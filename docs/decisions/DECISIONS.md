@@ -54,6 +54,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-38 | Decision/question ids: WP sessions write provisional `D-3D<wp>-<n>` / `Q-3D<wp>-<n>`; the session that merges into the base assigns final `D-NN` / `Q-NN` and rewrites references; `check:docs` (3D-05) rejects provisional ids on the base branch | Owner, dialog, 2026-11-19, after the D-35 collision |
 | D-39 | 3D-27 accepted (done); merged into the base | Owner, dialog, 2026-11-19 |
 | D-40 | All UI-related development follows `GeoIPlus/brandbook` (its `AGENTS.md` rules are hard rules), here and in mirror rows | Owner, dialog, 2026-11-19 |
+| D-41 | The 300-line limit applies to source code only; documents (BACKLOG, specs, notes) are exempt | Owner, dialog, 2026-11-19 |
+| D-42 | Keep the repository clean: once a WP branch is fully merged into the base, the branch is deleted and its session archived; no obsolete branches are kept | Owner, dialog, 2026-11-19. Cloud sessions can push only their own branch; deletion of other branches falls to the WP session itself or the owner |
 
 ## Open questions
 

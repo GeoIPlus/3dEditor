@@ -43,4 +43,8 @@ Checks outstanding: <list>
    overview counts and mermaid group; mirror rows if the WP touches another repository.
 3. Checkpoint: `status: done`, results with numbers, what the next WP needs to know.
 4. Report to the owner in chat: what was done, check results, open questions (asked via dialog, not as text).
-5. The next WP is **not** started in this session. Offer the handoff for the next `ready` row.
+5. **Keep the repository clean (D-42).** After the coordinating session has merged the WP into the base and confirmed
+   the branch head is an ancestor of the base, the WP branch is deleted and the session archived. A cloud session may push
+   only its own branch: the WP session tries to delete its own branch after the merge is confirmed; if refused, the
+   owner deletes it in GitHub (Branches page). Never delete a branch that is not fully merged.
+6. The next WP is **not** started in this session. Offer the handoff for the next `ready` row.

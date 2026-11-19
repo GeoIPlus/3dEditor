@@ -52,7 +52,7 @@ audit PDF are background only. Read source specs with an offset by section, neve
    report, tolerance profile) is a JSON Schema 2020-12 before it is code. Types are derived from it.
 8. **JavaScript ESM with JSDoc types**, checked by `tsc --checkJs`; no TypeScript sources. This is the working rule from
    HANDOVER §5, not yet an owner decision: the kernel language is open question Q-01, closed by the ADR of 3D-08.
-9. **Files at most 300 lines**, one responsibility per file. The kernel is dozens of small modules.
+9. **Source files at most 300 lines** (code only; documents are exempt, D-41), one responsibility per file. The kernel is dozens of small modules.
 10. **No DOM, no three.js** in `geo-model3d`. It runs in Node unchanged.
 10a. **All UI follows `GeoIPlus/brandbook`** (D-40): its `AGENTS.md` rules are hard rules for any UI, mockup or styling
     work, here or in a mirror row (tokens only, its fonts, radius, borders, spacing; no invented colours or styles).
