@@ -64,6 +64,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-48 | 3D-00 accepted (done) | Owner, dialog, 2026-11-19 |
 | D-49 | 3D-02 and 3D-05 set `ready`; started now in two parallel fresh sessions | Owner, dialog, 2026-11-19 |
 | D-50 | Codebase graph / read-cache tooling: one spike row 3D-31, `ready` now, measured on cross-repo reading of existing code (not on 3D-02/3D-05, where there is no code to index) with vs. without the tool, two runs each; nothing about it in the daily report of 2026-11-20 | Owner, dialog, 2026-11-19 |
+| D-3D05-1 | `backlog:sync` (D-25) reads the other repository's BACKLOG from a vendored snapshot pinned to a full SHA with a sha256 `provenance.json` (3D-ADR-0001 pattern, `tools/backlog-sync/pins/<repo>/`); CI stays offline and needs no token; a status refresh is a deliberate `npm run backlog:sync -- --fetch <repo> <sha>` commit | Owner, dialog, 2026-11-19 (3D-05) |
+| D-3D05-2 | AGENTS.md §5 is left unchanged by 3D-05 (its sentence "until 3D-05 is done they do not exist" stays until a later batch of instruction changes) | Owner, dialog, 2026-11-19 (3D-05) |
 
 ## Open questions
 
