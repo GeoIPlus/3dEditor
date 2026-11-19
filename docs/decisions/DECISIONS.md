@@ -60,6 +60,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-44 | Daily report as a scheduled task "3DQM daily report" (`trig_01STtubMobM7cpZpFr2NnpBB`), 07:45 Europe/Copenhagen (jittered from 08:00), fresh read-only session, push notification, no commits: what was done, tokens/cost per session, up to three data-based proposals | Owner, dialog, 2026-11-19 |
 | D-45 | The Task Observer plugin is not used (it writes learned rules into CLAUDE.md, against AGENTS.md §10) | Owner, dialog, 2026-11-19 |
 | D-46 | claude-code-setup recommendations adopted as row 3D-30 (`ready`): `merge-wp` skill, `tools/check-docs.mjs` + Stop hook (only when `docs/` changed), PreToolUse guard for `docs/source/`, read-only permission allow list. Deferred to code WPs: context7 MCP, `wp-reviewer` subagent. Rejected: SessionStart backlog hook, extra plugins (§7.4) | Owner, dialog, 2026-11-19 |
+| D-47 | 3D-30 accepted (done); merged into the base without PR via the `merge-wp` skill | Owner, dialog, 2026-11-19 |
 
 ## Open questions
 

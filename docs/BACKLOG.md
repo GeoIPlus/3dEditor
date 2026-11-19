@@ -13,19 +13,19 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-00 session: D-43..D-46; row 3D-30 ready).
+Updated: 2026-11-19 (3D-30 merged into the base, D-47).
 
 | Progress | Rows |
 |---|---:|
-| Done | 3 / 43 |
+| Done | 4 / 43 |
 | Review | 1 |
 | In progress | 0 |
-| Ready | 1 |
+| Ready | 0 |
 | Proposed (waiting for the owner to set `ready`) | 37 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 3/43 rows done. Planning: the agent operating manual, intake procedure and this backlog
-(3D-00) are on review; the verification notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)) are done.
+**Implementation progress: 0 %** of code; 4/43 rows done. Planning: the agent operating manual, intake procedure and this backlog
+(3D-00) are on review; the verification notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)) are done; agent tooling 3D-30 is done (D-47).
 **Next step for the owner:** review 3D-00; set the next rows `ready` (agreed order: 3D-02 / 3D-05, then 3D-28). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
 3D-02 / 3D-05**; 3D-28 (agent evals) runs as soon as 3D-05 is done.
 
@@ -35,6 +35,7 @@ flowchart TB
     D01["3D-01 Verification note"]
     D29["3D-29 Verify crowdsource CP/DP"]
     D27["3D-27 Early ADR: contracts location + P4 canary"]
+    D30["3D-30 Agent tooling"]
   end
   subgraph review["REVIEW"]
     D00["3D-00 Agent manual, intake, backlog"]
@@ -48,7 +49,6 @@ flowchart TB
     D08["3D-08 Latency spike + kernel ADRs"]
     D03["3D-03 ADR storage (Operaflow)"]
     D28["3D-28 Agent evals"]
-    D30["3D-30 Agent tooling"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
     D09["3D-09 B-Rep core"]
@@ -197,7 +197,7 @@ flowchart TB
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | done (D-39; merged into base, no PR) |
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | done (D-36; merged into base, no PR) |
-| 3D-30 | Agent tooling: `merge-wp` skill, `tools/check-docs.mjs` + Stop hook, `docs/source` edit guard, read-only permission allow list | here | .claude, tools | 00 | G0 | S | ready (D-46) |
+| 3D-30 | Agent tooling: `merge-wp` skill, `tools/check-docs.mjs` + Stop hook, `docs/source` edit guard, read-only permission allow list | here | .claude, tools | 00 | G0 | S | done (D-47; merged into base, no PR) |
 | 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
 | 3D-60 | crowdsource: 3D project type and CityJSON building dataset kind (Operaflow-conformant) | crowdsource | backend, streaming | 03, 29 | G5+ | L | proposed (D-35; under crowdsource's own process) |
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |

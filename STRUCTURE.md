@@ -7,7 +7,8 @@ boundary is fixed by ADR 3D-02 (decision D-17 sets the hybrid model, the ADR set
 
 ```
 AGENTS.md, CLAUDE.md, STRUCTURE.md   agent manual, entry point, this file
-.claude/skills/<name>/SKILL.md       procedures loaded on demand (task-intake, wp-session, ...)
+.claude/skills/<name>/SKILL.md       procedures loaded on demand (task-intake, wp-session, merge-wp, ...)
+.claude/settings.json                hooks (Stop: check-docs; PreToolUse: docs/source guard) + read-only allow list (3D-30)
 .agent/checkpoints/3D-<id>.md        one per WP: plan, state, results, handoff
 docs/
   BACKLOG.md                         the 3DQM progress board (incl. mirror rows of other repos)
@@ -23,6 +24,8 @@ packages/geo-model3d/  (3D-05, 3D-09) server-only kernel, protection P4, DOM-fre
 services/kernel/       (3D-23)        command API host for the kernel; ports: command, storage, point, validation
 contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
 fixtures/              (3D-07)        small synthetic golden fixtures and their generator
+tools/check-docs.mjs                 document consistency check, Node built-ins (3D-30; `npm run check:docs` after 3D-05)
+tools/hooks/                         Claude Code hook scripts (3D-30)
 ```
 
 ## 2. Dependency rules (to be enforced by `check:arch`, 3D-05)
