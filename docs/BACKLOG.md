@@ -13,20 +13,20 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50).
+Updated: 2026-11-19 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 in review, 3D-47, 3D-48, 3D-51 added by 3D-02).
 
 | Progress | Rows |
 |---|---:|
-| Done | 5 / 44 |
-| Review | 0 |
-| In progress | 1 |
+| Done | 5 / 47 |
+| Review | 1 |
+| In progress | 0 |
 | Ready | 2 |
-| Proposed (waiting for the owner to set `ready`) | 35 |
+| Proposed (waiting for the owner to set `ready`) | 38 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 5/44 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 5/47 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47).
-**Running:** 3D-02 and 3D-05 (D-49), spike 3D-31 (D-50). **Next:** 3D-28 (agent evals) as soon as 3D-05 is done.
+**Review:** 3D-02 (3D-ADR-0002 accepted). **Running:** 3D-05 (D-49), spike 3D-31 (D-50). **Next:** 3D-28 (agent evals) as soon as 3D-05 is done.
 
 ```mermaid
 flowchart TB
@@ -37,8 +37,10 @@ flowchart TB
     D30["3D-30 Agent tooling"]
     D00["3D-00 Agent manual, intake, backlog"]
   end
-  subgraph ready["READY"]
+  subgraph review["REVIEW"]
     D02["3D-02 ADR kernel package and boundary"]
+  end
+  subgraph ready["READY"]
     D05["3D-05 Repository bootstrap"]
     D31["3D-31 Spike: code graph / read cache"]
   end
@@ -81,7 +83,10 @@ flowchart TB
     D44["3D-44 3DQM UI panels"]
     D45["3D-45 SC: pinned model3d schemas"]
     D46["3D-46 SC: P4 canary scan"]
+    D47["3D-47 SC: 3D view port + host"]
+    D48["3D-48 SC: apps/3dqm host"]
     D50["3D-50 geoviewer host adapter"]
+    D51["3D-51 geoviewer scene3d adapter"]
     D60["3D-60 crowdsource 3D project + CityJSON"]
     D61["3D-61 crowdsource COPC stream"]
     D62["3D-62 crowdsource server grant"]
@@ -163,6 +168,14 @@ flowchart TB
   D45 --> D43
   D23 --> D50
   D43 --> D50
+  D02 --> D47
+  D47 --> D40
+  D06 --> D41
+  D45 --> D41
+  D43 --> D48
+  D47 --> D48
+  D47 --> D51
+  D50 --> D51
 ```
 
 ## Work-package status
@@ -171,7 +184,7 @@ flowchart TB
 |---|---|---|---|---|---|---|---|
 | 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | done (D-48) |
 | 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents = Tools Plane, geoviewer, Operaflow = CP + DP) | here | docs/verification | 00 | G0 | S | done (D-34; merged into base, no PR) |
-| 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | in-progress (wp/3d-02-kernel-package-adr) |
+| 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | review (local, PR not requested; [3D-ADR-0002](decisions/adr/3D-ADR-0002-kernel-package-and-remote-port.md) accepted D-3D02-1) |
 | 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01, 29 | G0 | M | proposed (D-35: interim own store behind a port, later crowdsource) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
 | 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary + negative control per 3D-ADR-0001), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | ready (D-49) |
@@ -205,14 +218,17 @@ flowchart TB
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
 | 3D-63 | Swap 3DQM interim data adapters for crowdsource datasets; migrate stored buildings and journals | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | proposed (D-35) |
-| 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45; shared WP-19, WP-20 | G3 | L | proposed (Q-12 answered by 3D-01: no 3D scene in `geo-render`; 3D-02 decides scene source (Q-16), row may split; UI per brandbook, D-40) |
-| 3D-41 | Remote kernel port in `workspace/plan` (network port described by schema) | shared | workspace/plan | 02; shared WP-21 | G3 | M | proposed (Q-13 narrowed by 3D-01: `placement: dp` declarable, not executed) |
+| 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-3D02-4: 3D host split out to 3D-47; UI per brandbook, D-40) |
+| 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-3D02-2, D-3D02-3) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
 | 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-28 | G5 | M | proposed (Q-03 shape known, 3D-01 §6; extension URI content-named, no product) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | proposed (UI per brandbook, D-40) |
 | 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared | contracts | 06, 27 | G3 | S | proposed (D-37) |
+| 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | proposed (D-3D02-4; UI per brandbook, D-40) |
+| 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | proposed (D-3D02-5; UI per brandbook, D-40) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared | tools, CI | 27 | G0 | S | proposed (D-37) |
-| 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server, file storage port for tests, P4 canary scan of the client build | geoviewer | host | 23, 43 | G5 | M | proposed (UI per brandbook, D-40) |
+| 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server (mounts `createKernelHandler`, 3D-ADR-0002), file storage port for tests, P4 canary scan of the client build | geoviewer | host | 23, 43 | G5 | M | proposed (UI per brandbook, D-40) |
+| 3D-51 | geoviewer `scene3d` adapter implementing the 3D view port (entity-id pick, model3d drawing in GV) | geoviewer | scene3d | 47, 50 | G5 | M | proposed (D-3D02-4; UI per brandbook, D-40) |
 
 ## Details
 
@@ -269,6 +285,11 @@ flowchart TB
   kernel language/Boolean library and licences (closes Q-01) and solver approach, owner-approved.
 
 ### 3D-09 .. 3D-24 Kernel, operations, service
+- 3D-02 changes (`change-wp`, [3D-ADR-0002](decisions/adr/3D-ADR-0002-kernel-package-and-remote-port.md), D-3D02-1):
+  3D-09 Accept adds: `check:arch` enforces the module DAG of the ADR (C1 rule 2), no I/O in `geo-model3d` (no `fs`/`net`/
+  `http(s)`/`child_process`/`process.env`, no `Date.now`/`Math.random`), only `services/kernel` imports it.
+  3D-23 Accept adds: `services/kernel` exports `createKernelHandler(ports)` (plain Node, mountable by geoviewer, 3D-50) and
+  its own server for the image (D-33); every request and reply validates against `contracts/model3d/`.
 - Accept lines come from `docs/specs/3dqm-spec.md` (3D-04). Golden tests per row:
   3D-09 GT-25; 3D-10 GT-I1..GT-I3; 3D-11 GT-I4; 3D-14 GT-01..GT-05; 3D-15 GT-08, GT-10; 3D-16 GT-07, GT-09;
   3D-17 GT-06, GT-11, GT-19; 3D-18 GT-12, GT-13; 3D-19 GT-14..GT-16; 3D-20 GT-17, GT-18; 3D-22 GT-20, GT-21;
@@ -355,3 +376,30 @@ flowchart TB
   - 3D-43: the extension follows `extension-orthoqm.schema.json` (assignment, dataset, production, runtime,
     deliverable) under a content-named URI (Operaflow `extension-names-no-product`); buildings as `work.units`.
   - 3D-50: geoviewer consumes no `@geoiplus/*` package today; Accept adds the registry token in its CI and Docker build.
+- 3D-02 changes (`change-wp` / `external`, 2026-11-19, [3D-ADR-0002](decisions/adr/3D-ADR-0002-kernel-package-and-remote-port.md)):
+  - 3D-40 Accept: draws only through the 3D view port of 3D-47; an entity id survives drawing and picking.
+  - 3D-41 Accept: a `model3d-kernel` service factory in `plans/registry` validates every request/reply against the vendored
+    `model3d` schemas (3D-45) and sends it through a host-injected `kernelTransport(request, {signal})`; a stale PREVIEW
+    reply is dropped; a plan with a URL or credential is rejected; plan v2 gets a Tools Plane placement value (D-3D02-3).
+    Waits for SC WP-28 (factory, registry, plan v2; paused on its branch).
+  - 3D-43 Accept adds: the 3DQM extension `runtime` declares the kernel service endpoint (D-3D02-2).
+  - 3D-50 Accept adds: the server route mounts `createKernelHandler` from `services/kernel`; how GV obtains it (pinned SHA
+    or tarball) is the GV row's choice. The 3D view adapter is 3D-51.
+
+### 3D-47 SC 3D view port and perspective host
+- Source: 3D-02, owner dialog 2026-11-19 (D-3D02-4). Goal: a 3D view in `geo-render` that any host can use.
+- Scope in: SC ADR; 3D view port (add/remove object, camera, pick ray); perspective host module on `three@0.185.1`;
+  point drawing. Scope out: building drawing (3D-40), tools (3D-42).
+- Accept: SC ADR accepted under SC rules; a port contract test that 3D-51 reuses; scenes/cameras never escape the port.
+- Decisions: D-17, D-40, D-3D02-4  Open: Q-06 (LidarQM reuse)
+
+### 3D-48 SC `apps/3dqm`
+- Source: 3D-02, owner dialog 2026-11-19 (D-3D02-5). Goal: an independent 3DQM host beside geoviewer.
+- Accept: assembles the 3DQM workplace from a CP document on the SC CP/DP mock using 3D-47, 3D-41 and `plans/3dqm`;
+  the P4 canary scan (3D-46) covers its build.
+- Decisions: D-17, D-3D02-2, D-3D02-5  Open: -
+
+### 3D-51 geoviewer `scene3d` adapter
+- Source: 3D-02, owner dialog 2026-11-19 (D-3D02-4). Goal: GV is a second host of the same 3D view port.
+- Accept: the 3D-47 port contract test passes against the GV adapter; picking returns entity ids for model3d objects.
+- Decisions: D-07, D-3D02-4  Open: -

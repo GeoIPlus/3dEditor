@@ -1,7 +1,7 @@
 # 3D-ADR-0002: `geo-model3d` package layout, remote kernel port, relation to `geo-render` / `workspace`
 
-- Status: proposed
-- WP: 3D-02   Questions closed: Q-13, Q-16 (on acceptance); Q-15 groups assigned   Recorded, not decided: Q-14
+- Status: accepted (owner, 2026-11-19, D-3D02-1 .. D-3D02-5)
+- WP: 3D-02   Questions closed: Q-13, Q-16; Q-15 groups assigned   Recorded, not decided: Q-14
 
 Source revisions (read-only, the same as [3D-01](../../verification/3D-01.md) and [3D-ADR-0001](3D-ADR-0001-contracts-location-and-p4-canary.md)):
 this repository at `5d984a3`; `GeoIPlus/shared_compnents` (SC) `main` at `cc54eb3` and its paused WP-28 branch
@@ -76,14 +76,28 @@ Placement value for the kernel operations (needed by A1):
 |---|---|---|
 | **B1. SC owns 3D drawing behind a 3D view port.** `geo-render/model3d` draws the edited building from patches (own layer, source hidden, ghost, entity-id pick) against a narrow **3D view port** (add/remove object, camera, pick ray). SC adds the first implementation of that port as a new perspective host module in `geo-render` (SC ADR). GV may later implement the same port over `scene3d` (adapter, GV row) | The 3DQM workplace runs in SC apps, Storybook and tests without GV; matches D-17 and SC's composition model; entity-id picking is designed in, not retrofitted; reusable by a later LidarQM | Larger: a 3D host and point drawing are new SC work (3D-40 splits); GV's COPC/points code is not reused at first |
 | B2. GV `scene3d` is the only 3D host; SC ships `geo-render/model3d` as objects that GV registers as a content type | Reuses GV camera, points, COPC streaming now | Production workplace depends on GV, which has no `@geoiplus/*` dependency yet (3D-50) and is not an SC host; GV merged meshes must be reworked for entity ids; SC tests need a GV harness; SC's composition spec still assumes a React GV |
+| B3. Both: B1, and GV `scene3d` implements the same 3D view port through an adapter | Any host can run the workplace (D-3D02-2); SC host for the independent 3DQM app, GV for the GV workplace | Two implementations of one port: the port must stay narrow and be covered by one shared contract test |
 
 ### C. Internal layout of this repository
 
-One option is proposed; the alternatives (one package with I/O inside; one package per module) are rejected below.
+| Option | Consequences | Risk |
+|---|---|---|
+| **C. Pure kernel package + separate service host** (below) | Kernel is deterministic and host-free; both hosts (D-07) and the later move (D-31) reuse it unchanged; ports swap per D-35 | One more folder boundary to enforce |
+| C2. One package with storage, network and Operaflow handling inside | Fewer files | I/O inside the kernel breaks deterministic golden tests and ties the kernel to one host; the D-35 adapter swap touches kernel code |
+| C3. One npm package per module (`brep`, `solve`, ...) | Hard boundaries | Many `exports` entries, each needing the canary (D-37); versioning overhead with no consumer that needs a part alone |
 
 ## Decision
 
-Proposed: **A1 with P1, B1, and the layout C below.** Accepted only after the owner's word in a dialog (D-18).
+Accepted (owner, dialog, 2026-11-19): **A1 with P1, B3, and the layout C below.**
+
+- D-3D02-2 (Q-13): the CP issues one Operaflow contract from which **any host** assembles the workplace - geoviewer, an
+  independent 3DQM host, or others; the kernel is one tool in that workplace. The kernel endpoint is declared in the CP
+  document (3DQM extension `runtime`, 3D-43), and every host uses the same SC adapter with its own transport. No
+  host-specific kernel client exists.
+- D-3D02-3: a new placement value for the Tools Plane server (P1).
+- D-3D02-4 (Q-16): B3 - SC 3D view port + perspective host, and a GV `scene3d` adapter of the same port.
+- D-3D02-5: the independent 3DQM host is SC `apps/3dqm`, as `apps/orthoqm` (D-17).
+- D-3D02-1: the layout C and the Q-15 assignment below.
 
 ### C1. `packages/geo-model3d` - the pure kernel (P4)
 
@@ -143,7 +157,8 @@ The GV test host (D-07) mounts `createKernelHandler` on a GV server route (3D-50
 |---|---|---|
 | Geometry, solving, validation, lineage, export | `geo-model3d` via `services/kernel` (here) | `model3d` replies |
 | Drawing the edited building, ghost, entity-id pick | SC `geo-render/model3d` (3D-40) over a 3D view port | patches in, entity ids out |
-| 3D view host (camera, controls, point drawing) | SC `geo-render`, new module (SC ADR) | 3D view port |
+| 3D view host (camera, controls, point drawing) | SC `geo-render`, new module (SC ADR, 3D-47); GV `scene3d` adapter (3D-51) | 3D view port |
+| Workplace host | SC `apps/3dqm` (3D-48), geoviewer (3D-50), any other host of the CP contract | CP document + host ports |
 | Tools, E-04 state machine, snapping, PREVIEW throttling | SC `workspace/tools` (3D-42) | commands out |
 | Kernel transport | SC registry service + host port (3D-41) | `model3d` messages |
 | Workplace plans and the CP extension | SC `plans/3dqm` (3D-43) | plan + extension schemas |
@@ -178,4 +193,5 @@ change for P4 code to live there remains SC's ADR (Q-14, 3D-ADR-0001 "Relocation
   on both sides (contract tests).
 - SC 3D-41: a plan placing a kernel operation on the Tools Plane value composes only with a registered `model3d-kernel`
   service and an injected transport; a plan with a URL or credential is rejected; a stale PREVIEW reply is dropped.
-- SC 3D-40 (B1): an entity id survives drawing and picking; the 3D view port is the only access to the scene.
+- SC 3D-40 / 3D-47, GV 3D-51 (B3): an entity id survives drawing and picking; the 3D view port is the only access to the
+  scene; one port contract test passes against both the SC host and the GV adapter.
