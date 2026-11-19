@@ -45,6 +45,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-29 | `GeoIPlus/Operaflow` is the Control Plane (CP) | Owner, dialog, 2026-11-19. DP and Tools Plane repositories still unnamed |
 | D-30 | `GeoIPlus/Operaflow` is both the Control Plane and the Data Plane. Amends D-29 | Owner, dialog, 2026-11-19 |
 | D-31 | Tools Plane = `GeoIPlus/shared_compnents`. The 3DQM kernel service is built now as a separate service in this repository and is planned to become part of `shared_compnents` (Tools Plane) later. Therefore kernel and service development must fully conform to Operaflow (contracts, exchange, conventions) and to `shared_compnents` conventions, so that the later move is a relocation, not a rewrite. Amends the wording of D-07 | Owner, dialog, 2026-11-19. Conflict with the P4 rule of `shared_compnents`: Q-14 |
+| D-32 | Per the owner, the CP/DP implementation is in `GeoIPlus/crowdsource` ("everything should be there"). Operaflow stays the format and rules of the CP/DP roles (3D-01 §9.1). D-30 now reads: Operaflow defines CP and DP; their implementation is to be verified in `crowdsource` (row 3D-29). Not verified yet | Owner, dialog, 2026-11-19 |
+| D-33 | The kernel service ships as its own container image built from this repository (answers the build form of Q-04). The deployment target is decided later with ADR-OPS | Owner, dialog, 2026-11-19 |
+| D-34 | 3D-01 accepted (done) and merged into the base branch without PR; 3D-27 and 3D-29 set `ready` | Owner, dialog, 2026-11-19 |
 
 ## Open questions
 
@@ -65,6 +68,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-13 | Can `workspace/plan` describe a remote (network) port, not only a Worker port? (HANDOVER §7 Q2) | If not, a library row is needed | 3D-01, 3D-02 |
 | Q-14 | The planned move of the kernel service into `shared_compnents` (D-31) conflicts with its rule that no P4 code lives there (HANDOVER §6: server counterparts live in the DP repository). Options: a server-only package with a mechanical isolation rule there (canary, D-24); or the service moves to Operaflow (DP) instead | Needs an ADR in `shared_compnents` before the move; not before | 3D-27 records it; owner before the move |
 | Q-15 | What "full conformance with Operaflow" (D-31) requires concretely: contract/exchange schemas, API conventions, auth, storage, deployment | Operaflow's own AGENTS/docs and contracts | 3D-01 extracts the list; 3D-02/3D-03 apply it |
+| Q-16 | Q-12 answered: no 3D scene in `geo-render`. Does 3DQM get a new 3D scene module in `shared_compnents` (ADR there, three.js already pinned) or does the scene stay in geoviewer `features/scene3d` with library components mounted into it? | Decides 3D-40 location and size | 3D-02, owner approval |
 
 ## Open-question status updates
 
@@ -81,3 +85,5 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-13 | 2026-11-19, 3D-01 | narrowed; closed by 3D-02 | `plan.schema.json` `placement` allows `dp` / `dp.batch`, but `workspace/plan` code never reads `placement`, and the compose factory is SC WP-28 (not done). A plan can declare a server operation, but nothing executes it. 3D-41 must add the binding |
 | Q-14 | 2026-11-19, 3D-01 | evidence recorded, not decided | SC limits P4 in client packages (`STRUCTURE.md:245-246`), and its check rejects `server`/`p4` paths and P4 cards under `packages|plans|apps`. Node-only precedents exist (`ui-lint`, `NODE_TOOLS`); Operaflow hosts no services. Verification §10 |
 | Q-15 | 2026-11-19, 3D-01 | answered (list) | Six groups of Operaflow rules bind the kernel service when it reads, saves or sends itself: versions + authenticity, data access (OAuth client credentials for a server), saving (`PUT`/`If-Match`, Part 4), immutable delivery, progress records, extension naming. The rule ids are in verification §9.3; 3D-02 assigns each group to the service or the client |
+| Q-04 | 2026-11-19, owner | build form decided (D-33), target open | Own container image from 3dEditor; deployment target with ADR-OPS |
+| Q-02 | 2026-11-19, owner | open, new source | CP/DP implementation is in `crowdsource` per the owner (D-32); 3D-29 verifies, 3D-03 decides |
