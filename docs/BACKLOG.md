@@ -13,18 +13,18 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-00 session: D-38 provisional ids, D-39 3D-27 done, D-40 brandbook for all UI).
+Updated: 2026-11-19 (3D-00 session: D-43..D-46; row 3D-30 ready).
 
 | Progress | Rows |
 |---|---:|
-| Done | 3 / 42 |
+| Done | 3 / 43 |
 | Review | 1 |
 | In progress | 0 |
-| Ready | 0 |
+| Ready | 1 |
 | Proposed (waiting for the owner to set `ready`) | 37 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 3/42 rows done. Planning: the agent operating manual, intake procedure and this backlog
+**Implementation progress: 0 %** of code; 3/43 rows done. Planning: the agent operating manual, intake procedure and this backlog
 (3D-00) are on review; the verification notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)) are done.
 **Next step for the owner:** review 3D-00; set the next rows `ready` (agreed order: 3D-02 / 3D-05, then 3D-28). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
 3D-02 / 3D-05**; 3D-28 (agent evals) runs as soon as 3D-05 is done.
@@ -48,6 +48,7 @@ flowchart TB
     D08["3D-08 Latency spike + kernel ADRs"]
     D03["3D-03 ADR storage (Operaflow)"]
     D28["3D-28 Agent evals"]
+    D30["3D-30 Agent tooling"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
     D09["3D-09 B-Rep core"]
@@ -105,6 +106,8 @@ flowchart TB
   D27 --> D05
   D27 --> D06
   D05 --> D28
+  D00 --> D30
+  D30 --> D05
   D01 --> D02
   D01 --> D03
   D01 --> D04
@@ -194,6 +197,7 @@ flowchart TB
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | done (D-39; merged into base, no PR) |
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | done (D-36; merged into base, no PR) |
+| 3D-30 | Agent tooling: `merge-wp` skill, `tools/check-docs.mjs` + Stop hook, `docs/source` edit guard, read-only permission allow list | here | .claude, tools | 00 | G0 | S | ready (D-46) |
 | 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
 | 3D-60 | crowdsource: 3D project type and CityJSON building dataset kind (Operaflow-conformant) | crowdsource | backend, streaming | 03, 29 | G5+ | L | proposed (D-35; under crowdsource's own process) |
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
@@ -288,6 +292,17 @@ flowchart TB
 - Accept: `docs/verification/3D-29.md` with `crowdsource` revision and file:line references: what CP/DP roles it
   implements, how it serves datasets (forms, `stream`/COPC, box reads), where versions/results/journals live, auth,
   deployment; Q-02, Q-05, Q-14 narrowed; D-32 confirmed or corrected. Read-only in `crowdsource`.
+
+### 3D-30 Agent tooling (D-46)
+- Source: claude-code-setup analysis, owner dialog 2026-11-19. Goal: cut repeated coordinator work and ad-hoc checks.
+- Accept: (1) `.claude/skills/merge-wp/SKILL.md`: ancestry check, merge, provisional ids `D-3D<wp>-n` -> final `D-NN`
+  with all references rewritten, backlog recount, branch delete attempt, session archive (D-38, D-42).
+  (2) `tools/check-docs.mjs` (Node, no deps): overview counts = table, mermaid nodes = rows, unique D/Q ids in the
+  decision table, no provisional ids, relative links resolve, every row has an Accept line or a Details entry; exit 1
+  with one line per problem; tests on planted faults in `tools/check-docs.test.mjs` runnable with `node --test`.
+  (3) `.claude/settings.json`: Stop hook runs the script only when `docs/` changed (quiet on success); PreToolUse hook
+  refuses Edit/Write under `docs/source/`; allow list for read-only git/grep. (4) Each hook demonstrated once with output.
+  3D-05 later folds the script into `npm run check`.
 
 ### 3D-28 Agent evals
 - Source: owner dialog 2026-11-19 (D-27). Goal: prove the instructions by measurement.
