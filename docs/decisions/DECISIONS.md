@@ -61,6 +61,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-45 | The Task Observer plugin is not used (it writes learned rules into CLAUDE.md, against AGENTS.md §10) | Owner, dialog, 2026-11-19 |
 | D-46 | claude-code-setup recommendations adopted as row 3D-30 (`ready`): `merge-wp` skill, `tools/check-docs.mjs` + Stop hook (only when `docs/` changed), PreToolUse guard for `docs/source/`, read-only permission allow list. Deferred to code WPs: context7 MCP, `wp-reviewer` subagent. Rejected: SessionStart backlog hook, extra plugins (§7.4) | Owner, dialog, 2026-11-19 |
 | D-47 | 3D-30 accepted (done); merged into the base without PR via the `merge-wp` skill | Owner, dialog, 2026-11-19 |
+| D-48 | 3D-00 accepted (done) | Owner, dialog, 2026-11-19 |
+| D-49 | 3D-02 and 3D-05 set `ready`; started now in two parallel fresh sessions | Owner, dialog, 2026-11-19 |
+| D-50 | Codebase graph / read-cache tooling: one spike row 3D-31, `ready` now, measured on cross-repo reading of existing code (not on 3D-02/3D-05, where there is no code to index) with vs. without the tool, two runs each; nothing about it in the daily report of 2026-11-20 | Owner, dialog, 2026-11-19 |
 
 ## Open questions
 

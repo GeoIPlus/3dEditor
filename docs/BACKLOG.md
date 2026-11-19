@@ -13,21 +13,20 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-30 merged into the base, D-47).
+Updated: 2026-11-19 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50).
 
 | Progress | Rows |
 |---|---:|
-| Done | 4 / 43 |
-| Review | 1 |
+| Done | 5 / 44 |
+| Review | 0 |
 | In progress | 0 |
-| Ready | 0 |
-| Proposed (waiting for the owner to set `ready`) | 37 |
+| Ready | 3 |
+| Proposed (waiting for the owner to set `ready`) | 35 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 4/43 rows done. Planning: the agent operating manual, intake procedure and this backlog
-(3D-00) are on review; the verification notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)) are done; agent tooling 3D-30 is done (D-47).
-**Next step for the owner:** review 3D-00; set the next rows `ready` (agreed order: 3D-02 / 3D-05, then 3D-28). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
-3D-02 / 3D-05**; 3D-28 (agent evals) runs as soon as 3D-05 is done.
+**Implementation progress: 0 %** of code; 5/44 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47).
+**Running:** 3D-02 and 3D-05 (D-49), spike 3D-31 (D-50). **Next:** 3D-28 (agent evals) as soon as 3D-05 is done.
 
 ```mermaid
 flowchart TB
@@ -36,14 +35,15 @@ flowchart TB
     D29["3D-29 Verify crowdsource CP/DP"]
     D27["3D-27 Early ADR: contracts location + P4 canary"]
     D30["3D-30 Agent tooling"]
-  end
-  subgraph review["REVIEW"]
     D00["3D-00 Agent manual, intake, backlog"]
   end
-  subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
+  subgraph ready["READY"]
     D02["3D-02 ADR kernel package and boundary"]
-    D04["3D-04 3DQM spec"]
     D05["3D-05 Repository bootstrap"]
+    D31["3D-31 Spike: code graph / read cache"]
+  end
+  subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
+    D04["3D-04 3DQM spec"]
     D06["3D-06 Contract schemas"]
     D07["3D-07 Golden fixtures"]
     D08["3D-08 Latency spike + kernel ADRs"]
@@ -106,6 +106,7 @@ flowchart TB
   D27 --> D05
   D27 --> D06
   D05 --> D28
+  D30 --> D31
   D00 --> D30
   D30 --> D05
   D01 --> D02
@@ -168,12 +169,12 @@ flowchart TB
 
 | WP | Title | Repo | Modules | Depends on | Gate | Size | Status |
 |---|---|---|---|---|---|---|---|
-| 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | review (local, `claude/keen-pascal-u7z2gk`; PR not requested) |
+| 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | done (D-48) |
 | 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents = Tools Plane, geoviewer, Operaflow = CP + DP) | here | docs/verification | 00 | G0 | S | done (D-34; merged into base, no PR) |
-| 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | proposed |
+| 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | ready (D-49) |
 | 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01, 29 | G0 | M | proposed (D-35: interim own store behind a port, later crowdsource) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
-| 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary + negative control per 3D-ADR-0001), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | proposed |
+| 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary + negative control per 3D-ADR-0001), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | ready (D-49) |
 | 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | here (D-37) | contracts | 04, 27 | G0 | L | proposed |
 | 3D-07 | Golden fixtures: format and synthetic CityJSON/point sets for GT-I1..GT-25 | here | fixtures | 06 | G0 | M | proposed |
 | 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | proposed |
@@ -199,6 +200,7 @@ flowchart TB
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | done (D-36; merged into base, no PR) |
 | 3D-30 | Agent tooling: `merge-wp` skill, `tools/check-docs.mjs` + Stop hook, `docs/source` edit guard, read-only permission allow list | here | .claude, tools | 00 | G0 | S | done (D-47; merged into base, no PR) |
 | 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
+| 3D-31 | Spike: codebase graph / read-cache tool (MCP or skill) measured on cross-repo reading tasks, with vs. without | here | .claude, docs/agent-evals | 30 | G0 | M | ready (D-50) |
 | 3D-60 | crowdsource: 3D project type and CityJSON building dataset kind (Operaflow-conformant) | crowdsource | backend, streaming | 03, 29 | G5+ | L | proposed (D-35; under crowdsource's own process) |
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
@@ -310,6 +312,22 @@ flowchart TB
   intake of a new request, chore vs. non-chore, refuse a client import of the kernel, mark an unknown tolerance
   `TBD`, refuse to re-open a decision, handoff to a fresh session, question asked as a dialog; plus one per hard rule
   of AGENTS.md §2. Every task run twice; scores recorded in DECISIONS.md. A rule change is kept only if evals hold.
+
+### 3D-31 Spike: codebase graph / read-cache tool (D-50)
+- Source: owner message 2026-11-19 (Codebase Memory MCP and similar graph/cache tools against repeated code reading).
+- Goal: decide with measured data whether one local code-graph or read-cache tool lowers cost per task without lowering
+  result quality.
+- Scope in: check which candidate tools exist and what they need (codebase-memory-mcp first; others only if their
+  repository is found); pick one that runs fully locally (no code sent to external services); install it for the
+  session only; one fixed cross-repo reading task on code that exists (`GeoIPlus/shared_compnents` and/or `geoviewer`,
+  e.g. "where would the remote kernel port plug in, what does it touch"), run twice with and twice without the tool.
+  Scope out: permanent install in `.claude/settings.json` or the environment setup script (needs a new owner decision),
+  indexing `docs/source` (markdown, not code), more than one tool per run.
+- Accept: `docs/agent-evals/3D-31-code-graph.md` with tool name, version, install steps actually run, the task text,
+  a rubric, and per run: cost, context tokens, tool calls, turns, rubric score; tool-definition count added; a
+  recommendation (adopt / defer until kernel code exists / reject) that follows from the numbers; noise stated
+  (n=2 per arm). Vendor claims are cited as claims, not results.
+- Decisions: D-43, D-50  Open: -
 
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under
