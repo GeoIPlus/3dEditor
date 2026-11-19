@@ -20,8 +20,8 @@ Updated: 2026-11-19 (3D-00 session; D-24..D-27 added).
 | Done | 0 / 35 |
 | Review | 1 |
 | In progress | 0 |
-| Ready | 0 |
-| Proposed (waiting for the owner to set `ready`) | 32 |
+| Ready | 1 |
+| Proposed (waiting for the owner to set `ready`) | 31 |
 | Blocked (external access or data) | 2 |
 
 **Implementation progress: 0 %** (0/35). Planning: the agent operating manual, intake procedure and this backlog
@@ -142,9 +142,9 @@ flowchart TB
 | WP | Title | Repo | Modules | Depends on | Gate | Size | Status |
 |---|---|---|---|---|---|---|---|
 | 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | review (local, `claude/keen-pascal-u7z2gk`; PR not requested) |
-| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code | here | docs/verification | 00 | G0 | S | proposed (needs `shared_compnents`, `geoviewer` attached) |
+| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents, geoviewer, Operaflow = CP) | here | docs/verification | 00 | G0 | S | ready (D-28) |
 | 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | proposed |
-| 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | blocked (CP, DP, Tools Plane repositories not accessible; Q-02, Q-04) |
+| 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | blocked (DP and Tools Plane repositories not named; CP = Operaflow, D-29; Q-02, Q-04) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
 | 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | proposed |
 | 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | per 3D-27 (Q-08) | contracts | 04, 27 | G0 | L | proposed |
@@ -187,7 +187,8 @@ flowchart TB
 ### 3D-01 Verification note
 - Goal: each [V]/[A] item of HANDOVER §5-§7 and v0.3 §2 checked against code with file references; corrections listed.
 - Accept: `docs/verification/3D-01.md`; every item marked confirmed / corrected / not checkable (why); Q-12, Q-13
-  answered or narrowed; how geoviewer consumes `@geoiplus/*` recorded. Read-only in the other repositories.
+  answered or narrowed; how geoviewer consumes `@geoiplus/*` recorded; Operaflow (CP, D-29): workplace contract
+  shape, assignment/roles, any DP/Tools Plane references found (narrows Q-02..Q-05). Read-only in other repositories.
 
 ### 3D-02 ADR kernel package and boundary
 - Accept: `3D-ADR-0002` answers Q-13 and HANDOVER §7 Q2 (remote port), the internal package layout and the relation

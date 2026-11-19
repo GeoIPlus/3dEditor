@@ -41,6 +41,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-25 | Mirror rows store only the external id/link; status is filled by `npm run backlog:sync` from the other repository's BACKLOG at a pinned ref; CI fails on drift. Until the external row exists, the local intake status applies | Implemented in 3D-05 |
 | D-26 | Fast lane for chores (amends D-22): typo/wording fixes in documents, at most ~20 lines, no change to behaviour, contracts, decisions, acceptance or rules; logged in `docs/CHORES.md`, no backlog row, no `ready`. Everything else: full intake | |
 | D-27 | Instructions are proven by measurement: `check:docs` lint (3D-05), agent evals (3D-28, each task run twice), and 3D-01 is the next WP | 10/10 is claimed only after evals pass |
+| D-28 | 3D-01 set `ready`; it runs in a fresh cloud session that attaches `shared_compnents`, `geoviewer` and `Operaflow` read-only | Owner, dialog, 2026-11-19 |
+| D-29 | `GeoIPlus/Operaflow` is the Control Plane (CP) | Owner, dialog, 2026-11-19. DP and Tools Plane repositories still unnamed |
 
 ## Open questions
 
@@ -48,7 +50,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 |---|---|---|---|
 | Q-01 | Kernel language: JavaScript on Node (HANDOVER §5 proposal, matches both repos) or compiled (v0.3 §3, ADR-001) | JS keeps one toolchain and the same protection (server-only); risk = latency. Decided by measurement | 3D-08 ADR, owner approval |
 | Q-02 | Where building versions, edit journal and results live (DP? own store?) | Delegated by the owner to the agent after reading CP/DP code (HANDOVER §8 #1) | 3D-03 ADR; needs CP/DP access |
-| Q-03 | Shape of the CP contract for a workplace; what a 3DQM extension carries (building list, roles, tolerance profile, data references) | Model: `extension-orthoqm.schema.json` in `shared_compnents` | 3D-02/3D-06; needs CP access |
+| Q-03 | Shape of the CP contract for a workplace; what a 3DQM extension carries (building list, roles, tolerance profile, data references) | Model: `extension-orthoqm.schema.json` in `shared_compnents`; CP = Operaflow (D-29) | 3D-01 reads, 3D-02/3D-06 decide |
 | Q-04 | How the Tools Plane runs a server-side component; where the kernel service is deployed | Unknown | 3D-03; needs Tools Plane access |
 | Q-05 | Can a server component read source LAS/LAZ by box from DP (v0.3 Д-02)? | If not, heatmap and plane fit need points uploaded from the client | 3D-01; needs DP access |
 | Q-06 | What LidarQM offers for reuse (point reading, selection, 3D view) | Unknown | 3D-01; needs LidarQM access |
