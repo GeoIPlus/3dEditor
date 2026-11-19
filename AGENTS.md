@@ -104,6 +104,7 @@ audit PDF are background only. Read source specs with an offset by section, neve
 | Golden tests | `npm run golden` |
 | Preview latency bench | `npm run bench` |
 | Document consistency (backlog counts, graph, ids, links) | `npm run check:docs` |
+| Document consistency, available now (3D-30; Stop hook runs it when `docs/` changed) | `node tools/check-docs.mjs` (tests: `node --test tools/check-docs.test.mjs`) |
 | Mirror row status from other repositories | `npm run backlog:sync` |
 | P4 canary scan of client bundles | part of `npm run check:arch` |
 
