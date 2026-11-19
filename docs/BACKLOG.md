@@ -19,8 +19,8 @@ Updated: 2026-11-19 (3D-00 session after 3D-01 acceptance: D-32..D-34, Q-16, row
 |---|---:|
 | Done | 1 / 36 |
 | Review | 1 |
-| In progress | 0 |
-| Ready | 2 |
+| In progress | 1 |
+| Ready | 1 |
 | Proposed (waiting for the owner to set `ready`) | 31 |
 | Blocked (external access or data) | 1 |
 
@@ -173,7 +173,7 @@ flowchart TB
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23 | G5 | M | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | blocked (sample data path, Q-07) |
-| 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | ready (D-34; SC read in 3D-01: SC already rejects P4 paths, `tools/check-architecture.js:67-69`) |
+| 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | in-progress (`wp/3d-27-seam-adr`) |
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | ready (D-32, D-34) |
 | 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06; shared WP-19, WP-20 | G3 | L | proposed (Q-12 answered by 3D-01: no 3D scene in `geo-render`; 3D-02 decides scene source (Q-16), row may split) |
