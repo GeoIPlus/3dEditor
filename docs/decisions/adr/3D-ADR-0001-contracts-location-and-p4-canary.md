@@ -1,6 +1,6 @@
 # 3D-ADR-0001: Location of the `model3d` contract schemas and P4 canary check of client bundles
 
-- Status: accepted (owner, 2026-11-19, D-35)
+- Status: accepted (owner, 2026-11-19, D-37)
 - WP: 3D-27   Questions closed: Q-08, Q-09   Recorded, not decided: Q-14
 
 Source revisions: this repository at `2846dff`; `GeoIPlus/shared_compnents` (SC) at `cc54eb3`, read-only, the same
@@ -65,7 +65,7 @@ Facts:
 
 ## Decision
 
-Accepted (owner, dialog, 2026-11-19, D-35): **Q-08 option A** and **Q-09 option 1**, as specified below.
+Accepted (owner, dialog, 2026-11-19, D-37): **Q-08 option A** and **Q-09 option 1**, as specified below.
 
 ### Q-08: authoritative location and pinned consumption
 
@@ -81,6 +81,8 @@ Accepted (owner, dialog, 2026-11-19, D-35): **Q-08 option A** and **Q-09 option 
 4. How SC client code loads the vendored schemas (types generation, packaging into `geo-core/contracts`, which today
    skips `contracts/vendor/`) is decided by the SC mirror row, under SC's rules. GV consumes `model3d` shapes only
    through SC packages; if it ever needs the schemas, the same mechanism applies.
+   The same holds for `crowdsource` when it serves 3D data later (D-35, rows 3D-60..3D-63): it pins and vendors, or reads
+   the schemas at a pinned revision; nothing here assumes SC is the only consumer.
 5. Option C (registry package) remains a later upgrade with the same ids, once a deployed registry has consumers.
 
 ### Q-09: marker format
