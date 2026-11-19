@@ -38,7 +38,8 @@ Checks outstanding: <list>
 ## Finish
 
 1. All acceptance lines proven; `npm run check` output read (once 3D-05 exists).
-2. Update: module card, STRUCTURE.md, DECISIONS.md, BACKLOG row -> `review` (PR link, or "local, PR not requested"),
+2. Decisions and questions of this WP keep provisional ids `D-3D<wp>-<n>` / `Q-3D<wp>-<n>`; the merging session assigns
+   final ids (D-38). Update: module card, STRUCTURE.md, DECISIONS.md, BACKLOG row -> `review` (PR link, or "local, PR not requested"),
    overview counts and mermaid group; mirror rows if the WP touches another repository.
 3. Checkpoint: `status: done`, results with numbers, what the next WP needs to know.
 4. Report to the owner in chat: what was done, check results, open questions (asked via dialog, not as text).

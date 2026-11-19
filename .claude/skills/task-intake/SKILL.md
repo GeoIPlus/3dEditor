@@ -40,7 +40,9 @@ Intake writes documents only. It never writes code, schemas or fixtures and neve
    reason before asking.
 5. **Write** in one commit, using the formats below:
    - the BACKLOG row (status `proposed`), its Details entry, the dependency edge in the mermaid graph, the overview counts;
-   - DECISIONS: every owner answer as `D-NN` (append-only, with date and "owner, dialog"), every unresolved point as `Q-NN`.
+   - DECISIONS: every owner answer as a decision (append-only, with date and "owner, dialog"), every unresolved point as a
+     question. Inside a WP session use provisional ids `D-3D<wp>-<n>` / `Q-3D<wp>-<n>`; only the session working on the
+     base branch (the coordinating session or the merge) assigns final `D-NN` / `Q-NN` (D-38).
 6. **Size**: S < 1 day of agent work, M up to ~3 days, L larger. An L row that has more than one acceptance group is
    split now into several rows.
 7. **Report** in chat in three lines: class, row id(s) created/changed, what the owner must do (set `ready`, answer Q-NN).

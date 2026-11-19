@@ -51,6 +51,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-35 | 3D CP/DP: interim own, later crowdsource. 3DQM starts with its own data ports (storage: file/S3 for buildings, versions, journal, drafts, baseline; points: COPC/LAS read by box) inside this repository for development and tests. Data serving moves to `crowdsource` once it supports 3D (project type, CityJSON and COPC `stream` datasets, client-credentials grant). The ports are designed so the move is a swap of adapters, not a rewrite (D-31) | Owner, dialog, 2026-11-19, after 3D-29 |
 | D-36 | 3D-29 accepted (done) and merged into the base branch without PR | Owner, dialog, 2026-11-19 |
 | D-37 | [3D-ADR-0001](adr/3D-ADR-0001-contracts-location-and-p4-canary.md) accepted. Q-08: `model3d` schemas are authoritative only in `contracts/model3d/` here, ids `urn:geoiplus:schema:model3d-<name>:v<major>`; consumers vendor a byte-for-byte copy pinned to a commit SHA with `provenance.json` + hash check (SC: `contracts/vendor/3deditor/`). Q-09: P4 canary `geoiplus-p4-canary:<package>:<32 hex>` imported by every `exports` entry; SC and GV scan their browser outputs for the pattern; this repository runs a negative control that must find the marker | Owner, dialog, 2026-11-19 (3D-27) |
+| D-38 | Decision/question ids: WP sessions write provisional `D-3D<wp>-<n>` / `Q-3D<wp>-<n>`; the session that merges into the base assigns final `D-NN` / `Q-NN` and rewrites references; `check:docs` (3D-05) rejects provisional ids on the base branch | Owner, dialog, 2026-11-19, after the D-35 collision |
+| D-39 | 3D-27 accepted (done); merged into the base | Owner, dialog, 2026-11-19 |
+| D-40 | All UI-related development follows `GeoIPlus/brandbook` (its `AGENTS.md` rules are hard rules), here and in mirror rows | Owner, dialog, 2026-11-19 |
 
 ## Open questions
 

@@ -13,20 +13,20 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-00 session: merged 3D-27 branch; its decision renumbered D-35 -> D-37 because 3D-29 acceptance already used D-35/D-36).
+Updated: 2026-11-19 (3D-00 session: D-38 provisional ids, D-39 3D-27 done, D-40 brandbook for all UI).
 
 | Progress | Rows |
 |---|---:|
-| Done | 2 / 42 |
-| Review | 2 |
+| Done | 3 / 42 |
+| Review | 1 |
 | In progress | 0 |
 | Ready | 0 |
 | Proposed (waiting for the owner to set `ready`) | 37 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 2/42 rows done. Planning: the agent operating manual, intake procedure and this backlog
+**Implementation progress: 0 %** of code; 3/42 rows done. Planning: the agent operating manual, intake procedure and this backlog
 (3D-00) are on review; the verification notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)) are done.
-**Next step for the owner:** review 3D-00 and 3D-27 ([3D-ADR-0001](decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md) accepted, D-37). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
+**Next step for the owner:** review 3D-00; set the next rows `ready` (agreed order: 3D-02 / 3D-05, then 3D-28). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
 3D-02 / 3D-05**; 3D-28 (agent evals) runs as soon as 3D-05 is done.
 
 ```mermaid
@@ -34,10 +34,10 @@ flowchart TB
   subgraph done["DONE"]
     D01["3D-01 Verification note"]
     D29["3D-29 Verify crowdsource CP/DP"]
+    D27["3D-27 Early ADR: contracts location + P4 canary"]
   end
   subgraph review["REVIEW"]
     D00["3D-00 Agent manual, intake, backlog"]
-    D27["3D-27 Early ADR: contracts location + P4 canary"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
     D02["3D-02 ADR kernel package and boundary"]
@@ -192,21 +192,21 @@ flowchart TB
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23 | G5 | M | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | blocked (sample data path, Q-07) |
-| 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | review (local, `wp/3d-27-seam-adr`; PR not requested; [3D-ADR-0001](decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md) accepted, D-37) |
+| 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | done (D-39; merged into base, no PR) |
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | done (D-36; merged into base, no PR) |
 | 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
 | 3D-60 | crowdsource: 3D project type and CityJSON building dataset kind (Operaflow-conformant) | crowdsource | backend, streaming | 03, 29 | G5+ | L | proposed (D-35; under crowdsource's own process) |
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
 | 3D-63 | Swap 3DQM interim data adapters for crowdsource datasets; migrate stored buildings and journals | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | proposed (D-35) |
-| 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45; shared WP-19, WP-20 | G3 | L | proposed (Q-12 answered by 3D-01: no 3D scene in `geo-render`; 3D-02 decides scene source (Q-16), row may split) |
+| 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45; shared WP-19, WP-20 | G3 | L | proposed (Q-12 answered by 3D-01: no 3D scene in `geo-render`; 3D-02 decides scene source (Q-16), row may split; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port in `workspace/plan` (network port described by schema) | shared | workspace/plan | 02; shared WP-21 | G3 | M | proposed (Q-13 narrowed by 3D-01: `placement: dp` declarable, not executed) |
-| 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed |
+| 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
 | 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-28 | G5 | M | proposed (Q-03 shape known, 3D-01 §6; extension URI content-named, no product) |
-| 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | proposed |
+| 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | proposed (UI per brandbook, D-40) |
 | 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared | contracts | 06, 27 | G3 | S | proposed (D-37) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared | tools, CI | 27 | G0 | S | proposed (D-37) |
-| 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server, file storage port for tests, P4 canary scan of the client build | geoviewer | host | 23, 43 | G5 | M | proposed |
+| 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server, file storage port for tests, P4 canary scan of the client build | geoviewer | host | 23, 43 | G5 | M | proposed (UI per brandbook, D-40) |
 
 ## Details
 
@@ -244,7 +244,7 @@ flowchart TB
   is generated once; `check:arch` fails if an `exports` entry of `geo-model3d` does not import the canary module; the
   negative control (minified Vite browser build of each entry) finds the marker in every output, else CI fails. `check:docs` fails on a planted count mismatch, a graph node without a row, a duplicate D/Q id, a dead link
   and a row without `Accept:`. `backlog:sync` reads a pinned ref of the other BACKLOG (fixture in tests, no network)
-  and CI fails on drift (D-25). Commands of AGENTS.md §5 exist.
+  and CI fails on drift (D-25). `check:docs` also rejects provisional decision ids `D-3D<wp>-<n>` on the base (D-38). Commands of AGENTS.md §5 exist.
 
 ### 3D-06 Contract schemas
 - Accept: JSON Schema 2020-12 for every `OperationKind` payload (v0.3 §9.1), result, patch, `topologyLineage`
@@ -309,6 +309,8 @@ flowchart TB
   rejects a `geo-model3d` dependency; a planted synthetic marker per output kind and a planted dependency each fail.
 
 ### 3D-40 .. 3D-50 Mirrors
+- UI rows (3D-40, 3D-42, 3D-44, 3D-50) follow `GeoIPlus/brandbook` (D-40); acceptance includes the brand checks of the
+  repository they are built in.
 - Rows are added in the other repository by a session working there, under its AGENTS.md; this row records the id
   and status. 3D-40 depends on Q-12; 3D-41 on Q-13; 3D-43 on Q-03.
 - 3D-01 changes (intake `change-wp`, 2026-11-19; [verification note](verification/3D-01.md)):

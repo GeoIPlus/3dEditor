@@ -54,6 +54,8 @@ audit PDF are background only. Read source specs with an offset by section, neve
    HANDOVER §5, not yet an owner decision: the kernel language is open question Q-01, closed by the ADR of 3D-08.
 9. **Files at most 300 lines**, one responsibility per file. The kernel is dozens of small modules.
 10. **No DOM, no three.js** in `geo-model3d`. It runs in Node unchanged.
+10a. **All UI follows `GeoIPlus/brandbook`** (D-40): its `AGENTS.md` rules are hard rules for any UI, mockup or styling
+    work, here or in a mirror row (tokens only, its fonts, radius, borders, spacing; no invented colours or styles).
 11. **Tests are deterministic, offline and not weakened to pass.** Golden tests of v0.3 §12 are the acceptance; their
     numbers are not edited to match code.
 12. **ADRs and contract schemas need the owner's explicit approval** (D-18): status `accepted` is set only after the
@@ -110,7 +112,7 @@ audit PDF are background only. Read source specs with an offset by section, neve
 | Document | Owner of change | When it changes |
 |---|---|---|
 | `docs/BACKLOG.md` | the session that changes a status; new rows only via `task-intake` | status change, intake, handoff |
-| `docs/decisions/DECISIONS.md` | the session that got the owner's answer | same session as the answer; append-only ids `D-NN`, `Q-NN` |
+| `docs/decisions/DECISIONS.md` | the session that got the owner's answer | same session as the answer. A WP session writes **provisional** ids `D-3D<wp>-<n>` / `Q-3D<wp>-<n>` (e.g. `D-3D27-1`); the session that merges the WP into the base assigns the final append-only `D-NN` / `Q-NN` and rewrites every reference (D-38) |
 | `docs/decisions/adr/3D-ADR-NNNN-*.md` | WP that needs the design choice | from [docs/templates/adr.md](docs/templates/adr.md); `proposed` until the owner accepts |
 | `docs/specs/*` | spec WPs; others only through intake | spec defect found -> question, not silent edit |
 | `.agent/checkpoints/3D-<id>.md` | the WP's session only | every stop, handoff and finish |
