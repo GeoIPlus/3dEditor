@@ -1,0 +1,23 @@
+# 3D-05: what `npm run check` runs locally runs here (AGENTS.md §5). Offline after `npm ci`: backlog:sync reads
+# pinned snapshots, the negative control builds into a temp dir.
+name: check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
