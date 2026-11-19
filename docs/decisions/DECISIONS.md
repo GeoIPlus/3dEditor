@@ -50,6 +50,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-34 | 3D-01 accepted (done) and merged into the base branch without PR; 3D-27 and 3D-29 set `ready` | Owner, dialog, 2026-11-19 |
 | D-35 | 3D CP/DP: interim own, later crowdsource. 3DQM starts with its own data ports (storage: file/S3 for buildings, versions, journal, drafts, baseline; points: COPC/LAS read by box) inside this repository for development and tests. Data serving moves to `crowdsource` once it supports 3D (project type, CityJSON and COPC `stream` datasets, client-credentials grant). The ports are designed so the move is a swap of adapters, not a rewrite (D-31) | Owner, dialog, 2026-11-19, after 3D-29 |
 | D-36 | 3D-29 accepted (done) and merged into the base branch without PR | Owner, dialog, 2026-11-19 |
+| D-37 | [3D-ADR-0001](adr/3D-ADR-0001-contracts-location-and-p4-canary.md) accepted. Q-08: `model3d` schemas are authoritative only in `contracts/model3d/` here, ids `urn:geoiplus:schema:model3d-<name>:v<major>`; consumers vendor a byte-for-byte copy pinned to a commit SHA with `provenance.json` + hash check (SC: `contracts/vendor/3deditor/`). Q-09: P4 canary `geoiplus-p4-canary:<package>:<32 hex>` imported by every `exports` entry; SC and GV scan their browser outputs for the pattern; this repository runs a negative control that must find the marker | Owner, dialog, 2026-11-19 (3D-27) |
 
 ## Open questions
 
@@ -95,3 +96,6 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-14 | 2026-11-19, 3D-29 | evidence added, not decided | crowdsource's DP is a fixed set of containers (Rust streaming, Python worker) with no third-party service slot; hosting the kernel there needs a crowdsource requirement under its own process ([3D-29 §6](../verification/3D-29.md#6-deployment)) |
 | Q-02 | 2026-11-19, owner | decided in principle (D-35) | Interim own store behind a storage port; later crowdsource. 3D-03 designs the port and the interim adapter |
 | Q-05 | 2026-11-19, owner | decided in principle (D-35) | Interim: kernel service reads COPC (by box) / LAS (whole) itself; later crowdsource COPC `stream` dataset (3D-61) |
+| Q-08 | 2026-11-19, owner (3D-27) | closed by D-37 | Option A of 3D-ADR-0001: here, pinned vendored copy |
+| Q-09 | 2026-11-19, owner (3D-27) | closed by D-37 | Option 1 of 3D-ADR-0001: pattern scan in SC/GV + negative control here |
+| Q-14 | 2026-11-19, 3D-27 | still open | 3D-ADR-0001 "Relocation path" keeps the move a relocation (same ids, pattern scanners unchanged); the SC path/registry rules still need an SC ADR before any move |

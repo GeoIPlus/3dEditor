@@ -13,20 +13,20 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-00 session after 3D-29 acceptance: D-35, D-36; rows 3D-60..3D-63).
+Updated: 2026-11-19 (3D-00 session: merged 3D-27 branch; its decision renumbered D-35 -> D-37 because 3D-29 acceptance already used D-35/D-36).
 
 | Progress | Rows |
 |---|---:|
-| Done | 2 / 40 |
-| Review | 1 |
+| Done | 2 / 42 |
+| Review | 2 |
 | In progress | 0 |
-| Ready | 1 |
-| Proposed (waiting for the owner to set `ready`) | 35 |
+| Ready | 0 |
+| Proposed (waiting for the owner to set `ready`) | 37 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 2/40 rows done. Planning: the agent operating manual, intake procedure and this backlog
+**Implementation progress: 0 %** of code; 2/42 rows done. Planning: the agent operating manual, intake procedure and this backlog
 (3D-00) are on review; the verification notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)) are done.
-**Next step for the owner:** review 3D-00. In work: 3D-27 (contracts location + P4 canary). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
+**Next step for the owner:** review 3D-00 and 3D-27 ([3D-ADR-0001](decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md) accepted, D-37). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
 3D-02 / 3D-05**; 3D-28 (agent evals) runs as soon as 3D-05 is done.
 
 ```mermaid
@@ -37,6 +37,7 @@ flowchart TB
   end
   subgraph review["REVIEW"]
     D00["3D-00 Agent manual, intake, backlog"]
+    D27["3D-27 Early ADR: contracts location + P4 canary"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
     D02["3D-02 ADR kernel package and boundary"]
@@ -46,7 +47,6 @@ flowchart TB
     D07["3D-07 Golden fixtures"]
     D08["3D-08 Latency spike + kernel ADRs"]
     D03["3D-03 ADR storage (Operaflow)"]
-    D27["3D-27 Early ADR: contracts location + P4 canary"]
     D28["3D-28 Agent evals"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
@@ -78,6 +78,8 @@ flowchart TB
     D42["3D-42 3DQM tools"]
     D43["3D-43 plans/3dqm"]
     D44["3D-44 3DQM UI panels"]
+    D45["3D-45 SC: pinned model3d schemas"]
+    D46["3D-46 SC: P4 canary scan"]
     D50["3D-50 geoviewer host adapter"]
     D60["3D-60 crowdsource 3D project + CityJSON"]
     D61["3D-61 crowdsource COPC stream"]
@@ -150,6 +152,11 @@ flowchart TB
   D06 --> D43
   D41 --> D43
   D42 --> D44
+  D06 --> D45
+  D27 --> D45
+  D27 --> D46
+  D45 --> D40
+  D45 --> D43
   D23 --> D50
   D43 --> D50
 ```
@@ -163,8 +170,8 @@ flowchart TB
 | 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | proposed |
 | 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01, 29 | G0 | M | proposed (D-35: interim own store behind a port, later crowdsource) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
-| 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | proposed |
-| 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | per 3D-27 (Q-08) | contracts | 04, 27 | G0 | L | proposed |
+| 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary + negative control per 3D-ADR-0001), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | proposed |
+| 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | here (D-37) | contracts | 04, 27 | G0 | L | proposed |
 | 3D-07 | Golden fixtures: format and synthetic CityJSON/point sets for GT-I1..GT-25 | here | fixtures | 06 | G0 | M | proposed |
 | 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | proposed |
 | 3D-09 | Kernel core: half-edge B-Rep, primary planes, derived vertices, local frame, transactions, versions | here | geo-model3d/brep | 08 | G1 | L | proposed |
@@ -185,19 +192,21 @@ flowchart TB
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23 | G5 | M | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | blocked (sample data path, Q-07) |
-| 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | ready (D-34; SC read in 3D-01: SC already rejects P4 paths, `tools/check-architecture.js:67-69`) |
+| 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | review (local, `wp/3d-27-seam-adr`; PR not requested; [3D-ADR-0001](decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md) accepted, D-37) |
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | done (D-36; merged into base, no PR) |
 | 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
 | 3D-60 | crowdsource: 3D project type and CityJSON building dataset kind (Operaflow-conformant) | crowdsource | backend, streaming | 03, 29 | G5+ | L | proposed (D-35; under crowdsource's own process) |
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
 | 3D-63 | Swap 3DQM interim data adapters for crowdsource datasets; migrate stored buildings and journals | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | proposed (D-35) |
-| 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06; shared WP-19, WP-20 | G3 | L | proposed (Q-12 answered by 3D-01: no 3D scene in `geo-render`; 3D-02 decides scene source (Q-16), row may split) |
+| 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45; shared WP-19, WP-20 | G3 | L | proposed (Q-12 answered by 3D-01: no 3D scene in `geo-render`; 3D-02 decides scene source (Q-16), row may split) |
 | 3D-41 | Remote kernel port in `workspace/plan` (network port described by schema) | shared | workspace/plan | 02; shared WP-21 | G3 | M | proposed (Q-13 narrowed by 3D-01: `placement: dp` declarable, not executed) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed |
-| 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41; shared WP-21, WP-28 | G5 | M | proposed (Q-03 shape known, 3D-01 §6; extension URI content-named, no product) |
+| 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-28 | G5 | M | proposed (Q-03 shape known, 3D-01 §6; extension URI content-named, no product) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | proposed |
-| 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server, file storage port for tests | geoviewer | host | 23, 43 | G5 | M | proposed |
+| 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared | contracts | 06, 27 | G3 | S | proposed (D-37) |
+| 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared | tools, CI | 27 | G0 | S | proposed (D-37) |
+| 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server, file storage port for tests, P4 canary scan of the client build | geoviewer | host | 23, 43 | G5 | M | proposed |
 
 ## Details
 
@@ -231,14 +240,17 @@ flowchart TB
 ### 3D-05 Repository bootstrap
 - Accept: `npm ci && npm run check` pass on the empty skeleton; a planted client-side import of `geo-model3d`, a 301-line
   file, a DOM global in the kernel and the P4 canary planted in a test bundle each fail `check:arch` (tests for the
-  checker). `check:docs` fails on a planted count mismatch, a graph node without a row, a duplicate D/Q id, a dead link
+  checker). Per [3D-ADR-0001](decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md) (D-37): the canary value
+  is generated once; `check:arch` fails if an `exports` entry of `geo-model3d` does not import the canary module; the
+  negative control (minified Vite browser build of each entry) finds the marker in every output, else CI fails. `check:docs` fails on a planted count mismatch, a graph node without a row, a duplicate D/Q id, a dead link
   and a row without `Accept:`. `backlog:sync` reads a pinned ref of the other BACKLOG (fixture in tests, no network)
   and CI fails on drift (D-25). Commands of AGENTS.md §5 exist.
 
 ### 3D-06 Contract schemas
 - Accept: JSON Schema 2020-12 for every `OperationKind` payload (v0.3 §9.1), result, patch, `topologyLineage`
   `{mapped, deleted, preserved}`, validation report, error registry (v0.3 §9.2), tolerance profile (D-13 values as
-  defaults); valid and invalid examples per schema; Ajv 2020 compiles all. Owner-approved (D-18). L: split by intake if
+  defaults); valid and invalid examples per schema; Ajv 2020 compiles all. Owner-approved (D-18). Location
+  `contracts/model3d/` here; every `$id` matches `urn:geoiplus:schema:model3d-<name>:v<n>` (D-37, 3D-ADR-0001). L: split by intake if
   the command schemas and the model schemas review separately.
 
 ### 3D-07 Golden fixtures
@@ -290,12 +302,19 @@ flowchart TB
 - Accept 3D-63: same golden tests pass against crowdsource adapters as against the interim adapters; no change to
   kernel code outside adapters; stored building versions and journals migrated with a recorded check.
 
+### 3D-45, 3D-46 shared_compnents mirrors from 3D-27 (class `external`; D-37, [3D-ADR-0001](decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md))
+- 3D-45 Accept: SC vendors the schemas into `contracts/vendor/3deditor/` + `provenance.json`; an edited copy fails SC
+  `npm run check`; a `revision` bump passes; the loading module is named (`sync-contract-assets.js:11` skips vendor/).
+- 3D-46 Accept: SC CI scans its browser outputs (ADR table "what each repository scans") for the canary pattern and
+  rejects a `geo-model3d` dependency; a planted synthetic marker per output kind and a planted dependency each fail.
+
 ### 3D-40 .. 3D-50 Mirrors
 - Rows are added in the other repository by a session working there, under its AGENTS.md; this row records the id
   and status. 3D-40 depends on Q-12; 3D-41 on Q-13; 3D-43 on Q-03.
 - 3D-01 changes (intake `change-wp`, 2026-11-19; [verification note](verification/3D-01.md)):
   - 3D-40: `geo-render` has only a 2D orthographic host and XY picking; geoviewer `scene3d` picks points, not entity ids.
     The 3D scene source (new `geo-render` module vs geoviewer host port) is decided in 3D-02; split 3D-40 if it grows.
+- 3D-27 (`change-wp`, D-37): 3D-40/3D-43 depend on 3D-45. 3D-50 also scans GV `client/dist` (+ `.map`) for the canary; a planted marker fails it.
   - 3D-41: Accept adds "a plan placement value or binding that a remote (Tools Plane) kernel port can use; WP-28's
     compose executes it" - today `placement` (`dp`, `dp.batch`) is declarative only.
   - 3D-43: the extension follows `extension-orthoqm.schema.json` (assignment, dataset, production, runtime,

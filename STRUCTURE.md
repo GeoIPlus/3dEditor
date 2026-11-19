@@ -21,7 +21,7 @@ docs/
 packages/geo-model3d/  (3D-05, 3D-09) server-only kernel, protection P4, DOM-free Node ESM
   src/brep/ import/ ops/ solve/ validate/ export/ cloud/   (proposed split, HANDOVER §7)
 services/kernel/       (3D-23)        command API host for the kernel; ports: command, storage, point, validation
-contracts/model3d/     (3D-06)        only if ADR 3D-02 places them here (Q-08)
+contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
 fixtures/              (3D-07)        small synthetic golden fixtures and their generator
 ```
 
@@ -29,6 +29,7 @@ fixtures/              (3D-07)        small synthetic golden fixtures and their 
 
 1. `geo-model3d` imports no DOM, no three.js, nothing from `shared_compnents` client packages.
 2. Nothing in `shared_compnents` or geoviewer client code may depend on `geo-model3d` (P4, D-06). Proven on build
-   output: the kernel carries a canary marker and CI fails if any client bundle contains it (D-24, ADR 3D-27).
+   output: the kernel carries a canary marker and CI fails if any client bundle contains it (D-24, D-37,
+   [3D-ADR-0001](docs/decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md)).
 3. Public API of a package only through its `index.js`.
 4. A new dependency between packages needs an ADR.
