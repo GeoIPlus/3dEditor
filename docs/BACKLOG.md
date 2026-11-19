@@ -18,15 +18,15 @@ Updated: 2026-11-19 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50).
 | Progress | Rows |
 |---|---:|
 | Done | 5 / 44 |
-| Review | 0 |
-| In progress | 1 |
+| Review | 1 |
+| In progress | 0 |
 | Ready | 2 |
 | Proposed (waiting for the owner to set `ready`) | 35 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 5/44 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47).
-**Running:** 3D-02 and 3D-05 (D-49), spike 3D-31 (D-50). **Next:** 3D-28 (agent evals) as soon as 3D-05 is done.
+**Running:** 3D-02 and 3D-05 (D-49), spike 3D-31 in review (result: defer). **Next:** 3D-28 (agent evals) as soon as 3D-05 is done.
 
 ```mermaid
 flowchart TB
@@ -40,6 +40,8 @@ flowchart TB
   subgraph ready["READY"]
     D02["3D-02 ADR kernel package and boundary"]
     D05["3D-05 Repository bootstrap"]
+  end
+  subgraph review["REVIEW"]
     D31["3D-31 Spike: code graph / read cache"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
@@ -200,7 +202,7 @@ flowchart TB
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | done (D-36; merged into base, no PR) |
 | 3D-30 | Agent tooling: `merge-wp` skill, `tools/check-docs.mjs` + Stop hook, `docs/source` edit guard, read-only permission allow list | here | .claude, tools | 00 | G0 | S | done (D-47; merged into base, no PR) |
 | 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
-| 3D-31 | Spike: codebase graph / read-cache tool (MCP or skill) measured on cross-repo reading tasks, with vs. without | here | .claude, docs/agent-evals | 30 | G0 | M | in-progress (wp/3d-31-code-graph-spike) |
+| 3D-31 | Spike: codebase graph / read-cache tool (MCP or skill) measured on cross-repo reading tasks, with vs. without | here | .claude, docs/agent-evals | 30 | G0 | M | review (wp/3d-31-code-graph-spike; local, PR not requested; result: defer, [eval](agent-evals/3D-31-code-graph.md)) |
 | 3D-60 | crowdsource: 3D project type and CityJSON building dataset kind (Operaflow-conformant) | crowdsource | backend, streaming | 03, 29 | G5+ | L | proposed (D-35; under crowdsource's own process) |
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
