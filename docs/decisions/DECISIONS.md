@@ -43,13 +43,15 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-27 | Instructions are proven by measurement: `check:docs` lint (3D-05), agent evals (3D-28, each task run twice), and 3D-01 is the next WP | 10/10 is claimed only after evals pass |
 | D-28 | 3D-01 set `ready`; it runs in a fresh cloud session that attaches `shared_compnents`, `geoviewer` and `Operaflow` read-only | Owner, dialog, 2026-11-19 |
 | D-29 | `GeoIPlus/Operaflow` is the Control Plane (CP) | Owner, dialog, 2026-11-19. DP and Tools Plane repositories still unnamed |
+| D-30 | `GeoIPlus/Operaflow` is both the Control Plane and the Data Plane. Amends D-29 | Owner, dialog, 2026-11-19 |
+| D-31 | Tools Plane = `GeoIPlus/shared_compnents`. The 3DQM kernel service is built now as a separate service in this repository and is planned to become part of `shared_compnents` (Tools Plane) later. Therefore kernel and service development must fully conform to Operaflow (contracts, exchange, conventions) and to `shared_compnents` conventions, so that the later move is a relocation, not a rewrite. Amends the wording of D-07 | Owner, dialog, 2026-11-19. Conflict with the P4 rule of `shared_compnents`: Q-14 |
 
 ## Open questions
 
 | Id | Question | Options / evidence | Closed by |
 |---|---|---|---|
 | Q-01 | Kernel language: JavaScript on Node (HANDOVER §5 proposal, matches both repos) or compiled (v0.3 §3, ADR-001) | JS keeps one toolchain and the same protection (server-only); risk = latency. Decided by measurement | 3D-08 ADR, owner approval |
-| Q-02 | Where building versions, edit journal and results live (DP? own store?) | Delegated by the owner to the agent after reading CP/DP code (HANDOVER §8 #1) | 3D-03 ADR; needs CP/DP access |
+| Q-02 | Where building versions, edit journal and results live (DP? own store?) | Delegated by the owner to the agent after reading CP/DP code (HANDOVER §8 #1); CP+DP = Operaflow (D-30) | 3D-03 ADR |
 | Q-03 | Shape of the CP contract for a workplace; what a 3DQM extension carries (building list, roles, tolerance profile, data references) | Model: `extension-orthoqm.schema.json` in `shared_compnents`; CP = Operaflow (D-29) | 3D-01 reads, 3D-02/3D-06 decide |
 | Q-04 | How the Tools Plane runs a server-side component; where the kernel service is deployed | Unknown | 3D-03; needs Tools Plane access |
 | Q-05 | Can a server component read source LAS/LAZ by box from DP (v0.3 Д-02)? | If not, heatmap and plane fit need points uploaded from the client | 3D-01; needs DP access |
@@ -61,6 +63,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-11 | v0.3 §15 assumptions Д-01..Д-12 are not confirmed by the owner; must be confirmed before G1-equivalent rows start. Д-01 is partly overtaken by D-10 (auth and assignment from CP) | List in v0.3 §15 | Owner, dialog, before 3D-09 |
 | Q-12 | Does `shared_compnents` plan a 3D scene module in `geo-render`, or does the 3D scene stay in geoviewer? (HANDOVER §6, not checked) | Determines where 3D-40 lands | 3D-01 |
 | Q-13 | Can `workspace/plan` describe a remote (network) port, not only a Worker port? (HANDOVER §7 Q2) | If not, a library row is needed | 3D-01, 3D-02 |
+| Q-14 | The planned move of the kernel service into `shared_compnents` (D-31) conflicts with its rule that no P4 code lives there (HANDOVER §6: server counterparts live in the DP repository). Options: a server-only package with a mechanical isolation rule there (canary, D-24); or the service moves to Operaflow (DP) instead | Needs an ADR in `shared_compnents` before the move; not before | 3D-27 records it; owner before the move |
+| Q-15 | What "full conformance with Operaflow" (D-31) requires concretely: contract/exchange schemas, API conventions, auth, storage, deployment | Operaflow's own AGENTS/docs and contracts | 3D-01 extracts the list; 3D-02/3D-03 apply it |
 
 ## Open-question status updates
 

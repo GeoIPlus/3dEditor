@@ -18,11 +18,11 @@ Updated: 2026-11-19 (3D-01 session: verification note on review; Q-03/Q-12 answe
 | Progress | Rows |
 |---|---:|
 | Done | 0 / 35 |
-| Review | 2 |
-| In progress | 0 |
+| Review | 1 |
+| In progress | 1 |
 | Ready | 0 |
-| Proposed (waiting for the owner to set `ready`) | 31 |
-| Blocked (external access or data) | 2 |
+| Proposed (waiting for the owner to set `ready`) | 32 |
+| Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** (0/35). Planning: the agent operating manual, intake procedure and this backlog
 (3D-00) and the verification note (3D-01, [docs/verification/3D-01.md](verification/3D-01.md)) are on review.
@@ -42,6 +42,7 @@ flowchart TB
     D06["3D-06 Contract schemas"]
     D07["3D-07 Golden fixtures"]
     D08["3D-08 Latency spike + kernel ADRs"]
+    D03["3D-03 ADR storage (Operaflow)"]
     D27["3D-27 Early ADR: contracts location + P4 canary"]
     D28["3D-28 Agent evals"]
   end
@@ -77,7 +78,6 @@ flowchart TB
     D50["3D-50 geoviewer host adapter"]
   end
   subgraph blocked["BLOCKED"]
-    D03["3D-03 ADR storage - CP/DP access"]
     D26["3D-26 Real-data import - samples Q-07"]
   end
   D00 --> D01
@@ -142,9 +142,9 @@ flowchart TB
 | WP | Title | Repo | Modules | Depends on | Gate | Size | Status |
 |---|---|---|---|---|---|---|---|
 | 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | review (local, `claude/keen-pascal-u7z2gk`; PR not requested) |
-| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents, geoviewer, Operaflow = CP) | here | docs/verification | 00 | G0 | S | review (local, `wp/3d-01-verification`; PR not requested) |
+| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents = Tools Plane, geoviewer, Operaflow = CP + DP) | here | docs/verification | 00 | G0 | S | in-progress (`wp/3d-01-verification`; scope extended by D-30/D-31, Q-15) |
 | 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | proposed |
-| 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | blocked (DP and Tools Plane repositories not named; CP = Operaflow, D-29, is a format without storage - 3D-01 §6.5; Q-02, Q-04) |
+| 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | proposed (CP + DP = Operaflow, Tools Plane = shared_compnents; D-30, D-31) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
 | 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | proposed |
 | 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | per 3D-27 (Q-08) | contracts | 04, 27 | G0 | L | proposed |
@@ -188,7 +188,8 @@ flowchart TB
 - Goal: each [V]/[A] item of HANDOVER §5-§7 and v0.3 §2 checked against code with file references; corrections listed.
 - Accept: `docs/verification/3D-01.md`; every item marked confirmed / corrected / not checkable (why); Q-12, Q-13
   answered or narrowed; how geoviewer consumes `@geoiplus/*` recorded; Operaflow (CP, D-29): workplace contract
-  shape, assignment/roles, any DP/Tools Plane references found (narrows Q-02..Q-05). Read-only in other repositories.
+  shape, assignment/roles, data/storage and point-cloud access (narrows Q-02..Q-05); list of Operaflow conformance
+  requirements for the kernel service (Q-15, D-31). Read-only in other repositories.
 
 ### 3D-02 ADR kernel package and boundary
 - Accept: `3D-ADR-0002` answers Q-13 and HANDOVER §7 Q2 (remote port), the internal package layout and the relation
@@ -196,10 +197,7 @@ flowchart TB
 
 ### 3D-03 ADR storage
 - Accept: `3D-ADR-0003` proposes one option for versions, journal, baseline and results after reading CP/DP code;
-  retention >= 90 days (v0.3 §11) addressed. Blocked until CP/DP/Tools Plane repositories are attached.
-- 3D-01 input: the CP format (Operaflow) carries dataset `version`, saves results by `PUT` + `If-Match` or OGC API
-  Features, keeps delivered bytes immutable, and has no journal/history/retention - those are 3DQM's own
-  ([verification §6.5](verification/3D-01.md#65-data-saving-history)).
+  retention >= 90 days (v0.3 §11) addressed; conforms to Operaflow (D-31, Q-15).
 
 ### 3D-04 3DQM spec
 - Accept: one section per module (purpose, API, rules, `Accept:` lines); contracts as a list of schemas; C.8 and C.11
