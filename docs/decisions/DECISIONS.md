@@ -64,6 +64,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-48 | 3D-00 accepted (done) | Owner, dialog, 2026-11-19 |
 | D-49 | 3D-02 and 3D-05 set `ready`; started now in two parallel fresh sessions | Owner, dialog, 2026-11-19 |
 | D-50 | Codebase graph / read-cache tooling: one spike row 3D-31, `ready` now, measured on cross-repo reading of existing code (not on 3D-02/3D-05, where there is no code to index) with vs. without the tool, two runs each; nothing about it in the daily report of 2026-11-20 | Owner, dialog, 2026-11-19 |
+| D-3D31-1 | 3D-31 runs in the cloud session only: the checksum-verified codebase-memory-mcp release binary (0.12.1) from the session scratchpad, isolated `CBM_CACHE_DIR`, no `install` command, no hooks, no client config; not the owner's PC install (its user-level hooks would contaminate the runs without the tool) | Owner, dialog, 2026-11-19 |
 
 ## Open questions
 
