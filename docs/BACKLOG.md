@@ -13,13 +13,13 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-01 session: verification note on review; Q-03/Q-12 answered, Q-02/Q-05/Q-13 narrowed).
+Updated: 2026-11-19 (3D-01 session: verification note on review incl. D-30/D-31 scope; Q-03/Q-12/Q-15 answered, Q-02/Q-04/Q-05/Q-13 narrowed).
 
 | Progress | Rows |
 |---|---:|
 | Done | 0 / 35 |
-| Review | 1 |
-| In progress | 1 |
+| Review | 2 |
+| In progress | 0 |
 | Ready | 0 |
 | Proposed (waiting for the owner to set `ready`) | 32 |
 | Blocked (external access or data) | 1 |
@@ -142,7 +142,7 @@ flowchart TB
 | WP | Title | Repo | Modules | Depends on | Gate | Size | Status |
 |---|---|---|---|---|---|---|---|
 | 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | review (local, `claude/keen-pascal-u7z2gk`; PR not requested) |
-| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents = Tools Plane, geoviewer, Operaflow = CP + DP) | here | docs/verification | 00 | G0 | S | in-progress (`wp/3d-01-verification`; scope extended by D-30/D-31, Q-15) |
+| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents = Tools Plane, geoviewer, Operaflow = CP + DP) | here | docs/verification | 00 | G0 | S | review (local, `wp/3d-01-verification`; PR not requested) |
 | 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | proposed |
 | 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | proposed (CP + DP = Operaflow, Tools Plane = shared_compnents; D-30, D-31) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
@@ -198,6 +198,8 @@ flowchart TB
 ### 3D-03 ADR storage
 - Accept: `3D-ADR-0003` proposes one option for versions, journal, baseline and results after reading CP/DP code;
   retention >= 90 days (v0.3 §11) addressed; conforms to Operaflow (D-31, Q-15).
+- 3D-01 input: Operaflow holds no storage. Dataset `version`, `PUT` + `If-Match` / OGC API Features saves and immutable
+  deliveries are in the format; the journal, drafts and retention are 3DQM's own ([verification §9](verification/3D-01.md#9-operaflow-as-cp--dp-data-point-clouds-conformance-d-30-d-31-q-15)).
 
 ### 3D-04 3DQM spec
 - Accept: one section per module (purpose, API, rules, `Accept:` lines); contracts as a list of schemas; C.8 and C.11
