@@ -142,7 +142,7 @@ flowchart TB
 | WP | Title | Repo | Modules | Depends on | Gate | Size | Status |
 |---|---|---|---|---|---|---|---|
 | 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | review (local, `claude/keen-pascal-u7z2gk`; PR not requested) |
-| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents, geoviewer, Operaflow = CP) | here | docs/verification | 00 | G0 | S | ready (D-28) |
+| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents, geoviewer, Operaflow = CP) | here | docs/verification | 00 | G0 | S | in-progress (`wp/3d-01-verification`) |
 | 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | proposed |
 | 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | blocked (DP and Tools Plane repositories not named; CP = Operaflow, D-29; Q-02, Q-04) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
