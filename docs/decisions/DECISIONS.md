@@ -1,0 +1,57 @@
+# DECISIONS - 3DQM
+
+Append-only. Ids are never reused. A decision is changed only by a new decision that names the one it supersedes.
+`D-NN` = decided by the owner. `Q-NN` = open question. ADRs live in [adr/](adr/).
+
+## Decisions
+
+### Taken over from HANDOVER-3DQM.md §4 (owner, 2026-11-18/19)
+
+| Id | Decision | Source |
+|---|---|---|
+| D-01 | Scope: editing of existing LoD2 only. Creation limited to "replace the roof with a template" (flat, shed, gable, hip) on the existing footprint | HANDOVER §4 #1; v0.3 Р-01, Р-04 |
+| D-02 | Input and output format: CityJSON. Anything else is converted before the editor | §4 #2; Р-05 |
+| D-03 | Production mode: point cloud + manual input. No stereo | §4 #3; Р-06 |
+| D-04 | First release ends at `VALID_SOLID` + export. `APPROVED` is a geometry QC mark, no tax profile | §4 #4; Р-02 |
+| D-05 | Export only for valid solids; drafts stay inside | §4 #5; Р-13 |
+| D-06 | Geometry kernel runs only on a server (code protection). Browser holds a visual ghost without solver logic. No WASM build of the kernel for browsers | §4 #6; Р-07 |
+| D-07 | Kernel = DOM-free Node package, run by two hosts: geoviewer server for testing, a Tools Plane service in production. *Location amended by D-17* | §4 #7 |
+| D-08 | Planes are primary, vertices are derived (intersection of the planes of incident faces) | §4 #8; Р-08 |
+| D-09 | Workplaces `3dqm.production` (operator edits) and `3dqm.qa` (independent check and approval by a different person; any later edit clears the approval) | §4 #9; Р-10 |
+| D-10 | Assignments of buildings to operators and roles come from the CP contract, not from an admin screen in the editor. *Supersedes v0.3 Р-09 and the admin column of v0.3 §8.5* | §4 #10 |
+| D-11 | Point cloud in the editor: snapping to points, model-to-cloud deviation heatmap, plane fit from selected points | §4 #11; Р-11 |
+| D-12 | First-release operations: v0.3 §6 table (move vertex/edge, split/merge, roof break, align ridge/eave, offset, remove/heal, weld, junctions, overhang, roof extent, footprint/walls/heights, translate/rotate, dormers, chimneys, replace roof, rebuild envelope, semantics, undo/redo, restore baseline) | §4 #12; Р-14 |
+| D-13 | Starting tolerance profile = v0.3 §10 values (planarity 0.02 m, weld 0.01 m, min edge 0.05 m, min face 0.1 m2, coplanarity 1 deg, ...), configurable per project. Not `TBD` | §4 #13; Р-12 |
+| D-14 | 3DQM gets its own packages and WP range in `shared_compnents`. *Partly superseded by D-17* | §4 #14 |
+| D-15 | The plan (ADR, spec, backlog rows) lives in `shared_compnents`; geoviewer gets host tasks only. *Superseded by D-17 for 3DQM planning documents* | §4 #15 |
+| D-16 | Pull requests merge on the QA team's sign-off of the checklist; the agent never merges | §4 #16 |
+
+### Taken in the 3D-00 session (owner, dialog, 2026-11-19)
+
+| Id | Decision | Note |
+|---|---|---|
+| D-17 | **Hybrid repository model.** `GeoIPlus/3dEditor` holds the server-only kernel `geo-model3d` (P4), its service, 3DQM specs, ADRs, backlog and golden fixtures. Client parts (`geo-render/model3d`, 3DQM tools in `workspace/tools`, `plans/3dqm`, remote kernel port) are built in `shared_compnents` under its rules. Supersedes D-14 for the kernel and D-15 for planning documents | Also answers HANDOVER §7 Q1: P4 code stays out of `shared_compnents`. The exact boundary (contracts location, P4 check) is ADR 3D-02 |
+| D-18 | ADRs and contract schemas become `accepted` only on the owner's explicit approval. Code PRs merge on QA checklist sign-off (D-16) | Closes the note under HANDOVER §4 |
+| D-19 | Agent instructions and project documents in English. Dialog with the owner may be in Russian | |
+| D-20 | Source documents moved unchanged to `docs/source/` and are read-only. Priority: DECISIONS > HANDOVER > v0.3 > v0.2 Appendix C > rest of v0.2; v0.1 and the audit are background | |
+| D-21 | Work-package ids `3D-NN`; branches `wp/3d-<id>-<short-name>`; a platform-assigned branch is used as is | Unique next to `shared_compnents` WP-00..WP-35 |
+| D-22 | Strict intake: every new request goes through the `task-intake` skill and becomes a `proposed` row; only the owner sets `ready`. Questions to the owner only as a dialog with proposed answers | |
+| D-23 | Client and host work is mirrored in this BACKLOG (`repo: shared` / `repo: geoviewer`); the row in the other repository is authoritative for its status | One 3DQM progress board |
+
+## Open questions
+
+| Id | Question | Options / evidence | Closed by |
+|---|---|---|---|
+| Q-01 | Kernel language: JavaScript on Node (HANDOVER §5 proposal, matches both repos) or compiled (v0.3 §3, ADR-001) | JS keeps one toolchain and the same protection (server-only); risk = latency. Decided by measurement | 3D-08 ADR, owner approval |
+| Q-02 | Where building versions, edit journal and results live (DP? own store?) | Delegated by the owner to the agent after reading CP/DP code (HANDOVER §8 #1) | 3D-03 ADR; needs CP/DP access |
+| Q-03 | Shape of the CP contract for a workplace; what a 3DQM extension carries (building list, roles, tolerance profile, data references) | Model: `extension-orthoqm.schema.json` in `shared_compnents` | 3D-02/3D-06; needs CP access |
+| Q-04 | How the Tools Plane runs a server-side component; where the kernel service is deployed | Unknown | 3D-03; needs Tools Plane access |
+| Q-05 | Can a server component read source LAS/LAZ by box from DP (v0.3 Д-02)? | If not, heatmap and plane fit need points uploaded from the client | 3D-01; needs DP access |
+| Q-06 | What LidarQM offers for reuse (point reading, selection, 3D view) | Unknown | 3D-01; needs LidarQM access |
+| Q-07 | Path to sample CityJSON (roofer, TerraSolid) with point clouds; geoviewer `LOD2-8` samples | Owner promised a repository or bucket path | Owner |
+| Q-08 | Where `contracts/model3d/` schemas live: `shared_compnents` (client consumes them) or here (kernel owns them) | Contract crosses the repository boundary; one location must be authoritative | 3D-02 ADR |
+| Q-09 | How P4 isolation is checked mechanically when the kernel is in a separate repository (no client package may depend on `geo-model3d`; no plan chunk references it) | `check:arch` rule here + dependency rule in `shared_compnents` | 3D-02 ADR |
+| Q-10 | External validation: val3dity (native) in a Node host and the Docker image, version pin (v0.3 Д-08) | Sidecar binary, container, or service | 3D-12 |
+| Q-11 | v0.3 §15 assumptions Д-01..Д-12 are not confirmed by the owner; must be confirmed before G1-equivalent rows start. Д-01 is partly overtaken by D-10 (auth and assignment from CP) | List in v0.3 §15 | Owner, dialog, before 3D-09 |
+| Q-12 | Does `shared_compnents` plan a 3D scene module in `geo-render`, or does the 3D scene stay in geoviewer? (HANDOVER §6, not checked) | Determines where 3D-40 lands | 3D-01 |
+| Q-13 | Can `workspace/plan` describe a remote (network) port, not only a Worker port? (HANDOVER §7 Q2) | If not, a library row is needed | 3D-01, 3D-02 |

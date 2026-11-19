@@ -1,0 +1,231 @@
+# BACKLOG - 3DQM work packages
+
+New rows enter only through the [`task-intake`](../.claude/skills/task-intake/SKILL.md) skill. Pick the lowest-numbered
+`ready` row whose dependencies are `done` ([AGENTS.md §4](../AGENTS.md#4-workflow-for-one-wp)). One WP = one branch =
+one session = one PR.
+
+Statuses: `proposed` (intake done, waiting for the owner), `ready` (set by the owner only), `blocked` (reason),
+`in-progress` (branch), `review` (PR or local description), `done`, `superseded` (replacing id), `dropped` (reason).
+Size: S (< 1 day of agent work), M (up to ~3 days), L (larger; split when it has more than one acceptance group).
+Repo: `here` = GeoIPlus/3dEditor; `shared` = GeoIPlus/shared_compnents; `geoviewer`. For `shared`/`geoviewer` rows
+this is a mirror (D-23): the row in that repository is authoritative and its id is given in brackets once it exists.
+Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, the process is this backlog.
+
+## Progress overview
+
+Updated: 2026-11-19 (3D-00 session).
+
+| Progress | Rows |
+|---|---:|
+| Done | 0 / 33 |
+| Review | 1 |
+| In progress | 0 |
+| Ready | 0 |
+| Proposed (waiting for the owner to set `ready`) | 30 |
+| Blocked (external access or data) | 2 |
+
+**Implementation progress: 0 %** (0/33). Planning: the agent operating manual, intake procedure and this backlog
+(3D-00) are on review. **Next step for the owner:** review 3D-00; set 3D-01 `ready` and attach `shared_compnents` and
+`geoviewer` to the session (3D-01 cannot verify code it cannot read).
+
+```mermaid
+flowchart TB
+  subgraph review["REVIEW"]
+    D00["3D-00 Agent manual, intake, backlog"]
+  end
+  subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
+    D01["3D-01 Verification note"]
+    D02["3D-02 ADR kernel package and boundary"]
+    D04["3D-04 3DQM spec"]
+    D05["3D-05 Repository bootstrap"]
+    D06["3D-06 Contract schemas"]
+    D07["3D-07 Golden fixtures"]
+    D08["3D-08 Latency spike + kernel ADRs"]
+  end
+  subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
+    D09["3D-09 B-Rep core"]
+    D10["3D-10 CityJSON import"]
+    D11["3D-11 CityJSON export"]
+    D12["3D-12 Validation"]
+  end
+  subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
+    D13["3D-13 Constraint solver"]
+    D14["3D-14 Replace roof, rebuild envelope"]
+    D15["3D-15 Core edits"]
+    D16["3D-16 Ridge, eave, elevations"]
+    D17["3D-17 Repair ops"]
+    D18["3D-18 History"]
+    D19["3D-19 Envelope ops"]
+    D20["3D-20 Installations"]
+    D21["3D-21 Semantics, constraints cmds"]
+    D22["3D-22 Point cloud functions"]
+  end
+  subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
+    D23["3D-23 Kernel service"]
+    D24["3D-24 QC and export rules"]
+    D25["3D-25 E2E on mock"]
+  end
+  subgraph client["shared / geoviewer mirrors (PROPOSED)"]
+    D40["3D-40 geo-render model3d"]
+    D41["3D-41 Remote kernel port"]
+    D42["3D-42 3DQM tools"]
+    D43["3D-43 plans/3dqm"]
+    D44["3D-44 3DQM UI panels"]
+    D50["3D-50 geoviewer host adapter"]
+  end
+  subgraph blocked["BLOCKED"]
+    D03["3D-03 ADR storage - CP/DP access"]
+    D26["3D-26 Real-data import - samples Q-07"]
+  end
+  D00 --> D01
+  D01 --> D02
+  D01 --> D03
+  D01 --> D04
+  D02 --> D04
+  D00 --> D05
+  D02 --> D06
+  D04 --> D06
+  D06 --> D07
+  D05 --> D08
+  D06 --> D08
+  D07 --> D08
+  D08 --> D09
+  D09 --> D10
+  D09 --> D12
+  D10 --> D11
+  D12 --> D11
+  D09 --> D13
+  D12 --> D14
+  D13 --> D14
+  D13 --> D15
+  D13 --> D16
+  D12 --> D17
+  D13 --> D17
+  D09 --> D18
+  D16 --> D18
+  D14 --> D19
+  D12 --> D20
+  D13 --> D20
+  D13 --> D21
+  D09 --> D22
+  D18 --> D23
+  D06 --> D23
+  D03 --> D23
+  D12 --> D24
+  D23 --> D24
+  D24 --> D25
+  D43 --> D25
+  D50 --> D25
+  D10 --> D26
+  D11 --> D26
+  D06 --> D40
+  D02 --> D41
+  D40 --> D42
+  D41 --> D42
+  D06 --> D43
+  D41 --> D43
+  D42 --> D44
+  D23 --> D50
+  D43 --> D50
+```
+
+## Work-package status
+
+| WP | Title | Repo | Modules | Depends on | Gate | Size | Status |
+|---|---|---|---|---|---|---|---|
+| 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | review (local, `claude/keen-pascal-u7z2gk`; PR not requested) |
+| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code | here | docs/verification | 00 | G0 | S | proposed (needs `shared_compnents`, `geoviewer` attached) |
+| 3D-02 | ADR: `geo-model3d` package - location, P4 isolation check, contracts location, remote kernel port, relation to `geo-render`/`workspace` | here | docs/decisions | 01 | G0 | M | proposed |
+| 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | blocked (CP, DP, Tools Plane repositories not accessible; Q-02, Q-04) |
+| 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
+| 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 isolation), CI | here | root, tools | 00 | G0 | M | proposed |
+| 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | here or shared (Q-08) | contracts | 02, 04 | G0 | L | proposed |
+| 3D-07 | Golden fixtures: format and synthetic CityJSON/point sets for GT-I1..GT-25 | here | fixtures | 06 | G0 | M | proposed |
+| 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | proposed |
+| 3D-09 | Kernel core: half-edge B-Rep, primary planes, derived vertices, local frame, transactions, versions | here | geo-model3d/brep | 08 | G1 | L | proposed |
+| 3D-10 | Import I-01: CityJSON -> canonical model + RTG + baseline | here | geo-model3d/import | 09 | G1 | L | proposed |
+| 3D-11 | Export: canonical model -> CityJSON, opaque data round-trip | here | geo-model3d/export | 10, 12 | G1 | M | proposed |
+| 3D-12 | Validation: FAST_PREVIEW, COMMIT_VALIDATION, FINAL_VALIDATION (val3dity), severity by state | here | geo-model3d/validate | 09 | G1 | L | proposed |
+| 3D-13 | Constraint solver and conflict diagnostics | here | geo-model3d/solve | 09 | G3 | L | proposed |
+| 3D-14 | `REPLACE_ROOF` R-01..R-04, `REBUILD_ENVELOPE` | here | geo-model3d/ops | 12, 13 | G2 | L | proposed |
+| 3D-15 | Core edits: `MOVE_VERTEX`, `MOVE_EDGE`, `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | here | geo-model3d/ops | 13 | G3 | L | proposed |
+| 3D-16 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | here | geo-model3d/ops | 13 | G3 | M | proposed |
+| 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | proposed |
+| 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE`, idempotent `commandId`, `expectedVersion` | here | geo-model3d | 09, 16 | G3 | M | proposed |
+| 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | proposed |
+| 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | proposed |
+| 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | proposed |
+| 3D-22 | Point cloud: point port (box query), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | proposed (open Q-05) |
+| 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, rate limit, error registry, command status, storage port (file impl) | here | service | 03, 06, 18 | G5 | L | proposed |
+| 3D-24 | QC and export rules: state transitions, approver != author, reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23 | G5 | M | proposed |
+| 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | proposed |
+| 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | blocked (sample data path, Q-07) |
+| 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06; shared WP-19, WP-20 | G3 | L | proposed (open Q-12) |
+| 3D-41 | Remote kernel port in `workspace/plan` (network port described by schema) | shared | workspace/plan | 02; shared WP-21 | G3 | M | proposed (open Q-13) |
+| 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed |
+| 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41; shared WP-21, WP-28 | G5 | M | proposed (open Q-03) |
+| 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | proposed |
+| 3D-50 | geoviewer host adapter: mount workplace, kernel route on server, file storage port for tests | geoviewer | host | 23, 43 | G5 | M | proposed |
+
+## Details
+
+### 3D-00 Agent operating manual and backlog
+- Source: owner message 2026-11-19. Goal: rules for agent sessions, documentation, handoffs and intake.
+- Accept: AGENTS.md, CLAUDE.md, STRUCTURE.md, skills `task-intake` and `wp-session`, templates, DECISIONS.md with
+  D-01..D-23 and Q-01..Q-13, this backlog; owner questions asked as dialog and recorded.
+
+### 3D-01 Verification note
+- Goal: each [V]/[A] item of HANDOVER §5-§7 and v0.3 §2 checked against code with file references; corrections listed.
+- Accept: `docs/verification/3D-01.md`; every item marked confirmed / corrected / not checkable (why); Q-12, Q-13
+  answered or narrowed; how geoviewer consumes `@geoiplus/*` recorded. Read-only in the other repositories.
+
+### 3D-02 ADR kernel package and boundary
+- Accept: `3D-ADR-0001` answers Q-08, Q-09, Q-13 and HANDOVER §7 Q1-Q2 with options and a recommendation;
+  owner-approved (D-18). Defines how a client package is mechanically prevented from depending on `geo-model3d`.
+
+### 3D-03 ADR storage
+- Accept: `3D-ADR-0002` proposes one option for versions, journal, baseline and results after reading CP/DP code;
+  retention >= 90 days (v0.3 §11) addressed. Blocked until CP/DP/Tools Plane repositories are attached.
+
+### 3D-04 3DQM spec
+- Accept: one section per module (purpose, API, rules, `Accept:` lines); contracts as a list of schemas; C.8 and C.11
+  restated in plane terms (D-08); each golden test of v0.3 §12 assigned to one module and one row; v0.3 process text
+  (gates, agent template) dropped; admin functions removed (D-10). Owner reviews before 3D-06 starts.
+
+### 3D-05 Repository bootstrap
+- Accept: `npm ci && npm run check` pass on the empty skeleton; a planted client-side import of `geo-model3d`, a 301-line
+  file and a DOM global in the kernel each fail `check:arch` (tests for the checker). Commands of AGENTS.md §5 exist.
+
+### 3D-06 Contract schemas
+- Accept: JSON Schema 2020-12 for every `OperationKind` payload (v0.3 §9.1), result, patch, `topologyLineage`
+  `{mapped, deleted, preserved}`, validation report, error registry (v0.3 §9.2), tolerance profile (D-13 values as
+  defaults); valid and invalid examples per schema; Ajv 2020 compiles all. Owner-approved (D-18). L: split by intake if
+  the command schemas and the model schemas review separately.
+
+### 3D-07 Golden fixtures
+- Accept: fixture format recorded; inputs for GT-I1..GT-I4, GT-01..GT-25 generated by a script, byte-identical on
+  regeneration; expected values copied from v0.3 §12 with the checks of its last paragraph reproduced in a test.
+
+### 3D-08 Latency spike and kernel ADRs
+- Accept: prototype `MOVE_EDGE` on GT-03 in the chosen language; p95 server PREVIEW for a 200-face building measured on
+  the recorded rig; result vs. 150 ms target. If it fails: escalate to the owner (D-06), no client fallback. ADRs for
+  kernel language/Boolean library and licences (closes Q-01) and solver approach, owner-approved.
+
+### 3D-09 .. 3D-24 Kernel, operations, service
+- Accept lines come from `docs/specs/3dqm-spec.md` (3D-04). Golden tests per row:
+  3D-09 GT-25; 3D-10 GT-I1..GT-I3; 3D-11 GT-I4; 3D-14 GT-01..GT-05; 3D-15 GT-08, GT-10; 3D-16 GT-07, GT-09;
+  3D-17 GT-06, GT-11, GT-19; 3D-18 GT-12, GT-13; 3D-19 GT-14..GT-16; 3D-20 GT-17, GT-18; 3D-22 GT-20, GT-21;
+  3D-24 GT-22, GT-24 (GT-23 is enforced from the CP contract, D-10: test belongs to 3D-25).
+- Every operation: atomic commit, PREVIEW before COMMIT, hard-constraint conflict -> refusal without partial change,
+  lineage in the result, "commit adds no new errors for the current state" (v0.3 §6).
+
+### 3D-25 E2E
+- Accept: the v0.3 G5 E2E chain on the CP/DP mock in both workplaces; GT-23 (building outside assignment -> 403).
+
+### 3D-26 Real-data import
+- Accept: import + export round-trip of the owner's roofer and TerraSolid samples; tolerance profile adjustments
+  proposed as decisions, not edited silently. Binaries stay outside git unless the owner allows.
+
+### 3D-40 .. 3D-50 Mirrors
+- Rows are added in the other repository by a session working there, under its AGENTS.md; this row records the id
+  and status. 3D-40 depends on Q-12; 3D-41 on Q-13; 3D-43 on Q-03.
