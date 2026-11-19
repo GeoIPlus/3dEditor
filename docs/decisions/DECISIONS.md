@@ -48,6 +48,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-32 | Per the owner, the CP/DP implementation is in `GeoIPlus/crowdsource` ("everything should be there"). Operaflow stays the format and rules of the CP/DP roles (3D-01 §9.1). D-30 now reads: Operaflow defines CP and DP; their implementation is to be verified in `crowdsource` (row 3D-29). Not verified yet | Owner, dialog, 2026-11-19 |
 | D-33 | The kernel service ships as its own container image built from this repository (answers the build form of Q-04). The deployment target is decided later with ADR-OPS | Owner, dialog, 2026-11-19 |
 | D-34 | 3D-01 accepted (done) and merged into the base branch without PR; 3D-27 and 3D-29 set `ready` | Owner, dialog, 2026-11-19 |
+| D-35 | 3D CP/DP: interim own, later crowdsource. 3DQM starts with its own data ports (storage: file/S3 for buildings, versions, journal, drafts, baseline; points: COPC/LAS read by box) inside this repository for development and tests. Data serving moves to `crowdsource` once it supports 3D (project type, CityJSON and COPC `stream` datasets, client-credentials grant). The ports are designed so the move is a swap of adapters, not a rewrite (D-31) | Owner, dialog, 2026-11-19, after 3D-29 |
+| D-36 | 3D-29 accepted (done) and merged into the base branch without PR | Owner, dialog, 2026-11-19 |
 
 ## Open questions
 
@@ -91,3 +93,5 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-02 | 2026-11-19, 3D-29 | narrowed, open | crowdsource keeps seamline versions (one S3 object per image, ETag + `If-Match`), progress records, issues, block history (PostgreSQL); the delivery record for streamed results is open there (its O-361). Nothing for building versions, edit journal or baselines. 3D-03 decides ([3D-29 §4](../verification/3D-29.md#4-versions-results-journals-q-02)) |
 | Q-05 | 2026-11-19, 3D-29 | answered for crowdsource: no | No `copc`/`ept` dataset kind and no box query in the DP; raw project files are readable by HTTP `Range` only, outside any Operaflow dataset. Box reads need a crowdsource change or a non-format ranged COPC read ([3D-29 §3.3](../verification/3D-29.md#33-point-clouds-and-box-reads-q-05)) |
 | Q-14 | 2026-11-19, 3D-29 | evidence added, not decided | crowdsource's DP is a fixed set of containers (Rust streaming, Python worker) with no third-party service slot; hosting the kernel there needs a crowdsource requirement under its own process ([3D-29 §6](../verification/3D-29.md#6-deployment)) |
+| Q-02 | 2026-11-19, owner | decided in principle (D-35) | Interim own store behind a storage port; later crowdsource. 3D-03 designs the port and the interim adapter |
+| Q-05 | 2026-11-19, owner | decided in principle (D-35) | Interim: kernel service reads COPC (by box) / LAS (whole) itself; later crowdsource COPC `stream` dataset (3D-61) |

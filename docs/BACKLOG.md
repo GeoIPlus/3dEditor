@@ -13,30 +13,30 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-29 session: crowdsource verified, row on review; D-32 corrected in part, [3D-29 note](verification/3D-29.md)).
+Updated: 2026-11-19 (3D-00 session after 3D-29 acceptance: D-35, D-36; rows 3D-60..3D-63).
 
 | Progress | Rows |
 |---|---:|
-| Done | 1 / 36 |
-| Review | 2 |
+| Done | 2 / 40 |
+| Review | 1 |
 | In progress | 0 |
 | Ready | 1 |
-| Proposed (waiting for the owner to set `ready`) | 31 |
+| Proposed (waiting for the owner to set `ready`) | 35 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 1/36 rows done. Planning: the agent operating manual, intake procedure and this backlog
-(3D-00) are on review; the verification note (3D-01, [docs/verification/3D-01.md](verification/3D-01.md)) is done.
-**Next step for the owner:** review 3D-00. Review 3D-29 ([verification/3D-29.md](verification/3D-29.md): crowdsource serves 2D mapping only - no point clouds, CityJSON or box reads). Ready now: 3D-27 (contracts location + P4 canary). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
+**Implementation progress: 0 %** of code; 2/40 rows done. Planning: the agent operating manual, intake procedure and this backlog
+(3D-00) are on review; the verification notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)) are done.
+**Next step for the owner:** review 3D-00. In work: 3D-27 (contracts location + P4 canary). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
 3D-02 / 3D-05**; 3D-28 (agent evals) runs as soon as 3D-05 is done.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
     D01["3D-01 Verification note"]
+    D29["3D-29 Verify crowdsource CP/DP"]
   end
   subgraph review["REVIEW"]
     D00["3D-00 Agent manual, intake, backlog"]
-    D29["3D-29 Verify crowdsource CP/DP"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
     D02["3D-02 ADR kernel package and boundary"]
@@ -72,13 +72,17 @@ flowchart TB
     D24["3D-24 QC and export rules"]
     D25["3D-25 E2E on mock"]
   end
-  subgraph client["shared / geoviewer mirrors (PROPOSED)"]
+  subgraph client["shared / geoviewer / crowdsource mirrors (PROPOSED)"]
     D40["3D-40 geo-render model3d"]
     D41["3D-41 Remote kernel port"]
     D42["3D-42 3DQM tools"]
     D43["3D-43 plans/3dqm"]
     D44["3D-44 3DQM UI panels"]
     D50["3D-50 geoviewer host adapter"]
+    D60["3D-60 crowdsource 3D project + CityJSON"]
+    D61["3D-61 crowdsource COPC stream"]
+    D62["3D-62 crowdsource server grant"]
+    D63["3D-63 Swap to crowdsource adapters"]
   end
   subgraph blocked["BLOCKED"]
     D26["3D-26 Real-data import - samples Q-07"]
@@ -86,6 +90,14 @@ flowchart TB
   D00 --> D01
   D01 --> D29
   D29 --> D03
+  D03 --> D60
+  D29 --> D61
+  D29 --> D62
+  D22 --> D63
+  D23 --> D63
+  D60 --> D63
+  D61 --> D63
+  D62 --> D63
   D01 --> D27
   D27 --> D02
   D27 --> D05
@@ -149,7 +161,7 @@ flowchart TB
 | 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | review (local, `claude/keen-pascal-u7z2gk`; PR not requested) |
 | 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents = Tools Plane, geoviewer, Operaflow = CP + DP) | here | docs/verification | 00 | G0 | S | done (D-34; merged into base, no PR) |
 | 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | proposed |
-| 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01, 29 | G0 | M | proposed (Operaflow = rules, implementation in crowdsource per D-32) |
+| 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01, 29 | G0 | M | proposed (D-35: interim own store behind a port, later crowdsource) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
 | 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | proposed |
 | 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | per 3D-27 (Q-08) | contracts | 04, 27 | G0 | L | proposed |
@@ -168,14 +180,18 @@ flowchart TB
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | proposed |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | proposed |
 | 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | proposed |
-| 3D-22 | Point cloud: point port (box query), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | proposed (Q-05 narrowed by 3D-01: box reads feasible for COPC only) |
-| 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, rate limit, error registry, command status, storage port (file impl) | here | service | 03, 06, 18 | G5 | L | proposed |
+| 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | proposed |
+| 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, rate limit, error registry, command status, storage port with interim file/S3 adapter (D-35) | here | service | 03, 06, 18 | G5 | L | proposed |
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23 | G5 | M | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | ready (D-34; SC read in 3D-01: SC already rejects P4 paths, `tools/check-architecture.js:67-69`) |
-| 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | review (wp/3d-29-crowdsource-verification; local, PR not requested; [note](verification/3D-29.md)) |
+| 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | done (D-36; merged into base, no PR) |
 | 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
+| 3D-60 | crowdsource: 3D project type and CityJSON building dataset kind (Operaflow-conformant) | crowdsource | backend, streaming | 03, 29 | G5+ | L | proposed (D-35; under crowdsource's own process) |
+| 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
+| 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
+| 3D-63 | Swap 3DQM interim data adapters for crowdsource datasets; migrate stored buildings and journals | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | proposed (D-35) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06; shared WP-19, WP-20 | G3 | L | proposed (Q-12 answered by 3D-01: no 3D scene in `geo-render`; 3D-02 decides scene source (Q-16), row may split) |
 | 3D-41 | Remote kernel port in `workspace/plan` (network port described by schema) | shared | workspace/plan | 02; shared WP-21 | G3 | M | proposed (Q-13 narrowed by 3D-01: `placement: dp` declarable, not executed) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed |
@@ -267,6 +283,12 @@ flowchart TB
   intake of a new request, chore vs. non-chore, refuse a client import of the kernel, mark an unknown tolerance
   `TBD`, refuse to re-open a decision, handoff to a fresh session, question asked as a dialog; plus one per hard rule
   of AGENTS.md §2. Every task run twice; scores recorded in DECISIONS.md. A rule change is kept only if evals hold.
+
+### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
+- Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under
+  its rules; this backlog mirrors them (D-25). 3D-63 is the 3DQM side of the move.
+- Accept 3D-63: same golden tests pass against crowdsource adapters as against the interim adapters; no change to
+  kernel code outside adapters; stored building versions and journals migrated with a recorded check.
 
 ### 3D-40 .. 3D-50 Mirrors
 - Rows are added in the other repository by a session working there, under its AGENTS.md; this row records the id
