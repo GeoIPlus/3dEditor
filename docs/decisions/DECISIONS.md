@@ -48,6 +48,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-32 | Per the owner, the CP/DP implementation is in `GeoIPlus/crowdsource` ("everything should be there"). Operaflow stays the format and rules of the CP/DP roles (3D-01 §9.1). D-30 now reads: Operaflow defines CP and DP; their implementation is to be verified in `crowdsource` (row 3D-29). Not verified yet | Owner, dialog, 2026-11-19 |
 | D-33 | The kernel service ships as its own container image built from this repository (answers the build form of Q-04). The deployment target is decided later with ADR-OPS | Owner, dialog, 2026-11-19 |
 | D-34 | 3D-01 accepted (done) and merged into the base branch without PR; 3D-27 and 3D-29 set `ready` | Owner, dialog, 2026-11-19 |
+| D-35 | [3D-ADR-0001](adr/3D-ADR-0001-contracts-location-and-p4-canary.md) accepted. Q-08: `model3d` schemas are authoritative only in `contracts/model3d/` here, ids `urn:geoiplus:schema:model3d-<name>:v<major>`; consumers vendor a byte-for-byte copy pinned to a commit SHA with `provenance.json` + hash check (SC: `contracts/vendor/3deditor/`). Q-09: P4 canary `geoiplus-p4-canary:<package>:<32 hex>` imported by every `exports` entry; SC and GV scan their browser outputs for the pattern; this repository runs a negative control that must find the marker | Owner, dialog, 2026-11-19 (3D-27) |
 
 ## Open questions
 
@@ -87,3 +88,6 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-15 | 2026-11-19, 3D-01 | answered (list) | Six groups of Operaflow rules bind the kernel service when it reads, saves or sends itself: versions + authenticity, data access (OAuth client credentials for a server), saving (`PUT`/`If-Match`, Part 4), immutable delivery, progress records, extension naming. The rule ids are in verification §9.3; 3D-02 assigns each group to the service or the client |
 | Q-04 | 2026-11-19, owner | build form decided (D-33), target open | Own container image from 3dEditor; deployment target with ADR-OPS |
 | Q-02 | 2026-11-19, owner | open, new source | CP/DP implementation is in `crowdsource` per the owner (D-32); 3D-29 verifies, 3D-03 decides |
+| Q-08 | 2026-11-19, owner (3D-27) | closed by D-35 | Option A of 3D-ADR-0001: here, pinned vendored copy |
+| Q-09 | 2026-11-19, owner (3D-27) | closed by D-35 | Option 1 of 3D-ADR-0001: pattern scan in SC/GV + negative control here |
+| Q-14 | 2026-11-19, 3D-27 | still open | 3D-ADR-0001 "Relocation path" keeps the move a relocation (same ids, pattern scanners unchanged); the SC path/registry rules still need an SC ADR before any move |
