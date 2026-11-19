@@ -61,3 +61,17 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-11 | v0.3 §15 assumptions Д-01..Д-12 are not confirmed by the owner; must be confirmed before G1-equivalent rows start. Д-01 is partly overtaken by D-10 (auth and assignment from CP) | List in v0.3 §15 | Owner, dialog, before 3D-09 |
 | Q-12 | Does `shared_compnents` plan a 3D scene module in `geo-render`, or does the 3D scene stay in geoviewer? (HANDOVER §6, not checked) | Determines where 3D-40 lands | 3D-01 |
 | Q-13 | Can `workspace/plan` describe a remote (network) port, not only a Worker port? (HANDOVER §7 Q2) | If not, a library row is needed | 3D-01, 3D-02 |
+
+## Open-question status updates
+
+Appended; the question rows above stay as written. Evidence: [docs/verification/3D-01.md §7](../verification/3D-01.md#7-open-questions---status-after-this-note).
+
+| Q | Date, source | Status | Finding |
+|---|---|---|---|
+| Q-02 | 2026-11-19, 3D-01 | narrowed, open | The CP format (Operaflow) carries a dataset `version`, saves results to `progress.save` datasets (`PUT` + `If-Match`, or OGC API Features) or an own https store, and keeps delivered bytes immutable. It has no edit journal, history, drafts or retention, so those are 3DQM's own. The DP repository is still unnamed |
+| Q-03 | 2026-11-19, 3D-01 | answered (shape); decided in 3D-06/3D-43 | Operaflow `1.0.0-rc.1` requires only `formatVersion`, `id`, `issuer`. There is one `open.operator {id, role}` per document, and the role is free text. Units come from `work.units` (`list` / `from` / `grid`). Extensions are keyed by URI and must not name a product. The model is SC `extension-orthoqm.schema.json` (13 members, including `assignment {id, userId, leaseRef, leaseEpoch, deadline}`, `dataset`, `runtime` endpoints). The format has no separation-of-duties rule: D-09 is enforced by 3DQM/issuer (3D-24) |
+| Q-04 | 2026-11-19, 3D-01 | not checkable, open | Nothing in SC, geoviewer or Operaflow says where a tool's server side runs |
+| Q-05 | 2026-11-19, 3D-01 | narrowed, open | The format has no bbox read; `stream` with `copc`/`ept` allows part reads. geoviewer serves COPC by HTTP Range and has a DOM-free COPC reader (selection by centre/LOD). Box reads look feasible for COPC; plain LAS/LAZ can only be read whole. The DP side is unknown |
+| Q-06 | 2026-11-19, 3D-01 | not checkable, open | There is no LidarQM repository, and it has 0 hits in Operaflow and SC. Reuse candidates today: geoviewer `layers/formats/{las,laz,copc,copc-fetch}.js`, `scene3d/content/points.js` |
+| Q-12 | 2026-11-19, 3D-01 | answered | SC plans no 3D scene: `geo-render` = `host` (2D orthographic), `raster2d`, `overlay`, `pick` (XY), and no SC row mentions a 3D scene. The only 3D scene is geoviewer `features/scene3d`. Where 3D-40 draws is decided in 3D-02 |
+| Q-13 | 2026-11-19, 3D-01 | narrowed; closed by 3D-02 | `plan.schema.json` `placement` allows `dp` / `dp.batch`, but `workspace/plan` code never reads `placement`, and the compose factory is SC WP-28 (not done). A plan can declare a server operation, but nothing executes it. 3D-41 must add the binding |

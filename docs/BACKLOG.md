@@ -13,29 +13,29 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-00 session; D-24..D-27 added).
+Updated: 2026-11-19 (3D-01 session: verification note on review; Q-03/Q-12 answered, Q-02/Q-05/Q-13 narrowed).
 
 | Progress | Rows |
 |---|---:|
 | Done | 0 / 35 |
-| Review | 1 |
+| Review | 2 |
 | In progress | 0 |
-| Ready | 1 |
+| Ready | 0 |
 | Proposed (waiting for the owner to set `ready`) | 31 |
 | Blocked (external access or data) | 2 |
 
 **Implementation progress: 0 %** (0/35). Planning: the agent operating manual, intake procedure and this backlog
-(3D-00) are on review. **Next step for the owner:** review 3D-00; set 3D-01 `ready` and attach `shared_compnents` and
-`geoviewer` to the session (3D-01 cannot verify code it cannot read). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
+(3D-00) and the verification note (3D-01, [docs/verification/3D-01.md](verification/3D-01.md)) are on review.
+**Next step for the owner:** review 3D-00 and 3D-01; set 3D-27 `ready`. Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
 3D-02 / 3D-05**; 3D-28 (agent evals) runs as soon as 3D-05 is done.
 
 ```mermaid
 flowchart TB
   subgraph review["REVIEW"]
     D00["3D-00 Agent manual, intake, backlog"]
+    D01["3D-01 Verification note"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
-    D01["3D-01 Verification note"]
     D02["3D-02 ADR kernel package and boundary"]
     D04["3D-04 3DQM spec"]
     D05["3D-05 Repository bootstrap"]
@@ -142,9 +142,9 @@ flowchart TB
 | WP | Title | Repo | Modules | Depends on | Gate | Size | Status |
 |---|---|---|---|---|---|---|---|
 | 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | review (local, `claude/keen-pascal-u7z2gk`; PR not requested) |
-| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents, geoviewer, Operaflow = CP) | here | docs/verification | 00 | G0 | S | in-progress (`wp/3d-01-verification`) |
+| 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents, geoviewer, Operaflow = CP) | here | docs/verification | 00 | G0 | S | review (local, `wp/3d-01-verification`; PR not requested) |
 | 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | proposed |
-| 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | blocked (DP and Tools Plane repositories not named; CP = Operaflow, D-29; Q-02, Q-04) |
+| 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | blocked (DP and Tools Plane repositories not named; CP = Operaflow, D-29, is a format without storage - 3D-01 §6.5; Q-02, Q-04) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
 | 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | proposed |
 | 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | per 3D-27 (Q-08) | contracts | 04, 27 | G0 | L | proposed |
@@ -163,19 +163,19 @@ flowchart TB
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | proposed |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | proposed |
 | 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | proposed |
-| 3D-22 | Point cloud: point port (box query), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | proposed (open Q-05) |
+| 3D-22 | Point cloud: point port (box query), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | proposed (Q-05 narrowed by 3D-01: box reads feasible for COPC only) |
 | 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, rate limit, error registry, command status, storage port (file impl) | here | service | 03, 06, 18 | G5 | L | proposed |
 | 3D-24 | QC and export rules: state transitions, approver != author, reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23 | G5 | M | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | blocked (sample data path, Q-07) |
-| 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | proposed (needs `shared_compnents` attached) |
+| 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | proposed (SC read in 3D-01: SC already rejects P4 paths, `tools/check-architecture.js:67-69`) |
 | 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
-| 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06; shared WP-19, WP-20 | G3 | L | proposed (open Q-12) |
-| 3D-41 | Remote kernel port in `workspace/plan` (network port described by schema) | shared | workspace/plan | 02; shared WP-21 | G3 | M | proposed (open Q-13) |
+| 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06; shared WP-19, WP-20 | G3 | L | proposed (Q-12 answered by 3D-01: no 3D scene in `geo-render`; 3D-02 decides scene source, row may split) |
+| 3D-41 | Remote kernel port in `workspace/plan` (network port described by schema) | shared | workspace/plan | 02; shared WP-21 | G3 | M | proposed (Q-13 narrowed by 3D-01: `placement: dp` declarable, not executed) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed |
-| 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41; shared WP-21, WP-28 | G5 | M | proposed (open Q-03) |
+| 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41; shared WP-21, WP-28 | G5 | M | proposed (Q-03 shape known, 3D-01 §6; extension URI content-named, no product) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | proposed |
-| 3D-50 | geoviewer host adapter: mount workplace, kernel route on server, file storage port for tests | geoviewer | host | 23, 43 | G5 | M | proposed |
+| 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server, file storage port for tests | geoviewer | host | 23, 43 | G5 | M | proposed |
 
 ## Details
 
@@ -197,6 +197,9 @@ flowchart TB
 ### 3D-03 ADR storage
 - Accept: `3D-ADR-0003` proposes one option for versions, journal, baseline and results after reading CP/DP code;
   retention >= 90 days (v0.3 §11) addressed. Blocked until CP/DP/Tools Plane repositories are attached.
+- 3D-01 input: the CP format (Operaflow) carries dataset `version`, saves results by `PUT` + `If-Match` or OGC API
+  Features, keeps delivered bytes immutable, and has no journal/history/retention - those are 3DQM's own
+  ([verification §6.5](verification/3D-01.md#65-data-saving-history)).
 
 ### 3D-04 3DQM spec
 - Accept: one section per module (purpose, API, rules, `Accept:` lines); contracts as a list of schemas; C.8 and C.11
@@ -256,3 +259,11 @@ flowchart TB
 ### 3D-40 .. 3D-50 Mirrors
 - Rows are added in the other repository by a session working there, under its AGENTS.md; this row records the id
   and status. 3D-40 depends on Q-12; 3D-41 on Q-13; 3D-43 on Q-03.
+- 3D-01 changes (intake `change-wp`, 2026-11-19; [verification note](verification/3D-01.md)):
+  - 3D-40: `geo-render` has only a 2D orthographic host and XY picking; geoviewer `scene3d` picks points, not entity ids.
+    The 3D scene source (new `geo-render` module vs geoviewer host port) is decided in 3D-02; split 3D-40 if it grows.
+  - 3D-41: Accept adds "a plan placement value or binding that a remote (Tools Plane) kernel port can use; WP-28's
+    compose executes it" - today `placement` (`dp`, `dp.batch`) is declarative only.
+  - 3D-43: the extension follows `extension-orthoqm.schema.json` (assignment, dataset, production, runtime,
+    deliverable) under a content-named URI (Operaflow `extension-names-no-product`); buildings as `work.units`.
+  - 3D-50: geoviewer consumes no `@geoiplus/*` package today; Accept adds the registry token in its CI and Docker build.
