@@ -21,7 +21,8 @@ Intake writes documents only. It never writes code, schemas or fixtures and neve
    | `bug` | Behaviour of finished work contradicts its acceptance or a decision | new row `proposed`, linked to the WP that introduced it |
    | `decision` | A choice the owner must make; no work by itself | dialog question -> `D-NN` or `Q-NN` |
    | `question` | Needs an answer, not work (e.g. "how does X work") | answer in chat; no row |
-   | `external` | Work in shared_compnents or geoviewer | mirror row with `repo: shared` / `repo: geoviewer` + text of the row to add there |
+   | `external` | Work in shared_compnents or geoviewer | mirror row with `repo: shared` / `repo: geoviewer` + text of the row to add there; status later filled by `backlog:sync` (D-25) |
+   | `chore` | Typo/wording in documents, <= ~20 lines, changes no behaviour, contract, decision, acceptance or rule (D-26) | do it, one line in `docs/CHORES.md`; no row. In doubt -> not a chore |
 
 3. **Check before writing** (batch these reads):
    - BACKLOG: duplicate or overlapping row? If yes -> `change-wp` instead of `new-wp`.

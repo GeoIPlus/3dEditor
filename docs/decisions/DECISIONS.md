@@ -36,7 +36,11 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-20 | Source documents moved unchanged to `docs/source/` and are read-only. Priority: DECISIONS > HANDOVER > v0.3 > v0.2 Appendix C > rest of v0.2; v0.1 and the audit are background | |
 | D-21 | Work-package ids `3D-NN`; branches `wp/3d-<id>-<short-name>`; a platform-assigned branch is used as is | Unique next to `shared_compnents` WP-00..WP-35 |
 | D-22 | Strict intake: every new request goes through the `task-intake` skill and becomes a `proposed` row; only the owner sets `ready`. Questions to the owner only as a dialog with proposed answers | |
-| D-23 | Client and host work is mirrored in this BACKLOG (`repo: shared` / `repo: geoviewer`); the row in the other repository is authoritative for its status | One 3DQM progress board |
+| D-23 | Client and host work is mirrored in this BACKLOG (`repo: shared` / `repo: geoviewer`); the row in the other repository is authoritative for its status. *Mechanism amended by D-25* | One 3DQM progress board |
+| D-24 | Q-08/Q-09 are closed early by a dedicated small ADR (row 3D-27) before 3D-02. P4 isolation is proven on build output: the kernel carries a unique canary marker; CI builds every client bundle and fails if the marker appears | Independent of which repository the code is in |
+| D-25 | Mirror rows store only the external id/link; status is filled by `npm run backlog:sync` from the other repository's BACKLOG at a pinned ref; CI fails on drift. Until the external row exists, the local intake status applies | Implemented in 3D-05 |
+| D-26 | Fast lane for chores (amends D-22): typo/wording fixes in documents, at most ~20 lines, no change to behaviour, contracts, decisions, acceptance or rules; logged in `docs/CHORES.md`, no backlog row, no `ready`. Everything else: full intake | |
+| D-27 | Instructions are proven by measurement: `check:docs` lint (3D-05), agent evals (3D-28, each task run twice), and 3D-01 is the next WP | 10/10 is claimed only after evals pass |
 
 ## Open questions
 
@@ -49,8 +53,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-05 | Can a server component read source LAS/LAZ by box from DP (v0.3 Д-02)? | If not, heatmap and plane fit need points uploaded from the client | 3D-01; needs DP access |
 | Q-06 | What LidarQM offers for reuse (point reading, selection, 3D view) | Unknown | 3D-01; needs LidarQM access |
 | Q-07 | Path to sample CityJSON (roofer, TerraSolid) with point clouds; geoviewer `LOD2-8` samples | Owner promised a repository or bucket path | Owner |
-| Q-08 | Where `contracts/model3d/` schemas live: `shared_compnents` (client consumes them) or here (kernel owns them) | Contract crosses the repository boundary; one location must be authoritative | 3D-02 ADR |
-| Q-09 | How P4 isolation is checked mechanically when the kernel is in a separate repository (no client package may depend on `geo-model3d`; no plan chunk references it) | `check:arch` rule here + dependency rule in `shared_compnents` | 3D-02 ADR |
+| Q-08 | Where `contracts/model3d/` schemas live: `shared_compnents` (client consumes them) or here (kernel owns them) | Contract crosses the repository boundary; one location must be authoritative | 3D-27 ADR (D-24) |
+| Q-09 | How P4 isolation is checked mechanically when the kernel is in a separate repository (no client package may depend on `geo-model3d`; no plan chunk references it) | Canary marker in build output (D-24) + dependency rule in `shared_compnents` | 3D-27 ADR (D-24) |
 | Q-10 | External validation: val3dity (native) in a Node host and the Docker image, version pin (v0.3 Д-08) | Sidecar binary, container, or service | 3D-12 |
 | Q-11 | v0.3 §15 assumptions Д-01..Д-12 are not confirmed by the owner; must be confirmed before G1-equivalent rows start. Д-01 is partly overtaken by D-10 (auth and assignment from CP) | List in v0.3 §15 | Owner, dialog, before 3D-09 |
 | Q-12 | Does `shared_compnents` plan a 3D scene module in `geo-render`, or does the 3D scene stay in geoviewer? (HANDOVER §6, not checked) | Determines where 3D-40 lands | 3D-01 |

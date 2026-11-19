@@ -33,7 +33,8 @@ audit PDF are background only. Read source specs with an offset by section, neve
 ## 2. Hard rules
 
 1. **Every new task enters through the `task-intake` skill** ([.claude/skills/task-intake/SKILL.md](.claude/skills/task-intake/SKILL.md)).
-   No implementation starts on a request that has no BACKLOG row with status `ready`.
+   No implementation starts on a request that has no BACKLOG row with status `ready`. Only exception: the narrow
+   chore fast lane of the skill (D-26), logged in `docs/CHORES.md`.
 2. **Questions to the owner only as a dialog with proposed answers** (the ask-user tool: 2-4 options, the recommended one
    first and marked "(Recommended)", each with its consequence). Ask only what changes what is built. Never ask in a file,
    a PR or a code comment and wait there. Every answer is recorded in DECISIONS.md in the same session.
@@ -100,6 +101,9 @@ audit PDF are background only. Read source specs with an offset by section, neve
 | Boundaries, file size, P4 isolation | `npm run check:arch` |
 | Golden tests | `npm run golden` |
 | Preview latency bench | `npm run bench` |
+| Document consistency (backlog counts, graph, ids, links) | `npm run check:docs` |
+| Mirror row status from other repositories | `npm run backlog:sync` |
+| P4 canary scan of client bundles | part of `npm run check:arch` |
 
 ## 6. Documentation rules
 
@@ -110,6 +114,7 @@ audit PDF are background only. Read source specs with an offset by section, neve
 | `docs/decisions/adr/3D-ADR-NNNN-*.md` | WP that needs the design choice | from [docs/templates/adr.md](docs/templates/adr.md); `proposed` until the owner accepts |
 | `docs/specs/*` | spec WPs; others only through intake | spec defect found -> question, not silent edit |
 | `.agent/checkpoints/3D-<id>.md` | the WP's session only | every stop, handoff and finish |
+| `docs/CHORES.md` | any session, fast lane only (D-26) | one line per chore |
 | module `README.md` | the WP that changes the module | public API, protection, status, source revision |
 | `docs/source/*` | nobody | read-only; corrections are recorded in DECISIONS.md |
 

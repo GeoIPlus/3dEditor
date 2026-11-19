@@ -13,20 +13,21 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-19 (3D-00 session).
+Updated: 2026-11-19 (3D-00 session; D-24..D-27 added).
 
 | Progress | Rows |
 |---|---:|
-| Done | 0 / 33 |
+| Done | 0 / 35 |
 | Review | 1 |
 | In progress | 0 |
 | Ready | 0 |
-| Proposed (waiting for the owner to set `ready`) | 30 |
+| Proposed (waiting for the owner to set `ready`) | 32 |
 | Blocked (external access or data) | 2 |
 
-**Implementation progress: 0 %** (0/33). Planning: the agent operating manual, intake procedure and this backlog
+**Implementation progress: 0 %** (0/35). Planning: the agent operating manual, intake procedure and this backlog
 (3D-00) are on review. **Next step for the owner:** review 3D-00; set 3D-01 `ready` and attach `shared_compnents` and
-`geoviewer` to the session (3D-01 cannot verify code it cannot read).
+`geoviewer` to the session (3D-01 cannot verify code it cannot read). Agreed order (D-24, D-27): **3D-01 -> 3D-27 ->
+3D-02 / 3D-05**; 3D-28 (agent evals) runs as soon as 3D-05 is done.
 
 ```mermaid
 flowchart TB
@@ -41,6 +42,8 @@ flowchart TB
     D06["3D-06 Contract schemas"]
     D07["3D-07 Golden fixtures"]
     D08["3D-08 Latency spike + kernel ADRs"]
+    D27["3D-27 Early ADR: contracts location + P4 canary"]
+    D28["3D-28 Agent evals"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
     D09["3D-09 B-Rep core"]
@@ -78,6 +81,11 @@ flowchart TB
     D26["3D-26 Real-data import - samples Q-07"]
   end
   D00 --> D01
+  D01 --> D27
+  D27 --> D02
+  D27 --> D05
+  D27 --> D06
+  D05 --> D28
   D01 --> D02
   D01 --> D03
   D01 --> D04
@@ -135,11 +143,11 @@ flowchart TB
 |---|---|---|---|---|---|---|---|
 | 3D-00 | Agent operating manual, `task-intake` and `wp-session` skills, decisions log, this backlog | here | AGENTS.md, .claude/skills, docs | - | G0 | S | review (local, `claude/keen-pascal-u7z2gk`; PR not requested) |
 | 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code | here | docs/verification | 00 | G0 | S | proposed (needs `shared_compnents`, `geoviewer` attached) |
-| 3D-02 | ADR: `geo-model3d` package - location, P4 isolation check, contracts location, remote kernel port, relation to `geo-render`/`workspace` | here | docs/decisions | 01 | G0 | M | proposed |
+| 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | proposed |
 | 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01 | G0 | M | blocked (CP, DP, Tools Plane repositories not accessible; Q-02, Q-04) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
-| 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 isolation), CI | here | root, tools | 00 | G0 | M | proposed |
-| 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | here or shared (Q-08) | contracts | 02, 04 | G0 | L | proposed |
+| 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | proposed |
+| 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | per 3D-27 (Q-08) | contracts | 04, 27 | G0 | L | proposed |
 | 3D-07 | Golden fixtures: format and synthetic CityJSON/point sets for GT-I1..GT-25 | here | fixtures | 06 | G0 | M | proposed |
 | 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | proposed |
 | 3D-09 | Kernel core: half-edge B-Rep, primary planes, derived vertices, local frame, transactions, versions | here | geo-model3d/brep | 08 | G1 | L | proposed |
@@ -160,6 +168,8 @@ flowchart TB
 | 3D-24 | QC and export rules: state transitions, approver != author, reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23 | G5 | M | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | blocked (sample data path, Q-07) |
+| 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | proposed (needs `shared_compnents` attached) |
+| 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches, hide source layer, ghost, pick by entity id | shared | geo-render | 06; shared WP-19, WP-20 | G3 | L | proposed (open Q-12) |
 | 3D-41 | Remote kernel port in `workspace/plan` (network port described by schema) | shared | workspace/plan | 02; shared WP-21 | G3 | M | proposed (open Q-13) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed |
@@ -172,7 +182,7 @@ flowchart TB
 ### 3D-00 Agent operating manual and backlog
 - Source: owner message 2026-11-19. Goal: rules for agent sessions, documentation, handoffs and intake.
 - Accept: AGENTS.md, CLAUDE.md, STRUCTURE.md, skills `task-intake` and `wp-session`, templates, DECISIONS.md with
-  D-01..D-23 and Q-01..Q-13, this backlog; owner questions asked as dialog and recorded.
+  D-01..D-27 and Q-01..Q-13, this backlog; owner questions asked as dialog and recorded.
 
 ### 3D-01 Verification note
 - Goal: each [V]/[A] item of HANDOVER §5-§7 and v0.3 §2 checked against code with file references; corrections listed.
@@ -180,11 +190,11 @@ flowchart TB
   answered or narrowed; how geoviewer consumes `@geoiplus/*` recorded. Read-only in the other repositories.
 
 ### 3D-02 ADR kernel package and boundary
-- Accept: `3D-ADR-0001` answers Q-08, Q-09, Q-13 and HANDOVER §7 Q1-Q2 with options and a recommendation;
-  owner-approved (D-18). Defines how a client package is mechanically prevented from depending on `geo-model3d`.
+- Accept: `3D-ADR-0002` answers Q-13 and HANDOVER §7 Q2 (remote port), the internal package layout and the relation
+  to `geo-render`/`workspace`, with options and a recommendation; owner-approved (D-18). Builds on 3D-27.
 
 ### 3D-03 ADR storage
-- Accept: `3D-ADR-0002` proposes one option for versions, journal, baseline and results after reading CP/DP code;
+- Accept: `3D-ADR-0003` proposes one option for versions, journal, baseline and results after reading CP/DP code;
   retention >= 90 days (v0.3 §11) addressed. Blocked until CP/DP/Tools Plane repositories are attached.
 
 ### 3D-04 3DQM spec
@@ -194,7 +204,10 @@ flowchart TB
 
 ### 3D-05 Repository bootstrap
 - Accept: `npm ci && npm run check` pass on the empty skeleton; a planted client-side import of `geo-model3d`, a 301-line
-  file and a DOM global in the kernel each fail `check:arch` (tests for the checker). Commands of AGENTS.md §5 exist.
+  file, a DOM global in the kernel and the P4 canary planted in a test bundle each fail `check:arch` (tests for the
+  checker). `check:docs` fails on a planted count mismatch, a graph node without a row, a duplicate D/Q id, a dead link
+  and a row without `Accept:`. `backlog:sync` reads a pinned ref of the other BACKLOG (fixture in tests, no network)
+  and CI fails on drift (D-25). Commands of AGENTS.md §5 exist.
 
 ### 3D-06 Contract schemas
 - Accept: JSON Schema 2020-12 for every `OperationKind` payload (v0.3 §9.1), result, patch, `topologyLineage`
@@ -225,6 +238,19 @@ flowchart TB
 ### 3D-26 Real-data import
 - Accept: import + export round-trip of the owner's roofer and TerraSolid samples; tolerance profile adjustments
   proposed as decisions, not edited silently. Binaries stay outside git unless the owner allows.
+
+### 3D-27 Early ADR: contracts location and P4 canary
+- Source: owner dialog 2026-11-19 (D-24). Goal: close the repository seam before contracts and bootstrap start.
+- Accept: `3D-ADR-0001` closes Q-08 (one authoritative location of `model3d` schemas, how the other repository
+  consumes them at a pinned version) and Q-09 (canary marker format, which bundles CI scans in each repository);
+  owner-approved (D-18). Reads `shared_compnents` contracts/build setup; read-only there.
+
+### 3D-28 Agent evals
+- Source: owner dialog 2026-11-19 (D-27). Goal: prove the instructions by measurement.
+- Accept: `docs/agent-evals/<task>/` with prompt, start state, rubric graded on the final result; tasks at least:
+  intake of a new request, chore vs. non-chore, refuse a client import of the kernel, mark an unknown tolerance
+  `TBD`, refuse to re-open a decision, handoff to a fresh session, question asked as a dialog; plus one per hard rule
+  of AGENTS.md §2. Every task run twice; scores recorded in DECISIONS.md. A rule change is kept only if evals hold.
 
 ### 3D-40 .. 3D-50 Mirrors
 - Rows are added in the other repository by a session working there, under its AGENTS.md; this row records the id

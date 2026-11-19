@@ -11,6 +11,7 @@ AGENTS.md, CLAUDE.md, STRUCTURE.md   agent manual, entry point, this file
 .agent/checkpoints/3D-<id>.md        one per WP: plan, state, results, handoff
 docs/
   BACKLOG.md                         the 3DQM progress board (incl. mirror rows of other repos)
+  CHORES.md                          fast-lane log of trivial document fixes (D-26)
   decisions/DECISIONS.md             D-NN decisions, Q-NN open questions (append-only)
   decisions/adr/3D-ADR-NNNN-*.md     architecture decision records
   specs/3dqm-spec.md                 maintained spec (3D-04)
@@ -27,7 +28,7 @@ fixtures/              (3D-07)        small synthetic golden fixtures and their 
 ## 2. Dependency rules (to be enforced by `check:arch`, 3D-05)
 
 1. `geo-model3d` imports no DOM, no three.js, nothing from `shared_compnents` client packages.
-2. Nothing in `shared_compnents` or geoviewer client code may depend on `geo-model3d` (P4, D-06). How this is checked
-   across repositories is Q-09 / ADR 3D-02.
+2. Nothing in `shared_compnents` or geoviewer client code may depend on `geo-model3d` (P4, D-06). Proven on build
+   output: the kernel carries a canary marker and CI fails if any client bundle contains it (D-24, ADR 3D-27).
 3. Public API of a package only through its `index.js`.
 4. A new dependency between packages needs an ADR.
