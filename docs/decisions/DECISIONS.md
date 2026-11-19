@@ -56,6 +56,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-40 | All UI-related development follows `GeoIPlus/brandbook` (its `AGENTS.md` rules are hard rules), here and in mirror rows | Owner, dialog, 2026-11-19 |
 | D-41 | The 300-line limit applies to source code only; documents (BACKLOG, specs, notes) are exempt | Owner, dialog, 2026-11-19 |
 | D-42 | Keep the repository clean: once a WP branch is fully merged into the base, the branch is deleted and its session archived; no obsolete branches are kept | Owner, dialog, 2026-11-19. Cloud sessions can push only their own branch; deletion of other branches falls to the WP session itself or the owner |
+| D-43 | AGENTS.md §7 rewritten for token and limit discipline after the article "When to fold subagents into your main agent loop" (claude.com, 2026-10-22): single loop by default, subagents only in its three cases, split by context, parallel sessions only for independent WPs, progressive disclosure, output filtering, stable prompt prefix, budgets from measured data | Owner request, 2026-11-19 |
+| D-44 | Daily report as a scheduled task "3DQM daily report" (`trig_01STtubMobM7cpZpFr2NnpBB`), 07:45 Europe/Copenhagen (jittered from 08:00), fresh read-only session, push notification, no commits: what was done, tokens/cost per session, up to three data-based proposals | Owner, dialog, 2026-11-19 |
+| D-45 | The Task Observer plugin is not used (it writes learned rules into CLAUDE.md, against AGENTS.md §10) | Owner, dialog, 2026-11-19 |
 
 ## Open questions
 

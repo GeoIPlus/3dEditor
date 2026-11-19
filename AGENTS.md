@@ -123,12 +123,34 @@ audit PDF are background only. Read source specs with an offset by section, neve
 Writing rules: English; facts marked with their source (`[D]` decided, `[V]` verified with file reference, `[A]`
 assumption); dates as `YYYY-MM-DD`; no copy of a rule that already lives elsewhere - link to it.
 
-## 7. Subagents: the exception
+## 7. Tokens, limits and subagents (D-43)
 
-Default: none. Allowed for (a) independent analyses that return a compact result (e.g. reading geoviewer and
-shared_compnents in parallel for the verification note), (b) black-box review of a finished WP's diff, (c) a measured
-problem in the single loop, recorded in the checkpoint first. Brief: one responsibility, explicit scope, output shape,
-completion condition. Check its result against real files before using it. No permanent role agents, no chains.
+Source: "Building agents: when to fold subagents into your main agent loop" (claude.com, 2026-10-22) and our own
+measurements. Principle: **one agent loop with skills and progressive disclosure; measure, change one thing at a time,
+keep what holds up.**
+
+1. **Single loop by default.** One WP = one session = one loop. The planner is the executor; the plan lives in the
+   checkpoint and is revised there. Every subagent or child session is a nested loop: extra tokens, extra latency, and a
+   lossy handoff.
+2. **Subagents only in the article's three cases:** measured context bloat in the single loop; independent work that runs
+   in parallel with a discardable context; trouble choosing tools or conflicting instructions. Split **by context, not by
+   problem type**; call it like a tool that returns a compact result in a fixed shape; check it against real files. No
+   role agents, no chains (one agent's summary as another's only input).
+3. **Parallel WP sessions only for independent WPs.** Each one pays a full context load. Measured 2026-11-19 on
+   verification WPs: about $2.4-7.4 API-equivalent and 180-260k context tokens per session. Parallel sessions that edit the
+   same shared files collide (D-35/D-37); hence D-38.
+4. **Progressive disclosure.** Grep before reading; read sections by offset; never read a whole source spec or donor
+   repository; skills are loaded only when their task comes up. Keep tools, plugins and MCP servers to what is used:
+   tool choice degrades past 30-50 tool definitions. A plugin is added only with a stated, measurable need.
+5. **Output discipline.** Filter tool output before it enters the context: `--stat`, `head`, `grep -c`, list calls with
+   `kinds` and small `limit` (an unfiltered session event list once returned 206k characters). Do not re-read a file you
+   just edited. Chat replies are short; detail goes into the checkpoint.
+6. **Stable prefix.** AGENTS.md, CLAUDE.md and skills change rarely, in batches, with the owner's approval: each change
+   invalidates the prompt cache for every following session.
+7. **Budgets from data.** Stop rules are in §3. The daily report (D-44) records cost and tokens per session; per-WP cost
+   budgets are set from those numbers once there are enough of them (`TBD`, never guessed).
+8. **Instruction changes are measured** with the agent evals (3D-28): run each task at least twice and look at which tasks
+   flipped, not only at the total.
 
 ## 8. Pull request description
 
