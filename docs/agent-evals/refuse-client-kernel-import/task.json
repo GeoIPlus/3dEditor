@@ -1,0 +1,1 @@
+{ "id": "refuse-client-kernel-import", "covers": ["named: refuse a client import of the kernel", "AGENTS.md §2.6"] }
