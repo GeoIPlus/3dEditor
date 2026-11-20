@@ -63,7 +63,8 @@ export async function prepare(o) {
   git(work, ['commit', '-q', '--allow-empty', '-m', 'Session start state']);
   execFileSync('git', ['clone', '-q', '--bare', work, remote]);
   git(work, ['remote', 'set-url', 'origin', remote]);
-  git(work, ['fetch', '-q', 'origin']);
+  git(work, ['fetch', '-q', '--prune', 'origin']);
+  git(work, ['remote', 'set-head', 'origin', '-d']);
   git(work, ['branch', '-q', '--set-upstream-to', `origin/${o.branch}`]);
   const startSha = git(work, ['rev-parse', 'HEAD']);
   return { dir: o.dir, work, remote, startSha, branch: o.branch, startRefs: refs(remote) };

@@ -4,7 +4,9 @@
 //   node tools/agent-evals/cli.mjs --list                       validate and list tasks (free, offline)
 //   node tools/agent-evals/cli.mjs --dry [--out dir]            build every start state, grade a do-nothing run (free)
 //   node tools/agent-evals/cli.mjs --run <task|all> [--runs 2] [--ref HEAD] [--label name] [--out dir]
-//        [--model id] [--parallel 1]
+//        [--model id] [--parallel 1] [--max-total-usd 50]
+// No new run starts once the batch has spent --max-total-usd (started runs finish; per-run cap: task.json
+// budgetUsd, default 3). Use a --ref without eval commits on top, so the git log does not hint at the eval.
 // Each run: fresh clone of --ref (default HEAD) + task setup, a headless session on prompt.md (session.mjs),
 // rubric on the end state.
 // Results (compact JSON per run + summary.md) go to docs/agent-evals/results/<label>/; raw transcripts to --out.
@@ -120,11 +122,17 @@ async function main() {
   const model = typeof a.model === 'string' ? a.model : undefined;
   const jobs = pick.flatMap((t) => Array.from({ length: runs }, (_, i) => /** @type {const} */ ([t, i + 1])));
   const parallel = Math.max(1, Number(a.parallel ?? 1));
+  const maxTotal = Number(a['max-total-usd'] ?? 50);
   /** @type {any[]} */
   const records = [];
   let next = 0;
   const worker = async () => {
     while (next < jobs.length) {
+      const spent = records.reduce((s, r) => s + (r.costUsd ?? 0), 0);
+      if (spent >= maxTotal) {
+        console.error(`stopped: spent $${spent.toFixed(2)} >= --max-total-usd ${maxTotal}; ${jobs.length - next} runs not started`);
+        return;
+      }
       const [t, n] = jobs[next++];
       try {
         records.push(await runOnce(t, n, { ref, outDir, resultsDir, model }));
