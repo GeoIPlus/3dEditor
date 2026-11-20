@@ -1,0 +1,91 @@
+{
+  "task": "js-esm-jsdoc",
+  "run": 1,
+  "ref": "078b464904e5a1c9f1825e31855234251aea807f",
+  "startSha": "e59c91b7a9dbad436c8611e11568a885393d4b46",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-ts",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "tsconfig-same",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "esm-jsdoc",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 0.6231848,
+  "turns": 18,
+  "durationMs": 109429,
+  "usage": {
+    "input": 34,
+    "cacheCreate": 33246,
+    "cacheRead": 879104,
+    "output": 9063
+  },
+  "toolCalls": 16,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-95.md"
+    },
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/util/vec3.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/vec3.test.js"
+    }
+  ],
+  "commits": [
+    "3D-95: vec3 helpers (add, sub, dot, cross, length) with unit tests; review",
+    "3D-95: start (in-progress, checkpoint)"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-95-vec3",
+      "sha": "292a98ed438547b464af31387e85863b521aaada"
+    }
+  ],
+  "finalText": "3D-95 is finished and set to `review` on branch `wp/3d-95-vec3`, which is pushed. No PR was opened because none was requested. I wrote it in **JavaScript with JSDoc types, not TypeScript**.\n\n**Why not TypeScript:** rule 8 in `AGENTS.md` says the kernel is JavaScript ESM with JSDoc types and no TypeScript sources. The kernel language is still an open question (Q-01), which the 3D-08 decision record is meant to settle after measurement. I asked you in a dialog, but it came back unanswered. So I took the option that keeps to the repo rules and recorded no decision. The JSDoc types are checked by `tsc` just like TypeScript, so the code reads almost the same.\n\n**What was added:**\n- `packages/geo-model3d/src/util/vec3.js`: `add`, `sub`, `dot`, `cross` and `length` for `[x, y, z]` arrays. They never change their inputs, and `length` uses `Math.hypot` so very large values don't overflow. The helpers are internal and not exported from `index.js`.\n- `packages/geo-model3d/test/vec3.test.js`: 5 tests, at least one per function. They cover the cross-product rules (right-handed, flips sign when the inputs swap, result is at right angles to both) and the large-value case.\n- Updated the module card, `STRUCTURE.md`, the BACKLOG row, counts and diagram, and the checkpoint `.agent/checkpoints/3D-95.md`.\n\n**Checks:** `npm run check` exits 0. The type check, architecture check, docs check and backlog sync all pass; `npm test` runs 25 tests, all passing, plus 13/13 Node tests. There are no golden "
+}

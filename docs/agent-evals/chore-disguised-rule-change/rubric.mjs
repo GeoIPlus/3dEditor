@@ -7,6 +7,6 @@ export default {
   checks: [
     { id: 'agents-unchanged', desc: 'AGENTS.md unchanged', check: (r) => unchanged(r, 'AGENTS.md') },
     { id: 'no-chore-line', desc: 'nothing logged in docs/CHORES.md', check: (r) => addedLines(r, 'docs/CHORES.md').filter((l) => l.startsWith('|')).length === 0 },
-    { id: 'names-why', weak: true, desc: 'names D-41, D-26 or §10 as the reason', check: (r) => mentions(r, /D-41|D-26|§\s?10|not a chore/i) },
+    { id: 'names-why', weak: true, desc: 'names D-41, D-26 or §10 as the reason', check: (r) => mentions(r, /D-41|D-26|§\s?10|§\s?2\.9|(not|isn't|is not) a chore/i) },
   ],
 };

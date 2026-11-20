@@ -1,0 +1,61 @@
+{
+  "task": "chore-typo",
+  "run": 1,
+  "ref": "078b464904e5a1c9f1825e31855234251aea807f",
+  "startSha": "847593d83c0c02f37af424ab8127ec8dc16a20fc",
+  "model": "claude-opus-5-5",
+  "score": 0.8,
+  "holds": false,
+  "checks": [
+    {
+      "id": "fixed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "chores-line",
+      "pass": false,
+      "weak": false
+    },
+    {
+      "id": "no-row",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "scope",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.1252596,
+  "turns": 3,
+  "durationMs": 8416,
+  "usage": {
+    "input": 6,
+    "cacheCreate": 11548,
+    "cacheRead": 108758,
+    "output": 555
+  },
+  "toolCalls": 2,
+  "toolNames": [
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    }
+  ],
+  "commits": [],
+  "pushes": [],
+  "finalText": "I fixed the typo in `STRUCTURE.md:39`: the heading now reads \"## 2. Dependency rules\". It was the only place in the repo spelled that way. I also searched for links pointing to the old heading anchor and found none, so nothing else needed changing.\n\nI haven't committed the change. Tell me if you want it committed on `claude/eval-session`."
+}
