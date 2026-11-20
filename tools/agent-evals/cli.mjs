@@ -3,6 +3,7 @@
 // Usage:
 //   node tools/agent-evals/cli.mjs --list                       validate and list tasks (free, offline)
 //   node tools/agent-evals/cli.mjs --dry [--out dir]            build every start state, grade a do-nothing run (free)
+//   node tools/agent-evals/cli.mjs --regrade <label> [--out dir] re-grade saved runs after a rubric fix (free)
 //   node tools/agent-evals/cli.mjs --run <task|all> [--runs 2] [--ref HEAD] [--label name] [--out dir]
 //        [--model id] [--parallel 1] [--max-total-usd 50]
 // No new run starts once the batch has spent --max-total-usd (started runs finish; per-run cap: task.json
@@ -11,12 +12,12 @@
 // rubric on the end state.
 // Results (compact JSON per run + summary.md) go to docs/agent-evals/results/<label>/; raw transcripts to --out.
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { loadTasks } from './tasks.mjs';
-import { prepare, snapshot } from './workspace.mjs';
+import { prepare, reopen, snapshot } from './workspace.mjs';
 import { parseTranscript } from './transcript.mjs';
 import { runSession } from './session.mjs';
 import { grade } from './grade.mjs';
@@ -52,12 +53,27 @@ async function runOnce(task, n, o) {
   const ws = await prepare({ repoRoot: root, ref: o.ref, dir, branch: task.branch, taskDir: task.dir });
   const raw = await runSession({ prompt: task.prompt, cwd: ws.work, maxTurns: task.maxTurns, budgetUsd: task.budgetUsd, owner: task.owner, model: o.model });
   writeFileSync(join(dir, 'transcript.jsonl'), raw);
+  const record = evaluate(task, n, ws, raw, o.ref);
+  writeFileSync(join(o.resultsDir, `${task.id}-run${n}.json`), `${JSON.stringify(record, null, 2)}\n`);
+  console.log(`${task.id} run${n}: score ${record.score} ${record.holds ? 'holds' : 'FAILS'} $${record.costUsd?.toFixed(2)} turns ${record.turns}`);
+  return record;
+}
+
+/**
+ * Grade a finished run and build its compact record.
+ * @param {import('./tasks.mjs').Task} task
+ * @param {number} n
+ * @param {import('./workspace.mjs').Workspace} ws
+ * @param {string} raw
+ * @param {string} ref
+ */
+function evaluate(task, n, ws, raw, ref) {
   const t = parseTranscript(raw);
   const end = snapshot(ws);
   const run = { ...t, ...end, text: `${t.assistantText}\n${t.finalText}` };
   const g = grade(task.rubric, run);
-  const record = {
-    task: task.id, run: n, ref: o.ref, startSha: ws.startSha, model: t.model,
+  return {
+    task: task.id, run: n, ref, startSha: ws.startSha, model: t.model,
     score: g.score, holds: g.holds, checks: g.results.map(({ id, pass, weak, error }) => ({ id, pass, weak, error })),
     costUsd: t.costUsd, turns: t.turns, durationMs: t.durationMs, usage: t.usage,
     toolCalls: t.toolCalls.length, toolNames: [...new Set(t.toolCalls.map((c) => c.name))],
@@ -65,9 +81,25 @@ async function runOnce(task, n, o) {
     changed: end.changed, commits: end.commits, pushes: end.pushes,
     finalText: t.finalText.slice(0, 1500),
   };
-  writeFileSync(join(o.resultsDir, `${task.id}-run${n}.json`), `${JSON.stringify(record, null, 2)}\n`);
-  console.log(`${task.id} run${n}: score ${g.score} ${g.holds ? 'holds' : 'FAILS'} $${t.costUsd?.toFixed(2)} turns ${t.turns}`);
-  return record;
+}
+
+/**
+ * Re-grade saved runs (after a rubric fix) from their clones and transcripts in --out; no model calls.
+ * @param {import('./tasks.mjs').Task[]} tasks
+ * @param {string} resultsDir
+ * @param {string} outDir
+ */
+function regrade(tasks, resultsDir, outDir) {
+  for (const old of readRecords(resultsDir)) {
+    const task = tasks.find((t) => t.id === old.task);
+    if (!task) continue;
+    const dir = join(outDir, `${old.task}-run${old.run}`);
+    const raw = readFileSync(join(dir, 'transcript.jsonl'), 'utf8');
+    const rec = evaluate(task, old.run, reopen(dir, task.branch, old.startSha), raw, old.ref);
+    writeFileSync(join(resultsDir, `${old.task}-run${old.run}.json`), `${JSON.stringify(rec, null, 2)}\n`);
+    if (rec.score !== old.score) console.log(`${old.task} run${old.run}: ${old.score} -> ${rec.score}`);
+  }
+  writeFileSync(join(resultsDir, 'summary.md'), summarize(String(resultsDir.split('/').at(-1)), readRecords(resultsDir), tasks));
 }
 
 /**
@@ -105,6 +137,11 @@ async function main() {
     await dryRun(tasks, String(a.out ?? join(tmpdir(), 'agent-evals', 'dry')));
     return;
   }
+  if (a.regrade) {
+    const label = String(a.regrade);
+    regrade(tasks, join(evalsDir, 'results', label), String(a.out ?? join(tmpdir(), 'agent-evals', label)));
+    return;
+  }
   if (a.list || !a.run) {
     for (const t of tasks) console.log(`${t.id}  covers: ${t.covers.join(', ')}  checks: ${t.rubric.checks.length}`);
     console.log(`${tasks.length} tasks valid`);
@@ -118,7 +155,10 @@ async function main() {
   const outDir = String(a.out ?? join(tmpdir(), 'agent-evals', label));
   mkdirSync(resultsDir, { recursive: true });
   mkdirSync(outDir, { recursive: true });
-  const ref = String(a.ref ?? 'HEAD');
+  // Resolve once and show it: a stale local branch name silently measures old instructions.
+  const ref = execFileSync('git', ['rev-parse', String(a.ref ?? 'HEAD')], { cwd: root, encoding: 'utf8' }).trim();
+  const subject = execFileSync('git', ['log', '-1', '--format=%h %s', ref], { cwd: root, encoding: 'utf8' }).trim();
+  console.log(`ref ${a.ref ?? 'HEAD'} = ${subject}`);
   const model = typeof a.model === 'string' ? a.model : undefined;
   const jobs = pick.flatMap((t) => Array.from({ length: runs }, (_, i) => /** @type {const} */ ([t, i + 1])));
   const parallel = Math.max(1, Number(a.parallel ?? 1));

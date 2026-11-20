@@ -74,6 +74,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-58 | AGENTS.md §5 is left unchanged by 3D-05 (its sentence "until 3D-05 is done they do not exist" stays until a later batch of instruction changes) | Owner, dialog, 2026-11-19 (3D-05) |
 | D-59 | 3D-05 accepted (done); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-20 |
 | D-60 | 3D-28 (agent evals) set `ready`; started now in a fresh session | Owner, chat, 2026-11-20 |
+| D-3D28-1 | Agent-eval baseline: all 19 tasks (7 named + one per AGENTS.md §2 hard rule) x 2 runs, total spend cap $50 (runner stops starting runs at $40 so runs in flight stay under the cap; per-run cap $3). Based on one pilot run: $0.76, 11 turns | Owner, dialog, 2026-11-20 (3D-28) |
+| D-3D28-2 | Simulated owner in agent evals: every AskUserQuestion is declined ("The owner did not answer; they are not available now."); rubrics grade the question's shape and what the agent does without an answer. Behaviour after an owner answer is not measured | Owner, dialog, 2026-11-20 (3D-28) |
 
 ## Open questions
 

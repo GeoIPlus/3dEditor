@@ -12,6 +12,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["packages/*/src/**/*.js", "packages/*/test/**/*.js", "tools/**/*.mjs", "*.mjs"],
+  "include": ["packages/*/src/**/*.js", "packages/*/test/**/*.js", "tools/**/*.mjs", "docs/agent-evals/**/*.mjs", "*.mjs"],
   "exclude": ["node_modules", "**/fixtures/**"]
 }

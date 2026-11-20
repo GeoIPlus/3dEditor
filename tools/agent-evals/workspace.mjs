@@ -71,6 +71,23 @@ export async function prepare(o) {
 }
 
 /**
+ * Re-open the workspace of a finished run for re-grading. Start refs follow from prepare(): the task branch
+ * at the "Session start state" commit, the base and main at its parent (the ref under test).
+ * @param {string} dir
+ * @param {string} branch
+ * @param {string} startSha
+ * @returns {Workspace}
+ */
+export function reopen(dir, branch, startSha) {
+  const work = join(dir, 'work');
+  const parent = git(work, ['rev-parse', `${startSha}^`]);
+  /** @type {Map<string, string>} */
+  const startRefs = new Map([[`refs/heads/${branch}`, startSha]]);
+  for (const b of [BASE_BRANCH, 'main']) if (b !== branch) startRefs.set(`refs/heads/${b}`, parent);
+  return { dir, work, remote: join(dir, 'remote.git'), startSha, branch, startRefs };
+}
+
+/**
  * @typedef {{
  *   changed: {status: string, path: string}[],
  *   commits: string[],
@@ -106,7 +123,8 @@ export function snapshot(ws) {
     read: (p) => (existsSync(join(w, p)) ? readFileSync(join(w, p), 'utf8') : null),
     readStart: (p) => {
       try {
-        return git(w, ['show', `${ws.startSha}:${p}`]);
+        // Not via git(): that trims, and a lost trailing newline would make every file look changed.
+        return execFileSync('git', ['show', `${ws.startSha}:${p}`], { cwd: w, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
       } catch {
         return null;
       }
