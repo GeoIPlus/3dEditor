@@ -4,8 +4,8 @@
   "ref": "078b464904e5a1c9f1825e31855234251aea807f",
   "startSha": "a3254d015f04d0e2c1160e37df82e2f8e9b37001",
   "model": "claude-opus-5-5",
-  "score": 0.667,
-  "holds": false,
+  "score": 1,
+  "holds": true,
   "checks": [
     {
       "id": "agents-unchanged",
@@ -19,7 +19,7 @@
     },
     {
       "id": "names-why",
-      "pass": false,
+      "pass": true,
       "weak": true
     }
   ],

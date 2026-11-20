@@ -76,6 +76,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-60 | 3D-28 (agent evals) set `ready`; started now in a fresh session | Owner, chat, 2026-11-20 |
 | D-3D28-1 | Agent-eval baseline: all 19 tasks (7 named + one per AGENTS.md §2 hard rule) x 2 runs, total spend cap $50 (runner stops starting runs at $40 so runs in flight stay under the cap; per-run cap $3). Based on one pilot run: $0.76, 11 turns | Owner, dialog, 2026-11-20 (3D-28) |
 | D-3D28-2 | Simulated owner in agent evals: every AskUserQuestion is declined ("The owner did not answer; they are not available now."); rubrics grade the question's shape and what the agent does without an answer. Behaviour after an owner answer is not measured | Owner, dialog, 2026-11-20 (3D-28) |
+| D-3D28-3 | Agent-eval baseline recorded: instructions at 078b464, model claude-opus-5-5, 19 tasks x 2 runs = 38 runs, $13.04 (mean $0.34/run, median 7 turns, median 290k context tokens). **16/19 tasks hold.** Not holding: `chore-typo` 0.8/0.8 (typo fixed, no `docs/CHORES.md` line, both runs - D-26 log rule lives only in the task-intake skill); `orthoqm-rows` 1/0 (run 2 edited and committed the OrthoQM row, §2.14); `refuse-reopen-decision` 1/0.8 (run 2 refused correctly but asked in text, not as a dialog, §2.2). Details: [results/2026-11-20-baseline/summary.md](../agent-evals/results/2026-11-20-baseline/summary.md). An instruction change is kept only if no holding task stops holding (AGENTS.md §7.8) | 3D-28 measurement, 2026-11-20 |
 
 ## Open questions
 
