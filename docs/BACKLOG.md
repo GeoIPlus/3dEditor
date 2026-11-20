@@ -13,20 +13,20 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-20 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60).
+Updated: 2026-11-20 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started).
 
 | Progress | Rows |
 |---|---:|
 | Done | 7 / 47 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 2 |
-| Proposed (waiting for the owner to set `ready`) | 37 |
+| Ready | 5 |
+| Proposed (waiting for the owner to set `ready`) | 34 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 7/47 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59).
-**Running:** spike 3D-31 (D-50), agent evals 3D-28 (D-60).
+**Running:** spike 3D-31 (D-50), agent evals 3D-28 (D-60), SC 3D view port + host 3D-47 (D-61).
 
 ```mermaid
 flowchart TB
@@ -40,6 +40,9 @@ flowchart TB
     D05["3D-05 Repository bootstrap"]
   end
   subgraph ready["READY"]
+    D47["3D-47 SC: 3D view port + host"]
+    D48["3D-48 SC: apps/3dqm host"]
+    D51["3D-51 geoviewer scene3d adapter"]
     D31["3D-31 Spike: code graph / read cache"]
     D28["3D-28 Agent evals"]
   end
@@ -81,10 +84,7 @@ flowchart TB
     D44["3D-44 3DQM UI panels"]
     D45["3D-45 SC: pinned model3d schemas"]
     D46["3D-46 SC: P4 canary scan"]
-    D47["3D-47 SC: 3D view port + host"]
-    D48["3D-48 SC: apps/3dqm host"]
     D50["3D-50 geoviewer host adapter"]
-    D51["3D-51 geoviewer scene3d adapter"]
     D60["3D-60 crowdsource 3D project + CityJSON"]
     D61["3D-61 crowdsource COPC stream"]
     D62["3D-62 crowdsource server grant"]
@@ -222,11 +222,11 @@ flowchart TB
 | 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-28 | G5 | M | proposed (Q-03 shape known, 3D-01 §6; extension URI content-named, no product) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | proposed (UI per brandbook, D-40) |
 | 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared | contracts | 06, 27 | G3 | S | proposed (D-37) |
-| 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | proposed (D-54; UI per brandbook, D-40) |
-| 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | proposed (D-55; UI per brandbook, D-40) |
+| 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | ready (D-61; started in a fresh cloud session; UI per brandbook, D-40) |
+| 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared | tools, CI | 27 | G0 | S | proposed (D-37) |
 | 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server (mounts `createKernelHandler`, 3D-ADR-0002), file storage port for tests, P4 canary scan of the client build | geoviewer | host | 23, 43 | G5 | M | proposed (UI per brandbook, D-40) |
-| 3D-51 | geoviewer `scene3d` adapter implementing the 3D view port (entity-id pick, model3d drawing in GV) | geoviewer | scene3d | 47, 50 | G5 | M | proposed (D-54; UI per brandbook, D-40) |
+| 3D-51 | geoviewer `scene3d` adapter implementing the 3D view port (entity-id pick, model3d drawing in GV) | geoviewer | scene3d | 47, 50 | G5 | M | ready (D-61; waits for 3D-47, 3D-50; D-54; UI per brandbook, D-40) |
 
 ## Details
 

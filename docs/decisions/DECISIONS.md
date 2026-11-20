@@ -74,6 +74,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-58 | AGENTS.md §5 is left unchanged by 3D-05 (its sentence "until 3D-05 is done they do not exist" stays until a later batch of instruction changes) | Owner, dialog, 2026-11-19 (3D-05) |
 | D-59 | 3D-05 accepted (done); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-20 |
 | D-60 | 3D-28 (agent evals) set `ready`; started now in a fresh session | Owner, chat, 2026-11-20 |
+| D-61 | 3D-47, 3D-48, 3D-51 set `ready`; 3D-47 started now in a fresh cloud session (works in `shared_compnents`); 3D-48 and 3D-51 start when their dependencies are done (3D-43, 3D-47, SC WP-28; 3D-47, 3D-50) | Owner, dialog, 2026-11-20 |
 
 ## Open questions
 
