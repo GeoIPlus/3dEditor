@@ -73,6 +73,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-57 | `backlog:sync` (D-25) reads the other repository's BACKLOG from a vendored snapshot pinned to a full SHA with a sha256 `provenance.json` (3D-ADR-0001 pattern, `tools/backlog-sync/pins/<repo>/`); CI stays offline and needs no token; a status refresh is a deliberate `npm run backlog:sync -- --fetch <repo> <sha>` commit | Owner, dialog, 2026-11-19 (3D-05) |
 | D-58 | AGENTS.md §5 is left unchanged by 3D-05 (its sentence "until 3D-05 is done they do not exist" stays until a later batch of instruction changes) | Owner, dialog, 2026-11-19 (3D-05) |
 | D-59 | 3D-05 accepted (done); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-20 |
+| D-60 | 3D-28 (agent evals) set `ready`; started now in a fresh session | Owner, chat, 2026-11-20 |
 
 ## Open questions
 

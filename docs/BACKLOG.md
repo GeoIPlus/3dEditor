@@ -13,20 +13,20 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-20 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged).
+Updated: 2026-11-20 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60).
 
 | Progress | Rows |
 |---|---:|
 | Done | 7 / 47 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 1 |
-| Proposed (waiting for the owner to set `ready`) | 38 |
+| Ready | 2 |
+| Proposed (waiting for the owner to set `ready`) | 37 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 7/47 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59).
-**Running:** spike 3D-31 (D-50). **Next:** 3D-28 (agent evals): its dependency 3D-05 is done (D-59); it waits for the owner to set `ready`.
+**Running:** spike 3D-31 (D-50), agent evals 3D-28 (D-60).
 
 ```mermaid
 flowchart TB
@@ -41,6 +41,7 @@ flowchart TB
   end
   subgraph ready["READY"]
     D31["3D-31 Spike: code graph / read cache"]
+    D28["3D-28 Agent evals"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
     D04["3D-04 3DQM spec"]
@@ -48,7 +49,6 @@ flowchart TB
     D07["3D-07 Golden fixtures"]
     D08["3D-08 Latency spike + kernel ADRs"]
     D03["3D-03 ADR storage (Operaflow)"]
-    D28["3D-28 Agent evals"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
     D09["3D-09 B-Rep core"]
@@ -210,7 +210,7 @@ flowchart TB
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | done (D-39; merged into base, no PR) |
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | done (D-36; merged into base, no PR) |
 | 3D-30 | Agent tooling: `merge-wp` skill, `tools/check-docs.mjs` + Stop hook, `docs/source` edit guard, read-only permission allow list | here | .claude, tools | 00 | G0 | S | done (D-47; merged into base, no PR) |
-| 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | proposed |
+| 3D-28 | Agent evals: 6-8 golden agent tasks + one per hard rule, rubric, runner, two runs each, baseline in DECISIONS | here | docs/agent-evals | 05 | G0 | M | ready (D-60) |
 | 3D-31 | Spike: codebase graph / read-cache tool (MCP or skill) measured on cross-repo reading tasks, with vs. without | here | .claude, docs/agent-evals | 30 | G0 | M | ready (D-50) |
 | 3D-60 | crowdsource: 3D project type and CityJSON building dataset kind (Operaflow-conformant) | crowdsource | backend, streaming | 03, 29 | G5+ | L | proposed (D-35; under crowdsource's own process) |
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
