@@ -64,6 +64,12 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-48 | 3D-00 accepted (done) | Owner, dialog, 2026-11-19 |
 | D-49 | 3D-02 and 3D-05 set `ready`; started now in two parallel fresh sessions | Owner, dialog, 2026-11-19 |
 | D-50 | Codebase graph / read-cache tooling: one spike row 3D-31, `ready` now, measured on cross-repo reading of existing code (not on 3D-02/3D-05, where there is no code to index) with vs. without the tool, two runs each; nothing about it in the daily report of 2026-11-20 | Owner, dialog, 2026-11-19 |
+| D-51 | [3D-ADR-0002](adr/3D-ADR-0002-kernel-package-and-remote-port.md) accepted: `geo-model3d` is a pure kernel (one `exports` entry, no I/O, fixed module DAG `brep` <- `solve`/`import`/`export`/`validate`/`cloud`, `ops` <- `brep`/`solve`/`validate`); `services/kernel` is the host with all ports and Operaflow handling and exports a mountable `createKernelHandler(ports)`; Q-15 groups: A both, B/C service, D bytes service + record client session, E client session, F both | Owner, dialog, 2026-11-19 (3D-02) |
+| D-52 | Q-13: the CP issues one Operaflow contract from which any host assembles the workplace (geoviewer, an independent 3DQM host, others); the kernel is one tool in it. The kernel endpoint is declared in the CP document (3DQM extension `runtime`, 3D-43); every host uses the same SC `model3d-kernel` registry service adapter with its own injected transport; no host-specific kernel client | Owner, dialog, 2026-11-19 (3D-02) |
+| D-53 | Kernel operations get a new `placement` value meaning "Tools Plane server" in SC plan v2 (name chosen in SC); `dp` is not reused | Owner, dialog, 2026-11-19 (3D-02) |
+| D-54 | Q-16: both. SC `geo-render` gets a 3D view port and a perspective host (SC ADR), and `geo-render/model3d` draws against that port; geoviewer `scene3d` is a second host through an adapter that implements the same port | Owner, dialog, 2026-11-19 (3D-02) |
+| D-55 | The independent 3DQM host is SC `apps/3dqm` (as `apps/orthoqm`), following D-17 | Owner, dialog, 2026-11-19 (3D-02) |
+| D-56 | 3D-02 accepted (done); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-20 |
 
 ## Open questions
 
@@ -112,3 +118,6 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-08 | 2026-11-19, owner (3D-27) | closed by D-37 | Option A of 3D-ADR-0001: here, pinned vendored copy |
 | Q-09 | 2026-11-19, owner (3D-27) | closed by D-37 | Option 1 of 3D-ADR-0001: pattern scan in SC/GV + negative control here |
 | Q-14 | 2026-11-19, 3D-27 | still open | 3D-ADR-0001 "Relocation path" keeps the move a relocation (same ids, pattern scanners unchanged); the SC path/registry rules still need an SC ADR before any move |
+| Q-13 | 2026-11-19, owner (3D-02) | closed by D-52, D-53 | Registry `service` adapter + host-injected transport; endpoint from the CP document; new Tools Plane placement value ([3D-ADR-0002](adr/3D-ADR-0002-kernel-package-and-remote-port.md)) |
+| Q-15 | 2026-11-19, owner (3D-02) | groups assigned (D-51) | A both; B, C service; D bytes service, record client session; E client session; F both. 3D-03 applies C/D to storage |
+| Q-16 | 2026-11-19, owner (3D-02) | closed by D-54, D-55 | SC 3D view port + host (3D-47), GV adapter (3D-51), independent host SC `apps/3dqm` (3D-48) |
