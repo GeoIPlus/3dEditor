@@ -13,20 +13,20 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-20 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02).
+Updated: 2026-11-20 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged).
 
 | Progress | Rows |
 |---|---:|
-| Done | 6 / 47 |
+| Done | 7 / 47 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 2 |
+| Ready | 1 |
 | Proposed (waiting for the owner to set `ready`) | 38 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 6/47 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
-notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56).
-**Running:** 3D-05 (D-49), spike 3D-31 (D-50). **Next:** 3D-28 (agent evals) as soon as 3D-05 is done.
+**Implementation progress: 0 %** of code; 7/47 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59).
+**Running:** spike 3D-31 (D-50). **Next:** 3D-28 (agent evals): its dependency 3D-05 is done (D-59); it waits for the owner to set `ready`.
 
 ```mermaid
 flowchart TB
@@ -37,9 +37,9 @@ flowchart TB
     D27["3D-27 Early ADR: contracts location + P4 canary"]
     D30["3D-30 Agent tooling"]
     D00["3D-00 Agent manual, intake, backlog"]
+    D05["3D-05 Repository bootstrap"]
   end
   subgraph ready["READY"]
-    D05["3D-05 Repository bootstrap"]
     D31["3D-31 Spike: code graph / read cache"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
@@ -185,7 +185,7 @@ flowchart TB
 | 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | done (D-56; merged into base, no PR; [3D-ADR-0002](decisions/adr/3D-ADR-0002-kernel-package-and-remote-port.md), D-51..D-55) |
 | 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01, 29 | G0 | M | proposed (D-35: interim own store behind a port, later crowdsource) |
 | 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | proposed |
-| 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary + negative control per 3D-ADR-0001), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | ready (D-49) |
+| 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary + negative control per 3D-ADR-0001), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | done (D-59; merged into base, no PR) |
 | 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | here (D-37) | contracts | 04, 27 | G0 | L | proposed |
 | 3D-07 | Golden fixtures: format and synthetic CityJSON/point sets for GT-I1..GT-25 | here | fixtures | 06 | G0 | M | proposed |
 | 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | proposed |

@@ -1,0 +1,16 @@
+{
+  "name": "@geoiplus/geo-model3d",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Server-only LoD2 geometry kernel of 3DQM (protection P4). Never bundle for a browser.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sideEffects": [
+    "./src/canary.js"
+  ],
+  "engines": {
+    "node": ">=22"
+  }
+}

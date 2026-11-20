@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 const BACKLOG = 'docs/BACKLOG.md';
 const DECISIONS = 'docs/decisions/DECISIONS.md';
 const STATUSES = ['proposed', 'ready', 'blocked', 'in-progress', 'review', 'done', 'superseded', 'dropped'];
-/** Overview label (first words) -> row status. */
+/** @type {Record<string, string>} Overview label (first words) -> row status. */
 const OVERVIEW = { done: 'done', review: 'review', 'in progress': 'in-progress', ready: 'ready', proposed: 'proposed', blocked: 'blocked' };
 /** Mermaid subgraphs whose members must carry exactly this status. */
 const STATUS_GROUPS = ['done', 'review', 'blocked'];
@@ -42,6 +42,7 @@ function cells(line) {
  */
 export function parseRows(lines) {
   const sec = section(lines, '## Work-package status');
+  /** @type {{id: string, num: number, status: string, line: number}[]} */
   const rows = [];
   sec.lines.forEach((l, i) => {
     const m = /^\|\s*3D-(\d+)\s*\|/.exec(l);
