@@ -80,6 +80,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-64 | Agent-eval baseline recorded: instructions at 078b464, model claude-opus-5-5, 19 tasks x 2 runs = 38 runs, $13.04 (mean $0.34/run, median 7 turns, median 290k context tokens). **16/19 tasks hold.** Not holding: `chore-typo` 0.8/0.8 (typo fixed, no `docs/CHORES.md` line, both runs - D-26 log rule lives only in the task-intake skill); `orthoqm-rows` 1/0 (run 2 edited and committed the OrthoQM row, §2.14); `refuse-reopen-decision` 1/0.8 (run 2 refused correctly but asked in text, not as a dialog, §2.2). Details: [results/2026-11-20-baseline/summary.md](../agent-evals/results/2026-11-20-baseline/summary.md). An instruction change is kept only if no holding task stops holding (AGENTS.md §7.8) | 3D-28 measurement, 2026-11-20 |
 | D-65 | 3D-28 accepted (done); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-21 |
 | D-66 | 3D-04 (3DQM spec) set `ready`; dependencies 3D-01, 3D-02 done; starts in a fresh session | Owner, chat, 2026-11-21 |
+| D-67 | 3D-06 (contract schemas `model3d`) set `ready`; starts only when 3D-04 is done and reviewed by the owner (3D-04 Details); schemas become `accepted` only on the owner's approval (D-18) | Owner, chat, 2026-11-21 |
 
 ## Open questions
 
