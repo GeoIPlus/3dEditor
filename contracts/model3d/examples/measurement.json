@@ -1,0 +1,73 @@
+{
+  "valid": [
+    {
+      "id": "m-1",
+      "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+      "sourceType": "POINT_CLOUD",
+      "sourceId": "cloud-1",
+      "horizontalCrs": "EPSG:25832",
+      "verticalCrs": null,
+      "frame": "LOCAL",
+      "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+      "status": "MEASURED",
+      "createdBy": "u-1"
+    },
+    {
+      "id": "m-2",
+      "geometry": { "kind": "PLANE", "coordinates": [[0, -0.6, 0.8, -4]] },
+      "sourceType": "MANUAL",
+      "sourceId": null,
+      "horizontalCrs": "EPSG:25832",
+      "verticalCrs": null,
+      "frame": "WORLD",
+      "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+      "status": "USER_CONFIRMED",
+      "createdBy": "u-1"
+    }
+  ],
+  "invalid": [
+    {
+      "why": "sourceType STEREO is not P0 (v0.3 §4.2)",
+      "instance": {
+        "id": "m-1",
+        "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+        "sourceType": "STEREO",
+        "sourceId": "cloud-1",
+        "horizontalCrs": "EPSG:25832",
+        "verticalCrs": null,
+        "frame": "LOCAL",
+        "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+        "status": "MEASURED",
+        "createdBy": "u-1"
+      }
+    },
+    {
+      "why": "missing createdBy (v0.3 §4.2)",
+      "instance": {
+        "id": "m-1",
+        "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+        "sourceType": "POINT_CLOUD",
+        "sourceId": "cloud-1",
+        "horizontalCrs": "EPSG:25832",
+        "verticalCrs": null,
+        "frame": "LOCAL",
+        "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+        "status": "MEASURED"
+      }
+    },
+    {
+      "why": "missing frame",
+      "instance": {
+        "id": "m-1",
+        "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+        "sourceType": "POINT_CLOUD",
+        "sourceId": "cloud-1",
+        "horizontalCrs": "EPSG:25832",
+        "verticalCrs": null,
+        "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+        "status": "MEASURED",
+        "createdBy": "u-1"
+      }
+    }
+  ]
+}

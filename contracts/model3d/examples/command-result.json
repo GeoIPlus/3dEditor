@@ -1,0 +1,387 @@
+{
+  "valid": [
+    {
+      "commandId": "cmd-001",
+      "status": "PREVIEW",
+      "modelVersion": 4,
+      "previewId": "prev-22",
+      "patch": {
+        "added": [
+          {
+            "type": "Face",
+            "entity": {
+              "id": "f-roof-1b",
+              "outerLoopId": "he-1",
+              "innerLoopIds": [],
+              "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+              "surfaceKind": "RoofSurface",
+              "tags": [],
+              "roofComponentId": "rc-1"
+            }
+          }
+        ],
+        "updated": [
+          {
+            "type": "Vtx",
+            "entity": {
+              "id": "v-1",
+              "p": [0, 0, 5],
+              "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+              "positionMode": "DERIVED",
+              "sourceRef": "12"
+            }
+          }
+        ],
+        "deleted": [{ "type": "HalfEdge", "id": "he-9" }],
+        "affectedMetrics": ["roofArea"]
+      },
+      "topologyLineage": {
+        "mapped": { "f-roof-1": ["f-roof-1a", "f-roof-1b"] },
+        "deleted": [],
+        "preserved": ["f-roof-2"]
+      },
+      "validation": {
+        "modelVersion": 3,
+        "targetState": "DRAFT_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "OPEN_BOUNDARY",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      },
+      "warnings": []
+    },
+    {
+      "commandId": "cmd-001",
+      "status": "COMMITTED",
+      "modelVersion": 5,
+      "patch": {
+        "added": [
+          {
+            "type": "Face",
+            "entity": {
+              "id": "f-roof-1b",
+              "outerLoopId": "he-1",
+              "innerLoopIds": [],
+              "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+              "surfaceKind": "RoofSurface",
+              "tags": [],
+              "roofComponentId": "rc-1"
+            }
+          }
+        ],
+        "updated": [
+          {
+            "type": "Vtx",
+            "entity": {
+              "id": "v-1",
+              "p": [0, 0, 5],
+              "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+              "positionMode": "DERIVED",
+              "sourceRef": "12"
+            }
+          }
+        ],
+        "deleted": [{ "type": "HalfEdge", "id": "he-9" }],
+        "affectedMetrics": ["roofArea"]
+      },
+      "topologyLineage": {
+        "mapped": { "f-roof-1": ["f-roof-1a", "f-roof-1b"] },
+        "deleted": [],
+        "preserved": ["f-roof-2"]
+      },
+      "validation": {
+        "modelVersion": 3,
+        "targetState": "DRAFT_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "OPEN_BOUNDARY",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      },
+      "warnings": []
+    },
+    {
+      "commandId": "cmd-003",
+      "status": "REJECTED",
+      "modelVersion": 5,
+      "validation": {
+        "modelVersion": 3,
+        "targetState": "DRAFT_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "OPEN_BOUNDARY",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      },
+      "warnings": [],
+      "error": {
+        "code": "CONSTRAINT_CONFLICT",
+        "httpStatus": 422,
+        "messageKey": "model3d.error.constraintConflict",
+        "entityIds": ["c-1", "v-1"]
+      }
+    },
+    {
+      "commandId": "cmd-004",
+      "status": "CONFLICT",
+      "modelVersion": 6,
+      "validation": {
+        "modelVersion": 3,
+        "targetState": "DRAFT_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "OPEN_BOUNDARY",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      },
+      "warnings": [],
+      "error": { "code": "VERSION_CONFLICT", "httpStatus": 409, "messageKey": "model3d.error.versionConflict" }
+    }
+  ],
+  "invalid": [
+    {
+      "why": "PREVIEW without previewId",
+      "instance": {
+        "commandId": "cmd-001",
+        "status": "PREVIEW",
+        "modelVersion": 4,
+        "patch": {
+          "added": [
+            {
+              "type": "Face",
+              "entity": {
+                "id": "f-roof-1b",
+                "outerLoopId": "he-1",
+                "innerLoopIds": [],
+                "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+                "surfaceKind": "RoofSurface",
+                "tags": [],
+                "roofComponentId": "rc-1"
+              }
+            }
+          ],
+          "updated": [
+            {
+              "type": "Vtx",
+              "entity": {
+                "id": "v-1",
+                "p": [0, 0, 5],
+                "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+                "positionMode": "DERIVED",
+                "sourceRef": "12"
+              }
+            }
+          ],
+          "deleted": [{ "type": "HalfEdge", "id": "he-9" }],
+          "affectedMetrics": ["roofArea"]
+        },
+        "topologyLineage": {
+          "mapped": { "f-roof-1": ["f-roof-1a", "f-roof-1b"] },
+          "deleted": [],
+          "preserved": ["f-roof-2"]
+        },
+        "validation": {
+          "modelVersion": 3,
+          "targetState": "DRAFT_SOLID",
+          "isValidForTargetState": true,
+          "issues": [
+            {
+              "code": "OPEN_BOUNDARY",
+              "scope": "TOPOLOGY",
+              "severity": "WARNING",
+              "entityIds": ["he-1", "he-9"],
+              "message": "open boundary"
+            }
+          ],
+          "validatorVersion": "geo-model3d 0.0.0",
+          "createdAt": "2026-11-21T10:00:00Z"
+        },
+        "warnings": []
+      }
+    },
+    {
+      "why": "REJECTED without error",
+      "instance": {
+        "commandId": "cmd-001",
+        "status": "REJECTED",
+        "modelVersion": 4,
+        "previewId": "prev-22",
+        "topologyLineage": {
+          "mapped": { "f-roof-1": ["f-roof-1a", "f-roof-1b"] },
+          "deleted": [],
+          "preserved": ["f-roof-2"]
+        },
+        "validation": {
+          "modelVersion": 3,
+          "targetState": "DRAFT_SOLID",
+          "isValidForTargetState": true,
+          "issues": [
+            {
+              "code": "OPEN_BOUNDARY",
+              "scope": "TOPOLOGY",
+              "severity": "WARNING",
+              "entityIds": ["he-1", "he-9"],
+              "message": "open boundary"
+            }
+          ],
+          "validatorVersion": "geo-model3d 0.0.0",
+          "createdAt": "2026-11-21T10:00:00Z"
+        },
+        "warnings": []
+      }
+    },
+    {
+      "why": "REJECTED with a patch (no partial change)",
+      "instance": {
+        "commandId": "cmd-001",
+        "status": "REJECTED",
+        "modelVersion": 4,
+        "previewId": "prev-22",
+        "patch": {
+          "added": [
+            {
+              "type": "Face",
+              "entity": {
+                "id": "f-roof-1b",
+                "outerLoopId": "he-1",
+                "innerLoopIds": [],
+                "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+                "surfaceKind": "RoofSurface",
+                "tags": [],
+                "roofComponentId": "rc-1"
+              }
+            }
+          ],
+          "updated": [
+            {
+              "type": "Vtx",
+              "entity": {
+                "id": "v-1",
+                "p": [0, 0, 5],
+                "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+                "positionMode": "DERIVED",
+                "sourceRef": "12"
+              }
+            }
+          ],
+          "deleted": [{ "type": "HalfEdge", "id": "he-9" }],
+          "affectedMetrics": ["roofArea"]
+        },
+        "topologyLineage": {
+          "mapped": { "f-roof-1": ["f-roof-1a", "f-roof-1b"] },
+          "deleted": [],
+          "preserved": ["f-roof-2"]
+        },
+        "validation": {
+          "modelVersion": 3,
+          "targetState": "DRAFT_SOLID",
+          "isValidForTargetState": true,
+          "issues": [
+            {
+              "code": "OPEN_BOUNDARY",
+              "scope": "TOPOLOGY",
+              "severity": "WARNING",
+              "entityIds": ["he-1", "he-9"],
+              "message": "open boundary"
+            }
+          ],
+          "validatorVersion": "geo-model3d 0.0.0",
+          "createdAt": "2026-11-21T10:00:00Z"
+        },
+        "warnings": [],
+        "error": {
+          "code": "CONSTRAINT_CONFLICT",
+          "httpStatus": 422,
+          "messageKey": "model3d.error.constraintConflict",
+          "entityIds": ["c-1", "v-1"]
+        }
+      }
+    },
+    {
+      "why": "v0.2 flat lineage",
+      "instance": {
+        "commandId": "cmd-001",
+        "status": "PREVIEW",
+        "modelVersion": 4,
+        "previewId": "prev-22",
+        "patch": {
+          "added": [
+            {
+              "type": "Face",
+              "entity": {
+                "id": "f-roof-1b",
+                "outerLoopId": "he-1",
+                "innerLoopIds": [],
+                "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+                "surfaceKind": "RoofSurface",
+                "tags": [],
+                "roofComponentId": "rc-1"
+              }
+            }
+          ],
+          "updated": [
+            {
+              "type": "Vtx",
+              "entity": {
+                "id": "v-1",
+                "p": [0, 0, 5],
+                "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+                "positionMode": "DERIVED",
+                "sourceRef": "12"
+              }
+            }
+          ],
+          "deleted": [{ "type": "HalfEdge", "id": "he-9" }],
+          "affectedMetrics": ["roofArea"]
+        },
+        "topologyLineage": { "f-1": ["f-2"] },
+        "validation": {
+          "modelVersion": 3,
+          "targetState": "DRAFT_SOLID",
+          "isValidForTargetState": true,
+          "issues": [
+            {
+              "code": "OPEN_BOUNDARY",
+              "scope": "TOPOLOGY",
+              "severity": "WARNING",
+              "entityIds": ["he-1", "he-9"],
+              "message": "open boundary"
+            }
+          ],
+          "validatorVersion": "geo-model3d 0.0.0",
+          "createdAt": "2026-11-21T10:00:00Z"
+        },
+        "warnings": []
+      }
+    }
+  ]
+}

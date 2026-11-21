@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-measurement:v1",
+  "title": "Measurement3D",
+  "description": "A measurement (v0.2 Module 14 with v0.3 §4.2: `createdBy`, `frame`; P0 `sourceType` POINT_CLOUD | MODEL | MANUAL). Soft with weight 1/σ² by default; hard only after an explicit Fix (v0.3 §7).",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "geometry": {
+      "type": "object",
+      "properties": {
+        "kind": { "enum": ["POINT", "LINE", "PLANE"] },
+        "coordinates": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "number" }, "minItems": 1 },
+          "minItems": 1,
+          "description": "v0.2 Module 14 `number[][]`. The per-kind layout (e.g. how a PLANE is written) is not given by the sources: TBD (Q-3D06-3)."
+        }
+      },
+      "required": ["kind", "coordinates"],
+      "additionalProperties": false
+    },
+    "sourceType": { "enum": ["POINT_CLOUD", "MODEL", "MANUAL"] },
+    "sourceId": { "type": ["string", "null"] },
+    "horizontalCrs": { "type": "string", "minLength": 1 },
+    "verticalCrs": { "type": ["string", "null"] },
+    "frame": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Frame" },
+    "uncertainty": {
+      "type": "object",
+      "properties": {
+        "sigmaX": { "type": "number", "minimum": 0 },
+        "sigmaY": { "type": "number", "minimum": 0 },
+        "sigmaZ": { "type": "number", "minimum": 0 },
+        "unit": { "const": "m" }
+      },
+      "required": ["unit"],
+      "additionalProperties": false
+    },
+    "fit": {
+      "type": "object",
+      "properties": {
+        "method": { "type": "string", "minLength": 1 },
+        "inliers": { "type": "integer", "minimum": 0 },
+        "rmseM": { "type": "number", "minimum": 0 },
+        "residuals": { "type": "array", "items": { "type": "number" } }
+      },
+      "required": ["method"],
+      "additionalProperties": false
+    },
+    "status": { "enum": ["MEASURED", "INFERRED", "USER_CONFIRMED"] },
+    "createdBy": { "type": "string", "minLength": 1, "description": "User id (v0.3 §4.2)." }
+  },
+  "required": ["id", "geometry", "sourceType", "sourceId", "horizontalCrs", "verticalCrs", "frame", "status", "createdBy"],
+  "additionalProperties": false
+}

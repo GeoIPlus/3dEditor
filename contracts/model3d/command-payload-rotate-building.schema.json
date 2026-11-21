@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-rotate-building:v1",
+  "title": "ROTATE_BUILDING payload",
+  "description": "Rotation about the vertical axis through the footprint centroid (v0.3 §6 F-43; spec §10.10 rule 7).",
+  "type": "object",
+  "properties": {
+    "angleDeg": { "type": "number", "description": "Counter-clockwise positive, as buildingAxisDeg [A]." }
+  },
+  "required": ["angleDeg"],
+  "additionalProperties": false,
+  "$comment": "[P] Field name."
+}

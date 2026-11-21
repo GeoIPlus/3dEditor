@@ -1,0 +1,12 @@
+{
+  "valid": [
+    {
+      "exported": [{ "buildingId": "b-1", "modelVersion": 7 }],
+      "skipped": [{ "buildingId": "b-2", "state": "DRAFT_SOLID", "reasonKey": "model3d.export.notValidSolid" }]
+    },
+    { "exported": [], "skipped": [] }
+  ],
+  "invalid": [
+    { "why": "skipped without reason (GT-24)", "instance": { "exported": [], "skipped": [{ "buildingId": "b-2" }] } }
+  ]
+}

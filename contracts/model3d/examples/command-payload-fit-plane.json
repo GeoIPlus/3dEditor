@@ -1,0 +1,10 @@
+{
+  "valid": [
+    { "selection": {}, "apply": "MEASUREMENT" },
+    { "selection": {}, "apply": "FACE_PLANE", "faceId": "f-roof-1" }
+  ],
+  "invalid": [
+    { "why": "FACE_PLANE without the face", "instance": { "selection": {}, "apply": "FACE_PLANE" } },
+    { "why": "no selection", "instance": { "apply": "MEASUREMENT" } }
+  ]
+}

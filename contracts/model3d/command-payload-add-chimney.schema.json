@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-add-chimney:v1",
+  "title": "ADD_CHIMNEY payload",
+  "description": "Add a box chimney as a separate BuildingInstallation body (v0.3 §6 F-37; spec §10.11; GT-17).",
+  "type": "object",
+  "properties": {
+    "roofFaceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "center": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3",
+      "description": "Centre of the base on the roof face."
+    },
+    "widthM": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength" },
+    "depthM": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength" },
+    "heightAboveRoofM": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength" },
+    "measurementId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "Dimensions from the cloud."
+    }
+  },
+  "required": ["roofFaceId", "center"],
+  "additionalProperties": false,
+  "anyOf": [{ "required": ["widthM", "depthM", "heightAboveRoofM"] }, { "required": ["measurementId"] }],
+  "$comment": "[P] Field names; box axes = building axes [A] (Q-3D06-13, 3D-20)."
+}

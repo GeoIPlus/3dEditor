@@ -1,0 +1,1 @@
+{ "valid": [{}, { "baseZ": 0 }], "invalid": [{ "why": "base as text", "instance": { "baseZ": "ground" } }] }

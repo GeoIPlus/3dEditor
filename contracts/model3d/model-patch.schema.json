@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-model-patch:v1",
+  "title": "ModelPatch",
+  "description": "Patch between two versions in canonical entities, not only RTG (v0.2 D.2). `type` names the entity collection's entity; `entity` validates against that entity schema. Used as forward and inverse patch in the journal (v0.2 §13.6).",
+  "type": "object",
+  "properties": {
+    "added": { "type": "array", "items": { "$ref": "#/$defs/EntityChange" } },
+    "updated": { "type": "array", "items": { "$ref": "#/$defs/EntityChange" } },
+    "deleted": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "$ref": "#/$defs/EntityType" },
+          "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" }
+        },
+        "required": ["type", "id"],
+        "additionalProperties": false
+      }
+    },
+    "affectedMetrics": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true,
+      "description": "Names of derived metrics the patch changes (v0.2 D.2). The list of names is not given by the sources: TBD (Q-3D06-6)."
+    }
+  },
+  "required": ["added", "updated", "deleted", "affectedMetrics"],
+  "additionalProperties": false,
+  "$comment": "A change of model-level members (`state`, `frame`) has no entity type in v0.2 D.2: TBD (Q-3D06-6).",
+  "$defs": {
+    "EntityType": {
+      "$comment": "[P] The values are the v0.2 B.2 entity type names; their use as `type` values is a 3D-06 proposal.",
+      "enum": ["Footprint", "ConstructionEntity", "Vtx", "HalfEdge", "Face", "Shell", "Solid", "RoofComponent", "Constraint", "Measurement3D", "SemanticNode"]
+    },
+    "EntityChange": {
+      "type": "object",
+      "properties": {
+        "type": { "$ref": "#/$defs/EntityType" },
+        "entity": { "type": "object" }
+      },
+      "required": ["type", "entity"],
+      "additionalProperties": false,
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "Footprint" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/Footprint" } } } },
+        { "if": { "properties": { "type": { "const": "ConstructionEntity" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/ConstructionEntity" } } } },
+        { "if": { "properties": { "type": { "const": "Vtx" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/Vtx" } } } },
+        { "if": { "properties": { "type": { "const": "HalfEdge" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/HalfEdge" } } } },
+        { "if": { "properties": { "type": { "const": "Face" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/Face" } } } },
+        { "if": { "properties": { "type": { "const": "Shell" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/Shell" } } } },
+        { "if": { "properties": { "type": { "const": "Solid" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/Solid" } } } },
+        { "if": { "properties": { "type": { "const": "RoofComponent" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/RoofComponent" } } } },
+        { "if": { "properties": { "type": { "const": "Constraint" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/Constraint" } } } },
+        { "if": { "properties": { "type": { "const": "Measurement3D" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-measurement:v1" } } } },
+        { "if": { "properties": { "type": { "const": "SemanticNode" } } }, "then": { "properties": { "entity": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/SemanticNode" } } } }
+      ]
+    }
+  }
+}

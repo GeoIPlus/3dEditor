@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command:v1",
+  "title": "GeometryCommand",
+  "description": "Command envelope (v0.2 D.2, v0.3 §9; spec §2.1). `payload` is validated by the payload schema of `operation` (one file per OperationKind). `actorId` is informational only: authority comes from the authenticated context on the server. `expectedVersion` is required; a changed version is 409 VERSION_CONFLICT. COMMIT is idempotent on (projectId, commandId). `previewId` is required on a COMMIT that follows a PREVIEW (v0.3 §3); whether a COMMIT without PREVIEW is allowed per operation is decided by the op rows.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/SchemaVersion" },
+    "commandId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "projectId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "buildingId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "actorId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "Informational only (v0.2 D.2)."
+    },
+    "operation": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/OperationKind" },
+    "phase": { "enum": ["PREVIEW", "COMMIT"] },
+    "expectedVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "payload": { "type": "object" },
+    "coordinateFrame": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Frame",
+      "description": "Frame of every coordinate in the payload."
+    },
+    "targetState": {
+      "enum": ["DRAFT_SOLID", "VALID_SOLID"],
+      "$comment": "[A] A command never targets DRAFT_SURFACE (never the result of a commit, spec §10.3 rule 8) or APPROVED (set by a reviewer outside commands, spec §11 rule 8)."
+    },
+    "previewId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" }
+  },
+  "required": [
+    "schemaVersion",
+    "commandId",
+    "projectId",
+    "buildingId",
+    "actorId",
+    "operation",
+    "phase",
+    "expectedVersion",
+    "payload",
+    "coordinateFrame",
+    "targetState"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "operation": { "const": "REMOVE_FACE" } } },
+      "then": { "properties": { "targetState": { "const": "DRAFT_SOLID" } } },
+      "$comment": "Spec §10.8 rule 1: REMOVE_FACE needs targetState DRAFT_SOLID."
+    },
+    {
+      "if": { "properties": { "operation": { "const": "IMPORT_BUILDING" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-import-building:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "RESTORE_BASELINE" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-restore-baseline:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "MOVE_VERTEX" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-move-vertex:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "MOVE_EDGE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-move-edge:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "OFFSET_FACE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-offset-face:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "SPLIT_FACE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-split-face:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "INSERT_ROOF_BREAK" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-insert-roof-break:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "MERGE_FACES" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-merge-faces:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "REMOVE_DETAILS" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-remove-details:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "ALIGN_RIDGE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-align-ridge:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "ALIGN_EAVE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-align-eave:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "MATCH_ELEVATIONS" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-match-elevations:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "STRAIGHTEN_FACE" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-straighten-face:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "TRIM_FACE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-trim-face:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "EXTEND_FACE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-extend-face:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "REMOVE_FACE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-remove-face:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "HEAL_HOLE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-heal-hole:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "FIT_TO_SHARED_EDGE" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-fit-to-shared-edge:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "ALIGN_JUNCTION" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-align-junction:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "RESIZE_ROOF" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-resize-roof:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "SET_OVERHANG" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-set-overhang:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "REGULARIZE_FOOTPRINT" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-regularize-footprint:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "ALIGN_WALL" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-align-wall:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "SET_HEIGHT" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-set-height:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "TRANSLATE_BUILDING" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-translate-building:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "ROTATE_BUILDING" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-rotate-building:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "ADD_DORMER" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-add-dormer:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "ADD_CHIMNEY" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-add-chimney:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "REMOVE_INSTALLATION" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-remove-installation:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "REPLACE_ROOF" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-replace-roof:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "REBUILD_ENVELOPE" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-rebuild-envelope:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "SET_SEMANTICS" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-set-semantics:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "SET_CONSTRAINT" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-set-constraint:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "REMOVE_CONSTRAINT" } } },
+      "then": {
+        "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-remove-constraint:v1" } }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "FIT_PLANE" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-fit-plane:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "UNDO" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-undo:v1" } } }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "REDO" } } },
+      "then": { "properties": { "payload": { "$ref": "urn:geoiplus:schema:model3d-command-payload-redo:v1" } } }
+    }
+  ]
+}

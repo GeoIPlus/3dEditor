@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-remove-details:v1",
+  "title": "REMOVE_DETAILS payload",
+  "description": "Remove small details after confirmation of a candidate list (v0.2 C.6; spec §10.6 rule 5).",
+  "type": "object",
+  "properties": {
+    "confirmedRemoveIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "description": "Entities the operator confirmed for removal; empty on the PREVIEW that lists candidates [A]."
+    },
+    "keepIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "description": "Candidates the operator keeps."
+    }
+  },
+  "required": ["confirmedRemoveIds"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names. How the candidate list reaches the client: TBD (Q-3D06-9, 3D-15)."
+}

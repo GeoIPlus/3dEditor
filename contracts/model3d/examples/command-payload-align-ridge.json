@@ -1,0 +1,20 @@
+{
+  "valid": [
+    {
+      "edgeId": "ridge-7",
+      "mode": "KEEP_EAVES",
+      "targetLine": [[0, 4, 8.5], [10, 4, 8.5]],
+      "hardConstraintIds": ["fixed-eave-a"]
+    },
+    { "edgeId": "ridge-7", "mode": "KEEP_PLANES", "targetLine": [[0, 4, 9], [10, 4, 9]] },
+    { "edgeId": "ridge-7", "mode": "FIT_MEASUREMENTS", "measurementIds": ["m-1"] }
+  ],
+  "invalid": [
+    {
+      "why": "KEEP_RIDGE removed for ALIGN_RIDGE (v0.3 §6)",
+      "instance": { "edgeId": "ridge-7", "mode": "KEEP_RIDGE", "targetLine": [[0, 4, 8.5], [10, 4, 8.5]] }
+    },
+    { "why": "KEEP_EAVES without target", "instance": { "edgeId": "ridge-7", "mode": "KEEP_EAVES" } },
+    { "why": "FIT_MEASUREMENTS without measurements", "instance": { "edgeId": "ridge-7", "mode": "FIT_MEASUREMENTS" } }
+  ]
+}

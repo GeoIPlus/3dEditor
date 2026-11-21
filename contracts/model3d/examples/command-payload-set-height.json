@@ -1,0 +1,7 @@
+{
+  "valid": [{ "kind": "BASE", "z": -1 }, { "kind": "EAVE", "z": 5.2, "eaveEdgeId": "he-eave-1" }],
+  "invalid": [
+    { "why": "EAVE without the selected eave (v0.3 §6)", "instance": { "kind": "EAVE", "z": 5.2 } },
+    { "why": "unknown kind", "instance": { "kind": "RIDGE", "z": 8 } }
+  ]
+}

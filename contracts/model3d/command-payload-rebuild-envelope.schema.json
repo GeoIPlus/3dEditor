@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-rebuild-envelope:v1",
+  "title": "REBUILD_ENVELOPE payload",
+  "description": "Rebuild walls and base under the current roof and footprint (v0.3 §6 C-12; v0.2 §11.4; spec §10.3). Base rule in P0: constant Z.",
+  "type": "object",
+  "properties": {
+    "baseZ": { "type": "number", "description": "Constant base Z; absent = the footprint baseElevationM [A]." }
+  },
+  "additionalProperties": false,
+  "$comment": "[P] Field name."
+}

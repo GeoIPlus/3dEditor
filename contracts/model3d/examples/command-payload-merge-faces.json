@@ -1,0 +1,13 @@
+{
+  "valid": [
+    { "faceIds": ["f-1a", "f-1b"], "mode": "MERGE_COPLANAR" },
+    { "faceIds": ["f-1", "f-2"], "mode": "MERGE_REFIT", "movableFaceIds": ["f-2"] }
+  ],
+  "invalid": [
+    { "why": "one face", "instance": { "faceIds": ["f-1"], "mode": "MERGE_COPLANAR" } },
+    {
+      "why": "MERGE_REFIT without the movable set (v0.2 C.6)",
+      "instance": { "faceIds": ["f-1", "f-2"], "mode": "MERGE_REFIT" }
+    }
+  ]
+}

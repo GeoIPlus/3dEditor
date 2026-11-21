@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-error:v1",
+  "title": "Error",
+  "description": "Error registry (v0.3 §9.2, spec §2.4): code, HTTP status, `entityIds?`, message key. Exactly the codes of spec §2.4, each bound to its status. `INVALID_MODE` is a special case of `INVALID_PAYLOAD`, written as `subcode` (it is not a registry code). On any error the model is unchanged.",
+  "type": "object",
+  "properties": {
+    "code": { "$ref": "#/$defs/ErrorCode" },
+    "httpStatus": { "enum": [400, 401, 403, 404, 409, 413, 422, 429, 500, 503] },
+    "messageKey": { "type": "string", "minLength": 1, "description": "Localisation key of the user text (spec §2 row 10; v0.3 Д-11)." },
+    "message": { "type": "string", "description": "Diagnostic text (v0.2 D.2 `error.message`); not shown as UI text." },
+    "entityIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList", "description": "Offending / conflicting entities (v0.2 D.2, D.4)." },
+    "subcode": { "enum": ["INVALID_MODE"], "$comment": "[P] Name of the field is a 3D-06 proposal." },
+    "details": {
+      "description": "Numbers and choices the sources require a refusal to carry.",
+      "$comment": "[P] Member names are 3D-06 proposals. Shape of the missing degrees of freedom is TBD (Q-3D06-4; solver 3D-13, Q-17).",
+      "type": "object",
+      "properties": {
+        "admissibleModes": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "description": "HEAL_HOLE refusal lists the admissible modes (v0.2 C.14, GT-11)." },
+        "missingDegreesOfFreedom": { "type": "array", "items": { "type": "string", "minLength": 1 }, "description": "UNDERCONSTRAINED_GEOMETRY shows the missing degrees of freedom (v0.2 D.4)." },
+        "pointCount": { "type": "integer", "minimum": 0, "description": "INVALID_MEASUREMENT of plane fit carries the numbers (v0.3 §7)." },
+        "inlierRatio": { "type": "number", "minimum": 0, "maximum": 1, "description": "As pointCount." }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["code", "httpStatus", "messageKey"],
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "code": { "const": "INVALID_PAYLOAD" } } }, "then": { "properties": { "httpStatus": { "const": 400 } } }, "else": { "not": { "required": ["subcode"] } } },
+    { "if": { "properties": { "code": { "const": "UNAUTHENTICATED" } } }, "then": { "properties": { "httpStatus": { "const": 401 } } } },
+    { "if": { "properties": { "code": { "const": "FORBIDDEN" } } }, "then": { "properties": { "httpStatus": { "const": 403 } } } },
+    { "if": { "properties": { "code": { "const": "NOT_FOUND" } } }, "then": { "properties": { "httpStatus": { "const": 404 } } } },
+    { "if": { "properties": { "code": { "const": "VERSION_CONFLICT" } } }, "then": { "properties": { "httpStatus": { "const": 409 } } } },
+    { "if": { "properties": { "code": { "const": "PAYLOAD_TOO_LARGE" } } }, "then": { "properties": { "httpStatus": { "const": 413 } } } },
+    { "if": { "properties": { "code": { "enum": ["UNDERCONSTRAINED_GEOMETRY", "CONSTRAINT_CONFLICT", "INVALID_TOPOLOGY", "INVALID_GEOMETRY", "INVALID_MEASUREMENT", "UNSUPPORTED_FOOTPRINT"] } } }, "then": { "properties": { "httpStatus": { "const": 422 } } } },
+    { "if": { "properties": { "code": { "const": "RATE_LIMITED" } } }, "then": { "properties": { "httpStatus": { "const": 429 } } } },
+    { "if": { "properties": { "code": { "const": "INTERNAL" } } }, "then": { "properties": { "httpStatus": { "const": 500 } }, "$comment": "[A] Spec §2.4 groups '500 / 503 | INTERNAL, UNAVAILABLE'; INTERNAL -> 500, UNAVAILABLE -> 503 is this schema's reading." } },
+    { "if": { "properties": { "code": { "const": "UNAVAILABLE" } } }, "then": { "properties": { "httpStatus": { "const": 503 } } } }
+  ],
+  "$defs": {
+    "ErrorCode": {
+      "enum": ["INVALID_PAYLOAD", "UNAUTHENTICATED", "FORBIDDEN", "NOT_FOUND", "VERSION_CONFLICT", "PAYLOAD_TOO_LARGE", "UNDERCONSTRAINED_GEOMETRY", "CONSTRAINT_CONFLICT", "INVALID_TOPOLOGY", "INVALID_GEOMETRY", "INVALID_MEASUREMENT", "UNSUPPORTED_FOOTPRINT", "RATE_LIMITED", "INTERNAL", "UNAVAILABLE"]
+    }
+  }
+}

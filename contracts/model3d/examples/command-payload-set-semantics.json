@@ -1,0 +1,4 @@
+{
+  "valid": [{ "faceIds": ["f-1"], "surfaceKind": "WallSurface" }],
+  "invalid": [{ "why": "unknown surface kind", "instance": { "faceIds": ["f-1"], "surfaceKind": "Roof" } }]
+}

@@ -1,0 +1,12 @@
+{
+  "valid": [
+    { "edgeId": "eave-1", "mode": "KEEP_RIDGE", "targetLine": [[0, 0, 5.2], [10, 0, 5.2]] },
+    { "edgeId": "eave-1", "mode": "KEEP_PLANES" }
+  ],
+  "invalid": [
+    {
+      "why": "KEEP_EAVES is a ridge mode",
+      "instance": { "edgeId": "eave-1", "mode": "KEEP_EAVES", "targetLine": [[0, 0, 5], [10, 0, 5]] }
+    }
+  ]
+}

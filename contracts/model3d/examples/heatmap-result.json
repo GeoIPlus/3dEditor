@@ -1,0 +1,30 @@
+{
+  "valid": [
+    {
+      "modelVersion": 3,
+      "thresholdM": 0.05,
+      "faces": [{ "faceId": "f-roof-1", "pointCount": 250, "meanM": 0.08, "rmseM": 0.081, "maxAbsM": 0.11 }],
+      "summary": { "pointCount": 500, "rmseM": 0.081, "maxAbsM": 0.11, "shareBeyondThreshold": 0.93 }
+    }
+  ],
+  "invalid": [
+    {
+      "why": "colour instead of values",
+      "instance": {
+        "modelVersion": 3,
+        "thresholdM": 0.05,
+        "faces": [{ "faceId": "f-roof-1", "pointCount": 1, "color": "#ff0000" }],
+        "summary": { "pointCount": 500, "rmseM": 0.081, "maxAbsM": 0.11, "shareBeyondThreshold": 0.93 }
+      }
+    },
+    {
+      "why": "share above 1",
+      "instance": {
+        "modelVersion": 3,
+        "thresholdM": 0.05,
+        "faces": [{ "faceId": "f-roof-1", "pointCount": 250, "meanM": 0.08, "rmseM": 0.081, "maxAbsM": 0.11 }],
+        "summary": { "pointCount": 500, "rmseM": 0.081, "maxAbsM": 0.11, "shareBeyondThreshold": 2 }
+      }
+    }
+  ]
+}

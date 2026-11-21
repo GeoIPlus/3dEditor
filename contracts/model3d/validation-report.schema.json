@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-validation-report:v1",
+  "title": "ValidationReport",
+  "description": "Validation report (v0.2 B.5; spec §8). Severity of a code depends on the model state (v0.3 §8.3, spec §8 rule 4): enforced below for `targetState` DRAFT_SOLID and VALID_SOLID. Severities of SOLID_OVERLAP, UNDERCONSTRAINED_GEOMETRY, INVALID_MEASUREMENT, EXPORT_SCHEMA_ERROR, PRECISION_LOSS are open (Q-21) and not constrained here. `isValidForTargetState = true` is never set from client-side validation (v0.2 D.5).",
+  "type": "object",
+  "properties": {
+    "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "targetState": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/ModelState" },
+    "isValidForTargetState": { "type": "boolean" },
+    "issues": { "type": "array", "items": { "$ref": "#/$defs/ValidationIssue" } },
+    "validatorVersion": { "type": "string", "minLength": 1 },
+    "createdAt": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Timestamp" }
+  },
+  "required": ["modelVersion", "targetState", "isValidForTargetState", "issues", "validatorVersion", "createdAt"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "targetState": { "const": "DRAFT_SOLID" } } },
+      "then": { "properties": { "issues": { "type": "array", "items": { "$ref": "#/$defs/SeverityInDraftSolid" } } } }
+    },
+    {
+      "if": { "properties": { "targetState": { "const": "VALID_SOLID" } } },
+      "then": { "properties": { "issues": { "type": "array", "items": { "$ref": "#/$defs/SeverityInValidSolid" } } } }
+    }
+  ],
+  "$defs": {
+    "ValidationCode": {
+      "description": "v0.2 B.5 list + INCONSISTENT_JUNCTION (v0.3 §4.1, §8.3; spec §8 rule 3).",
+      "enum": ["OPEN_BOUNDARY", "NON_MANIFOLD_EDGE", "NON_MANIFOLD_VERTEX", "DEGENERATE_EDGE", "DEGENERATE_FACE", "NON_PLANAR_FACE", "SELF_INTERSECTION", "INCONSISTENT_RING_ORIENTATION", "SHELL_NOT_CLOSED", "SHELL_ORIENTATION", "SOLID_OVERLAP", "CONSTRAINT_CONFLICT", "UNDERCONSTRAINED_GEOMETRY", "INVALID_CRS", "INVALID_MEASUREMENT", "SEMANTIC_MAPPING_ERROR", "EXPORT_SCHEMA_ERROR", "PRECISION_LOSS", "INCONSISTENT_JUNCTION"]
+    },
+    "ValidationIssue": {
+      "description": "v0.2 B.5.",
+      "type": "object",
+      "properties": {
+        "code": { "$ref": "#/$defs/ValidationCode" },
+        "scope": { "enum": ["GEOMETRY", "TOPOLOGY", "CONSTRAINT", "MEASUREMENT", "SEMANTICS", "EXPORT"] },
+        "severity": { "enum": ["INFO", "WARNING", "ERROR"] },
+        "entityIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" },
+        "location": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3" },
+        "message": { "type": "string" },
+        "externalValidatorCode": { "type": "string", "minLength": 1 },
+        "suggestedFix": { "type": "string" }
+      },
+      "required": ["code", "scope", "severity", "entityIds", "message"],
+      "additionalProperties": false
+    },
+    "SeverityInDraftSolid": {
+      "description": "Spec §8 rule 4, column DRAFT_SOLID.",
+      "type": "object",
+      "allOf": [
+        { "if": { "properties": { "code": { "enum": ["OPEN_BOUNDARY", "SHELL_NOT_CLOSED", "NON_MANIFOLD_EDGE", "NON_MANIFOLD_VERTEX", "SELF_INTERSECTION", "SHELL_ORIENTATION", "INCONSISTENT_RING_ORIENTATION", "INCONSISTENT_JUNCTION", "NON_PLANAR_FACE", "SEMANTIC_MAPPING_ERROR"] } } }, "then": { "properties": { "severity": { "const": "WARNING" } } } },
+        { "if": { "properties": { "code": { "enum": ["DEGENERATE_EDGE", "DEGENERATE_FACE", "CONSTRAINT_CONFLICT", "INVALID_CRS"] } } }, "then": { "properties": { "severity": { "const": "ERROR" } } } }
+      ]
+    },
+    "SeverityInValidSolid": {
+      "description": "Spec §8 rule 4, column VALID_SOLID.",
+      "type": "object",
+      "allOf": [
+        { "if": { "properties": { "code": { "enum": ["OPEN_BOUNDARY", "SHELL_NOT_CLOSED", "NON_MANIFOLD_EDGE", "NON_MANIFOLD_VERTEX", "SELF_INTERSECTION", "SHELL_ORIENTATION", "INCONSISTENT_RING_ORIENTATION", "INCONSISTENT_JUNCTION", "NON_PLANAR_FACE", "SEMANTIC_MAPPING_ERROR", "DEGENERATE_EDGE", "DEGENERATE_FACE", "CONSTRAINT_CONFLICT", "INVALID_CRS"] } } }, "then": { "properties": { "severity": { "const": "ERROR" } } } }
+      ]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-plane-fit-result:v1",
+  "title": "PlaneFitResult",
+  "description": "Robust plane fit (RANSAC + SVD refinement): plane, inlier count, inlier ratio, RMSE (v0.3 §7; spec §9). A refusal (too few points, low inlier ratio) is INVALID_MEASUREMENT with the numbers in error.details.",
+  "$comment": "[P] Member names.",
+  "type": "object",
+  "properties": {
+    "plane": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Plane" },
+    "pointCount": { "type": "integer", "minimum": 0 },
+    "inlierCount": { "type": "integer", "minimum": 0 },
+    "inlierRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+    "rmseM": { "type": "number", "minimum": 0 },
+    "frame": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Frame" }
+  },
+  "required": ["plane", "pointCount", "inlierCount", "inlierRatio", "rmseM", "frame"],
+  "additionalProperties": false
+}

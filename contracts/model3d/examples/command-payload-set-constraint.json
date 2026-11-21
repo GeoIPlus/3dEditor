@@ -1,0 +1,24 @@
+{
+  "valid": [
+    { "constraint": { "kind": "FIXED_POINT", "entityIds": ["v-1"], "hard": true, "target": [0, 0, 5] } },
+    {
+      "constraint": {
+        "kind": "CLOSE_TO_MEASUREMENT",
+        "entityIds": ["v-1"],
+        "hard": false,
+        "weight": 2500,
+        "measurementId": "m-1"
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "why": "unknown member in the constraint",
+      "instance": { "constraint": { "kind": "FIXED_POINT", "entityIds": ["v-1"], "hard": true, "locked": true } }
+    },
+    {
+      "why": "hard constraint with weight",
+      "instance": { "constraint": { "kind": "EQUAL_Z", "entityIds": ["v-1", "v-2"], "hard": true, "weight": 1 } }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-heatmap-result:v1",
+  "title": "HeatmapResult",
+  "description": "Model-to-cloud deviation computed on the server for points within heatmapBufferM: per-face values for the colouring and a summary of RMSE, maximum and share of points beyond the threshold (v0.3 §7; spec §9 rule 6). Distance along the face normal (GT-21).",
+  "$comment": "[P] Shape and names. Per-face values instead of colours: the client maps values to colours under the brandbook (D-40) [A]. The default threshold is TBD (Q-24); the threshold used is echoed.",
+  "type": "object",
+  "properties": {
+    "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "thresholdM": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength" },
+    "faces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+          "pointCount": { "type": "integer", "minimum": 0 },
+          "meanM": { "type": "number", "description": "Signed mean distance along the normal." },
+          "rmseM": { "type": "number", "minimum": 0 },
+          "maxAbsM": { "type": "number", "minimum": 0 }
+        },
+        "required": ["faceId", "pointCount"],
+        "additionalProperties": false
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "pointCount": { "type": "integer", "minimum": 0 },
+        "rmseM": { "type": "number", "minimum": 0 },
+        "maxAbsM": { "type": "number", "minimum": 0 },
+        "shareBeyondThreshold": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "required": ["pointCount", "rmseM", "maxAbsM", "shareBeyondThreshold"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["modelVersion", "thresholdM", "faces", "summary"],
+  "additionalProperties": false
+}

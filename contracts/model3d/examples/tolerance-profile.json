@@ -1,0 +1,120 @@
+{
+  "valid": [
+    {
+      "id": "tp-1",
+      "numericEpsilon": 1e-9,
+      "topologySnapTolM": 0.01,
+      "planarTolM": 0.02,
+      "zAlignTolM": 0.01,
+      "minEdgeLengthM": 0.05,
+      "minFaceAreaM2": 0.1,
+      "coplanarTolDeg": 1,
+      "footprintAngleTolDeg": 5,
+      "flatRoofTolDeg": 1,
+      "screenSnapPx": 10,
+      "heatmapBufferM": 1,
+      "planeFitMinPoints": 30,
+      "planeFitMinInlierRatio": 0.6,
+      "exportRoundDecimals": 3
+    },
+    {
+      "numericEpsilon": 1e-9,
+      "topologySnapTolM": 0.01,
+      "planarTolM": 0.02,
+      "zAlignTolM": 0.01,
+      "minEdgeLengthM": 0.05,
+      "minFaceAreaM2": 0.1,
+      "coplanarTolDeg": 1,
+      "footprintAngleTolDeg": 5,
+      "flatRoofTolDeg": 1,
+      "screenSnapPx": 10,
+      "heatmapBufferM": 1,
+      "planeFitMinPoints": 30,
+      "planeFitMinInlierRatio": 0.6,
+      "exportRoundDecimals": 3
+    }
+  ],
+  "invalid": [
+    {
+      "why": "lockTtlMin dropped (D-69)",
+      "instance": {
+        "id": "tp-1",
+        "numericEpsilon": 1e-9,
+        "topologySnapTolM": 0.01,
+        "planarTolM": 0.02,
+        "zAlignTolM": 0.01,
+        "minEdgeLengthM": 0.05,
+        "minFaceAreaM2": 0.1,
+        "coplanarTolDeg": 1,
+        "footprintAngleTolDeg": 5,
+        "flatRoofTolDeg": 1,
+        "screenSnapPx": 10,
+        "heatmapBufferM": 1,
+        "planeFitMinPoints": 30,
+        "planeFitMinInlierRatio": 0.6,
+        "exportRoundDecimals": 3,
+        "lockTtlMin": 15
+      }
+    },
+    {
+      "why": "measurementTolM has no value (Q-24)",
+      "instance": {
+        "id": "tp-1",
+        "numericEpsilon": 1e-9,
+        "topologySnapTolM": 0.01,
+        "planarTolM": 0.02,
+        "zAlignTolM": 0.01,
+        "minEdgeLengthM": 0.05,
+        "minFaceAreaM2": 0.1,
+        "coplanarTolDeg": 1,
+        "footprintAngleTolDeg": 5,
+        "flatRoofTolDeg": 1,
+        "screenSnapPx": 10,
+        "heatmapBufferM": 1,
+        "planeFitMinPoints": 30,
+        "planeFitMinInlierRatio": 0.6,
+        "exportRoundDecimals": 3,
+        "measurementTolM": 0.02
+      }
+    },
+    {
+      "why": "a field missing",
+      "instance": {
+        "id": "tp-1",
+        "numericEpsilon": 1e-9,
+        "topologySnapTolM": 0.01,
+        "zAlignTolM": 0.01,
+        "minEdgeLengthM": 0.05,
+        "minFaceAreaM2": 0.1,
+        "coplanarTolDeg": 1,
+        "footprintAngleTolDeg": 5,
+        "flatRoofTolDeg": 1,
+        "screenSnapPx": 10,
+        "heatmapBufferM": 1,
+        "planeFitMinPoints": 30,
+        "planeFitMinInlierRatio": 0.6,
+        "exportRoundDecimals": 3
+      }
+    },
+    {
+      "why": "inlier ratio above 1",
+      "instance": {
+        "id": "tp-1",
+        "numericEpsilon": 1e-9,
+        "topologySnapTolM": 0.01,
+        "planarTolM": 0.02,
+        "zAlignTolM": 0.01,
+        "minEdgeLengthM": 0.05,
+        "minFaceAreaM2": 0.1,
+        "coplanarTolDeg": 1,
+        "footprintAngleTolDeg": 5,
+        "flatRoofTolDeg": 1,
+        "screenSnapPx": 10,
+        "heatmapBufferM": 1,
+        "planeFitMinPoints": 30,
+        "planeFitMinInlierRatio": 1.2,
+        "exportRoundDecimals": 3
+      }
+    }
+  ]
+}

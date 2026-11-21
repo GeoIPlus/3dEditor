@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-insert-roof-break:v1",
+  "title": "INSERT_ROOF_BREAK payload",
+  "description": "Insert a break line with a new plane (v0.2 C.5, E-10; spec §10.6 rule 3).",
+  "type": "object",
+  "properties": {
+    "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "breakLine": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Line3" },
+    "newPlane": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Plane" }
+  },
+  "required": ["faceId", "breakLine", "newPlane"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names. Sources say \"new plane / ridge constraint\"; the ridge-constraint variant is TBD (Q-3D06-8, 3D-15)."
+}

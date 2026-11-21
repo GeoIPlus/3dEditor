@@ -1,0 +1,10 @@
+{
+  "valid": [
+    { "faceId": "f-roof-1", "offsetM": 0.1, "fixedMode": "NONE" },
+    { "faceId": "f-roof-1", "offsetM": -0.05, "fixedMode": "FIXED_EAVE" }
+  ],
+  "invalid": [
+    { "why": "unknown fixed mode", "instance": { "faceId": "f", "offsetM": 0.1, "fixedMode": "FIXED_WALL" } },
+    { "why": "missing offset", "instance": { "faceId": "f", "fixedMode": "NONE" } }
+  ]
+}

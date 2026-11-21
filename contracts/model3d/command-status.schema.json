@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-status:v1",
+  "title": "CommandStatus",
+  "description": "Status of a command by commandId, asked after a timeout before repeating it with the same commandId (v0.3 §9.2 GET /api/commands/{commandId}; v0.2 D.4; spec §11 rule 7). An unknown commandId is 404 NOT_FOUND (error schema).",
+  "$comment": "[P] Shape and the state names are a 3D-06 proposal; the sources give only the endpoint.",
+  "type": "object",
+  "properties": {
+    "commandId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "state": { "enum": ["IN_PROGRESS", "DONE"] },
+    "result": { "$ref": "urn:geoiplus:schema:model3d-command-result:v1", "description": "The stored result; present when DONE." }
+  },
+  "required": ["commandId", "state"],
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "state": { "const": "DONE" } } }, "then": { "required": ["result"] }, "else": { "not": { "required": ["result"] } } }
+  ]
+}
