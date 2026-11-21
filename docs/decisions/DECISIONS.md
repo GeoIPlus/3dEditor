@@ -81,6 +81,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-65 | 3D-28 accepted (done); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-21 |
 | D-66 | 3D-04 (3DQM spec) set `ready`; dependencies 3D-01, 3D-02 done; starts in a fresh session | Owner, chat, 2026-11-21 |
 | D-67 | 3D-06 (contract schemas `model3d`) set `ready`; starts only when 3D-04 is done and reviewed by the owner (3D-04 Details); schemas become `accepted` only on the owner's approval (D-18) | Owner, chat, 2026-11-21 |
+| D-3D04-1 | Q-3D04-7: golden test GT-13 (commandId idempotency, stale `expectedVersion` -> 409) belongs to 3D-23 (kernel service, owns the idempotency store); 3D-18 keeps GT-12 | Owner, dialog, 2026-11-21 (3D-04) |
+| D-3D04-2 | Q-3D04-6: 3DQM enforces only the CP assignment lease (`leaseRef`, `leaseEpoch`); no own building lock; `lockTtlMin` is dropped from the tolerance profile (amends D-13 for this one field); Undo covers the lease holder's operations | Owner, dialog, 2026-11-21 (3D-04) |
+| D-3D04-3 | Q-3D04-3: import keeps every vertex at its file position until an operation first changes one of its faces; then it becomes derived from planes (D-08). `NON_PLANAR_FACE` vertices are reported, not moved; an unedited round trip stays exact | Owner, dialog, 2026-11-21 (3D-04) |
 
 ## Open questions
 
@@ -141,3 +144,6 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-13 | 2026-11-19, owner (3D-02) | closed by D-52, D-53 | Registry `service` adapter + host-injected transport; endpoint from the CP document; new Tools Plane placement value ([3D-ADR-0002](adr/3D-ADR-0002-kernel-package-and-remote-port.md)) |
 | Q-15 | 2026-11-19, owner (3D-02) | groups assigned (D-51) | A both; B, C service; D bytes service, record client session; E client session; F both. 3D-03 applies C/D to storage |
 | Q-16 | 2026-11-19, owner (3D-02) | closed by D-54, D-55 | SC 3D view port + host (3D-47), GV adapter (3D-51), independent host SC `apps/3dqm` (3D-48) |
+| Q-3D04-3 | 2026-11-21, owner (3D-04) | closed by D-3D04-3 | Imported vertices explicit until edited |
+| Q-3D04-6 | 2026-11-21, owner (3D-04) | closed by D-3D04-2 | CP lease only |
+| Q-3D04-7 | 2026-11-21, owner (3D-04) | closed by D-3D04-1 | GT-13 -> 3D-23 |

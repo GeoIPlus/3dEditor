@@ -62,6 +62,7 @@ Field and command names in this spec are the names used in the sources; names th
 | Gates G0..G5 as process (v0.3 §13), agent work order, DoR/DoD, task template (v0.3 §13 last line -> v0.2 E.3, E.4, G) | Replaced by WP rows in [BACKLOG.md](../BACKLOG.md), AGENTS.md §4 and §9 (HANDOVER §5). Golden tests keep their content; their gate column is replaced by a module and a WP row (§13) |
 | Admin column of v0.3 §8.5: viewing all packages, creating packages, assigning buildings, managing tolerance profiles, releasing another user's lock | D-10: assignments and roles come from the CP contract, not from an admin screen in the editor (supersedes v0.3 Р-09). Only what a workplace must enforce locally stays (§11) |
 | "Package" as a 3DQM object (v0.3 §8.5: named list of `buildingId`, one active package per building) | D-10: the building set of an operator is the signed CP assignment (Operaflow work units, 3D-01 §9). GT-23 and GT-24 are restated in those terms (§13) |
+| Own building lock, renewal by activity, `lockTtlMin` (v0.3 §8.5, §10) | D-3D04-2: the CP assignment lease is the only lock |
 | Compiled kernel, ADR-001 language choice (v0.3 §3) | Q-01, decided by measurement in 3D-08 (HANDOVER §5) |
 | TypeScript DTOs as the contract (v0.3 §4, §9) | Contract first: JSON Schema 2020-12 in `contracts/model3d/` (AGENTS.md §2.7, D-37); §2 lists the schemas |
 | Client module `features/editor/` in geoviewer; architecture diagram of v0.3 §3 | Client parts are SC library components (D-17, D-52..D-55); geoviewer is one host (§12) |
@@ -81,7 +82,7 @@ Field and command names in this spec are the names used in the sources; names th
 | 8 | `validate` | `.../src/validate/` | 3D-12 | `brep` |
 | 9 | `cloud` | `.../src/cloud/` | 3D-22 | `brep` |
 | 10 | `ops` | `.../src/ops/` (one module per `OperationKind`) | 3D-14..3D-21, 3D-22 (`FIT_PLANE`) | `brep`, `solve`, `validate` |
-| 11 | Kernel service | `services/kernel/` | 3D-23, 3D-24 (and GT-13, GT-23: §13) | `geo-model3d` (the only importer) |
+| 11 | Kernel service | `services/kernel/` | 3D-23, 3D-24 (and GT-23: 3D-25, §13) | `geo-model3d` (the only importer) |
 | 12 | Client obligations | SC `workspace/tools`, `geo-render/model3d`, registry adapter | 3D-40..3D-44 (SC rows authoritative) | message contract only |
 | 13 | Golden tests map | `fixtures/` (3D-07) | all | - |
 
@@ -99,7 +100,7 @@ copy [D] (D-37, 3D-ADR-0001). Internal kernel structures never leave the package
 |---|---|---|---|
 | 1 | `building-model` | `BuildingModel` and its entities: `Footprint`, `ConstructionEntity`, `Vtx`, `HalfEdge`, `Plane`, `Face`, `Shell`, `Solid`, `RoofComponent`, `Constraint`, `CoordinateFrame`, `SemanticNode`, `ModelState`, `EdgeRole`, `SurfaceKind`, with the v0.3 §4.2 changes (§4 rules 6-7) | v0.2 B.2; v0.3 §4 |
 | 2 | `measurement` | `Measurement3D` with `createdBy`, `frame: LOCAL \| WORLD`; P0 `sourceType`: `POINT_CLOUD \| MODEL \| MANUAL` | v0.2 Module 14; v0.3 §4.2 |
-| 3 | `tolerance-profile` | The 15 fields of §2.3 with the D-13 values as defaults; per project | v0.3 §10; D-13 |
+| 3 | `tolerance-profile` | The 14 fields of §2.3 with the D-13 values as defaults; per project | v0.3 §10; D-13 |
 | 4 | `command` | `GeometryCommand` envelope (§2.2) | v0.2 D.2; v0.3 §9 |
 | 5 | `command-payload-<kind>` (or `$defs` per kind) | One payload schema per `OperationKind` (§2.2); `UNDO` / `REDO` payload empty | v0.3 §9.1; §10 of this spec |
 | 6 | `command-result` | `GeometryCommandResult`: `commandId`, `status: PREVIEW \| COMMITTED \| REJECTED \| CONFLICT`, `modelVersion`, `previewId?`, `patch?`, `topologyLineage?`, `validation`, `warnings`, `error?` | v0.2 D.2 |
@@ -156,10 +157,10 @@ Fields (v0.2 D.2): `schemaVersion`, `commandId`, `projectId`, `buildingId`, `act
 | `planeFitMinPoints` | 30 | minimum points for plane fit |
 | `planeFitMinInlierRatio` | 0.6 | minimum inlier share |
 | `exportRoundDecimals` | 3 | rounding on export (mm) |
-| `lockTtlMin` | 15 | lock expiry (applicability: Q-3D04-6) |
 
 The profile is set per project and delivered with the workplace (3DQM extension, Q-03 / 3D-43) [A]. `measurementTolM`
-(v0.2 B.4) has no v0.3 value: `TBD` (Q-3D04-8).
+(v0.2 B.4) has no v0.3 value: `TBD` (Q-3D04-8). `lockTtlMin = 15` of v0.3 §10 is dropped: 3DQM keeps no own lock, the
+CP assignment lease applies [D] (D-3D04-2; amends D-13 for this field). The profile has 14 fields.
 
 ### 2.4 Error registry (v0.3 §9.2)
 
@@ -182,7 +183,7 @@ outside the signed assignment" (D-10). Refusals whose code the sources do not na
 - Accept: one JSON Schema 2020-12 per row of the schema list (or a `$defs` entry, as 3D-06 decides), each `$id` matching
   `urn:geoiplus:schema:model3d-<name>:v<n>`; valid and invalid examples per schema; Ajv 2020 compiles all (3D-06 Details).
 - Accept: a payload schema for each of the 37 `OperationKind` values of §2.2; `UNDO` / `REDO` payloads are empty.
-- Accept: `tolerance-profile` defaults equal §2.3 field by field.
+- Accept: `tolerance-profile` defaults equal §2.3 field by field (14 fields, no `lockTtlMin`).
 - Accept: the `error` schema enumerates exactly the codes of §2.4 with their HTTP statuses.
 
 ---
@@ -240,7 +241,10 @@ isolated copy, patch + inverse patch + lineage between two versions; RTG project
    (v0.3 §4.1).
 3. Where fewer than three independent planes meet (open boundary of a draft), `Vtx.p` is stored explicitly and must lie
    on its planes within `planarTolM` (v0.3 §4.1).
-4. Invariant after every commit: the distance of each vertex to each of its planes is <= `planarTolM` (v0.3 §4.1).
+3a. An imported vertex keeps its file position (explicit `p`) until an operation first changes one of its faces; then it
+   becomes derived [D] (D-3D04-3). Such vertices on a `NON_PLANAR_FACE` are reported by validation, not moved.
+4. Invariant after every commit: the distance of each derived or explicit (rule 3) vertex to each of its planes is
+   <= `planarTolM` (v0.3 §4.1); imported vertices under rule 3a are checked by validation (`NON_PLANAR_FACE`).
 5. A node of 4+ planes that do not meet in one point within `topologySnapTolM` is `INCONSISTENT_JUNCTION`; it is repaired
    by `ALIGN_JUNCTION` (v0.3 §4.1).
 6. DTO changes (v0.3 §4.2): `RoofComponent.buildingPartId` -> `ownerId` (`Building` or `BuildingPart` id);
@@ -331,9 +335,9 @@ baseline, `import-report`.
 14. Geographic CRSs are refused with `INVALID_CRS`; heights are used as in the file; the vertical CRS is kept, not
     transformed (v0.3 Д-04, Q-11).
 15. More than 500 faces: import with a warning, no latency guarantee (v0.3 Д-12, Q-11).
-16. Whether vertex positions are replaced by plane intersections at import (step 4 moves them by up to `planarTolM`) or
-    kept explicit until the first edit, and how a `NON_PLANAR_FACE` keeps its vertices under rule 4 of §4: `TBD`
-    (Q-3D04-3).
+16. Vertex positions are **not** replaced by plane intersections at import: every vertex keeps its file position until
+    an operation first changes one of its faces (§4 rule 3a) [D] (D-3D04-3). A `NON_PLANAR_FACE` keeps its vertices and
+    its fitted plane; the issue stays until the face is edited or repaired.
 
 **Accept:**
 - Accept: GT-I1, GT-I2, GT-I3 (§13).
@@ -341,6 +345,8 @@ baseline, `import-report`.
 - Accept: opaque `GeometryInstance`, `appearance` and extension members are byte-equal after import -> export (with
   GT-I4).
 - Accept: a CityJSON in a geographic CRS is refused with `INVALID_CRS`.
+- Accept: on a noisy input (vertices up to 0.015 m off their fitted planes) import -> export without edits reproduces
+  the input coordinates within 0.001 m (D-3D04-3).
 
 ---
 
@@ -689,10 +695,10 @@ passed in by the service (§3).
    inverse patch is unsafe (v0.2 §13.6).
 4. `RESTORE_BASELINE` returns to the imported state as a new version (v0.3 §6).
 5. Undo affects only the operations of the current lock/lease holder, in stack order; other users' versions are not undone
-   (v0.3 §8.5) - the holder concept: Q-3D04-6.
+   (v0.3 §8.5); the holder is the holder of the CP assignment lease [D] (D-3D04-2).
 
 **Accept:**
-- Accept: GT-12 (§13). (GT-13 is in §11, see Q-3D04-7.)
+- Accept: GT-12 (§13). (GT-13 is in §11, row 3D-23, D-3D04-1.)
 - Accept: `RESTORE_BASELINE` after GT-07 yields geometry equal to the baseline and version = previous + 1.
 
 ### 10.10 Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` (3D-19)
@@ -811,9 +817,9 @@ and export rules (3D-ADR-0002 C2, D-51). Built as its own container image (D-33)
    setting `exportRequiresApproval`, default `false` (v0.3 Д-03, Q-11). Batch export skips buildings without the right and
    lists them in the `export-report`.
 10. Journal: one `journal-entry` per commit (§2 row 12); versions and journal kept >= 90 days (v0.3 §11; 3D-03).
-11. Lock / lease: v0.3 §8.5 takes a building lock on open, renewed by activity, expiring after `lockTtlMin`; the Operaflow
-    assignment carries `leaseRef` / `leaseEpoch` (3D-01). Which one 3DQM enforces: `TBD` (Q-3D04-6). Releasing another
-    user's lock (admin) is dropped (D-10).
+11. Lease, no own lock: 3DQM enforces the CP assignment lease (`leaseRef` / `leaseEpoch`, 3D-01); a command from a session
+    that does not hold the current lease -> `403 FORBIDDEN`. The own building lock of v0.3 §8.5 and `lockTtlMin` are
+    dropped [D] (D-3D04-2); releasing another user's lock (admin) is dropped (D-10).
 12. Every request and reply validates against `contracts/model3d/`; an invalid message is refused on both sides
     (3D-ADR-0002 Checks).
 13. Operaflow rule groups A-D, F apply as assigned in 3D-ADR-0002 "Q-15" (not repeated here).
@@ -823,7 +829,8 @@ and export rules (3D-ADR-0002 C2, D-51). Built as its own container image (D-33)
     ADR-012 in 3D-08.
 
 **Accept:**
-- Accept: GT-13 (row per Q-3D04-7), GT-22, GT-24 (3D-24), GT-23 (3D-25) (§13).
+- Accept: GT-13 (3D-23, D-3D04-1), GT-22, GT-24 (3D-24), GT-23 (3D-25) (§13).
+- Accept: a command with a stale `leaseEpoch` -> `403 FORBIDDEN`, model unchanged (D-3D04-2).
 - Accept: a request with a valid token but `actorId` of another user is executed as the token's user.
 - Accept: a contract test sends one invalid message per schema and gets `400 INVALID_PAYLOAD`.
 - Accept: a PREVIEW, a competing COMMIT by another command, then COMMIT of the first `previewId` -> `409 VERSION_CONFLICT`.
@@ -880,7 +887,7 @@ transition (3D-42).
 Metric tolerance in analytic tests: area +/- 0.01 m2, volume +/- 0.01 m3 unless stated (v0.3 §12). Every test is a
 fixture (format: 3D-07, from v0.2 F.3) and runs at least one check independent of the operation code (analytic formula or
 external validator, v0.2 F.3). Each test has exactly one module and one WP row; the row assignment is BACKLOG 3D-09..3D-24
-Details.
+Details, with GT-13 moved from 3D-18 to 3D-23 (D-3D04-1).
 
 | GT | Input and operation (v0.3 §12) | Expected (v0.3 §12) | Module | Row |
 |---|---|---|---|---|
@@ -900,7 +907,7 @@ Details.
 | GT-10 | `MOVE_VERTEX` of a vertex with `FIXED_POINT` | `CONSTRAINT_CONFLICT`; version unchanged | `ops` (`MOVE_VERTEX`) | 3D-15 |
 | GT-11 | GT-03 -> `REMOVE_FACE` of one slope | `DRAFT_SOLID`; export refused; then `HEAL_HOLE` `COPY_NEIGHBOR_PLANE` impossible -> refusal listing the admissible modes | `ops` (`REMOVE_FACE`, `HEAL_HOLE`) | 3D-17 |
 | GT-12 | Undo/Redo after GT-07 | Undo: 520 m3 and the original ids; Redo: 540 m3; each operation a new version | `ops` (`UNDO`, `REDO`) | 3D-18 |
-| GT-13 | Repeated `commandId`; stale `expectedVersion` | One commit, same reply; `409 VERSION_CONFLICT` | `services/kernel` | 3D-18 (Q-3D04-7) |
+| GT-13 | Repeated `commandId`; stale `expectedVersion` | One commit, same reply; `409 VERSION_CONFLICT` | `services/kernel` | 3D-23 (D-3D04-1) |
 | GT-14 | GT-03 -> `SET_OVERHANG` 0.5 m on both eaves | Footprint 80 m2; roof 112.5 m2; overhang edge Z = 4.625; walls unchanged | `ops` (`SET_OVERHANG`) | 3D-19 |
 | GT-15 | GT-03 -> `SET_HEIGHT BASE` = -1 | Volume 600 m3; roof 100 m2 | `ops` (`SET_HEIGHT`) | 3D-19 |
 | GT-16 | GT-03 -> `TRANSLATE_BUILDING` (100; 50; 2) | Volume and areas unchanged; every vertex moved exactly by the vector | `ops` (`TRANSLATE_BUILDING`) | 3D-19 |
@@ -924,17 +931,19 @@ Count: 29 tests (GT-I1..GT-I4, GT-01..GT-25); per module: `import` 3, `export` 1
 
 ## 14. Open questions of this spec
 
-Provisional ids (D-38); the merging session assigns final ids. Each is recorded in DECISIONS.md.
+Provisional ids (D-38); the merging session assigns final ids. Each is recorded in DECISIONS.md. Owner answers of
+2026-11-21 (dialog): D-3D04-1 (GT-13 -> 3D-23), D-3D04-2 (CP lease only, no own lock), D-3D04-3 (imported vertices
+explicit until edited).
 
 | Id | Question | Used in |
 |---|---|---|
 | Q-3D04-1 | Objective that fixes the remaining degrees of freedom of a movable plane (e.g. minimal displacement of its other derived vertices); the sources name only soft `MINIMIZE_DISPLACEMENT` | §5 r8, §10.4 r5, §10.5 r4, §10.7 r3, §10.8 r3 |
 | Q-3D04-2 | Operations given only as intent: movable planes of `MATCH_ELEVATIONS` and `SET_HEIGHT EAVE`; solid closure of `SET_OVERHANG` (soffit or not); collinearity tolerance of `STRAIGHTEN_FACE`; how the `FIT_PLANE` selection reaches the server | §10.1 r7, §10.6 r6, §10.7 r3, §10.10 r1, r5, §10.12 r4 |
-| Q-3D04-3 | Import: are vertex positions replaced by plane intersections (moves up to `planarTolM`, changes an unedited round trip of real data) or kept explicit until the first edit; how a `NON_PLANAR_FACE` keeps its vertices under the vertex-plane invariant | §6 r16 |
+| Q-3D04-3 | **Closed by D-3D04-3** (keep explicit until edit). Import: are vertex positions replaced by plane intersections (moves up to `planarTolM`, changes an unedited round trip of real data) or kept explicit until the first edit; how a `NON_PLANAR_FACE` keeps its vertices under the vertex-plane invariant | §6 r16 |
 | Q-3D04-4 | Refusal codes the sources leave open: `FIT_TO_SHARED_EDGE` over the displacement limit / no unique pairing; `HEAL_HOLE` mode impossible (GT-11); `SPLIT_FACE` errors; R-01 errors; and the default maximum displacement of `FIT_TO_SHARED_EDGE` | §2.4, §10.1 r6, §10.3 r6, §10.5, §10.6 r2 |
 | Q-3D04-5 | Severity by state of `SOLID_OVERLAP`, `UNDERCONSTRAINED_GEOMETRY`, `INVALID_MEASUREMENT`, `EXPORT_SCHEMA_ERROR`, `PRECISION_LOSS` | §8 r4 |
-| Q-3D04-6 | Lock: own building lock with `lockTtlMin` (v0.3 §8.5) or the CP assignment lease (`leaseRef`, `leaseEpoch`); defines "own operations" for Undo | §2.3, §10.9 r5, §11 r11 |
-| Q-3D04-7 | GT-13 (idempotency, `expectedVersion`) needs the service's store, but BACKLOG puts it on 3D-18 (module `geo-model3d`, no dependency on 3D-23) | §11, §13 |
+| Q-3D04-6 | **Closed by D-3D04-2** (CP lease only). Lock: own building lock with `lockTtlMin` (v0.3 §8.5) or the CP assignment lease (`leaseRef`, `leaseEpoch`); defines "own operations" for Undo | §2.3, §10.9 r5, §11 r11 |
+| Q-3D04-7 | **Closed by D-3D04-1** (GT-13 -> 3D-23). GT-13 (idempotency, `expectedVersion`) needs the service's store, but BACKLOG puts it on 3D-18 (module `geo-model3d`, no dependency on 3D-23) | §11, §13 |
 | Q-3D04-8 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, heatmap default threshold, RANSAC parameters, `measurementTolM` | §2.3, §2.4, §9 r3, r6, §11 r5, r6 |
 | Q-3D04-9 | CityJSON mapping of `OVERHANG` faces on export | §7 r6 |
 
