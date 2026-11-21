@@ -19,8 +19,8 @@ Updated: 2026-11-21 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 
 |---|---:|
 | Done | 8 / 47 |
 | Review | 0 |
-| In progress | 0 |
-| Ready | 6 |
+| In progress | 1 |
+| Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 32 |
 | Blocked (external access or data) | 1 |
 
@@ -184,7 +184,7 @@ flowchart TB
 | 3D-01 | Verification note: HANDOVER §5-§7 and v0.3 §2 checked against code (shared_compnents = Tools Plane, geoviewer, Operaflow = CP + DP) | here | docs/verification | 00 | G0 | S | done (D-34; merged into base, no PR) |
 | 3D-02 | ADR: `geo-model3d` package - internal layout, remote kernel port, relation to `geo-render`/`workspace` (contracts location and P4 check moved to 3D-27) | here | docs/decisions | 01, 27 | G0 | M | done (D-56; merged into base, no PR; [3D-ADR-0002](decisions/adr/3D-ADR-0002-kernel-package-and-remote-port.md), D-51..D-55) |
 | 3D-03 | ADR: storage of building versions, edit journal and results | here | docs/decisions | 01, 29 | G0 | M | proposed (D-35: interim own store behind a port, later crowdsource) |
-| 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | ready (D-66) |
+| 3D-04 | Spec `docs/specs/3dqm-spec.md`: v0.3 in module form, C.8/C.11 in plane terms, golden tests mapped to modules | here | docs/specs | 01, 02 | G0 | L | in-progress (wp/3d-04-spec; D-66) |
 | 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary + negative control per 3D-ADR-0001), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | done (D-59; merged into base, no PR) |
 | 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | here (D-37) | contracts | 04, 27 | G0 | L | ready (D-67; waits for 3D-04 done and owner-reviewed) |
 | 3D-07 | Golden fixtures: format and synthetic CityJSON/point sets for GT-I1..GT-25 | here | fixtures | 06 | G0 | M | proposed |
