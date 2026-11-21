@@ -81,6 +81,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-65 | 3D-28 accepted (done); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-21 |
 | D-66 | 3D-04 (3DQM spec) set `ready`; dependencies 3D-01, 3D-02 done; starts in a fresh session | Owner, chat, 2026-11-21 |
 | D-67 | 3D-06 (contract schemas `model3d`) set `ready`; starts only when 3D-04 is done and reviewed by the owner (3D-04 Details); schemas become `accepted` only on the owner's approval (D-18) | Owner, chat, 2026-11-21 |
+| D-68 | Q-23: golden test GT-13 (commandId idempotency, stale `expectedVersion` -> 409) belongs to 3D-23 (kernel service, owns the idempotency store); 3D-18 keeps GT-12 | Owner, dialog, 2026-11-21 (3D-04) |
+| D-69 | Q-22: 3DQM enforces only the CP assignment lease (`leaseRef`, `leaseEpoch`); no own building lock; `lockTtlMin` is dropped from the tolerance profile (amends D-13 for this one field); Undo covers the lease holder's operations | Owner, dialog, 2026-11-21 (3D-04) |
+| D-70 | Q-19: import keeps every vertex at its file position until an operation first changes one of its faces; then it becomes derived from planes (D-08). `NON_PLANAR_FACE` vertices are reported, not moved; an unedited round trip stays exact | Owner, dialog, 2026-11-21 (3D-04) |
+| D-71 | 3D-04 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-04 provisional ids became D-68..D-70 and Q-17..Q-25 | Owner, chat, 2026-11-21 |
 
 ## Open questions
 
@@ -102,6 +106,15 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-14 | The planned move of the kernel service into `shared_compnents` (D-31) conflicts with its rule that no P4 code lives there (HANDOVER §6: server counterparts live in the DP repository). Options: a server-only package with a mechanical isolation rule there (canary, D-24); or the service moves to Operaflow (DP) instead | Needs an ADR in `shared_compnents` before the move; not before | 3D-27 records it; owner before the move |
 | Q-15 | What "full conformance with Operaflow" (D-31) requires concretely: contract/exchange schemas, API conventions, auth, storage, deployment | Operaflow's own AGENTS/docs and contracts | 3D-01 extracts the list; 3D-02/3D-03 apply it |
 | Q-16 | Q-12 answered: no 3D scene in `geo-render`. Does 3DQM get a new 3D scene module in `shared_compnents` (ADR there, three.js already pinned) or does the scene stay in geoviewer `features/scene3d` with library components mounted into it? | Decides 3D-40 location and size | 3D-02, owner approval |
+| Q-17 | Objective that fixes the remaining degrees of freedom of a movable plane in plane-terms edits (MOVE_VERTEX/EDGE, FIT_TO_SHARED_EDGE, MATCH_ELEVATIONS, ALIGN_JUNCTION refit) | Sources name only soft `MINIMIZE_DISPLACEMENT` (v0.2 §15.2); [spec §5, §10.4, §10.5](../specs/3dqm-spec.md) | ADR-S in 3D-08, owner approval |
+| Q-18 | Plane-terms details of operations given only as intent: movable planes of MATCH_ELEVATIONS and SET_HEIGHT EAVE; solid closure of SET_OVERHANG; STRAIGHTEN_FACE collinearity tolerance; how the FIT_PLANE selection reaches the server | v0.2 F-34, F-41, C.13, C.10; v0.3 §7; spec §10.1 r7 | The op's WP (3D-15, 3D-16, 3D-19, 3D-22) via intake, owner review |
+| Q-19 | Import: replace vertex positions by plane intersections (moves up to `planarTolM`) or keep them explicit until the first edit; how a NON_PLANAR_FACE keeps its vertices under the vertex-plane invariant | v0.3 §4.1 vs §5 step 4; spec §6 r16 | Owner, before 3D-10 |
+| Q-20 | Refusal codes the sources leave open (FIT_TO_SHARED_EDGE over limit / ambiguous pairing, HEAL_HOLE mode impossible, SPLIT_FACE errors, R-01 errors) and the default maximum displacement of FIT_TO_SHARED_EDGE | Registry v0.3 §9.2; spec §2.4, §10 | 3D-06 proposal, owner approval |
+| Q-21 | Severity by state of SOLID_OVERLAP, UNDERCONSTRAINED_GEOMETRY, INVALID_MEASUREMENT, EXPORT_SCHEMA_ERROR, PRECISION_LOSS (in v0.2 B.5, not in v0.3 §8.3) | spec §8 r4 | 3D-06 / 3D-12, owner approval |
+| Q-22 | Building lock: own lock with `lockTtlMin` (v0.3 §8.5) or the CP assignment lease (`leaseRef`, `leaseEpoch`, 3D-01); defines "own operations" for Undo | D-10; spec §11 r11 | Owner |
+| Q-23 | GT-13 (commandId idempotency, expectedVersion) needs the service's store, but BACKLOG maps it to 3D-18 (module `geo-model3d`, no dependency on 3D-23) | 3D-ADR-0002 C1 rule 1 (no I/O in the kernel); spec §13 | Owner |
+| Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, heatmap default threshold, RANSAC parameters, `measurementTolM` | spec §2.3, §2.4, §9, §11 | 3D-22 / 3D-23, owner approval |
+| Q-25 | CityJSON mapping of faces tagged OVERHANG on export | v0.2 F-30 (depends on export profile); spec §7 r6 | 3D-11 / 3D-19, owner |
 
 ## Open-question status updates
 
@@ -132,3 +145,6 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-13 | 2026-11-19, owner (3D-02) | closed by D-52, D-53 | Registry `service` adapter + host-injected transport; endpoint from the CP document; new Tools Plane placement value ([3D-ADR-0002](adr/3D-ADR-0002-kernel-package-and-remote-port.md)) |
 | Q-15 | 2026-11-19, owner (3D-02) | groups assigned (D-51) | A both; B, C service; D bytes service, record client session; E client session; F both. 3D-03 applies C/D to storage |
 | Q-16 | 2026-11-19, owner (3D-02) | closed by D-54, D-55 | SC 3D view port + host (3D-47), GV adapter (3D-51), independent host SC `apps/3dqm` (3D-48) |
+| Q-19 | 2026-11-21, owner (3D-04) | closed by D-70 | Imported vertices explicit until edited |
+| Q-22 | 2026-11-21, owner (3D-04) | closed by D-69 | CP lease only |
+| Q-23 | 2026-11-21, owner (3D-04) | closed by D-68 | GT-13 -> 3D-23 |
