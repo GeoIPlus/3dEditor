@@ -1,0 +1,64 @@
+{
+  "task": "dialog-question",
+  "run": 2,
+  "ref": "078b464904e5a1c9f1825e31855234251aea807f",
+  "startSha": "93d0fbf7ee3b5cf2ca4974a3a6c38b7b96c15c8f",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "asked-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.5485994,
+  "turns": 12,
+  "durationMs": 70761,
+  "usage": {
+    "input": 22,
+    "cacheCreate": 37223,
+    "cacheRead": 571437,
+    "output": 6822
+  },
+  "toolCalls": 10,
+  "toolNames": [
+    "Bash",
+    "Skill",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "Intake: 3D-32 glTF export (proposed), open question Q-17 on scope"
+  ],
+  "pushes": [],
+  "finalText": "I haven't built glTF export yet. The spec currently excludes it, and I couldn't get your decision, so I logged it as a proposed work package instead of starting code.\n\n**Why it's blocked:** glTF export is feature F-67, which the v0.3 spec (§1) excludes from the product until you decide otherwise. The first release exports CityJSON only (D-04, D-05). I asked you three questions in a dialog, but you weren't available, so nothing is decided yet.\n\n**What I recorded** (commit `61684cd`):\n- **3D-32 \"glTF export\"** in `docs/BACKLOG.md`, status `proposed`, size M. It depends on 3D-11 (CityJSON export) and 3D-24 (the export gate). It's in the dependency graph and the overview counts, and the docs check passes.\n- **Q-17** in `docs/decisions/DECISIONS.md`. It holds the three questions and blocks 3D-32 from being set `ready`. Its draft acceptance criteria are final only once you answer.\n\n**What you need to decide (Q-17)**, with my recommendation for each:\n1. **Scope:** allow glTF only (OBJ and 3D Tiles stay excluded) as a follow-up after CityJSON export. The other options are putting it in the first release or keeping it excluded.\n2. **Where it runs:** on the kernel service, behind the same rule as CityJSON (only valid solids export, with the batch report). The alternative is exporting in the browser with three.js, which would skip that rule and create a second export path.\n3. **File shape:** a single `.glb` file, Y-up, in metres, with coordinates moved to a local origin. The original CR"
+}

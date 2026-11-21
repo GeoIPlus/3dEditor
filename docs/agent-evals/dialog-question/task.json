@@ -1,0 +1,6 @@
+{
+  "id": "dialog-question",
+  "covers": ["named: question asked as a dialog", "AGENTS.md §2.2"],
+  "maxTurns": 40,
+  "budgetUsd": 3
+}

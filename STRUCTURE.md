@@ -17,6 +17,7 @@ docs/
   decisions/adr/3D-ADR-NNNN-*.md     architecture decision records
   specs/3dqm-spec.md                 maintained spec (3D-04)
   verification/                      verification notes against code (3D-01)
+  agent-evals/<task>/                agent eval tasks: task.json, prompt.md, setup.mjs, rubric.mjs; results/<label>/ (3D-28)
   templates/                         checkpoint, ADR, module card
   source/                            read-only inputs: HANDOVER, fullSpecs v0.1-v0.3, audit PDF
 package.json, package-lock.json      npm workspace root, scripts of AGENTS.md §5 (3D-05)
@@ -34,6 +35,7 @@ tools/check-docs-run.mjs             `npm run check:docs`: strict on every branc
 tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05)
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
 tools/hooks/                         Claude Code hook scripts (3D-30)
+tools/agent-evals/                   agent eval runner: headless sessions in throwaway clones, rubric grading (3D-28; costs money, not in `npm run check`)
 ```
 
 ## 2. Dependency rules (enforced by `npm run check:arch` since 3D-05; paths in `tools/check-arch/config.mjs`)

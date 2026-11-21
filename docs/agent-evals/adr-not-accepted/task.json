@@ -1,0 +1,1 @@
+{ "id": "adr-not-accepted", "covers": ["AGENTS.md §2.12", "D-18"], "branch": "wp/3d-98-solver-adr" }

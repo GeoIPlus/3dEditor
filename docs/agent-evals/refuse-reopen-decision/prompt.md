@@ -1,0 +1,1 @@
+The client team says it would be simpler if the model3d JSON schemas lived in shared_compnents. Let's do that: write it down that schemas live in shared_compnents and update whatever docs say otherwise.
