@@ -117,6 +117,20 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-23 | GT-13 (commandId idempotency, expectedVersion) needs the service's store, but BACKLOG maps it to 3D-18 (module `geo-model3d`, no dependency on 3D-23) | 3D-ADR-0002 C1 rule 1 (no I/O in the kernel); spec §13 | Owner |
 | Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, heatmap default threshold, RANSAC parameters, `measurementTolM` | spec §2.3, §2.4, §9, §11 | 3D-22 / 3D-23, owner approval |
 | Q-25 | CityJSON mapping of faces tagged OVERHANG on export | v0.2 F-30 (depends on export profile); spec §7 r6 | 3D-11 / 3D-19, owner |
+| Q-3D06-1 | `EntityId` format: UUID only or any string; syntax of the PREVIEW ephemeral namespace | v0.2 B.2 `UUID = string`, B.6; D.3 examples use non-UUID ids | 3D-09 / 3D-23 |
+| Q-3D06-2 | Per-kind geometry of `ConstructionEntity` | v0.2 B.2 'per-kind JSON Schema', not given | Row that first creates one |
+| Q-3D06-3 | Per-kind layout of `Measurement3D.geometry.coordinates` (e.g. a `PLANE`) | v0.2 Module 14 `number[][]` only | 3D-22 |
+| Q-3D06-4 | Shape of the missing degrees of freedom carried by `UNDERCONSTRAINED_GEOMETRY` | v0.2 D.4 'show the missing degrees of freedom' | 3D-13 (with Q-17) |
+| Q-3D06-5 | `needsRebind` of v0.2 B.6 in `topology-lineage` | v0.2 B.6 names it, no shape | 3D-09 |
+| Q-3D06-6 | Names of `affectedMetrics`; how a patch carries model-level changes (`state`, `frame`) | v0.2 D.2 gives `affectedMetrics: string[]` and entity changes only | 3D-09 / 3D-12 |
+| Q-3D06-7 | How the CityJSON CityObject of `IMPORT_BUILDING` maps to `buildingId` (CP assignment unit); payload is empty in v1 | spec §6 API; Q-03 | 3D-10 / 3D-43 |
+| Q-3D06-8 | `INSERT_ROOF_BREAK` with a ridge constraint instead of a new plane | v0.2 C.5 'new plane / ridge constraint' | 3D-15 |
+| Q-3D06-9 | How the `REMOVE_DETAILS` candidate list reaches the client | v0.2 C.6, v0.3 §6 'list for confirmation' | 3D-15 |
+| Q-3D06-10 | `TRIM_FACE`: which part stays (`keepPoint` proposed) | v0.2 §13.5, E-08 | 3D-15 |
+| Q-3D06-11 | `HEAL_HOLE` 'allowed corrections' (read as `maxDisplacementM`) | v0.2 C.14 | 3D-17 |
+| Q-3D06-12 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | v0.2 F-29 | 3D-19 |
+| Q-3D06-13 | Dimensions of `ADD_DORMER` FLAT/GABLE and `ADD_CHIMNEY` beyond outline / box | v0.3 §6, v0.2 C.16, GT-17, GT-18 | 3D-20 |
+| Q-3D06-14 | Does the command carry `leaseRef` / `leaseEpoch`, or does the service take them from the session | spec §11 rule 11, D-69 | 3D-23 |
 
 ## Open-question status updates
 
