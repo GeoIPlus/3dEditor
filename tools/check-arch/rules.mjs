@@ -3,6 +3,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join, posix } from 'node:path';
 import { isCode, lineCount, parseSource, readText } from './scan.mjs';
+import { kernelModuleDag, kernelNoIo } from './kernel-rules.mjs';
 
 /**
  * @typedef {import('./config.mjs').ArchConfig} ArchConfig
@@ -170,4 +171,6 @@ export function clientOutputScan(ctx) {
   });
 }
 
-export const STATIC_RULES = { lineLimit, kernelPurity, kernelImporters, canaryWiring, canaryValueLeak, clientOutputScan };
+export const STATIC_RULES = {
+  lineLimit, kernelPurity, kernelImporters, canaryWiring, canaryValueLeak, clientOutputScan, kernelModuleDag, kernelNoIo,
+};

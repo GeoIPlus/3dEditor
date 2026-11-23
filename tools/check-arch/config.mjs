@@ -21,10 +21,35 @@ export const CONFIG = {
     /** Module every `exports` target must import. */
     canaryModule: 'src/canary.js',
     /**
-     * [A] Who may import the kernel: itself, the kernel service (3D-23) and repository tools/tests.
-     * Every other file counts as client code.
+     * Who may import the kernel: itself (its tests included), the kernel service (3D-23; 3D-ADR-0002 C1, narrowed by
+     * 3D-09) and the latency bench, which drives the kernel in-process (3D-ADR-0006) [A]. Every other file counts as
+     * client code.
      */
-    allowedImporters: ['packages/geo-model3d/', 'services/', 'tools/'],
+    allowedImporters: ['packages/geo-model3d/', 'services/kernel/', 'tools/bench/'],
+    /** Kernel source: the module DAG and the no-I/O rule apply here (3D-09). */
+    srcDir: 'packages/geo-model3d/src',
+    /**
+     * Module DAG, 3D-ADR-0002 C1 rule 2: module -> modules it may import. Root files (`index.js`) import all.
+     * `crs` (3D-32, branch wp/3d-32-crs-support): a leaf that `brep`, `import`, `export` may import, as its accepted ADR
+     * amends C1 rule 2; listed here so that its merge does not break this rule.
+     * @type {Record<string, string[]>}
+     */
+    modules: {
+      brep: ['crs'],
+      crs: [],
+      solve: ['brep'],
+      import: ['brep', 'crs'],
+      export: ['brep', 'crs'],
+      validate: ['brep'],
+      cloud: ['brep'],
+      ops: ['brep', 'solve', 'validate'],
+    },
+    /** C1 rule 1: Node built-ins for I/O, processes, timers, clock, environment. */
+    ioModules: [/^(node:)?(fs|fs\/promises|net|http|https|http2|child_process|dgram|dns|tls|cluster|worker_threads|os|process|perf_hooks|timers|timers\/promises|readline|inspector|vm)$/],
+    /** C1 rule 1: globals that reach I/O, timers, clock, randomness, environment or process. */
+    ioGlobals: ['process', 'fetch', 'WebSocket', 'setTimeout', 'setInterval', 'setImmediate', 'queueMicrotask', 'performance', 'crypto', 'require'],
+    /** C1 rule 1: member calls that read the clock or randomness (`process.*` is caught by `ioGlobals`). */
+    ioMembers: ['Date.now', 'Math.random'],
     /** Modules the kernel must not import (AGENTS.md §2.10, STRUCTURE.md §2.1). */
     forbiddenModules: [/^three(\/|$)/, /^@geoiplus\/(?!geo-model3d(\/|$))/, /^(jsdom|happy-dom)(\/|$)/],
     /** Browser globals the kernel must not reference (AGENTS.md §2.10). */

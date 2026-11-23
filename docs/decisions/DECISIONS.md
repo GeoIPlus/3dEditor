@@ -129,6 +129,11 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-113 | 3D-08 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-08 provisional ids became D-109..D-112 and Q-42 | Owner, chat ("merge"), 2026-11-23 |
 | D-114 | Once 3D-09 is done, 3D-10 (import) and 3D-12 (validation) are set `ready` and started in parallel fresh sessions; 3D-10 starts only when 3D-32 is also done (AGENTS.md §4) | Owner, chat, 2026-11-23 |
 | D-115 | 3D-09 (kernel core) set `ready` and started in a fresh session | Owner, dialog, 2026-11-23 |
+| D-116 | Local frame boundary with `crs` (3D-32): `brep` applies only the `buildingAxisDeg` rotation on top of an injected origin-relative metric mapping (default `world - originWorld`, the projected-CRS path); `brep` does not import `crs`; import (3D-10) passes the `crs` ENU mapping for geographic CRSs | Owner, dialog, 2026-11-23 (3D-09) |
+| D-117 | `check:arch` allows only `packages/geo-model3d/`, `services/kernel/` and `tools/bench/` (in-process bench, 3D-ADR-0006) to import the kernel; 3D-ADR-0002 C1 rules 1-2 enforced as `kernelNoIo` and `kernelModuleDag` (DAG lists `crs` as a leaf for `brep`, `import`, `export`, per 3D-32) | Owner, dialog, 2026-11-23 (3D-09) |
+| D-118 | `robust-predicates` (3D-ADR-0004 decision 3) is not adopted in 3D-09: the core has no orientation predicate; 3D-12 decides when its ring and face-crossing tests need one | Owner, dialog, 2026-11-23 (3D-09) |
+| D-119 | Public function names of `geo-model3d` (spec §3): `executeCommand`, `importBuilding`, `exportBuilding`, `validateModel`, `fitPlane`, `deviationStats` (added by their rows); `worldToLocal`, `localToWorld`, `canonicalJson` exported by 3D-09 | Owner, dialog, 2026-11-23 (3D-09) |
+| D-120 | 3D-09 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-09 provisional ids became D-116..D-119 | Owner, chat, 2026-11-23 |
 
 ## Open questions
 
