@@ -1,0 +1,180 @@
+{
+ "type": "CityJSON",
+ "version": "2.0",
+ "transform": {
+  "scale": [
+   1e-8,
+   1e-8,
+   0.001
+  ],
+  "translate": [
+   55.6756,
+   9.1908,
+   0
+  ]
+ },
+ "metadata": {
+  "referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/4937"
+ },
+ "CityObjects": {
+  "bld-gt-i1": {
+   "type": "Building",
+   "geometry": [
+    {
+     "type": "Solid",
+     "lod": "2.2",
+     "boundaries": [
+      [
+       [
+        [
+         3,
+         2,
+         1,
+         0
+        ]
+       ],
+       [
+        [
+         0,
+         1,
+         5,
+         4
+        ]
+       ],
+       [
+        [
+         1,
+         2,
+         6,
+         9,
+         5
+        ]
+       ],
+       [
+        [
+         2,
+         3,
+         7,
+         6
+        ]
+       ],
+       [
+        [
+         3,
+         0,
+         4,
+         8,
+         7
+        ]
+       ],
+       [
+        [
+         4,
+         5,
+         9,
+         8
+        ]
+       ],
+       [
+        [
+         6,
+         7,
+         8,
+         9
+        ]
+       ]
+      ]
+     ],
+     "semantics": {
+      "surfaces": [
+       {
+        "type": "GroundSurface"
+       },
+       {
+        "type": "WallSurface"
+       },
+       {
+        "type": "WallSurface"
+       },
+       {
+        "type": "WallSurface"
+       },
+       {
+        "type": "WallSurface"
+       },
+       {
+        "type": "RoofSurface"
+       },
+       {
+        "type": "RoofSurface"
+       }
+      ],
+      "values": [
+       [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+       ]
+      ]
+     }
+    }
+   ]
+  }
+ },
+ "vertices": [
+  [
+   7004,
+   1219,
+   0
+  ],
+  [
+   6979,
+   17120,
+   0
+  ],
+  [
+   14167,
+   17155,
+   0
+  ],
+  [
+   14192,
+   1254,
+   0
+  ],
+  [
+   7004,
+   1219,
+   5000
+  ],
+  [
+   6979,
+   17120,
+   5000
+  ],
+  [
+   14167,
+   17155,
+   5000
+  ],
+  [
+   14192,
+   1254,
+   5000
+  ],
+  [
+   10598,
+   1237,
+   8000
+  ],
+  [
+   10573,
+   17138,
+   8000
+  ]
+ ]
+}

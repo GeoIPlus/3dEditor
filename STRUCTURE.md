@@ -29,6 +29,7 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
   src/solve/ import/ export/ validate/ cloud/ ops/      modules (3D-ADR-0002 C1; later rows)
   test/brep/ test/golden/                               unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
+  src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007)
 services/kernel/       (3D-23)        host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
   src/ports/ adapters/ operaflow/                        storage, points, validator, auth; interim adapters (D-35)
 contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
@@ -41,6 +42,7 @@ tools/check-arch/                    `npm run check:arch`: rules in config.mjs, 
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
 tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006)
 tools/hooks/                         Claude Code hook scripts (3D-30)
+tools/crs-table/                     generator of `geo-model3d/src/crs/epsg-table.json` from PROJ proj.db (3D-32)
 tools/agent-evals/                   agent eval runner: headless sessions in throwaway clones, rubric grading (3D-28; costs money, not in `npm run check`)
 ```
 

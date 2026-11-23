@@ -134,6 +134,13 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-118 | `robust-predicates` (3D-ADR-0004 decision 3) is not adopted in 3D-09: the core has no orientation predicate; 3D-12 decides when its ring and face-crossing tests need one | Owner, dialog, 2026-11-23 (3D-09) |
 | D-119 | Public function names of `geo-model3d` (spec §3): `executeCommand`, `importBuilding`, `exportBuilding`, `validateModel`, `fitPlane`, `deviationStats` (added by their rows); `worldToLocal`, `localToWorld`, `canonicalJson` exported by 3D-09 | Owner, dialog, 2026-11-23 (3D-09) |
 | D-120 | 3D-09 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-09 provisional ids became D-116..D-119 | Owner, chat, 2026-11-23 |
+| D-121 | 3D-32 transform library: proj4js (`proj4`, MIT) at runtime inside `geo-model3d` (server-only, P4), exact version pin; CRS definitions come from a generated EPSG table (3D-ADR-0007 states the source) | Owner, dialog, 2026-11-23 (3D-32) |
+| D-122 | CityJSON vertices in a geographic (and any EPSG) CRS are read in the EPSG authority axis order of that CRS, not assumed lon/lat (CityJSON 2.0 is silent) | Owner, dialog, 2026-11-23 (3D-32) |
+| D-123 | Export of edited vertices in a geographic CRS: `exportRoundDecimals` is read metrically: angles get `exportRoundDecimals + 5` decimal places of a degree (1e-8 deg <= 1.12 mm), heights `exportRoundDecimals`; the file `transform.scale` is kept, a coarser scale is reported as `PRECISION_LOSS`; untouched vertices keep their file integers (D-70) | Owner, dialog, 2026-11-23 (3D-32) |
+| D-124 | Contract change (D-18): description-only fix of `CoordinateFrame.originWorld` in `building-model` (units and axis order of `horizontalCrs`; for a geographic CRS the ENU origin); shape and `$id` v1 unchanged | Owner, dialog, 2026-11-23 (3D-32) |
+| D-125 | 3D-ADR-0007 accepted (D-18) as written, including: non-metre projected CRSs (e.g. EPSG:2263) are `INVALID_CRS`; axis order per code from the generated table; `crs` leaf module in the DAG. Q-43 (EPSG terms) stays open, checked by the owner; it blocks only a production release | Owner, dialog, 2026-11-23 (3D-32) |
+| D-126 | Point cloud in another horizontal CRS than a geographic-CRS building (reprojection out of 3D-32) becomes a new `proposed` row (3D-69); reproject vs. refuse is decided when it is set `ready` | Owner, dialog, 2026-11-23 (3D-32) |
+| D-127 | 3D-32 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids became D-121..D-126 and Q-43 (EPSG terms, still open); id clashes with the parallel 3D-08 resolved at merge: CRS ADR 3D-ADR-0004 -> 3D-ADR-0007, row 3D-66 (cloud CRS) -> 3D-69 | Owner, chat, 2026-11-23 |
 
 ## Open questions
 
@@ -181,6 +188,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-40 | Is `APPROVED` / return-for-rework a new version with a journal entry? If yes, `history` needs no new operation; if no, a state-record operation is added. The reviewer must not count as an author of such an entry (v0.3 §8.1) | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md) §6 | 3D-24 / 3D-06, owner |
 | Q-41 | GT-I2: which edges carry `OPEN_BOUNDARY` - the two ridge edges only (the 0.03 m wall edges reported as degenerate, < `minEdgeLengthM`) or all four edges of the gap loop | v0.3 §12 GT-I2, D-101 | 3D-10 |
 | Q-42 | On which machine class is the latency verdict re-measured once the kernel service image exists (production instance class of the Tools Plane, unknown today: HANDOVER §8 q3) | [3D-ADR-0006](adr/3D-ADR-0006-bench-rig-and-scenes.md) step 5; 3D-08 measured on the cloud agent container | 3D-23, owner |
+| Q-43 | Do the EPSG dataset terms of use allow shipping a table derived from it (via PROJ `proj.db`) inside the kernel image? PROJ code and data are MIT (`LICENSE_proj` in pyproj 3.8.0); the EPSG terms could not be read (epsg.org blocked by the network policy) | 3D-ADR-0004 licence section | owner / legal, before 3D-32 is accepted |
 
 ## Open-question status updates
 

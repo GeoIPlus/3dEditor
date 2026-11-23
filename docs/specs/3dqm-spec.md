@@ -23,7 +23,7 @@ Field and command names in this spec are the names used in the sources; names th
 - 3DQM edits **existing** LoD2 building models. Creation is limited to `REPLACE_ROOF` with the templates flat, shed,
   gable, hip on the existing footprint [D] (D-01).
 - Input and output are CityJSON; anything else is converted before 3DQM [D] (D-02). CityJSON 2.0.x; the exact version is
-  pinned with the validator version (v0.3 Д-08, unconfirmed: Q-11).
+  pinned with the validator version [D] (v0.3 Д-08, D-91).
 - Production input is the point cloud plus manual input; no stereo [D] (D-03).
 - The first release ends at `VALID_SOLID` + export. `APPROVED` is a geometry QC mark; no tax profile [D] (D-04). Export
   only for valid solids; drafts stay inside [D] (D-05).
@@ -40,7 +40,8 @@ Field and command names in this spec are the names used in the sources; names th
   terms: its unknowns are `Face.supportPlane` values; vertex positions follow from them (§4).
 - Units: metres and degrees (v0.3 §4.3). Coordinates are double precision; the kernel works in the building's local frame
   (`CoordinateFrame.originWorld` + `buildingAxisDeg`); world coordinates are reconstructed by transform without
-  accumulating edit error (v0.2 B.3, M-02).
+  accumulating edit error (v0.2 B.3, M-02). For a geographic CRS the frame is a local metric ENU frame (east, north,
+  up) at `originWorld`; `originWorld` is in the units and axis order of `horizontalCrs` [D] (D-92, D-124; §4a).
 - `LOCAL_X` / `LOCAL_Y` in commands always mean the building axes, including `buildingAxisDeg` (v0.3 §4.3).
 - Ring orientation: the outer ring of a face is counter-clockwise seen from outside the solid, inner rings clockwise
   (v0.3 §4.3).
@@ -75,10 +76,11 @@ Field and command names in this spec are the names used in the sources; names th
 |---|---|---|---|---|
 | 2 | Contracts | `contracts/model3d/` | 3D-06 | - |
 | 3 | Kernel public API | `packages/geo-model3d/src/index.js` | 3D-09, each op row | all modules |
-| 4 | `brep` | `packages/geo-model3d/src/brep/` | 3D-09 | - |
+| 4 | `brep` | `packages/geo-model3d/src/brep/` | 3D-09 | `crs` |
+| 4a | `crs` | `.../src/crs/` | 3D-32 | - (third party: `proj4`, [3D-ADR-0004](../decisions/adr/3D-ADR-0007-crs-transform.md)) |
 | 5 | `solve` | `.../src/solve/` | 3D-13 | `brep` |
-| 6 | `import` | `.../src/import/` | 3D-10 | `brep` |
-| 7 | `export` | `.../src/export/` | 3D-11 | `brep` |
+| 6 | `import` | `.../src/import/` | 3D-10 | `brep`, `crs` |
+| 7 | `export` | `.../src/export/` | 3D-11 | `brep`, `crs` |
 | 8 | `validate` | `.../src/validate/` | 3D-12 | `brep` |
 | 9 | `cloud` | `.../src/cloud/` | 3D-22 | `brep` |
 | 10 | `ops` | `.../src/ops/` (one module per `OperationKind`) | 3D-14..3D-21, 3D-22 (`FIT_PLANE`) | `brep`, `solve`, `validate` |
@@ -275,6 +277,34 @@ isolated copy, patch + inverse patch + lineage between two versions; RTG project
 
 ---
 
+## 4a. `crs` - CRS resolution, local metric frame, write-back (3D-32)
+
+**Purpose.** Map one building between its file CRS and a local metric frame, and write changed vertices back [D]
+(D-92, D-93, [3D-ADR-0004](../decisions/adr/3D-ADR-0007-crs-transform.md), D-125).
+
+**API.** `resolveCrs(referenceSystem)`; `createMetricFrame(referenceSystem, originWorld)` with `toMetric` / `toWorld`;
+`writeBackVertices({ frame, transform, fileVertices, changed, exportRoundDecimals })`; `decodeVertex`. Internal to the
+kernel (not in `index.js`); `import` (3D-10) and `export` (3D-11) call it.
+
+**Rules.**
+1. A CRS reference is the CityJSON 2.0 OGC URL (`http(s)://www.opengis.net/def/crs/{EPSG|OGC}/{version}/{code}`) or
+   `EPSG:nnnn`. It is looked up in a table generated from PROJ `proj.db` (versions recorded in the table). A compound
+   CRS resolves through its horizontal part; the vertical part is kept, not transformed (D-93).
+2. Supported: geographic 2D/3D CRSs in degrees with east/north axes and a metric ellipsoid; projected CRSs in metres
+   with east/north axes. Anything else is `INVALID_CRS` (D-92).
+3. Axis order is the EPSG authority order of the horizontal CRS, for geographic and projected CRSs alike (D-122).
+4. Projected: metric = world - origin (axes in east, north order). Geographic: local ENU at the origin, through
+   geodetic -> geocentric with `proj4` and the topocentric rotation; heights as in the file.
+5. Write-back: untouched vertices keep their file integers; changed vertices are rounded (§7 rule 2) and quantised to
+   the file's own `transform`; a coarser grid gives `PRECISION_LOSS` (D-70, D-123).
+
+**Accept:**
+- Accept: an unedited geographic-CRS fixture writes back identical integers (GT-I4 rule, 0.001 m); an edited one writes
+  changed vertices within 0.001 m; a projected file takes the same path with a translation only; unknown or unsupported
+  CRS -> `INVALID_CRS` (tests in `packages/geo-model3d/test/crs/`).
+
+---
+
 ## 5. `solve` - constraints, plane intersection, conflict diagnostics (3D-13)
 
 **Purpose.** Solve plane unknowns under hard and soft constraints; report conflicts and missing degrees of freedom
@@ -319,7 +349,9 @@ baseline, `import-report`.
 
 **Rules** (v0.3 §5 steps):
 1. Geometry: the highest LoD in the 2.x range; if a `Solid` and a `MultiSurface` of the same LoD exist, take the `Solid`.
-2. Apply `transform`; convert to the building's local frame in double precision.
+2. Apply `transform`; resolve `metadata.referenceSystem` (§4a); convert to the building's local metric frame in double
+   precision (projected CRS: translation; geographic CRS: ENU) [D] (D-92). File coordinates are read in the EPSG
+   authority axis order of the CRS [D] (D-122).
 3. Merge vertices within `topologySnapTolM`.
 4. Fit a plane to each surface (SVD); deviation > `planarTolM` -> tag `NON_PLANAR_FACE`; the face stays in the model.
 5. Merge adjacent coplanar faces of the same semantic type (angle < `coplanarTolDeg`, offset < `planarTolM`).
@@ -335,10 +367,12 @@ baseline, `import-report`.
 11. Return the immutable baseline (F-08) and the import report; the service stores them (§11).
 12. No constraints are inferred at import; the operator sets `FIXED_*` explicitly. `GeometryInstance`, `appearance` and
     extensions are kept as opaque data and returned unchanged on export.
-13. Each `BuildingPart` is kept and edited as its own body; creating or splitting parts is P1 (v0.3 Д-09, Q-11).
-14. Geographic CRSs are refused with `INVALID_CRS`; heights are used as in the file; the vertical CRS is kept, not
-    transformed (v0.3 Д-04, Q-11).
-15. More than 500 faces: import with a warning, no latency guarantee (v0.3 Д-12, Q-11).
+13. Each `BuildingPart` is kept and edited as its own body; creating or splitting parts is P1 [D] (v0.3 Д-09, D-91).
+14. Projected and geographic CRSs are accepted; an unknown or unsupported CRS (not in the CRS table of §4a: e.g. a
+    malformed reference, grads, non-metre projected units, geocentric) is refused with `INVALID_CRS` [D] (D-92; the
+    non-metre case: D-125). Heights are used as in the file; the vertical CRS is kept, not
+    transformed [D] (D-93). Adjacent buildings are imported and edited independently [D] (v0.3 Д-05, D-89).
+15. More than 500 faces: import with a warning, no latency guarantee [D] (v0.3 Д-12, D-94).
 16. Vertex positions are **not** replaced by plane intersections at import: every vertex keeps its file position until
     an operation first changes one of its faces (§4 rule 3a) [D] (D-70). A `NON_PLANAR_FACE` keeps its vertices and
     its fitted plane; the issue stays until the face is edited or repaired.
@@ -348,7 +382,8 @@ baseline, `import-report`.
 - Accept: a face without semantics is classified by the normal thresholds of rule 7 and tagged `SEMANTICS_INFERRED`.
 - Accept: opaque `GeometryInstance`, `appearance` and extension members are byte-equal after import -> export (with
   GT-I4).
-- Accept: a CityJSON in a geographic CRS is refused with `INVALID_CRS`.
+- Accept: a CityJSON with an unknown or unsupported CRS is refused with `INVALID_CRS`; a geographic CRS is imported
+  into an ENU frame (3D-32 tests: `packages/geo-model3d/test/crs/`).
 - Accept: on a noisy input (vertices up to 0.015 m off their fitted planes) import -> export without edits reproduces
   the input coordinates within 0.001 m (D-70).
 
@@ -364,9 +399,12 @@ service).
 **Rules.**
 1. Geometry, semantics and object ids round-trip: an unedited import -> export matches within 0.001 m; semantics and ids
    are identical (v0.3 §12 GT-I4).
-2. Coordinates are rounded to `exportRoundDecimals` (v0.3 §10).
+2. Only vertices changed by an edit are converted back to the file CRS; untouched vertices keep their file integers
+   [D] (D-70, D-92). Changed coordinates are rounded to `exportRoundDecimals` (v0.3 §10); in a geographic CRS angles get
+   `exportRoundDecimals + 5` decimals of a degree and heights `exportRoundDecimals` [D] (D-123). The file's
+   `transform` is kept; a grid coarser than the rounding step is reported as `PRECISION_LOSS` (§4a).
 3. The output LoD label equals the input; installations are written as `BuildingInstallation` of the same LoD
-   (v0.3 Д-07, Q-11).
+   [D] (v0.3 Д-07, D-91).
 4. Opaque data (`GeometryInstance`, `appearance`, extensions) are returned unchanged (v0.3 §5).
 5. Whether a model may be exported is decided by the service gate (§11 rule 9); the module itself exports any model it is
    given [A].
@@ -374,7 +412,8 @@ service).
 
 **Accept:**
 - Accept: GT-I4 (§13).
-- Accept: every coordinate in the output has at most `exportRoundDecimals` decimals.
+- Accept: every changed coordinate is rounded by rule 2 before it is quantised to the file grid; untouched vertices
+  are byte-equal integers.
 
 ---
 
@@ -828,7 +867,7 @@ and export rules (3D-ADR-0002 C2, D-51). Built as its own container image (D-33)
    baseline; `APPROVED -> VALID_SOLID | DRAFT_SOLID` automatically on any edit. Separation of duties is enforced here; the
    Operaflow format has no such rule (3D-01; 3D-24 row).
 9. Export gate (v0.3 §8.4): export allowed for `VALID_SOLID` and `APPROVED` with a passed `FINAL_VALIDATION`; project
-   setting `exportRequiresApproval`, default `false` (v0.3 Д-03, Q-11). Batch export skips buildings without the right and
+   setting `exportRequiresApproval`, default `false` [D] (v0.3 Д-03, D-90). Batch export skips buildings without the right and
    lists them in the `export-report`.
 10. Journal: one `journal-entry` per commit (§2 row 12); versions and journal kept >= 90 days (v0.3 §11; 3D-03).
 11. Lease, no own lock: 3DQM enforces the CP assignment lease (`leaseRef` / `leaseEpoch`, 3D-01); a command from a session
@@ -888,7 +927,7 @@ and export rules (3D-ADR-0002 C2, D-51). Built as its own container image (D-33)
    (3D-ADR-0002 B).
 7. The client shows at least the last 50 operations (v0.2 §13.6).
 8. Rendering is no worse than the current viewer with one edited building; desktop Chrome and Edge, last two versions,
-   WebGL2 (v0.3 §11, Д-06, Q-11). UI in English, error texts as localisation keys (v0.3 Д-11, Q-11).
+   WebGL2 [D] (v0.3 §11, Д-06, D-91). UI in English, error texts as localisation keys [D] (v0.3 Д-11, D-91).
 
 **Accept:** in the SC rows (3D-40 drawing and pick by entity id; 3D-41 transport and stale-reply drop; 3D-42 E-04,
 snapping, throttling; 3D-44 panels). This spec adds: Accept: the E-04 table above is implemented transition for
@@ -982,4 +1021,5 @@ Contract open questions of 3D-06 (D-75; source and wording:
 | Q-39 | Whether the command carries `leaseRef` / `leaseEpoch` (§11 rule 11) or the service takes them from the session | 3D-23 |
 
 Existing questions this spec depends on: Q-01 (kernel language, 3D-08), Q-03 (CP extension content, 3D-43), Q-10
-(val3dity binding, 3D-12), Q-11 (v0.3 assumptions Д-01..Д-12, owner before 3D-09).
+(val3dity binding, 3D-12). Q-11 (v0.3 assumptions Д-01..Д-12) is closed by D-88..D-94; Q-43 (EPSG terms of use,
+3D-ADR-0007) is open.

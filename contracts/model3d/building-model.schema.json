@@ -42,7 +42,7 @@
         "verticalCrs": { "type": ["string", "null"], "description": "null = not given; no silent assumption (v0.2 B.2)." },
         "axisOrder": { "const": "EAST_NORTH_UP" },
         "unit": { "const": "m" },
-        "originWorld": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3", "description": "Double precision CRS origin of the local frame." },
+        "originWorld": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3", "description": "Double precision origin of the local frame in the units and axis order of `horizontalCrs` (EPSG authority order); for a geographic CRS the ENU origin, angles in degrees and height in metres (D-92, D-124).", "$comment": "3D-32: overrides the metres wording of common V3 for this property; shape unchanged." },
         "buildingAxisDeg": { "type": "number", "description": "Rotation of the local X axis from east, counter-clockwise, degrees (v0.3 §4.2)." }
       },
       "required": ["horizontalCrs", "verticalCrs", "axisOrder", "unit", "originWorld", "buildingAxisDeg"],
