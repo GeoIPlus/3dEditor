@@ -94,6 +94,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-78 | 3D-06 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-06 provisional ids became D-75..D-77 and Q-26..Q-39 | Owner, chat, 2026-11-23 |
 | D-79 | 3D-07 set `ready` and started in a fresh session | Owner, chat, 2026-11-23 |
 | D-80 | Branch `chore/context7-mcp` (unmerged, Context7 MCP server) is kept on the remote; not merged, not deleted (context7 stays deferred per D-46) | Owner, chat, 2026-11-23 |
+| D-81 | 3D-64 (spec update applying D-76/D-77) set `ready` and started in a fresh session | Owner, chat, 2026-11-23 |
 
 ## Open questions
 
