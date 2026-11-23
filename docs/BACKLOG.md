@@ -219,7 +219,7 @@ flowchart TB
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
 | 3D-63 | Swap 3DQM interim data adapters for crowdsource datasets; migrate stored buildings and journals | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | proposed (D-35) |
-| 3D-64 | Spec update: apply D-76 (Q-20 refusal codes) and D-77 (Q-21 severities) to `docs/specs/3dqm-spec.md`; list contract questions Q-26..Q-39 | here | docs/specs | 04, 06 | G0 | S | ready (D-81; started in a fresh session) |
+| 3D-64 | Spec update: apply D-76 (Q-20 refusal codes) and D-77 (Q-21 severities) to `docs/specs/3dqm-spec.md`; list contract questions Q-26..Q-39 | here | docs/specs | 04, 06 | G0 | S | in-progress (wp/3d-64-spec-update) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
