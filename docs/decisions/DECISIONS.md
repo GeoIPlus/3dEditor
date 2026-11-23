@@ -147,6 +147,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D13-2 | Hard-constraint check tolerances: point / line / plane distances `planarTolM`; EQUAL_Z `zAlignTolM`; COINCIDENT `topologySnapTolM`; angular kinds exact up to `numericEpsilon` on sin / cos (an inconsistent angle demand is always a conflict) | Owner, dialog, 2026-11-23 (3D-13) |
 | D-3D13-3 | Q-29: `details.missingDegreesOfFreedom` stays `string[]` (no schema change); one entry per free degree `"<faceId>:OFFSET"` or `"<faceId>:ROTATION"`; `entityIds` lists the faces | Owner, dialog, 2026-11-23 (3D-13) |
 | D-3D13-4 | Underconstrained threshold (3D-ADR-0005): eigenvalue gap of O1 / smallest singular value of the reduced stage-2 system <= `numericEpsilon` of the profile (default 1e-9, the spike value) | Owner, dialog, 2026-11-23 (3D-13) |
+| D-3D13-5 | Spec §5 receives the per-kind table (D-3D13-1) and D-3D13-2..4 through a `proposed` intake row that the coordinating session adds after 3D-66 is merged (both edit §5); until then the [solve module card](../../packages/geo-model3d/README.md#solve-3d-13) and this table are the authority | Owner, dialog, 2026-11-23 (3D-13) |
 
 ## Open questions
 
