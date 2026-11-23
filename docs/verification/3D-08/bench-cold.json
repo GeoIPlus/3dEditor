@@ -1,0 +1,228 @@
+{
+  "target": {
+    "p95Ms": 150,
+    "faces": 200,
+    "source": "v0.3 §11; spec §11 rule 14"
+  },
+  "rig": {
+    "cpuModel": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "logicalCpus": 4,
+    "cpuMHz": 0,
+    "cgroupCpuMax": null,
+    "memGiB": 15.7,
+    "os": "Linux 6.18.44-fc-v726 x64",
+    "node": "v22.23.5",
+    "v8": "12.4.254.21-node.57",
+    "loadavg1m": 0.52,
+    "commit": "5d62ce7"
+  },
+  "protocol": {
+    "runs": 5,
+    "requests": 1000,
+    "warmup": 300,
+    "modelLoad": "parse stored version per request"
+  },
+  "scenes": [
+    {
+      "id": "GT-03",
+      "faces": 7,
+      "vertices": 10,
+      "halfEdges": 30,
+      "gate": false,
+      "pooled": {
+        "n": 5000,
+        "p50": 0.123,
+        "p95": 0.282,
+        "p99": 0.558,
+        "max": 3.296,
+        "mean": 0.157
+      },
+      "worstRunP95": 0.365,
+      "perRun": [
+        {
+          "n": 1000,
+          "p50": 0.163,
+          "p95": 0.365,
+          "p99": 0.661,
+          "max": 2.472,
+          "mean": 0.194
+        },
+        {
+          "n": 1000,
+          "p50": 0.178,
+          "p95": 0.31,
+          "p99": 0.505,
+          "max": 2.807,
+          "mean": 0.194
+        },
+        {
+          "n": 1000,
+          "p50": 0.118,
+          "p95": 0.274,
+          "p99": 0.541,
+          "max": 1.747,
+          "mean": 0.157
+        },
+        {
+          "n": 1000,
+          "p50": 0.098,
+          "p95": 0.192,
+          "p99": 0.484,
+          "max": 3.296,
+          "mean": 0.123
+        },
+        {
+          "n": 1000,
+          "p50": 0.097,
+          "p95": 0.198,
+          "p99": 0.558,
+          "max": 1.273,
+          "mean": 0.119
+        }
+      ],
+      "stageMeanMs": {
+        "parse": 0.002,
+        "validateCommand": 0.009,
+        "loadModel": 0.035,
+        "kernel": 0.09,
+        "validateReply": 0.012,
+        "serialize": 0.009
+      },
+      "meetsTarget": true
+    },
+    {
+      "id": "sawtooth-199",
+      "faces": 199,
+      "vertices": 394,
+      "halfEdges": 1182,
+      "gate": true,
+      "pooled": {
+        "n": 5000,
+        "p50": 3.447,
+        "p95": 5.411,
+        "p99": 6.264,
+        "max": 21.023,
+        "mean": 3.75
+      },
+      "worstRunP95": 5.798,
+      "perRun": [
+        {
+          "n": 1000,
+          "p50": 3.413,
+          "p95": 5.123,
+          "p99": 5.757,
+          "max": 8.826,
+          "mean": 3.638
+        },
+        {
+          "n": 1000,
+          "p50": 3.322,
+          "p95": 5.532,
+          "p99": 6.313,
+          "max": 10.701,
+          "mean": 3.661
+        },
+        {
+          "n": 1000,
+          "p50": 3.687,
+          "p95": 5.439,
+          "p99": 6.213,
+          "max": 21.023,
+          "mean": 3.984
+        },
+        {
+          "n": 1000,
+          "p50": 3.409,
+          "p95": 4.606,
+          "p99": 5.83,
+          "max": 9.167,
+          "mean": 3.605
+        },
+        {
+          "n": 1000,
+          "p50": 3.479,
+          "p95": 5.798,
+          "p99": 6.308,
+          "max": 6.639,
+          "mean": 3.861
+        }
+      ],
+      "stageMeanMs": {
+        "parse": 0.007,
+        "validateCommand": 0.008,
+        "loadModel": 1.357,
+        "kernel": 2.326,
+        "validateReply": 0.027,
+        "serialize": 0.022
+      },
+      "meetsTarget": true
+    },
+    {
+      "id": "sawtooth-499",
+      "faces": 499,
+      "vertices": 994,
+      "halfEdges": 2982,
+      "gate": false,
+      "pooled": {
+        "n": 5000,
+        "p50": 12.832,
+        "p95": 18.731,
+        "p99": 26.228,
+        "max": 46.812,
+        "mean": 13.791
+      },
+      "worstRunP95": 18.912,
+      "perRun": [
+        {
+          "n": 1000,
+          "p50": 12.858,
+          "p95": 18.739,
+          "p99": 28.319,
+          "max": 38.287,
+          "mean": 13.964
+        },
+        {
+          "n": 1000,
+          "p50": 12.886,
+          "p95": 18.67,
+          "p99": 26.668,
+          "max": 44.914,
+          "mean": 13.824
+        },
+        {
+          "n": 1000,
+          "p50": 12.918,
+          "p95": 18.541,
+          "p99": 24.034,
+          "max": 33.107,
+          "mean": 13.793
+        },
+        {
+          "n": 1000,
+          "p50": 12.699,
+          "p95": 18.771,
+          "p99": 26.228,
+          "max": 46.812,
+          "mean": 13.556
+        },
+        {
+          "n": 1000,
+          "p50": 12.821,
+          "p95": 18.912,
+          "p99": 25.76,
+          "max": 33.835,
+          "mean": 13.819
+        }
+      ],
+      "stageMeanMs": {
+        "parse": 0.01,
+        "validateCommand": 0.014,
+        "loadModel": 3.41,
+        "kernel": 10.278,
+        "validateReply": 0.039,
+        "serialize": 0.036
+      },
+      "meetsTarget": true
+    }
+  ]
+}

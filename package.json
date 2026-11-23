@@ -19,7 +19,7 @@
     "backlog:sync": "node tools/backlog-sync/cli.mjs",
     "golden": "vitest run --project golden --passWithNoTests",
     "fixtures": "node tools/golden-fixtures/cli.mjs",
-    "bench": "vitest bench --run --passWithNoTests"
+    "bench": "node tools/bench/cli.mjs"
   },
   "devDependencies": {
     "@types/node": "22.20.5",

@@ -122,6 +122,11 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-106 | 3D-65 schema text accepted: `maxDisplacementM` description of `command-payload-fit-to-shared-edge` reads "Maximum displacement allowed. Required, no default maximum displacement (D-76; spec §10.5)."; no keyword, `required`, `$id` or version change; row -> `review` | Owner, dialog, 2026-11-23 (3D-65) |
 | D-107 | 3D-65 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-65 provisional id became D-106 | Owner, chat ("merge"), 2026-11-23 |
 | D-108 | 3D-46 (SC P4 canary scan + "no `geo-model3d` dependency" rule; mirror, `GeoIPlus/shared_compnents` row authoritative) set `ready` as the next fresh-session WP; the other `ready` rows are owned (3D-08, 3D-32, 3D-47) or wait on dependencies (3D-48, 3D-51) | Owner, dialog, 2026-11-23 |
+| D-109 | [3D-ADR-0004](adr/3D-ADR-0004-kernel-language-boolean-licences.md) accepted: kernel in JavaScript ESM + JSDoc on Node (Q-01 closed; MOVE_EDGE PREVIEW p95 5.411 ms on 199 faces vs 150 ms); own planar Boolean operations for the K-12 P0 scope, no third-party Boolean library; kernel and service image use only permissive licences; reopen if a later gate p95 > 50 ms | Owner, dialog, 2026-11-23 (3D-08) |
+| D-110 | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) accepted: own two-stage solver in JS (closed form per plane, then Gauss-Newton/LM for coupled constraints, deletion filter for conflict sets); objective O1 for free degrees of freedom: keep the face's other vertices (least squares to their old positions, hard conditions exact) (Q-17 closed) | Owner, dialog, 2026-11-23 (3D-08) |
+| D-111 | [3D-ADR-0006](adr/3D-ADR-0006-bench-rig-and-scenes.md) accepted: reference rig = cloud agent container (fingerprint recorded), scenes GT-03 / sawtooth-199 (gate) / sawtooth-499, protocol 300 warm-up + 5 x 1000 requests, verdict on pooled and worst-run p95; re-measure on the production class in 3D-23 (Q-42) | Owner, dialog, 2026-11-23 (3D-08) |
+| D-112 | 3D-08 follow-ups go to intake as `proposed` rows: licence allow-list check, COMMIT / import / concurrency latency bench, production re-measure | Owner, dialog, 2026-11-23 (3D-08) |
+| D-113 | 3D-08 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-08 provisional ids became D-109..D-112 and Q-42 | Owner, chat ("merge"), 2026-11-23 |
 
 ## Open questions
 
@@ -168,6 +173,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-39 | Does the command carry `leaseRef` / `leaseEpoch`, or does the service take them from the session | spec §11 rule 11, D-69 | 3D-23 |
 | Q-40 | Is `APPROVED` / return-for-rework a new version with a journal entry? If yes, `history` needs no new operation; if no, a state-record operation is added. The reviewer must not count as an author of such an entry (v0.3 §8.1) | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md) §6 | 3D-24 / 3D-06, owner |
 | Q-41 | GT-I2: which edges carry `OPEN_BOUNDARY` - the two ridge edges only (the 0.03 m wall edges reported as degenerate, < `minEdgeLengthM`) or all four edges of the gap loop | v0.3 §12 GT-I2, D-101 | 3D-10 |
+| Q-42 | On which machine class is the latency verdict re-measured once the kernel service image exists (production instance class of the Tools Plane, unknown today: HANDOVER §8 q3) | [3D-ADR-0006](adr/3D-ADR-0006-bench-rig-and-scenes.md) step 5; 3D-08 measured on the cloud agent container | 3D-23, owner |
 
 ## Open-question status updates
 
@@ -205,3 +211,5 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-21 | 2026-11-23, owner (3D-06) | closed by D-77 | Severities accepted, enforced in `validation-report` |
 | Q-02 | 2026-11-23, owner (3D-03) | closed by D-85 | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md): own append-only object store behind `history` + `datasets` ports; history stays own (D-82) |
 | Q-11 | 2026-11-23, owner (coordinating session) | closed by D-88..D-94 | Д-01/Д-02 overtaken (D-88); Д-04 changed to geographic CRS support (D-92, row 3D-32); rest confirmed |
+| Q-01 | 2026-11-23, owner (3D-08) | closed by D-109 | [3D-ADR-0004](adr/3D-ADR-0004-kernel-language-boolean-licences.md): JavaScript on Node; MOVE_EDGE PREVIEW p95 5.411 ms on 199 faces vs 150 ms ([3D-08 note](../verification/3D-08.md)) |
+| Q-17 | 2026-11-23, owner (3D-08) | closed by D-110 | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices (least squares to their old positions, hard conditions exact) |
