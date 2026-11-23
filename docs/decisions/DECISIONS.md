@@ -87,6 +87,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-71 | 3D-04 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-04 provisional ids became D-68..D-70 and Q-17..Q-25 | Owner, chat, 2026-11-21 |
 | D-72 | 3D-31 runs in the cloud session only: the checksum-verified codebase-memory-mcp release binary (0.12.1) from the session scratchpad, isolated `CBM_CACHE_DIR`, no `install` command, no hooks, no client config; not the owner's PC install (its user-level hooks would contaminate the runs without the tool) | Owner, dialog, 2026-11-19 |
 | D-73 | 3D-31 accepted (done; result: defer the code-graph tool until kernel code exists, [eval](../agent-evals/3D-31-code-graph.md)); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-21 |
+| D-74 | 3D-03 set `ready` and started in a fresh session in parallel with 3D-06 | Owner, dialog, 2026-11-21 |
 
 ## Open questions
 
