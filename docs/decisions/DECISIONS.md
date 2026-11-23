@@ -118,6 +118,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-102 | GT-20 outliers lie 1.5..3 m off the plane (beyond `heatmapBufferM` 1.0); GT-21 reuses all GT-20 points shifted +0.10 m in Z and the heatmap buffer excludes the outliers | Owner, dialog, 2026-11-23 (3D-07) |
 | D-103 | 3D-07 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-07 provisional ids became D-99..D-102 and Q-41 | Owner, dialog, 2026-11-23 |
 | D-104 | 3D-08 (latency spike, kernel ADRs) set `ready` and started in a fresh session | Owner, dialog, 2026-11-23 |
+| D-3D32-1 | 3D-32 transform library: proj4js (`proj4`, MIT) at runtime inside `geo-model3d` (server-only, P4), exact version pin; CRS definitions come from a generated EPSG table (3D-ADR-0004 states the source) | Owner, dialog, 2026-11-23 (3D-32) |
+| D-3D32-2 | CityJSON vertices in a geographic (and any EPSG) CRS are read in the EPSG authority axis order of that CRS, not assumed lon/lat (CityJSON 2.0 is silent) | Owner, dialog, 2026-11-23 (3D-32) |
+| D-3D32-3 | Export of edited vertices in a geographic CRS: `exportRoundDecimals` is read metrically: angles get `exportRoundDecimals + 5` decimal places of a degree (1e-8 deg <= 1.12 mm), heights `exportRoundDecimals`; the file `transform.scale` is kept, a coarser scale is reported as `PRECISION_LOSS`; untouched vertices keep their file integers (D-70) | Owner, dialog, 2026-11-23 (3D-32) |
+| D-3D32-4 | Contract change (D-18): description-only fix of `CoordinateFrame.originWorld` in `building-model` (units and axis order of `horizontalCrs`; for a geographic CRS the ENU origin); shape and `$id` v1 unchanged | Owner, dialog, 2026-11-23 (3D-32) |
 
 ## Open questions
 
@@ -164,6 +168,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-39 | Does the command carry `leaseRef` / `leaseEpoch`, or does the service take them from the session | spec §11 rule 11, D-69 | 3D-23 |
 | Q-40 | Is `APPROVED` / return-for-rework a new version with a journal entry? If yes, `history` needs no new operation; if no, a state-record operation is added. The reviewer must not count as an author of such an entry (v0.3 §8.1) | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md) §6 | 3D-24 / 3D-06, owner |
 | Q-41 | GT-I2: which edges carry `OPEN_BOUNDARY` - the two ridge edges only (the 0.03 m wall edges reported as degenerate, < `minEdgeLengthM`) or all four edges of the gap loop | v0.3 §12 GT-I2, D-101 | 3D-10 |
+| Q-3D32-1 | Do the EPSG dataset terms of use allow shipping a table derived from it (via PROJ `proj.db`) inside the kernel image? PROJ code and data are MIT (`LICENSE_proj` in pyproj 3.8.0); the EPSG terms could not be read (epsg.org blocked by the network policy) | 3D-ADR-0004 licence section | owner / legal, before 3D-32 is accepted |
 
 ## Open-question status updates
 
