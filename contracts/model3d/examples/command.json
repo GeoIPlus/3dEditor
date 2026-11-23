@@ -1,0 +1,198 @@
+{
+  "valid": [
+    {
+      "schemaVersion": "1",
+      "commandId": "cmd-002",
+      "projectId": "p-1",
+      "buildingId": "b-1",
+      "actorId": "u-1",
+      "phase": "COMMIT",
+      "expectedVersion": 5,
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID",
+      "previewId": "prev-22",
+      "operation": "ALIGN_RIDGE",
+      "payload": {
+        "edgeId": "ridge-7",
+        "mode": "KEEP_EAVES",
+        "targetLine": [[0, 4, 8.5], [10, 4, 8.5]],
+        "hardConstraintIds": ["fixed-eave-a", "fixed-eave-b"]
+      }
+    },
+    {
+      "schemaVersion": "1",
+      "commandId": "cmd-001",
+      "projectId": "p-1",
+      "buildingId": "b-1",
+      "actorId": "u-1",
+      "phase": "PREVIEW",
+      "expectedVersion": 4,
+      "coordinateFrame": "LOCAL",
+      "targetState": "DRAFT_SOLID",
+      "operation": "REPLACE_ROOF",
+      "payload": {
+        "footprintId": "fp-1",
+        "template": "GABLE",
+        "ridgeAxis": "LOCAL_X",
+        "eaveZ": 5,
+        "ridgeZ": 8,
+        "symmetric": true
+      }
+    },
+    {
+      "schemaVersion": "1",
+      "commandId": "cmd-002",
+      "projectId": "p-1",
+      "buildingId": "b-1",
+      "actorId": "u-1",
+      "phase": "COMMIT",
+      "expectedVersion": 5,
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID",
+      "operation": "UNDO",
+      "payload": {}
+    },
+    {
+      "schemaVersion": "1",
+      "commandId": "cmd-002",
+      "projectId": "p-1",
+      "buildingId": "b-1",
+      "actorId": "u-1",
+      "phase": "COMMIT",
+      "expectedVersion": 5,
+      "coordinateFrame": "LOCAL",
+      "targetState": "DRAFT_SOLID",
+      "previewId": "prev-22",
+      "operation": "REMOVE_FACE",
+      "payload": { "faceId": "f-roof-2" }
+    }
+  ],
+  "invalid": [
+    {
+      "why": "ALIGN_RIDGE with KEEP_RIDGE (v0.3 §6)",
+      "instance": {
+        "schemaVersion": "1",
+        "commandId": "cmd-002",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "actorId": "u-1",
+        "phase": "COMMIT",
+        "expectedVersion": 5,
+        "coordinateFrame": "LOCAL",
+        "targetState": "VALID_SOLID",
+        "previewId": "prev-22",
+        "operation": "ALIGN_RIDGE",
+        "payload": {
+          "edgeId": "ridge-7",
+          "mode": "KEEP_RIDGE",
+          "targetLine": [[0, 4, 8.5], [10, 4, 8.5]],
+          "hardConstraintIds": ["fixed-eave-a", "fixed-eave-b"]
+        }
+      }
+    },
+    {
+      "why": "missing expectedVersion (v0.2 D.4)",
+      "instance": {
+        "schemaVersion": "1",
+        "commandId": "cmd-002",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "actorId": "u-1",
+        "phase": "COMMIT",
+        "coordinateFrame": "LOCAL",
+        "targetState": "VALID_SOLID",
+        "previewId": "prev-22",
+        "operation": "ALIGN_RIDGE",
+        "payload": {
+          "edgeId": "ridge-7",
+          "mode": "KEEP_EAVES",
+          "targetLine": [[0, 4, 8.5], [10, 4, 8.5]],
+          "hardConstraintIds": ["fixed-eave-a", "fixed-eave-b"]
+        }
+      }
+    },
+    {
+      "why": "REMOVE_FACE without targetState DRAFT_SOLID",
+      "instance": {
+        "schemaVersion": "1",
+        "commandId": "cmd-002",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "actorId": "u-1",
+        "phase": "COMMIT",
+        "expectedVersion": 5,
+        "coordinateFrame": "LOCAL",
+        "targetState": "VALID_SOLID",
+        "previewId": "prev-22",
+        "operation": "REMOVE_FACE",
+        "payload": { "faceId": "f" }
+      }
+    },
+    {
+      "why": "v0.2 operation name",
+      "instance": {
+        "schemaVersion": "1",
+        "commandId": "cmd-002",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "actorId": "u-1",
+        "phase": "COMMIT",
+        "expectedVersion": 5,
+        "coordinateFrame": "LOCAL",
+        "targetState": "VALID_SOLID",
+        "previewId": "prev-22",
+        "operation": "CREATE_GABLE_ROOF",
+        "payload": {
+          "edgeId": "ridge-7",
+          "mode": "KEEP_EAVES",
+          "targetLine": [[0, 4, 8.5], [10, 4, 8.5]],
+          "hardConstraintIds": ["fixed-eave-a", "fixed-eave-b"]
+        }
+      }
+    },
+    {
+      "why": "targetState APPROVED is not a command target",
+      "instance": {
+        "schemaVersion": "1",
+        "commandId": "cmd-002",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "actorId": "u-1",
+        "phase": "COMMIT",
+        "expectedVersion": 5,
+        "coordinateFrame": "LOCAL",
+        "targetState": "APPROVED",
+        "previewId": "prev-22",
+        "operation": "ALIGN_RIDGE",
+        "payload": {
+          "edgeId": "ridge-7",
+          "mode": "KEEP_EAVES",
+          "targetLine": [[0, 4, 8.5], [10, 4, 8.5]],
+          "hardConstraintIds": ["fixed-eave-a", "fixed-eave-b"]
+        }
+      }
+    },
+    {
+      "why": "payload of another operation",
+      "instance": {
+        "schemaVersion": "1",
+        "commandId": "cmd-002",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "actorId": "u-1",
+        "phase": "COMMIT",
+        "expectedVersion": 5,
+        "coordinateFrame": "LOCAL",
+        "targetState": "VALID_SOLID",
+        "previewId": "prev-22",
+        "operation": "SPLIT_FACE",
+        "payload": {
+          "edgeId": "ridge-7",
+          "mode": "KEEP_EAVES",
+          "targetLine": [[0, 4, 8.5], [10, 4, 8.5]],
+          "hardConstraintIds": ["fixed-eave-a", "fixed-eave-b"]
+        }
+      }
+    }
+  ]
+}

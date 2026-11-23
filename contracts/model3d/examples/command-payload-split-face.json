@@ -1,0 +1,4 @@
+{
+  "valid": [{ "faceId": "f-roof-1", "splitLine": [[5, 0, 5], [5, 4, 8]] }],
+  "invalid": [{ "why": "missing line", "instance": { "faceId": "f-roof-1" } }]
+}

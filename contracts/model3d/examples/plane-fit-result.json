@@ -1,0 +1,35 @@
+{
+  "valid": [
+    {
+      "plane": { "normal": [0, -0.6, 0.8], "d": -4 },
+      "pointCount": 500,
+      "inlierCount": 452,
+      "inlierRatio": 0.904,
+      "rmseM": 0.011,
+      "frame": "LOCAL"
+    }
+  ],
+  "invalid": [
+    {
+      "why": "ratio above 1",
+      "instance": {
+        "plane": { "normal": [0, -0.6, 0.8], "d": -4 },
+        "pointCount": 500,
+        "inlierCount": 452,
+        "inlierRatio": 1.1,
+        "rmseM": 0.011,
+        "frame": "LOCAL"
+      }
+    },
+    {
+      "why": "missing RMSE",
+      "instance": {
+        "plane": { "normal": [0, -0.6, 0.8], "d": -4 },
+        "pointCount": 500,
+        "inlierCount": 452,
+        "inlierRatio": 0.904,
+        "frame": "LOCAL"
+      }
+    }
+  ]
+}

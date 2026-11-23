@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-set-semantics:v1",
+  "title": "SET_SEMANTICS payload",
+  "description": "Set the surface type of the selected faces; no geometry change (v0.3 §6 F-50; spec §10.12 rule 1).",
+  "type": "object",
+  "properties": {
+    "faceIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList", "type": "array", "minItems": 1 },
+    "surfaceKind": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/SurfaceKind" }
+  },
+  "required": ["faceIds", "surfaceKind"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names."
+}

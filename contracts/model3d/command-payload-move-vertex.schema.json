@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-move-vertex:v1",
+  "title": "MOVE_VERTEX payload",
+  "description": "Move a vertex to a target point by solving the planes of the incident faces marked movable (v0.3 §6 F-25; spec §10.4).",
+  "type": "object",
+  "properties": {
+    "vertexId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "targetPoint": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3" },
+    "movableFaceIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "description": "Faces whose support planes may change; every other plane is fixed (spec §5 rule 7, §10.1 rule 3)."
+    }
+  },
+  "required": ["vertexId", "targetPoint", "movableFaceIds"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names. An empty movableFaceIds is allowed (spec §10.4 rule 4)."
+}

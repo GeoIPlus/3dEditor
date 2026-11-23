@@ -1,0 +1,4 @@
+{
+  "valid": [{ "footprintId": "fp-1", "allowCourtyardRemoval": false, "orthogonalize": true }],
+  "invalid": [{ "why": "flags must be explicit", "instance": { "footprintId": "fp-1" } }]
+}

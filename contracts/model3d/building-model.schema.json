@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-building-model:v1",
+  "title": "BuildingModel",
+  "description": "Canonical model of one building at one version (v0.2 B.2 with the v0.3 §4.2 changes; spec §4). Derived values (area, slope, volume, isWatertight, triangulation) are not part of it and are never accepted from a client (v0.2 B.3). Collections are maps id -> entity; each key equals its entity's `id` (checked by the kernel).",
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+    "projectId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "buildingId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "version": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "state": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/ModelState" },
+    "frame": { "$ref": "#/$defs/CoordinateFrame" },
+    "footprints": { "type": "object", "additionalProperties": { "$ref": "#/$defs/Footprint" } },
+    "constructionEntities": { "type": "object", "additionalProperties": { "$ref": "#/$defs/ConstructionEntity" } },
+    "vertices": { "type": "object", "additionalProperties": { "$ref": "#/$defs/Vtx" } },
+    "halfEdges": { "type": "object", "additionalProperties": { "$ref": "#/$defs/HalfEdge" } },
+    "faces": { "type": "object", "additionalProperties": { "$ref": "#/$defs/Face" } },
+    "shells": { "type": "object", "additionalProperties": { "$ref": "#/$defs/Shell" } },
+    "solids": { "type": "object", "additionalProperties": { "$ref": "#/$defs/Solid" } },
+    "roofComponents": { "type": "object", "additionalProperties": { "$ref": "#/$defs/RoofComponent" } },
+    "constraints": { "type": "object", "additionalProperties": { "$ref": "#/$defs/Constraint" } },
+    "measurements": { "type": "object", "additionalProperties": { "$ref": "urn:geoiplus:schema:model3d-measurement:v1" } },
+    "semantics": { "type": "object", "additionalProperties": { "$ref": "#/$defs/SemanticNode" } },
+    "toleranceProfileId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "originalSourceRef": { "type": "string", "description": "Reference to the original CityJSON (v0.2 B.2)." }
+  },
+  "required": ["schemaVersion", "projectId", "buildingId", "version", "state", "frame", "footprints", "constructionEntities", "vertices", "halfEdges", "faces", "shells", "solids", "roofComponents", "constraints", "measurements", "semantics", "toleranceProfileId"],
+  "additionalProperties": false,
+  "$comment": "v0.3 §4.2: `templateInstances` (RoofTemplateInstance not stored) and `measurementProfileId` removed.",
+  "$defs": {
+    "SchemaVersion": {
+      "description": "Contract version of model and command messages; equals the major of the `$id`s (spec §2.1: set by 3D-06). v0.2 used '0.2'.",
+      "$comment": "[P] Value '1' is a 3D-06 proposal (D-18).",
+      "const": "1"
+    },
+    "CoordinateFrame": {
+      "description": "v0.2 B.2 + v0.3 §4.2 `buildingAxisDeg`.",
+      "type": "object",
+      "properties": {
+        "horizontalCrs": { "type": "string", "minLength": 1, "description": "e.g. 'EPSG:xxxx'." },
+        "verticalCrs": { "type": ["string", "null"], "description": "null = not given; no silent assumption (v0.2 B.2)." },
+        "axisOrder": { "const": "EAST_NORTH_UP" },
+        "unit": { "const": "m" },
+        "originWorld": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3", "description": "Double precision CRS origin of the local frame." },
+        "buildingAxisDeg": { "type": "number", "description": "Rotation of the local X axis from east, counter-clockwise, degrees (v0.3 §4.2)." }
+      },
+      "required": ["horizontalCrs", "verticalCrs", "axisOrder", "unit", "originWorld", "buildingAxisDeg"],
+      "additionalProperties": false
+    },
+    "Footprint": {
+      "description": "v0.2 B.2 + v0.3 §4.2 (`sourceKind`; 2D only + `baseElevationM`).",
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "buildingPartId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "outerRing": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Ring2" },
+        "innerRings": { "type": "array", "items": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Ring2" }, "description": "Courtyards / holes." },
+        "baseElevationM": { "type": "number", "$comment": "[A] Required: v0.3 §4.2 reads '2D only + baseElevationM' (optional in v0.2 B.2)." },
+        "sourceMeasurementIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" },
+        "sourceKind": { "enum": ["DERIVED_FROM_GROUND", "USER_EDITED"] }
+      },
+      "required": ["id", "outerRing", "innerRings", "baseElevationM", "sourceMeasurementIds", "sourceKind"],
+      "additionalProperties": false
+    },
+    "ConstructionEntity": {
+      "description": "Guide geometry outside the B-Rep (v0.2 B.2, B.3). The per-kind geometry rules of v0.2 B.2 are not given by the sources: TBD (Q-27).",
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "kind": { "enum": ["GUIDE_LINE", "GUIDE_PLANE", "GRID_AXIS", "ROOF_EDGE_DRAFT"] },
+        "geometry": {
+          "type": "object",
+          "properties": {
+            "points": { "type": "array", "items": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3" } },
+            "plane": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Plane" }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        },
+        "edgeRole": { "enum": ["RIDGE", "EAVE", "VALLEY", "HIP", "RAKE"] },
+        "constraintIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" }
+      },
+      "required": ["id", "kind", "geometry", "constraintIds"],
+      "additionalProperties": false
+    },
+    "Vtx": {
+      "description": "Vertex (v0.2 B.2 + v0.3 §4.1-4.2). `p` is derived from the planes of `definingFaceIds` unless `positionMode` is EXPLICIT: fewer than three independent planes (spec §4 rule 3) or imported and not yet edited (D-70, spec §4 rule 3a).",
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "p": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3" },
+        "definingFaceIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" },
+        "positionMode": {
+          "enum": ["DERIVED", "EXPLICIT"],
+          "$comment": "[P] Name and values are a 3D-06 proposal: D-70 needs a stored mark for 'imported, kept at file position', which geometry alone cannot tell."
+        },
+        "provenanceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "sourceRef": { "type": "string", "description": "Original CityJSON id/index (v0.3 §4.2)." }
+      },
+      "required": ["id", "p", "definingFaceIds", "positionMode"],
+      "additionalProperties": false
+    },
+    "HalfEdge": {
+      "description": "v0.2 B.2 + v0.3 §4.2 `nonManifoldGroupId`. `twinId = null` is allowed in drafts (spec §4 rule 7).",
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "startVertexId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "nextId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "prevId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "twinId": { "anyOf": [{ "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" }, { "type": "null" }] },
+        "edgeRole": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EdgeRole" },
+        "nonManifoldGroupId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" }
+      },
+      "required": ["id", "startVertexId", "nextId", "prevId", "faceId", "twinId", "edgeRole"],
+      "additionalProperties": false
+    },
+    "Face": {
+      "description": "v0.2 B.2 + v0.3 §4.2 `sourceRef`. `supportPlane` is authoritative (spec §4 rule 1).",
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "outerLoopId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId", "description": "Starting HalfEdge of the outer ring." },
+        "innerLoopIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList", "description": "Starting HalfEdges of holes." },
+        "supportPlane": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Plane" },
+        "surfaceKind": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/SurfaceKind" },
+        "tags": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "description": "Internal classification, e.g. OVERHANG (v0.2 B.2), NON_PLANAR_FACE, SEMANTICS_INFERRED (spec §6)." },
+        "roofComponentId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "sourceRef": { "type": "string" }
+      },
+      "required": ["id", "outerLoopId", "innerLoopIds", "supportPlane", "surfaceKind", "tags"],
+      "additionalProperties": false
+    },
+    "Shell": {
+      "description": "v0.2 B.2. `isClosed` is a derived validator state, not user truth.",
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "faceIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" },
+        "intendedRole": { "enum": ["OUTER", "VOID"] },
+        "isClosed": { "type": "boolean" }
+      },
+      "required": ["id", "faceIds", "intendedRole", "isClosed"],
+      "additionalProperties": false
+    },
+    "Solid": {
+      "description": "v0.2 B.2.",
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "outerShellId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "voidShellIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" }
+      },
+      "required": ["id", "outerShellId", "voidShellIds"],
+      "additionalProperties": false
+    },
+    "RoofComponent": {
+      "description": "v0.2 B.2 with v0.3 §4.2: `buildingPartId` -> `ownerId` (Building or BuildingPart id); no `templateInstanceId` (templates are not stored).",
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "ownerId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "faceIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" }
+      },
+      "required": ["id", "ownerId", "faceIds"],
+      "additionalProperties": false
+    },
+    "ConstraintBody": {
+      "description": "Constraint without its id (v0.2 B.2 + v0.3 §4.2). `ROOF_SLOPE.target` in degrees. `weight` only for soft constraints.",
+      "type": "object",
+      "properties": {
+        "kind": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/ConstraintKind" },
+        "entityIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" },
+        "hard": { "type": "boolean" },
+        "target": {
+          "anyOf": [
+            { "type": "number" },
+            { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3" },
+            { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Plane" }
+          ]
+        },
+        "weight": { "type": "number", "exclusiveMinimum": 0 },
+        "measurementId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" }
+      },
+      "required": ["kind", "entityIds", "hard"],
+      "allOf": [
+        { "if": { "properties": { "hard": { "const": true } } }, "then": { "not": { "required": ["weight"] } } },
+        { "if": { "properties": { "kind": { "const": "ROOF_SLOPE" } }, "required": ["kind"] }, "then": { "properties": { "target": { "type": "number" } } } }
+      ]
+    },
+    "Constraint": {
+      "type": "object",
+      "allOf": [{ "$ref": "#/$defs/ConstraintBody" }],
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "kind": true, "entityIds": true, "hard": true, "target": true, "weight": true, "measurementId": true
+      },
+      "required": ["id"],
+      "additionalProperties": false
+    },
+    "SemanticNode": {
+      "description": "v0.2 B.2 + v0.3 §4.2 `sourceRef`.",
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "kind": { "enum": ["Building", "BuildingPart", "BuildingInstallation", "Door", "Window"] },
+        "parentId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "solidIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" },
+        "attributes": { "type": "object" },
+        "sourceRef": { "type": "string" }
+      },
+      "required": ["id", "kind", "solidIds", "attributes"],
+      "additionalProperties": false
+    }
+  }
+}

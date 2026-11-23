@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-remove-constraint:v1",
+  "title": "REMOVE_CONSTRAINT payload",
+  "description": "Remove a constraint (Unfix, E-07); of a FIXED_POINT it is the explicit unlock of v0.2 C.11 (spec §10.12 rule 2).",
+  "type": "object",
+  "properties": { "constraintId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" } },
+  "required": ["constraintId"],
+  "additionalProperties": false,
+  "$comment": "[P] Field name."
+}

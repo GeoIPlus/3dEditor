@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-redo:v1",
+  "title": "REDO payload",
+  "description": "Empty payload. The server takes the top of the stack (v0.3 §6; spec §10.9 rule 1).",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}

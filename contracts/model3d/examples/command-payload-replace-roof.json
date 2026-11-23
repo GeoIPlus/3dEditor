@@ -1,0 +1,51 @@
+{
+  "valid": [
+    { "footprintId": "fp-1", "template": "FLAT", "roofZ": 5 },
+    { "footprintId": "fp-1", "template": "SHED", "slopeAxis": "LOCAL_Y", "zLow": 5, "zHigh": 8 },
+    { "footprintId": "fp-1", "template": "GABLE", "ridgeAxis": "LOCAL_X", "eaveZ": 5, "ridgeZ": 8, "symmetric": true },
+    {
+      "footprintId": "fp-1",
+      "template": "HIP",
+      "ridgeAxis": "LOCAL_X",
+      "eaveZ": 5,
+      "slopesDeg": [36.86989764584402, 36.86989764584402, 36.86989764584402, 36.86989764584402]
+    }
+  ],
+  "invalid": [
+    {
+      "why": "FLAT with both roofZ and roofPlane",
+      "instance": {
+        "footprintId": "fp-1",
+        "template": "FLAT",
+        "roofZ": 5,
+        "roofPlane": { "normal": [0, 0, 1], "d": -5 }
+      }
+    },
+    {
+      "why": "GABLE without eaveZ",
+      "instance": { "footprintId": "fp-1", "template": "GABLE", "ridgeAxis": "LOCAL_X", "ridgeZ": 8, "symmetric": true }
+    },
+    {
+      "why": "HIP with three slopes",
+      "instance": {
+        "footprintId": "fp-1",
+        "template": "HIP",
+        "ridgeAxis": "LOCAL_X",
+        "eaveZ": 5,
+        "slopesDeg": [30, 30, 30]
+      }
+    },
+    {
+      "why": "asymmetric GABLE without ridge position",
+      "instance": {
+        "footprintId": "fp-1",
+        "template": "GABLE",
+        "ridgeAxis": "LOCAL_X",
+        "eaveZ": 5,
+        "ridgeZ": 8,
+        "symmetric": false
+      }
+    },
+    { "why": "v0.2 template names", "instance": { "footprintId": "fp-1", "template": "CREATE_GABLE_ROOF" } }
+  ]
+}

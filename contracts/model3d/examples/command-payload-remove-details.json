@@ -1,0 +1,4 @@
+{
+  "valid": [{ "confirmedRemoveIds": [] }, { "confirmedRemoveIds": ["f-9"], "keepIds": ["inst-1"] }],
+  "invalid": [{ "why": "missing confirmation list", "instance": { "keepIds": [] } }]
+}

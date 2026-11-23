@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-topology-lineage:v1",
+  "title": "TopologyLineage",
+  "description": "Lineage of one operation, form of v0.2 B.6 (v0.3 §9.1): `mapped` oldEntityId -> [newEntityIds], `deleted` ids, `preserved` ids. Covers every changed, added and deleted face, edge and vertex id (spec §10.1). Selection, comments and provenance are carried over by this map (v0.2 B.6; client E-04).",
+  "type": "object",
+  "properties": {
+    "mapped": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+        "minItems": 1,
+        "uniqueItems": true
+      },
+      "description": "oldEntityId -> new ids (split 1 -> n, merge: each old id -> the merged id)."
+    },
+    "deleted": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" },
+    "preserved": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" }
+  },
+  "required": ["mapped", "deleted", "preserved"],
+  "additionalProperties": false,
+  "$comment": "v0.2 B.6 also names `needsRebind` for references that cannot follow the map; its shape is not given: TBD (Q-30)."
+}

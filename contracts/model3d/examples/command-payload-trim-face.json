@@ -1,0 +1,6 @@
+{
+  "valid": [{ "faceId": "f-1", "trimLine": [[0, 2, 6.5], [10, 2, 6.5]], "keepPoint": [5, 1, 5.75] }],
+  "invalid": [
+    { "why": "which part stays is missing", "instance": { "faceId": "f-1", "trimLine": [[0, 2, 6.5], [10, 2, 6.5]] } }
+  ]
+}

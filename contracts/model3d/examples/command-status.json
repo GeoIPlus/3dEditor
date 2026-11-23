@@ -1,0 +1,135 @@
+{
+  "valid": [
+    { "commandId": "cmd-002", "state": "IN_PROGRESS" },
+    {
+      "commandId": "cmd-002",
+      "state": "DONE",
+      "result": {
+        "commandId": "cmd-001",
+        "status": "PREVIEW",
+        "modelVersion": 4,
+        "previewId": "prev-22",
+        "patch": {
+          "added": [
+            {
+              "type": "Face",
+              "entity": {
+                "id": "f-roof-1b",
+                "outerLoopId": "he-1",
+                "innerLoopIds": [],
+                "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+                "surfaceKind": "RoofSurface",
+                "tags": [],
+                "roofComponentId": "rc-1"
+              }
+            }
+          ],
+          "updated": [
+            {
+              "type": "Vtx",
+              "entity": {
+                "id": "v-1",
+                "p": [0, 0, 5],
+                "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+                "positionMode": "DERIVED",
+                "sourceRef": "12"
+              }
+            }
+          ],
+          "deleted": [{ "type": "HalfEdge", "id": "he-9" }],
+          "affectedMetrics": ["roofArea"]
+        },
+        "topologyLineage": {
+          "mapped": { "f-roof-1": ["f-roof-1a", "f-roof-1b"] },
+          "deleted": [],
+          "preserved": ["f-roof-2"]
+        },
+        "validation": {
+          "modelVersion": 3,
+          "targetState": "DRAFT_SOLID",
+          "isValidForTargetState": true,
+          "issues": [
+            {
+              "code": "OPEN_BOUNDARY",
+              "scope": "TOPOLOGY",
+              "severity": "WARNING",
+              "entityIds": ["he-1", "he-9"],
+              "message": "open boundary"
+            }
+          ],
+          "validatorVersion": "geo-model3d 0.0.0",
+          "createdAt": "2026-11-21T10:00:00Z"
+        },
+        "warnings": []
+      }
+    }
+  ],
+  "invalid": [
+    { "why": "DONE without result", "instance": { "commandId": "cmd-002", "state": "DONE" } },
+    {
+      "why": "result while in progress",
+      "instance": {
+        "commandId": "cmd-002",
+        "state": "IN_PROGRESS",
+        "result": {
+          "commandId": "cmd-001",
+          "status": "PREVIEW",
+          "modelVersion": 4,
+          "previewId": "prev-22",
+          "patch": {
+            "added": [
+              {
+                "type": "Face",
+                "entity": {
+                  "id": "f-roof-1b",
+                  "outerLoopId": "he-1",
+                  "innerLoopIds": [],
+                  "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+                  "surfaceKind": "RoofSurface",
+                  "tags": [],
+                  "roofComponentId": "rc-1"
+                }
+              }
+            ],
+            "updated": [
+              {
+                "type": "Vtx",
+                "entity": {
+                  "id": "v-1",
+                  "p": [0, 0, 5],
+                  "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+                  "positionMode": "DERIVED",
+                  "sourceRef": "12"
+                }
+              }
+            ],
+            "deleted": [{ "type": "HalfEdge", "id": "he-9" }],
+            "affectedMetrics": ["roofArea"]
+          },
+          "topologyLineage": {
+            "mapped": { "f-roof-1": ["f-roof-1a", "f-roof-1b"] },
+            "deleted": [],
+            "preserved": ["f-roof-2"]
+          },
+          "validation": {
+            "modelVersion": 3,
+            "targetState": "DRAFT_SOLID",
+            "isValidForTargetState": true,
+            "issues": [
+              {
+                "code": "OPEN_BOUNDARY",
+                "scope": "TOPOLOGY",
+                "severity": "WARNING",
+                "entityIds": ["he-1", "he-9"],
+                "message": "open boundary"
+              }
+            ],
+            "validatorVersion": "geo-model3d 0.0.0",
+            "createdAt": "2026-11-21T10:00:00Z"
+          },
+          "warnings": []
+        }
+      }
+    }
+  ]
+}

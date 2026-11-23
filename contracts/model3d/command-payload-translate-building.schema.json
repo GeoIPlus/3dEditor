@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-translate-building:v1",
+  "title": "TRANSLATE_BUILDING payload",
+  "description": "Rigid shift of all planes; fixed points and attached measurements move with the building; a journal warning is written (v0.3 §6 F-42; spec §10.10 rule 6).",
+  "type": "object",
+  "properties": { "vector": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3" } },
+  "required": ["vector"],
+  "additionalProperties": false,
+  "$comment": "[P] Field name."
+}

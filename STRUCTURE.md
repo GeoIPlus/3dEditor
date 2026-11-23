@@ -29,6 +29,7 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
 services/kernel/       (3D-23)        host: createKernelHandler(ports) + own server for the image (D-33)
   src/ports/ adapters/ operaflow/                        storage, points, validator, auth; interim adapters (D-35)
 contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
+  <name>.schema.json examples/<name>.json test/           53 schemas ($id urn:geoiplus:schema:model3d-<name>:v1), valid/invalid examples, Ajv test (3D-06; card README.md)
 fixtures/              (3D-07)        small synthetic golden fixtures and their generator
 tools/check-docs.mjs                 document consistency check, Node built-ins (3D-30)
 tools/check-docs-run.mjs             `npm run check:docs`: strict on every branch except `wp/*` (D-38) (3D-05)

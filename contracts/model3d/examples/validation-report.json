@@ -1,0 +1,163 @@
+{
+  "valid": [
+    {
+      "modelVersion": 3,
+      "targetState": "DRAFT_SOLID",
+      "isValidForTargetState": true,
+      "issues": [
+        {
+          "code": "OPEN_BOUNDARY",
+          "scope": "TOPOLOGY",
+          "severity": "WARNING",
+          "entityIds": ["he-1", "he-9"],
+          "message": "open boundary"
+        }
+      ],
+      "validatorVersion": "geo-model3d 0.0.0",
+      "createdAt": "2026-11-21T10:00:00Z"
+    },
+    {
+      "modelVersion": 3,
+      "targetState": "VALID_SOLID",
+      "isValidForTargetState": false,
+      "issues": [
+        {
+          "code": "OPEN_BOUNDARY",
+          "scope": "TOPOLOGY",
+          "severity": "ERROR",
+          "entityIds": ["he-1", "he-9"],
+          "message": "open boundary",
+          "externalValidatorCode": "303",
+          "location": [5, 4, 8]
+        }
+      ],
+      "validatorVersion": "geo-model3d 0.0.0",
+      "createdAt": "2026-11-21T10:00:00Z"
+    },
+    {
+      "modelVersion": 3,
+      "targetState": "DRAFT_SOLID",
+      "isValidForTargetState": true,
+      "issues": [
+        { "code": "PRECISION_LOSS", "scope": "EXPORT", "severity": "WARNING", "entityIds": [], "message": "rounded" }
+      ],
+      "validatorVersion": "geo-model3d 0.0.0",
+      "createdAt": "2026-11-21T10:00:00Z"
+    }
+  ],
+  "invalid": [
+    {
+      "why": "OPEN_BOUNDARY must be ERROR in VALID_SOLID (v0.3 §8.3)",
+      "instance": {
+        "modelVersion": 3,
+        "targetState": "VALID_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "OPEN_BOUNDARY",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      }
+    },
+    {
+      "why": "DEGENERATE_EDGE must be ERROR in DRAFT_SOLID",
+      "instance": {
+        "modelVersion": 3,
+        "targetState": "DRAFT_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "DEGENERATE_EDGE",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      }
+    },
+    {
+      "why": "unknown code",
+      "instance": {
+        "modelVersion": 3,
+        "targetState": "DRAFT_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "GEOMETRY_INVALID",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      }
+    },
+    {
+      "why": "missing createdAt",
+      "instance": {
+        "modelVersion": 3,
+        "targetState": "DRAFT_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "OPEN_BOUNDARY",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0"
+      }
+    },
+    {
+      "why": "Q-21: INVALID_MEASUREMENT is WARNING in VALID_SOLID (D-77)",
+      "instance": {
+        "modelVersion": 3,
+        "targetState": "VALID_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "INVALID_MEASUREMENT",
+            "scope": "MEASUREMENT",
+            "severity": "ERROR",
+            "entityIds": ["m-1"],
+            "message": "x"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      }
+    },
+    {
+      "why": "Q-21: UNDERCONSTRAINED_GEOMETRY is ERROR in DRAFT_SOLID (D-77)",
+      "instance": {
+        "modelVersion": 3,
+        "targetState": "DRAFT_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "UNDERCONSTRAINED_GEOMETRY",
+            "scope": "CONSTRAINT",
+            "severity": "WARNING",
+            "entityIds": ["f-1"],
+            "message": "x"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      }
+    }
+  ]
+}

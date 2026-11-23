@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-replace-roof:v1",
+  "title": "REPLACE_ROOF payload",
+  "description": "Replace the roof by template R-01 FLAT, R-02 SHED, R-03 GABLE, R-04 HIP on the current footprint and rebuild the walls (v0.3 §6 C-05; v0.2 C.1-C.4; spec §10.3). R-02..R-04 accept only a rectangular footprint (domain refusal UNSUPPORTED_FOOTPRINT).",
+  "type": "object",
+  "properties": {
+    "footprintId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "template": { "enum": ["FLAT", "SHED", "GABLE", "HIP"] },
+    "roofZ": { "type": "number" },
+    "roofPlane": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Plane" },
+    "slopeAxis": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/LocalAxis",
+      "description": "SHED: Z rises from zLow to zHigh along the positive axis [A]."
+    },
+    "zLow": { "type": "number" },
+    "zHigh": { "type": "number" },
+    "measurementIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "type": "array",
+      "minItems": 3,
+      "description": "SHED: three non-collinear roof measurements."
+    },
+    "ridgeAxis": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/LocalAxis" },
+    "eaveZ": { "type": "number" },
+    "ridgeZ": { "type": "number" },
+    "slopeDeg": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 90,
+      "description": "GABLE: slope instead of ridgeZ."
+    },
+    "symmetric": { "type": "boolean", "description": "GABLE: ridge on the mid line (v0.2 C.3, D.3)." },
+    "ridgeOffsetM": {
+      "type": "number",
+      "description": "GABLE, symmetric = false: ridge position from the mid line along the other axis [A]."
+    },
+    "slopesDeg": {
+      "type": "array",
+      "items": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 90 },
+      "minItems": 4,
+      "maxItems": 4,
+      "description": "HIP: slopes of the four faces, in the order of the footprint outer ring edges [A]."
+    }
+  },
+  "required": ["footprintId", "template"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "template": { "const": "FLAT" } } },
+      "then": { "oneOf": [{ "required": ["roofZ"] }, { "required": ["roofPlane"] }] }
+    },
+    {
+      "if": { "properties": { "template": { "const": "SHED" } } },
+      "then": { "oneOf": [{ "required": ["slopeAxis", "zLow", "zHigh"] }, { "required": ["measurementIds"] }] }
+    },
+    {
+      "if": { "properties": { "template": { "const": "GABLE" } } },
+      "then": {
+        "required": ["ridgeAxis", "eaveZ", "symmetric"],
+        "oneOf": [{ "required": ["ridgeZ"] }, { "required": ["slopeDeg"] }]
+      }
+    },
+    {
+      "if": {
+        "properties": { "template": { "const": "GABLE" }, "symmetric": { "const": false } },
+        "required": ["symmetric"]
+      },
+      "then": { "required": ["ridgeOffsetM"] }
+    },
+    {
+      "if": { "properties": { "template": { "const": "HIP" } } },
+      "then": { "required": ["ridgeAxis", "eaveZ", "slopesDeg"] }
+    }
+  ],
+  "$comment": "Given values per template from v0.2 C.1-C.4; `footprintId`, `ridgeAxis`, `eaveZ`, `ridgeZ`, `symmetric` as in v0.2 D.3; `roofZ`, `roofPlane`, `zLow`, `zHigh`, `slopeAxis` from C.1-C.2. [P] `template`, `measurementIds`, `slopeDeg`, `ridgeOffsetM`, `slopesDeg`. Members of another template are not rejected by the schema [A]. R-04 undetermined ridge length is a domain refusal (UNDERCONSTRAINED_GEOMETRY)."
+}

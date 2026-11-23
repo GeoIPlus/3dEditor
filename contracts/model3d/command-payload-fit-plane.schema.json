@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-fit-plane:v1",
+  "title": "FIT_PLANE payload",
+  "description": "Plane fit on selected cloud points, applied as a PLANE measurement or as the new supportPlane of a face (v0.3 §7; spec §9, §10.12 rule 4).",
+  "type": "object",
+  "properties": {
+    "selection": {
+      "type": "object",
+      "description": "How the selection (rectangle or lasso in the view) reaches the server is open: TBD (Q-18, 3D-22). Shape not constrained in v1."
+    },
+    "apply": { "enum": ["MEASUREMENT", "FACE_PLANE"] },
+    "faceId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "FACE_PLANE only: the face whose supportPlane is replaced."
+    }
+  },
+  "required": ["selection", "apply"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "apply": { "const": "FACE_PLANE" } }, "required": ["apply"] },
+      "then": { "required": ["faceId"] }
+    }
+  ],
+  "$comment": "[P] Field names and enum spelling."
+}

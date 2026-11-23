@@ -1,0 +1,26 @@
+{
+  "valid": [
+    { "vertexId": "v-5", "faceIds": ["f-1", "f-2", "f-3", "f-4"], "mode": "KEEP_PRIMARY_PLANE", "primaryFaceId": "f-1" },
+    {
+      "vertexId": "v-5",
+      "faceIds": ["f-1", "f-2", "f-3"],
+      "mode": "REFIT_SELECTED_PLANES",
+      "movableFaceIds": ["f-3"],
+      "maxDisplacementM": 0.05
+    }
+  ],
+  "invalid": [
+    {
+      "why": "CANCEL is a client cancel",
+      "instance": { "vertexId": "v-5", "faceIds": ["f-1", "f-2", "f-3"], "mode": "CANCEL" }
+    },
+    {
+      "why": "KEEP_PRIMARY_PLANE without primary",
+      "instance": { "vertexId": "v-5", "faceIds": ["f-1", "f-2", "f-3"], "mode": "KEEP_PRIMARY_PLANE" }
+    },
+    {
+      "why": "two planes",
+      "instance": { "vertexId": "v-5", "faceIds": ["f-1", "f-2"], "mode": "KEEP_PRIMARY_PLANE", "primaryFaceId": "f-1" }
+    }
+  ]
+}

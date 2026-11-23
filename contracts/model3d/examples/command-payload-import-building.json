@@ -1,0 +1,1 @@
+{ "valid": [{}], "invalid": [{ "why": "no members in v1", "instance": { "cityObjectId": "DEBY_1" } }] }

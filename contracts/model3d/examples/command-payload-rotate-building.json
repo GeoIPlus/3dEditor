@@ -1,0 +1,1 @@
+{ "valid": [{ "angleDeg": 90 }], "invalid": [{ "why": "radians field", "instance": { "angleRad": 1.57 } }] }

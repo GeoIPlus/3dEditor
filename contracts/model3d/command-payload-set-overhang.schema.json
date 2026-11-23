@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-set-overhang:v1",
+  "title": "SET_OVERHANG payload",
+  "description": "Extend roof planes within their support planes to a new eave line; walls and footprint unchanged (v0.3 §6 F-30; v0.2 C.13; spec §10.10 rule 1).",
+  "type": "object",
+  "properties": {
+    "eaveEdgeIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "type": "array",
+      "minItems": 1
+    },
+    "overhangM": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/NonNegativeLength",
+      "description": "Overhang in horizontal projection, metres (v0.3 §6)."
+    }
+  },
+  "required": ["eaveEdgeIds", "overhangM"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names."
+}

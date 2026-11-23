@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-fit-to-shared-edge:v1",
+  "title": "FIT_TO_SHARED_EDGE payload",
+  "description": "Weld two open boundary edges into one shared edge; the leading plane is fixed (v0.2 C.8; spec §10.5). Tolerance and strategy are required: without them the source asks for a diagnostic error (INVALID_PAYLOAD).",
+  "type": "object",
+  "properties": {
+    "edgeIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "The two open boundary half-edges (twinId = null), on faces A and B."
+    },
+    "leadingFaceId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "Face A; its plane does not change (GT-06)."
+    },
+    "maxDisplacementM": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength",
+      "description": "Maximum displacement allowed. No default: the sources give none (Q-20); 3D-06 proposes \"always explicit\"."
+    },
+    "movableFaceIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "description": "The priority strategy: planes that may move; empty = B fixed (spec §10.5 rule 4). Must not contain leadingFaceId."
+    }
+  },
+  "required": ["edgeIds", "leadingFaceId", "maxDisplacementM", "movableFaceIds"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names; the strategy written as a movable-face list."
+}

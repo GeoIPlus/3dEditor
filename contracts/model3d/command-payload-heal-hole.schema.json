@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-heal-hole:v1",
+  "title": "HEAL_HOLE payload",
+  "description": "Close a hole by an explicit mode (v0.2 C.14; v0.3 §6; spec §10.8 rule 2).",
+  "type": "object",
+  "properties": {
+    "boundaryEdgeIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "type": "array",
+      "minItems": 1,
+      "description": "Half-edges with twinId = null bounding the hole."
+    },
+    "mode": { "enum": ["COPY_NEIGHBOR_PLANE", "FIT_MEASUREMENTS", "FILL_PLANAR"] },
+    "neighborFaceId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "COPY_NEIGHBOR_PLANE only: the face whose plane is copied."
+    },
+    "measurementIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "type": "array",
+      "minItems": 1,
+      "description": "FIT_MEASUREMENTS only."
+    },
+    "maxDisplacementM": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/NonNegativeLength",
+      "description": "\"Allowed corrections\" of v0.2 C.14 [A]."
+    }
+  },
+  "required": ["boundaryEdgeIds", "mode"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "mode": { "const": "COPY_NEIGHBOR_PLANE" } }, "required": ["mode"] },
+      "then": { "required": ["neighborFaceId"] }
+    },
+    {
+      "if": { "properties": { "mode": { "const": "FIT_MEASUREMENTS" } }, "required": ["mode"] },
+      "then": { "required": ["measurementIds"] }
+    }
+  ],
+  "$comment": "[P] Field names; reading \"allowed corrections\" as a maximum displacement is a proposal (Q-36, 3D-17)."
+}

@@ -88,6 +88,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-72 | 3D-31 runs in the cloud session only: the checksum-verified codebase-memory-mcp release binary (0.12.1) from the session scratchpad, isolated `CBM_CACHE_DIR`, no `install` command, no hooks, no client config; not the owner's PC install (its user-level hooks would contaminate the runs without the tool) | Owner, dialog, 2026-11-19 |
 | D-73 | 3D-31 accepted (done; result: defer the code-graph tool until kernel code exists, [eval](../agent-evals/3D-31-code-graph.md)); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-21 |
 | D-74 | 3D-03 set `ready` and started in a fresh session in parallel with 3D-06 | Owner, dialog, 2026-11-21 |
+| D-75 | 3D-06 `model3d` contract schemas accepted (D-18): 53 JSON Schema 2020-12 files in `contracts/model3d/`, `$id` `urn:geoiplus:schema:model3d-<name>:v1`, one payload file per `OperationKind`, shared `common`, `schemaVersion: "1"`; proposals P1-P10 of the [module card](../../contracts/model3d/README.md#proposals-accepted-by-the-owner-d-3d06-1) decided; open items Q-26..14 stay `TBD` for the rows named | Owner, dialog, 2026-11-23 (3D-06) |
+| D-76 | Q-20: FIT_TO_SHARED_EDGE over `maxDisplacementM` -> `CONSTRAINT_CONFLICT`, no unique pairing -> `INVALID_TOPOLOGY`, no default maximum displacement (required in the payload); HEAL_HOLE no closing -> `INVALID_GEOMETRY`, several closings -> `UNDERCONSTRAINED_GEOMETRY`, both with `details.admissibleModes`; SPLIT_FACE line outside / zero area -> `INVALID_GEOMETRY`, ambiguous hole components -> `INVALID_TOPOLOGY`, fixed plane -> `CONSTRAINT_CONFLICT`; R-01 errors -> `INVALID_GEOMETRY` | Owner, dialog, 2026-11-23 (3D-06) |
+| D-77 | Q-21: severity DRAFT_SOLID / VALID_SOLID: `SOLID_OVERLAP` WARNING/ERROR, `UNDERCONSTRAINED_GEOMETRY` ERROR/ERROR, `INVALID_MEASUREMENT` WARNING/WARNING, `EXPORT_SCHEMA_ERROR` WARNING/ERROR, `PRECISION_LOSS` WARNING/WARNING; enforced by `validation-report` | Owner, dialog, 2026-11-23 (3D-06) |
+| D-78 | 3D-06 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-06 provisional ids became D-75..D-77 and Q-26..Q-39 | Owner, chat, 2026-11-23 |
 
 ## Open questions
 
@@ -118,6 +122,20 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-23 | GT-13 (commandId idempotency, expectedVersion) needs the service's store, but BACKLOG maps it to 3D-18 (module `geo-model3d`, no dependency on 3D-23) | 3D-ADR-0002 C1 rule 1 (no I/O in the kernel); spec §13 | Owner |
 | Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, heatmap default threshold, RANSAC parameters, `measurementTolM` | spec §2.3, §2.4, §9, §11 | 3D-22 / 3D-23, owner approval |
 | Q-25 | CityJSON mapping of faces tagged OVERHANG on export | v0.2 F-30 (depends on export profile); spec §7 r6 | 3D-11 / 3D-19, owner |
+| Q-26 | `EntityId` format: UUID only or any string; syntax of the PREVIEW ephemeral namespace | v0.2 B.2 `UUID = string`, B.6; D.3 examples use non-UUID ids | 3D-09 / 3D-23 |
+| Q-27 | Per-kind geometry of `ConstructionEntity` | v0.2 B.2 'per-kind JSON Schema', not given | Row that first creates one |
+| Q-28 | Per-kind layout of `Measurement3D.geometry.coordinates` (e.g. a `PLANE`) | v0.2 Module 14 `number[][]` only | 3D-22 |
+| Q-29 | Shape of the missing degrees of freedom carried by `UNDERCONSTRAINED_GEOMETRY` | v0.2 D.4 'show the missing degrees of freedom' | 3D-13 (with Q-17) |
+| Q-30 | `needsRebind` of v0.2 B.6 in `topology-lineage` | v0.2 B.6 names it, no shape | 3D-09 |
+| Q-31 | Names of `affectedMetrics`; how a patch carries model-level changes (`state`, `frame`) | v0.2 D.2 gives `affectedMetrics: string[]` and entity changes only | 3D-09 / 3D-12 |
+| Q-32 | How the CityJSON CityObject of `IMPORT_BUILDING` maps to `buildingId` (CP assignment unit); payload is empty in v1 | spec §6 API; Q-03 | 3D-10 / 3D-43 |
+| Q-33 | `INSERT_ROOF_BREAK` with a ridge constraint instead of a new plane | v0.2 C.5 'new plane / ridge constraint' | 3D-15 |
+| Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | v0.2 C.6, v0.3 §6 'list for confirmation' | 3D-15 |
+| Q-35 | `TRIM_FACE`: which part stays (`keepPoint` proposed) | v0.2 §13.5, E-08 | 3D-15 |
+| Q-36 | `HEAL_HOLE` 'allowed corrections' (read as `maxDisplacementM`) | v0.2 C.14 | 3D-17 |
+| Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | v0.2 F-29 | 3D-19 |
+| Q-38 | Dimensions of `ADD_DORMER` FLAT/GABLE and `ADD_CHIMNEY` beyond outline / box | v0.3 §6, v0.2 C.16, GT-17, GT-18 | 3D-20 |
+| Q-39 | Does the command carry `leaseRef` / `leaseEpoch`, or does the service take them from the session | spec §11 rule 11, D-69 | 3D-23 |
 
 ## Open-question status updates
 
@@ -151,3 +169,5 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-19 | 2026-11-21, owner (3D-04) | closed by D-70 | Imported vertices explicit until edited |
 | Q-22 | 2026-11-21, owner (3D-04) | closed by D-69 | CP lease only |
 | Q-23 | 2026-11-21, owner (3D-04) | closed by D-68 | GT-13 -> 3D-23 |
+| Q-20 | 2026-11-23, owner (3D-06) | closed by D-76 | Refusal map of the module card accepted |
+| Q-21 | 2026-11-23, owner (3D-06) | closed by D-77 | Severities accepted, enforced in `validation-report` |

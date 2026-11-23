@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-match-elevations:v1",
+  "title": "MATCH_ELEVATIONS payload",
+  "description": "Bring a vertex group to one Z: an EQUAL_Z hard constraint solved for movable planes (v0.2 F-34; spec §10.7 rule 3).",
+  "type": "object",
+  "properties": {
+    "vertexIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList", "type": "array", "minItems": 2 },
+    "targetZ": {
+      "anyOf": [{ "type": "number" }, { "enum": ["MIN", "MAX", "MEAN"] }],
+      "description": "v0.2 F-34 \"target Z (number/min/max/mean)\"."
+    },
+    "hardConstraintIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" }
+  },
+  "required": ["vertexIds", "targetZ"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names and MIN/MAX/MEAN spelling. Movable planes: Q-18 (3D-16)."
+}

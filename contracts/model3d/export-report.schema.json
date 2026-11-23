@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-export-report:v1",
+  "title": "ExportReport",
+  "description": "Batch export of the assignment's buildings: exported buildings and skipped buildings with the reason (v0.3 §8.4; spec §11 rule 9; GT-24).",
+  "$comment": "[P] Shape and names; the reason is a localisation key (v0.3 Д-11) plus the state, since the sources give no reason codes.",
+  "type": "object",
+  "properties": {
+    "exported": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": { "buildingId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" }, "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" } },
+        "required": ["buildingId", "modelVersion"],
+        "additionalProperties": false
+      }
+    },
+    "skipped": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "buildingId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+          "state": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/ModelState" },
+          "reasonKey": { "type": "string", "minLength": 1 }
+        },
+        "required": ["buildingId", "reasonKey"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["exported", "skipped"],
+  "additionalProperties": false
+}

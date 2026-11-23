@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-remove-face:v1",
+  "title": "REMOVE_FACE payload",
+  "description": "Delete a face; the model becomes DRAFT_SOLID (v0.3 §6; spec §10.8 rule 1). The envelope must carry targetState DRAFT_SOLID (enforced by the command schema).",
+  "type": "object",
+  "properties": { "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" } },
+  "required": ["faceId"],
+  "additionalProperties": false,
+  "$comment": "[P] Field name."
+}

@@ -10,7 +10,7 @@ export default defineConfig({
       {
         test: {
           name: 'unit',
-          include: ['packages/*/test/**/*.test.js', 'tools/**/*.test.mjs', 'services/*/test/**/*.test.js'],
+          include: ['packages/*/test/**/*.test.js', 'tools/**/*.test.mjs', 'services/*/test/**/*.test.js', 'contracts/*/test/**/*.test.mjs'],
           exclude: ['**/node_modules/**', GOLDEN, 'tools/check-docs.test.mjs'],
         },
       },
