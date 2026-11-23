@@ -143,6 +143,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-127 | 3D-32 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids became D-121..D-126 and Q-43 (EPSG terms, still open); id clashes with the parallel 3D-08 resolved at merge: CRS ADR 3D-ADR-0004 -> 3D-ADR-0007, row 3D-66 (cloud CRS) -> 3D-69 | Owner, chat, 2026-11-23 |
 | D-128 | Per D-114: 3D-10 (import) and 3D-12 (validation) set `ready` (3D-09 and 3D-32 done) and started in parallel fresh sessions | Owner, chat, 2026-11-23 (D-114) |
 | D-129 | 3D-13 (solver), 3D-22 (point cloud), 3D-66 (3D-08 ADRs into spec and AGENTS.md) and 3D-67 (licence allow-list check) set `ready` and started in parallel fresh sessions, beside 3D-10 and 3D-12 | Owner, dialog, 2026-11-24 |
+| D-3D66-1 | AGENTS.md §2 rule 8 text approved as shown: "... no TypeScript sources. Owner decision D-109 (3D-ADR-0004, Q-01 closed)." (AGENTS.md §10) | Owner, dialog, 2026-11-23 (3D-66) |
+| D-3D66-2 | 3D-66 scope widened to the other stale references of the same decisions: spec §10.5 rule 4 cites 3D-ADR-0005 O1 instead of `TBD` (row scope-out overridden); §1.1 and §10.11 rule 4 cite D-109 (Q-01 closed, own Boolean, no library); link text of the CRS ADR in §1.4 and §4a corrected to 3D-ADR-0007 (D-127) | Owner, dialog, 2026-11-23 (3D-66) |
 
 ## Open questions
 

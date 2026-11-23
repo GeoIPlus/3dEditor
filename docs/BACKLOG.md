@@ -18,8 +18,8 @@ Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 
 | Progress | Rows |
 |---|---:|
 | Done | 18 / 55 |
-| Review | 0 |
-| In progress | 1 |
+| Review | 1 |
+| In progress | 0 |
 | Ready | 9 |
 | Proposed (waiting for the owner to set `ready`) | 26 |
 | Blocked (external access or data) | 1 |
@@ -51,10 +51,10 @@ flowchart TB
     D65["3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D66["3D-66 Apply 3D-08 ADRs to spec, AGENTS"]
   end
   subgraph ready["READY"]
     D67["3D-67 Licence allow-list check"]
-    D66["3D-66 Apply 3D-08 ADRs to spec, AGENTS"]
     D22["3D-22 Point cloud functions"]
     D13["3D-13 Constraint solver"]
     D12["3D-12 Validation"]
@@ -247,7 +247,7 @@ flowchart TB
 | 3D-32 | CRS support: server-only transform module, local metric frame (ENU) per building, ADR for the library; spec and schema update for geographic CRSs (D-92) | here | geo-model3d (frame), services/kernel, docs, contracts | 02, 06, 64 | G1 | M | done (D-127; merged into base, no PR; [3D-ADR-0007](decisions/adr/3D-ADR-0007-crs-transform.md); EPSG terms Q-43 open) |
 | 3D-33 | Inter-building validation (shared walls, overlaps between buildings), P1 (D-89) | here | geo-model3d/validate | 12 | P1 | M | proposed |
 | 3D-65 | Schema text: `FIT_TO_SHARED_EDGE` `maxDisplacementM` description cites D-76 instead of open Q-20 / "3D-06 proposes" | here | contracts | 06 | G0 | S | done (D-107; merged into base, no PR) |
-| 3D-66 | Apply accepted 3D-08 ADRs to spec and AGENTS.md: spec §1.3, §5 r8, §10.4 r5, §11 r14; AGENTS.md §2 rule 8 cites 3D-ADR-0004 | here | docs | 08 | G0 | S | in-progress (wp/3d-66-adr-refs) |
+| 3D-66 | Apply accepted 3D-08 ADRs to spec and AGENTS.md: spec §1.3, §5 r8, §10.4 r5, §11 r14; AGENTS.md §2 rule 8 cites 3D-ADR-0004 | here | docs | 08 | G0 | S | review (local, PR not requested; wp/3d-66-adr-refs) |
 | 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | ready (D-129) |
 | 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23 | G5 | M | proposed (D-112) |
 | 3D-69 | Point cloud CRS vs. a geographic-CRS building: reproject points into the building metric frame on the server, or refuse a mismatch (D-126) | here | geo-model3d/cloud, services/kernel | 22, 32 | G4 | M | proposed |
@@ -506,7 +506,8 @@ flowchart TB
   text, §10). Scope out: any other spec change; §10.5 / §10.7 / §10.8 keep their wording (they link Q-17, now closed).
 - Accept: `grep -n "Q-17\|ADR-S" docs/specs/3dqm-spec.md` shows only references to the closed question / accepted ADR;
   AGENTS.md §2 rule 8 no longer says "not yet an owner decision"; `npm run check` passes.
-- Decisions: D-109, D-110, D-111  Open: -
+- Scope widened by D-3D66-2: §10.5 r4, §1.1, §10.11 r4, CRS ADR link text in §1.4 and §4a.
+- Decisions: D-109, D-110, D-111, D-3D66-1, D-3D66-2  Open: -
 
 ### 3D-67 Licence allow-list check in `check:arch`
 - Source: 3D-08, 3D-ADR-0004 decision 3 (D-109, D-112).

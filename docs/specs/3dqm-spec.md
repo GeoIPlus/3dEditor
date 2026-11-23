@@ -31,8 +31,9 @@ Field and command names in this spec are the names used in the sources; names th
 - Point cloud in the editor: snapping to points, model-to-cloud deviation heatmap, plane fit from selected points [D]
   (D-11).
 - The geometry kernel runs **only on a server** (P4); the browser holds a visual ghost without solver logic; no WASM
-  build for browsers [D] (D-06). Kernel language: JavaScript on Node is the working rule, decided by measurement in 3D-08
-  (Q-01). Nothing in this spec depends on the language.
+  build for browsers [D] (D-06). Kernel language: JavaScript ESM + JSDoc on Node [D] (D-109,
+  [3D-ADR-0004](../decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md); Q-01 closed). Nothing in this spec
+  depends on the language.
 
 ### 1.2 Conventions
 
@@ -64,7 +65,7 @@ Field and command names in this spec are the names used in the sources; names th
 | Admin column of v0.3 §8.5: viewing all packages, creating packages, assigning buildings, managing tolerance profiles, releasing another user's lock | D-10: assignments and roles come from the CP contract, not from an admin screen in the editor (supersedes v0.3 Р-09). Only what a workplace must enforce locally stays (§11) |
 | "Package" as a 3DQM object (v0.3 §8.5: named list of `buildingId`, one active package per building) | D-10: the building set of an operator is the signed CP assignment (Operaflow work units, 3D-01 §9). GT-23 and GT-24 are restated in those terms (§13) |
 | Own building lock, renewal by activity, `lockTtlMin` (v0.3 §8.5, §10) | D-69: the CP assignment lease is the only lock |
-| Compiled kernel, ADR-001 language choice (v0.3 §3) | Q-01, decided by measurement in 3D-08 (HANDOVER §5) |
+| Compiled kernel, ADR-001 language choice (v0.3 §3) | D-109: JavaScript ESM + JSDoc on Node, measured in 3D-08 ([3D-ADR-0004](../decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md); Q-01 closed) |
 | TypeScript DTOs as the contract (v0.3 §4, §9) | Contract first: JSON Schema 2020-12 in `contracts/model3d/` (AGENTS.md §2.7, D-37); §2 lists the schemas |
 | Client module `features/editor/` in geoviewer; architecture diagram of v0.3 §3 | Client parts are SC library components (D-17, D-52..D-55); geoviewer is one host (§12) |
 | "CityJSON already loaded in the system" (v0.3 §5) as a source of topology | The kernel reads the original CityJSON on the server; the geoviewer drawing path is not a topology source (HANDOVER §5) |
@@ -77,7 +78,7 @@ Field and command names in this spec are the names used in the sources; names th
 | 2 | Contracts | `contracts/model3d/` | 3D-06 | - |
 | 3 | Kernel public API | `packages/geo-model3d/src/index.js` | 3D-09, each op row | all modules |
 | 4 | `brep` | `packages/geo-model3d/src/brep/` | 3D-09 | `crs` |
-| 4a | `crs` | `.../src/crs/` | 3D-32 | - (third party: `proj4`, [3D-ADR-0004](../decisions/adr/3D-ADR-0007-crs-transform.md)) |
+| 4a | `crs` | `.../src/crs/` | 3D-32 | - (third party: `proj4`, [3D-ADR-0007](../decisions/adr/3D-ADR-0007-crs-transform.md)) |
 | 5 | `solve` | `.../src/solve/` | 3D-13 | `brep` |
 | 6 | `import` | `.../src/import/` | 3D-10 | `brep`, `crs` |
 | 7 | `export` | `.../src/export/` | 3D-11 | `brep`, `crs` |
@@ -280,7 +281,7 @@ isolated copy, patch + inverse patch + lineage between two versions; RTG project
 ## 4a. `crs` - CRS resolution, local metric frame, write-back (3D-32)
 
 **Purpose.** Map one building between its file CRS and a local metric frame, and write changed vertices back [D]
-(D-92, D-93, [3D-ADR-0004](../decisions/adr/3D-ADR-0007-crs-transform.md), D-125).
+(D-92, D-93, [3D-ADR-0007](../decisions/adr/3D-ADR-0007-crs-transform.md), D-125).
 
 **API.** `resolveCrs(referenceSystem)`; `createMetricFrame(referenceSystem, originWorld)` with `toMetric` / `toWorld`;
 `writeBackVertices({ frame, transform, fileVertices, changed, exportRoundDecimals })`; `decodeVertex`. Internal to the
@@ -328,8 +329,9 @@ missing degrees of freedom when underconstrained. Plane-plane-plane intersection
 5. Too few independent conditions -> `UNDERCONSTRAINED_GEOMETRY` with the missing degrees of freedom (v0.2 D.4, C.2).
 6. `FIXED_POINT` never changes except by an explicit unlock (`REMOVE_CONSTRAINT`) (v0.2 C.11).
 7. No hidden jumps of many vertices: a solve may change only the planes the operation declares movable (v0.2 C.9, §13.5).
-8. Solver approach and the objective that fixes the remaining degrees of freedom of a movable plane: `TBD` (ADR-S in 3D-08,
-   owner-approved; Q-17).
+8. Solver approach and the objective that fixes the remaining degrees of freedom of a movable plane:
+   [3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) (D-110; Q-17 closed): own two-stage solver (A1) with
+   objective O1, keep the face's other vertices (least squares to their old positions, hard conditions exact).
 
 **Accept:**
 - Accept: two contradictory hard constraints return `feasible = false` and both ids; no planes are changed.
@@ -602,8 +604,9 @@ movable; coordinate frame. Output: candidate planes for `solve`.
    same solve. A `FIXED_POINT` vertex that would change position -> `CONSTRAINT_CONFLICT` naming it (v0.2 C.11; GT-10).
 4. If no plane is movable, the command succeeds only when the target already satisfies rule 2; otherwise
    `CONSTRAINT_CONFLICT` naming the fixed planes [A].
-5. Degrees of freedom of a movable plane not fixed by rules 2-3 are resolved by the ADR-S objective (`TBD`, Q-17); a
-   solve with free degrees and no objective returns `UNDERCONSTRAINED_GEOMETRY` (§5 rule 5).
+5. Degrees of freedom of a movable plane not fixed by rules 2-3 are resolved by objective O1 of
+   [3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) (D-110); a solve with free degrees that O1 does not fix
+   (e.g. all kept vertices on the target line) returns `UNDERCONSTRAINED_GEOMETRY` (§5 rule 5).
 6. A vertex with fewer than three independent planes (§4 rule 3) is moved by writing its explicit `p` only if `p*` lies on
    all its planes within `planarTolM` after the solve; its planes follow rule 2.
 7. No two faces may hold independent coordinates of one canonical vertex (v0.2 C.11); this holds by construction because
@@ -643,7 +646,7 @@ Default values: none; the payload requires `maxDisplacementM`, there is no defau
 4. If B is fixed by the strategy: weld succeeds only when each derived vertex is within the maximum displacement of both
    copies it replaces. If B is movable: B's plane is solved with the hard constraint "contains the leading edge of A"
    (`ON_PLANE` for the edge's endpoints on A, which lie on plane A by construction); its remaining degree of freedom is
-   the ADR-S objective (`TBD`, Q-17).
+   objective O1 of [3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) (D-110).
 5. Displacement over the maximum -> `CONSTRAINT_CONFLICT` with the offending vertex ids; no unique pairing ->
    `INVALID_TOPOLOGY` with the edge ids (D-76).
 6. Dependent faces whose vertices change are re-derived; rule 8 checks of §10.4 apply. Result: the two `OPEN_BOUNDARY`
@@ -795,8 +798,8 @@ dimensions or a plane-fit measurement; installation id (`REMOVE_INSTALLATION`).
 2. `ADD_DORMER`: type `FLAT` or `GABLE`; outline on a roof face + dimensions manual or from plane fit. `ADD_CHIMNEY`:
    box only; dimensions manual or from the cloud (v0.3 §6).
 3. The installation is a separate closed `BuildingInstallation` body; its base lies in the roof plane (GT-17).
-4. Boolean in P0 only: plane-plane, face-half-space, union of a prism with a shell (K-12, v0.3 §14). Library: 3D-08 ADR
-   (Q-01).
+4. Boolean in P0 only: plane-plane, face-half-space, union of a prism with a shell (K-12, v0.3 §14). Own implementation,
+   no third-party Boolean library (D-109, [3D-ADR-0004](../decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md) B1).
 5. `REMOVE_INSTALLATION`: removes the installation and restores the underlying roof face (v0.2 §13.5).
 
 **Accept:**
@@ -876,10 +879,11 @@ and export rules (3D-ADR-0002 C2, D-51). Built as its own container image (D-33)
 12. Every request and reply validates against `contracts/model3d/`; an invalid message is refused on both sides
     (3D-ADR-0002 Checks).
 13. Operaflow rule groups A-D, F apply as assigned in 3D-ADR-0002 "Q-15" (not repeated here).
-14. Latency targets (v0.3 §11): server PREVIEW p95 <= 150 ms for a building up to 200 faces, network excluded (3D-08; a
+14. Latency targets (v0.3 §11): server PREVIEW p95 <= 150 ms for a building up to 200 faces, network excluded (3D-08
+    measured 5.411 ms, D-109; a
     miss is an owner escalation, never a client fallback, D-06); COMMIT of a simple operation p95 <= 1 s;
-    `FINAL_VALIDATION` p95 <= 10 s (assumption); import of a building up to 500 faces <= 2 s (assumption). Bench rig:
-    ADR-012 in 3D-08.
+    `FINAL_VALIDATION` p95 <= 10 s (assumption); import of a building up to 500 faces <= 2 s (assumption). Bench rig,
+    scenes and protocol: [3D-ADR-0006](../decisions/adr/3D-ADR-0006-bench-rig-and-scenes.md) (D-111; `npm run bench`).
 
 **Accept:**
 - Accept: GT-13 (3D-23, D-68), GT-22, GT-24 (3D-24), GT-23 (3D-25) (§13).
@@ -990,7 +994,7 @@ explicit until edited). Owner answers of 2026-11-23 (dialog, 3D-06): D-76 (refus
 
 | Id | Question | Used in |
 |---|---|---|
-| Q-17 | Objective that fixes the remaining degrees of freedom of a movable plane (e.g. minimal displacement of its other derived vertices); the sources name only soft `MINIMIZE_DISPLACEMENT` | §5 r8, §10.4 r5, §10.5 r4, §10.7 r3, §10.8 r3 |
+| Q-17 | **Closed by D-110** ([3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices). Objective that fixes the remaining degrees of freedom of a movable plane (e.g. minimal displacement of its other derived vertices); the sources name only soft `MINIMIZE_DISPLACEMENT` | §5 r8, §10.4 r5, §10.5 r4, §10.7 r3, §10.8 r3 |
 | Q-18 | Operations given only as intent: movable planes of `MATCH_ELEVATIONS` and `SET_HEIGHT EAVE`; solid closure of `SET_OVERHANG` (soffit or not); collinearity tolerance of `STRAIGHTEN_FACE`; how the `FIT_PLANE` selection reaches the server | §10.1 r7, §10.6 r6, §10.7 r3, §10.10 r1, r5, §10.12 r4 |
 | Q-19 | **Closed by D-70** (keep explicit until edit). Import: are vertex positions replaced by plane intersections (moves up to `planarTolM`, changes an unedited round trip of real data) or kept explicit until the first edit; how a `NON_PLANAR_FACE` keeps its vertices under the vertex-plane invariant | §6 r16 |
 | Q-20 | **Closed by D-76** (codes in §10.3 r6, §10.5 r5, §10.6 r2, §10.8 r2; no default maximum displacement). Refusal codes the sources leave open: `FIT_TO_SHARED_EDGE` over the displacement limit / no unique pairing; `HEAL_HOLE` mode impossible (GT-11); `SPLIT_FACE` errors; R-01 errors; and the default maximum displacement of `FIT_TO_SHARED_EDGE` | §2.4, §10.1 r6, §10.3 r6, §10.5, §10.6 r2 |
@@ -1020,6 +1024,6 @@ Contract open questions of 3D-06 (D-75; source and wording:
 | Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
 | Q-39 | Whether the command carries `leaseRef` / `leaseEpoch` (§11 rule 11) or the service takes them from the session | 3D-23 |
 
-Existing questions this spec depends on: Q-01 (kernel language, 3D-08), Q-03 (CP extension content, 3D-43), Q-10
-(val3dity binding, 3D-12). Q-11 (v0.3 assumptions Д-01..Д-12) is closed by D-88..D-94; Q-43 (EPSG terms of use,
-3D-ADR-0007) is open.
+Existing questions this spec depends on: Q-03 (CP extension content, 3D-43), Q-10 (val3dity binding, 3D-12). Q-01
+(kernel language) is closed by D-109; Q-11 (v0.3 assumptions Д-01..Д-12) is closed by D-88..D-94; Q-43 (EPSG terms of
+use, 3D-ADR-0007) is open.
