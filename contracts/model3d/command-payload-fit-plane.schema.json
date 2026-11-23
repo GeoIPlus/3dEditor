@@ -6,8 +6,8 @@
   "type": "object",
   "properties": {
     "selection": {
-      "type": "object",
-      "description": "How the selection (rectangle or lasso in the view) reaches the server is open: TBD (Q-18, 3D-22). Shape not constrained in v1."
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PointSelection",
+      "description": "Rectangle or lasso in the view as a LOCAL-frame box or plan polygon with height range (D-3D22-3, Q-18)."
     },
     "apply": { "enum": ["MEASUREMENT", "FACE_PLANE"] },
     "faceId": {

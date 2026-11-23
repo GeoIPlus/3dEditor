@@ -18,7 +18,7 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 
 | Spec §2 row | `<name>` | Root |
 |---|---|---|
-| - | `common` | `$defs` only: `EntityId`, `V2`, `V3`, `Line2`, `Line3`, `Ring2`, `Plane`, `ModelState`, `SurfaceKind`, `EdgeRole`, `ConstraintKind`, `Frame`, `LocalAxis`, `OperationKind`, lengths, `Version`, `Timestamp` |
+| - | `common` | `$defs` only: `EntityId`, `V2`, `V3`, `Line2`, `Line3`, `Ring2`, `Plane`, `ModelState`, `SurfaceKind`, `EdgeRole`, `ConstraintKind`, `Frame`, `LocalAxis`, `OperationKind`, lengths, `Version`, `Timestamp`, `PointSelection` (BOX / POLYGON, D-3D22-3) |
 | 1 | `building-model` | `BuildingModel`; entities in `$defs` (`Footprint`, `ConstructionEntity`, `Vtx`, `HalfEdge`, `Face`, `Shell`, `Solid`, `RoofComponent`, `Constraint`, `ConstraintBody`, `CoordinateFrame`, `SemanticNode`, `SchemaVersion`) |
 | 2 | `measurement` | `Measurement3D` |
 | 3 | `tolerance-profile` | 14 fields, `default` = D-13 values |
@@ -35,6 +35,7 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 | 14 | `plane-fit-result` | plane, counts, ratio, RMSE |
 | 15 | `heatmap-result` | per-face values + summary |
 | 16 | `export-report` | exported / skipped with reason |
+| (3D-22) | `heatmap-request` | building, model version, `PointSelection`, optional `faceIds`, required `thresholdM` (D-3D22-7; spec §2 row pending intake) |
 
 `examples/<name>.json` holds `{ "valid": [...], "invalid": [{ "why", "instance" }] }` (for `common`: per `$defs` entry).
 
@@ -43,9 +44,9 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 - Marks inside the schemas: `[P]` in a `$comment` = a name or shape the sources do not give, proposed by 3D-06 and
   accepted by the owner (D-75); `[A]` = this schema's reading of a source; `TBD (Q-NN)` = left open, never guessed.
 - Every object is closed (`additionalProperties: false`) except `SemanticNode.attributes`, `ConstraintBody` (closed by
-  its users with `unevaluatedProperties`) and the `FIT_PLANE` `selection` (shape open, Q-18).
+  its users with `unevaluatedProperties`) (the `FIT_PLANE` `selection` is a `PointSelection` since D-3D22-3).
 - Values: the only defaults are the D-13 tolerances. No limit, threshold or default that the sources do not give
-  (payload size, PREVIEW rate and expiry, heatmap threshold, RANSAC parameters, `measurementTolM`: Q-24).
+  (payload size, PREVIEW rate and expiry, `measurementTolM`: Q-24). The heatmap threshold has no default and is required in `heatmap-request` (D-3D22-2); RANSAC parameters are kernel settings (D-3D22-1), not contract fields.
 - `schemaVersion` of model and command is `"1"` and equals the `$id` major `v1` [P]. A breaking change bumps both.
 - Ajv: strict mode except `strictRequired` (it rejects the standard `if`/`then` `required` idiom).
 

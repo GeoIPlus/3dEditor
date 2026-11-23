@@ -18,6 +18,17 @@
       "valid": [[[0, 0], [10, 0], [10, 8], [0, 8]]],
       "invalid": [{ "why": "two points", "instance": [[0, 0], [10, 0]] }]
     },
+    "PointSelection": {
+      "valid": [
+        { "kind": "BOX", "min": [0, 0, 4], "max": [10, 4, 9] },
+        { "kind": "POLYGON", "ringXY": [[0, 0], [10, 0], [10, 4]], "zMin": 4, "zMax": 9 }
+      ],
+      "invalid": [
+        { "why": "unknown kind", "instance": { "kind": "LASSO", "min": [0, 0, 0], "max": [1, 1, 1] } },
+        { "why": "polygon without height range", "instance": { "kind": "POLYGON", "ringXY": [[0, 0], [10, 0], [10, 4]] } },
+        { "why": "box with a 2D corner", "instance": { "kind": "BOX", "min": [0, 0], "max": [10, 4, 9] } }
+      ]
+    },
     "Plane": {
       "valid": [{ "normal": [0, 0, 1], "d": -5 }],
       "invalid": [

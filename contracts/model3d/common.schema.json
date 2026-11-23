@@ -51,6 +51,33 @@
       "items": { "$ref": "#/$defs/V2" },
       "minItems": 3
     },
+    "PointSelection": {
+      "description": "Cloud points chosen by the operator (rectangle or lasso in the view, v0.3 §7), in the LOCAL frame of the building. The service queries the points port by the bounding box and filters by the shape; the kernel receives the points (spec §9). BOX: min <= max per axis (checked by the kernel). POLYGON: plan ring plus a height range.",
+      "$comment": "D-3D22-3 (Q-18 for FIT_PLANE). [P] Member names.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "BOX" },
+            "min": { "$ref": "#/$defs/V3" },
+            "max": { "$ref": "#/$defs/V3" }
+          },
+          "required": ["kind", "min", "max"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "POLYGON" },
+            "ringXY": { "$ref": "#/$defs/Ring2" },
+            "zMin": { "type": "number" },
+            "zMax": { "type": "number" }
+          },
+          "required": ["kind", "ringXY", "zMin", "zMax"],
+          "additionalProperties": false
+        }
+      ]
+    },
     "Plane": {
       "description": "Plane `normal · p + d = 0` with |normal| = 1 (v0.2 B.2). The unit length is checked by the kernel, not expressible here.",
       "type": "object",
