@@ -128,6 +128,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-112 | 3D-08 follow-ups go to intake as `proposed` rows: licence allow-list check, COMMIT / import / concurrency latency bench, production re-measure | Owner, dialog, 2026-11-23 (3D-08) |
 | D-113 | 3D-08 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-08 provisional ids became D-109..D-112 and Q-42 | Owner, chat ("merge"), 2026-11-23 |
 | D-114 | Once 3D-09 is done, 3D-10 (import) and 3D-12 (validation) are set `ready` and started in parallel fresh sessions; 3D-10 starts only when 3D-32 is also done (AGENTS.md §4) | Owner, chat, 2026-11-23 |
+| D-115 | 3D-09 (kernel core) set `ready` and started in a fresh session | Owner, dialog, 2026-11-23 |
 
 ## Open questions
 
