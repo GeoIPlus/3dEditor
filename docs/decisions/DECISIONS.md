@@ -142,6 +142,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-126 | Point cloud in another horizontal CRS than a geographic-CRS building (reprojection out of 3D-32) becomes a new `proposed` row (3D-69); reproject vs. refuse is decided when it is set `ready` | Owner, dialog, 2026-11-23 (3D-32) |
 | D-127 | 3D-32 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids became D-121..D-126 and Q-43 (EPSG terms, still open); id clashes with the parallel 3D-08 resolved at merge: CRS ADR 3D-ADR-0004 -> 3D-ADR-0007, row 3D-66 (cloud CRS) -> 3D-69 | Owner, chat, 2026-11-23 |
 | D-128 | Per D-114: 3D-10 (import) and 3D-12 (validation) set `ready` (3D-09 and 3D-32 done) and started in parallel fresh sessions | Owner, chat, 2026-11-23 (D-114) |
+| D-3D10-1 | Q-41: GT-I2 `OPEN_BOUNDARY` is reported on the two ridge edges only; an edge with one face shorter than `minEdgeLengthM` (the two 0.03 m gable-wall edges) is reported as `DEGENERATE_EDGE`, not `OPEN_BOUNDARY`. 3D-12 applies the same rule | Owner, dialog, 2026-11-23 (3D-10) |
+| D-3D10-2 | 3D-10 import computes its own interim issues and state (`import/state.js`: `OPEN_BOUNDARY`, `NON_MANIFOLD_EDGE`, `DEGENERATE_EDGE`, `NON_PLANAR_FACE` from `brep` topology), because the module DAG allows `import` -> `brep`, `crs` only and 3D-12 is not merged. Once 3D-10 and 3D-12 are both merged, `importBuilding` in `index.js` takes the state from `validateModel` and `import/state.js` is removed (intake row) | Owner, dialog, 2026-11-23 (3D-10) |
 
 ## Open questions
 
@@ -229,3 +231,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-11 | 2026-11-23, owner (coordinating session) | closed by D-88..D-94 | Д-01/Д-02 overtaken (D-88); Д-04 changed to geographic CRS support (D-92, row 3D-32); rest confirmed |
 | Q-01 | 2026-11-23, owner (3D-08) | closed by D-109 | [3D-ADR-0004](adr/3D-ADR-0004-kernel-language-boolean-licences.md): JavaScript on Node; MOVE_EDGE PREVIEW p95 5.411 ms on 199 faces vs 150 ms ([3D-08 note](../verification/3D-08.md)) |
 | Q-17 | 2026-11-23, owner (3D-08) | closed by D-110 | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices (least squares to their old positions, hard conditions exact) |
+| Q-41 | 2026-11-23, owner (3D-10) | closed by D-3D10-1 | Two ridge edges; short one-face edges are `DEGENERATE_EDGE` |
