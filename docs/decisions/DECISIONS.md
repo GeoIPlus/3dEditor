@@ -146,6 +146,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D12-2 | 3D-12 delivers `src/validate` (three modes, severity by state, "new" issues via lineage), the in-process validator port with a stub, and the ADR; the val3dity image and its binding in `services/kernel` are a new intake row that depends on 3D-23 | Owner, dialog, 2026-11-23 (3D-12) |
 | D-3D12-3 | D-118: `robust-predicates` is not adopted in 3D-12; ring and face-crossing tests use tolerance-based predicates in own code; reopen only if a test shows a sign error near zero | Owner, dialog, 2026-11-23 (3D-12) |
 | D-3D12-4 | `validateModel` takes findings of other modules (solve, crs, export, cloud, import) and of the external validator port and assigns scope and severity from one table; `validate` itself detects the geometry and topology codes and `SOLID_OVERLAP` between bodies of one building (D-89) | Owner, dialog, 2026-11-23 (3D-12) |
+| D-3D12-5 | `INCONSISTENT_JUNCTION` measure (spec §4 rule 5): the spread of a node = largest distance between the points where triples of its independent planes meet; reported when > `topologySnapTolM`. Replaces the 3D-09 [A] reading (largest distance of the least-squares point), under which GT-19's 0.05 m divergence measured 0.00997 m and passed; `brep.inconsistentJunctions` and `rederive` use it | Owner, dialog, 2026-11-23 (3D-12) |
+| D-3D12-6 | Severity columns beyond spec §8 rule 4: target state `DRAFT_SURFACE` uses the `DRAFT_SOLID` column, `APPROVED` the `VALID_SOLID` column | Owner, dialog, 2026-11-23 (3D-12) |
 
 ## Open questions
 
@@ -194,6 +196,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-41 | GT-I2: which edges carry `OPEN_BOUNDARY` - the two ridge edges only (the 0.03 m wall edges reported as degenerate, < `minEdgeLengthM`) or all four edges of the gap loop | v0.3 §12 GT-I2, D-101 | 3D-10 |
 | Q-42 | On which machine class is the latency verdict re-measured once the kernel service image exists (production instance class of the Tools Plane, unknown today: HANDOVER §8 q3) | [3D-ADR-0006](adr/3D-ADR-0006-bench-rig-and-scenes.md) step 5; 3D-08 measured on the cloud agent container | 3D-23, owner |
 | Q-43 | Do the EPSG dataset terms of use allow shipping a table derived from it (via PROJ `proj.db`) inside the kernel image? PROJ code and data are MIT (`LICENSE_proj` in pyproj 3.8.0); the EPSG terms could not be read (epsg.org blocked by the network policy) | 3D-ADR-0004 licence section | owner / legal, before 3D-32 is accepted |
+| Q-3D12-1 | Review of the three [A] maps of `validate`: code -> scope (`codes.js`), brep structural problem -> code (`structure.js`), val3dity code -> code with fallback `EXPORT_SCHEMA_ERROR` (`external.js`) | Spec §8 names codes and scopes, no map; owner: review at acceptance of 3D-12 | Owner, at 3D-12 acceptance |
 
 ## Open-question status updates
 
