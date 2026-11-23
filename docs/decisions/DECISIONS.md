@@ -121,6 +121,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-105 | 3D-65 (schema description of `FIT_TO_SHARED_EDGE` `maxDisplacementM` cites D-76) set `ready` and started in a fresh session; 3D-32 is already owned by its session (wp/3d-32-crs-support) | Owner, dialog, 2026-11-23 (3D-64 session) |
 | D-106 | 3D-65 schema text accepted: `maxDisplacementM` description of `command-payload-fit-to-shared-edge` reads "Maximum displacement allowed. Required, no default maximum displacement (D-76; spec §10.5)."; no keyword, `required`, `$id` or version change; row -> `review` | Owner, dialog, 2026-11-23 (3D-65) |
 | D-107 | 3D-65 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-65 provisional id became D-106 | Owner, chat ("merge"), 2026-11-23 |
+| D-108 | 3D-46 (SC P4 canary scan + "no `geo-model3d` dependency" rule; mirror, `GeoIPlus/shared_compnents` row authoritative) set `ready` as the next fresh-session WP; the other `ready` rows are owned (3D-08, 3D-32, 3D-47) or wait on dependencies (3D-48, 3D-51) | Owner, dialog, 2026-11-23 |
 
 ## Open questions
 
