@@ -6,6 +6,7 @@ import './canary.js';
 import { canonicalJson as canon, localFrame } from './brep/index.js';
 
 export { P4_CANARY } from './canary.js';
+export { validateModel } from './validate/index.js';
 
 /** @typedef {import('./brep/frame.js').CoordinateFrame} CoordinateFrame */
 /** @typedef {[number, number, number]} V3 */
