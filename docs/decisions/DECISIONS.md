@@ -122,6 +122,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-106 | 3D-65 schema text accepted: `maxDisplacementM` description of `command-payload-fit-to-shared-edge` reads "Maximum displacement allowed. Required, no default maximum displacement (D-76; spec §10.5)."; no keyword, `required`, `$id` or version change; row -> `review` | Owner, dialog, 2026-11-23 (3D-65) |
 | D-107 | 3D-65 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-65 provisional id became D-106 | Owner, chat ("merge"), 2026-11-23 |
 | D-108 | 3D-46 (SC P4 canary scan + "no `geo-model3d` dependency" rule; mirror, `GeoIPlus/shared_compnents` row authoritative) set `ready` as the next fresh-session WP; the other `ready` rows are owned (3D-08, 3D-32, 3D-47) or wait on dependencies (3D-48, 3D-51) | Owner, dialog, 2026-11-23 |
+| D-3D46-1 | 3D-46: `GeoIPlus/shared_compnents` had no mirror row; the owner approved adding it there as **SC row 76** (branch `wp/76-p4-canary-scan`) and implementing it in this session. SC records the approval in its own DECISIONS.md | Owner, dialog, 2026-11-23 (3D-46) |
+| D-3D46-2 | 3D-46 delivery: the SC branch is pushed **without a pull request** (overrides SC AGENTS.md §4.8 for this WP); the owner opens it or asks for one later. 3dEditor bookkeeping stays on its branch without a PR | Owner, dialog, 2026-11-23 (3D-46) |
 
 ## Open questions
 
