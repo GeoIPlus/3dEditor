@@ -18,7 +18,7 @@
     },
     "maxDisplacementM": {
       "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength",
-      "description": "Maximum displacement allowed. No default: the sources give none (Q-20); 3D-06 proposes \"always explicit\"."
+      "description": "Maximum displacement allowed. Required, no default maximum displacement (D-76; spec §10.5)."
     },
     "movableFaceIds": {
       "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
