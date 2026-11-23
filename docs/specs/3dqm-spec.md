@@ -280,7 +280,7 @@ isolated copy, patch + inverse patch + lineage between two versions; RTG project
 ## 4a. `crs` - CRS resolution, local metric frame, write-back (3D-32)
 
 **Purpose.** Map one building between its file CRS and a local metric frame, and write changed vertices back [D]
-(D-92, D-93, [3D-ADR-0004](../decisions/adr/3D-ADR-0004-crs-transform.md), proposed).
+(D-92, D-93, [3D-ADR-0004](../decisions/adr/3D-ADR-0004-crs-transform.md), D-3D32-5).
 
 **API.** `resolveCrs(referenceSystem)`; `createMetricFrame(referenceSystem, originWorld)` with `toMetric` / `toWorld`;
 `writeBackVertices({ frame, transform, fileVertices, changed, exportRoundDecimals })`; `decodeVertex`. Internal to the
@@ -370,7 +370,7 @@ baseline, `import-report`.
 13. Each `BuildingPart` is kept and edited as its own body; creating or splitting parts is P1 [D] (v0.3 Д-09, D-91).
 14. Projected and geographic CRSs are accepted; an unknown or unsupported CRS (not in the CRS table of §4a: e.g. a
     malformed reference, grads, non-metre projected units, geocentric) is refused with `INVALID_CRS` [D] (D-92; the
-    non-metre case is proposed in 3D-ADR-0004). Heights are used as in the file; the vertical CRS is kept, not
+    non-metre case: D-3D32-5). Heights are used as in the file; the vertical CRS is kept, not
     transformed [D] (D-93). Adjacent buildings are imported and edited independently [D] (v0.3 Д-05, D-89).
 15. More than 500 faces: import with a warning, no latency guarantee [D] (v0.3 Д-12, D-94).
 16. Vertex positions are **not** replaced by plane intersections at import: every vertex keeps its file position until

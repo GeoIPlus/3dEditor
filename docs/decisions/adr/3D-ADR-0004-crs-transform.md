@@ -1,6 +1,6 @@
 # 3D-ADR-0004: CRS support - transform library, EPSG table, local ENU frame
 
-- Status: proposed (D-18: accepted only on the owner's word in a dialog). Owner answers that shaped it: D-3D32-1..4.
+- Status: accepted (owner, 2026-11-23, D-3D32-5). Owner answers that shaped it: D-3D32-1..4.
 - WP: 3D-32   Questions closed: -   Opened: Q-3D32-1 (EPSG terms of use)
 
 ## Context
@@ -46,7 +46,7 @@
    Written: EPSG and OGC geographic 2D/3D CRSs in degrees with east/north axes and a metric ellipsoid (841); projected CRSs
    in metres with east/north axes (4262); compound CRSs whose horizontal part is one of those (357). Everything else,
    including grads, feet, geocentric and south/west-oriented axes, is `INVALID_CRS` (D-92 "unknown or unsupported").
-   **Proposed for confirmation:** non-metre projected CRSs (e.g. EPSG:2263, US survey foot) become `INVALID_CRS`. Before
+   Accepted by the owner (D-3D32-5): non-metre projected CRSs (e.g. EPSG:2263, US survey foot) become `INVALID_CRS`. Before
    this ADR the spec did not say what happens to them, and treating feet as metres would be wrong.
 3. **Axis order** (D-3D32-2): file coordinates are read in the EPSG authority order of the horizontal CRS. This applies
    to projected CRSs too (EPSG:31467 is northing-first). GT fixtures (EPSG:25832, east-first) are unaffected.

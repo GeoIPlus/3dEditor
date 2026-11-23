@@ -52,6 +52,6 @@ tools/agent-evals/                   agent eval runner: headless sessions in thr
    [3D-ADR-0001](docs/decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md)).
 3. Public API of a package only through its `index.js`.
 3a. Inside `geo-model3d` (3D-ADR-0002 C1): `brep` <- `solve`, `import`, `export`, `validate`, `cloud`; `ops` <- `brep`,
-    `solve`, `validate`; `crs` (leaf, third party `proj4` only) <- `brep`, `import`, `export` (3D-ADR-0004, proposed);
+    `solve`, `validate`; `crs` (leaf, third party `proj4` only) <- `brep`, `import`, `export` (3D-ADR-0004, D-3D32-5);
     `index.js` <- all. No I/O, clock or randomness in the kernel; only `services/kernel` imports it.
 4. A new dependency between packages needs an ADR.

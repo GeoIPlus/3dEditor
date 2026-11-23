@@ -4,7 +4,7 @@
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap)   Spec: `docs/specs/3dqm-spec.md` (3D-04, not written yet)
 - Source/donor: new; third-party runtime code: `proj4` 2.23.0 (MIT; deps `mgrs` 1.0.0 MIT, `wkt-parser` 1.9.0 MIT), used by
-  `src/crs/` only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-crs-transform.md), proposed); `src/crs/epsg-table.json`
+  `src/crs/` only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-crs-transform.md), accepted D-3D32-5); `src/crs/epsg-table.json`
   generated from PROJ 9.8.1 `proj.db` (EPSG v12.029; EPSG terms of use: Q-3D32-1)
 
 ## Purpose

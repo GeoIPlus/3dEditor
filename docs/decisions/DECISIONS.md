@@ -122,6 +122,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D32-2 | CityJSON vertices in a geographic (and any EPSG) CRS are read in the EPSG authority axis order of that CRS, not assumed lon/lat (CityJSON 2.0 is silent) | Owner, dialog, 2026-11-23 (3D-32) |
 | D-3D32-3 | Export of edited vertices in a geographic CRS: `exportRoundDecimals` is read metrically: angles get `exportRoundDecimals + 5` decimal places of a degree (1e-8 deg <= 1.12 mm), heights `exportRoundDecimals`; the file `transform.scale` is kept, a coarser scale is reported as `PRECISION_LOSS`; untouched vertices keep their file integers (D-70) | Owner, dialog, 2026-11-23 (3D-32) |
 | D-3D32-4 | Contract change (D-18): description-only fix of `CoordinateFrame.originWorld` in `building-model` (units and axis order of `horizontalCrs`; for a geographic CRS the ENU origin); shape and `$id` v1 unchanged | Owner, dialog, 2026-11-23 (3D-32) |
+| D-3D32-5 | 3D-ADR-0004 accepted (D-18) as written, including: non-metre projected CRSs (e.g. EPSG:2263) are `INVALID_CRS`; axis order per code from the generated table; `crs` leaf module in the DAG. Q-3D32-1 (EPSG terms) stays open, checked by the owner; it blocks only a production release | Owner, dialog, 2026-11-23 (3D-32) |
+| D-3D32-6 | Point cloud in another horizontal CRS than a geographic-CRS building (reprojection out of 3D-32) becomes a new `proposed` row (3D-66); reproject vs. refuse is decided when it is set `ready` | Owner, dialog, 2026-11-23 (3D-32) |
 
 ## Open questions
 
