@@ -13,18 +13,18 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79).
+Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake).
 
 | Progress | Rows |
 |---|---:|
-| Done | 11 / 47 |
+| Done | 11 / 48 |
 | Review | 0 |
 | In progress | 0 |
 | Ready | 5 |
-| Proposed (waiting for the owner to set `ready`) | 30 |
+| Proposed (waiting for the owner to set `ready`) | 31 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 11/47 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 11/48 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78).
 **Running:** SC 3D view port + host 3D-47 (D-61), ADR storage 3D-03 (D-74), golden fixtures 3D-07 (D-79).
 
@@ -52,6 +52,7 @@ flowchart TB
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
     D08["3D-08 Latency spike + kernel ADRs"]
+    D64["3D-64 Spec: apply D-76, D-77"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
     D09["3D-09 B-Rep core"]
@@ -120,6 +121,8 @@ flowchart TB
   D02 --> D06
   D04 --> D06
   D06 --> D07
+  D04 --> D64
+  D06 --> D64
   D05 --> D08
   D06 --> D08
   D07 --> D08
@@ -216,6 +219,7 @@ flowchart TB
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | proposed (D-35) |
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
 | 3D-63 | Swap 3DQM interim data adapters for crowdsource datasets; migrate stored buildings and journals | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | proposed (D-35) |
+| 3D-64 | Spec update: apply D-76 (Q-20 refusal codes) and D-77 (Q-21 severities) to `docs/specs/3dqm-spec.md`; list contract questions Q-26..Q-39 | here | docs/specs | 04, 06 | G0 | S | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -401,3 +405,17 @@ flowchart TB
 - Source: 3D-02, owner dialog 2026-11-19 (D-54). Goal: GV is a second host of the same 3D view port.
 - Accept: the 3D-47 port contract test passes against the GV adapter; picking returns entity ids for model3d objects.
 - Decisions: D-07, D-54  Open: -
+
+### 3D-64 Spec update: apply D-76 and D-77
+- Source: owner message 2026-11-23, found at the 3D-06 merge (checkpoint 3D-06 handoff). 3D-04 is `done`, so this is a new row.
+- Goal: the maintained spec states the refusal codes and severities the owner decided in 3D-06 instead of `TBD`.
+- Scope in: spec §8 rule 4 (severity table gains `SOLID_OVERLAP`, `UNDERCONSTRAINED_GEOMETRY`, `INVALID_MEASUREMENT`,
+  `EXPORT_SCHEMA_ERROR`, `PRECISION_LOSS` per D-77); refusal codes per D-76 in §2.4, §10.1 rule 6, §10.3 rule 6, §10.5
+  (API default and rule 5), §10.6 rule 2; §14 rows Q-20, Q-21 marked closed (as Q-19); §2 or §14 points to the contract
+  open questions Q-26..Q-39 ([contracts/model3d](../contracts/model3d/README.md)). Scope out: any other spec change;
+  schema changes (D-75..D-77 are already in `contracts/model3d/`).
+- Accept: no spec line calls Q-20 or Q-21 open or a Q-20 code `TBD`; the five codes appear in the §8 rule 4 table with
+  the D-77 severities, and each D-76 refusal is named with its code where the spec lists that refusal; §14 marks Q-20 /
+  Q-21 closed by D-76 / D-77 and lists Q-26..Q-39; `npm run check` passes (the contract test parses spec §2.2-§2.4, so
+  those tables keep their shape).
+- Decisions: D-76, D-77, D-75  Open: -
