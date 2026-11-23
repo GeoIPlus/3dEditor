@@ -1,23 +1,52 @@
 # @geoiplus/geo-model3d
 
-- Status: planned (empty skeleton from 3D-05; layout decided by 3D-02, code from 3D-09)
+- Status: implemented - `brep` core (3D-09); other modules follow their rows (3D-10..3D-22)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
-- WP: 3D-05 (bootstrap)   Spec: `docs/specs/3dqm-spec.md` (3D-04, not written yet)
-- Source/donor: new; licence of third-party code: none (proposed rule: permissive only, 3D-ADR-0004)
+- WP: 3D-05 (bootstrap), 3D-09 (core)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4
+- Source/donor: new; no third-party runtime code (permissive only, [3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
+  `robust-predicates` not adopted (D-3D09-3)
 - Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
 
 ## Purpose
-Geometry kernel for editing LoD2 building models (planes primary, vertices derived, D-08). Runs in Node unchanged.
+Geometry kernel for editing LoD2 building models (planes primary, vertices derived, D-08). Runs in Node unchanged,
+no I/O, clock or randomness (3D-ADR-0002 C1 rule 1).
 
 ## Public API (index.js)
+Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
 - `P4_CANARY` - the canary literal (format `geoiplus-p4-canary:geo-model3d:<32 hex>`, [3D-ADR-0001](../../docs/decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md)).
-  Exported so tests and the service can assert it; client code must never reach it.
+- `worldToLocal(frame, points)`, `localToWorld(frame, points)` - contract `CoordinateFrame` + `V3[]`; projected CRS
+  (translation by `originWorld`, rotation by `buildingAxisDeg`). Geographic CRSs: import (3D-10) composes `crs` (3D-32).
+- `canonicalJson(value)` - canonical JSON (sorted keys, no `-0`); `save -> load -> save` is byte-identical (K-11).
+- Names fixed for later rows (D-3D09-4): `executeCommand` (3D-14..3D-21), `importBuilding` (3D-10),
+  `exportBuilding` (3D-11), `validateModel` (3D-12), `fitPlane`, `deviationStats` (3D-22).
+
+## Modules (`src/`, DAG of 3D-ADR-0002 C1 rule 2, enforced by `check:arch`)
+`brep` (3D-09) is the leaf every other module imports. Its surface (`src/brep/index.js`), for kernel modules only:
+
+| File | Contents |
+|---|---|
+| `vec.js`, `plane.js` | vectors; `normal · p + d = 0`; `derivePoint(planes, numericEpsilon)`: 3 planes exact, 4+ least squares with residual; null below the Gram-determinant rank threshold |
+| `frame.js` | `localFrame(frame, metric?)`: local = Rz(-buildingAxisDeg) · metric; metric mapping injected (D-3D09-1), default `world - originWorld` |
+| `halfedge.js` | `buildIndex` (rings by `nextId`, faces of vertex, shell of face), `checkTopology` (spec §4 r7; internal kinds `LINK`, `TWIN_*`, `SHELL_FACE`, `VERTEX_FACE`; `validate` maps them to codes) |
+| `derive.js` | `vertexPlaneViolations` (shared invariant helper for every op row, spec §4 Accept 2), `inconsistentJunctions` (`INCONSISTENT_JUNCTION`, residual > `topologySnapTolM`), `rederive` (D-70: EXPLICIT -> DERIVED when a face changes) |
+| `patch.js`, `transaction.js` | `diffModels`, `applyPatch`; `transact(model, mutate)`: isolated copy, version + 1, forward / inverse patch, lineage; `transactPatch` for Undo / Redo as new versions |
+| `rtg.js`, `serialize.js` | `roofGraph` (projection, canonical ids only); `saveModel` / `loadModel` / `isolatedCopy` |
 
 ## Rules and invariants
 - Every target of `package.json` `exports` imports `./src/canary.js`; `canary.js` is listed in `sideEffects`.
-- Enforced by `npm run check:arch`: kernel files import no DOM globals and no `three`; no source file over 300 lines;
-  only `packages/geo-model3d/`, `services/` and `tools/` may import the package; the negative control builds each
-  entry for the browser (Vite, minified, source maps) and requires the marker in every output.
+- `check:arch`: no DOM / `three`; no file over 300 lines; kernel source imports no I/O modules and references no
+  `process`, timers, `fetch`, `performance`, `crypto`, `Date.now`, `Math.random`, `new Date()` (`kernelNoIo`); imports
+  follow the module DAG (`kernelModuleDag`); only `packages/geo-model3d/`, `services/kernel/`, `tools/bench/` import the
+  package (D-3D09-2); negative control builds the entry for the browser and requires the marker.
+- A transaction never writes its input: refusal returns the input object, a throw leaves it untouched.
+- Readings marked [A] in code: junction residual = largest distance of the least-squares point; rank threshold =
+  `numericEpsilon` on det(NᵀN); finalised states = `VALID_SOLID`, `APPROVED`; roof face = `RoofSurface`; lineage
+  covers Face / HalfEdge / Vtx; model-level changes (`state`, `frame`) are reported beside the patch (Q-31).
 
 ## Tests and golden tests
-- `test/canary.test.js`: marker format, entry exports it. Golden tests: none yet (3D-07).
+- `test/brep/` (geometry, model, transaction; 3D-09): every golden input sound, on its planes, byte-identical
+  `save -> load -> save`; broken copies reported; patches and lineage valid against the contracts (Ajv).
+- Golden: `test/golden/gt-25.golden.test.js` (GT-25, world -> local -> world <= 0.001 m; measured 0 m).
+- Cost on the bench scenes (3D-09, warm, 300 requests): sawtooth-199 index 0.59 ms, topology 0.53 ms, transaction with
+  re-derivation 3.9 ms p50 / 6.8 ms p95; sawtooth-499 transaction 14.2 / 22.5 ms. Clone and diff dominate (~2 ms each
+  at 199 faces); a dirty-tracking draft is the next step if a gate needs it.
