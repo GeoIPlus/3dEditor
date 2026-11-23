@@ -142,6 +142,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-126 | Point cloud in another horizontal CRS than a geographic-CRS building (reprojection out of 3D-32) becomes a new `proposed` row (3D-69); reproject vs. refuse is decided when it is set `ready` | Owner, dialog, 2026-11-23 (3D-32) |
 | D-127 | 3D-32 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids became D-121..D-126 and Q-43 (EPSG terms, still open); id clashes with the parallel 3D-08 resolved at merge: CRS ADR 3D-ADR-0004 -> 3D-ADR-0007, row 3D-66 (cloud CRS) -> 3D-69 | Owner, chat, 2026-11-23 |
 | D-128 | Per D-114: 3D-10 (import) and 3D-12 (validation) set `ready` (3D-09 and 3D-32 done) and started in parallel fresh sessions | Owner, chat, 2026-11-23 (D-114) |
+| D-129 | 3D-13 (solver), 3D-22 (point cloud), 3D-66 (3D-08 ADRs into spec and AGENTS.md) and 3D-67 (licence allow-list check) set `ready` and started in parallel fresh sessions, beside 3D-10 and 3D-12 | Owner, dialog, 2026-11-24 |
 
 ## Open questions
 
