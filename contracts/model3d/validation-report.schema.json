@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:geoiplus:schema:model3d-validation-report:v1",
   "title": "ValidationReport",
-  "description": "Validation report (v0.2 B.5; spec §8). Severity of a code depends on the model state (v0.3 §8.3, spec §8 rule 4): enforced below for `targetState` DRAFT_SOLID and VALID_SOLID. Severities of SOLID_OVERLAP, UNDERCONSTRAINED_GEOMETRY, INVALID_MEASUREMENT, EXPORT_SCHEMA_ERROR, PRECISION_LOSS are open (Q-21) and not constrained here. `isValidForTargetState = true` is never set from client-side validation (v0.2 D.5).",
+  "description": "Validation report (v0.2 B.5; spec §8). Severity of a code depends on the model state (v0.3 §8.3, spec §8 rule 4): enforced below for `targetState` DRAFT_SOLID and VALID_SOLID. Severities of SOLID_OVERLAP, UNDERCONSTRAINED_GEOMETRY, INVALID_MEASUREMENT, EXPORT_SCHEMA_ERROR, PRECISION_LOSS (absent from v0.3 §8.3) are the owner's answer to Q-21 (D-3D06-3). `isValidForTargetState = true` is never set from client-side validation (v0.2 D.5).",
   "type": "object",
   "properties": {
     "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
@@ -27,7 +27,27 @@
   "$defs": {
     "ValidationCode": {
       "description": "v0.2 B.5 list + INCONSISTENT_JUNCTION (v0.3 §4.1, §8.3; spec §8 rule 3).",
-      "enum": ["OPEN_BOUNDARY", "NON_MANIFOLD_EDGE", "NON_MANIFOLD_VERTEX", "DEGENERATE_EDGE", "DEGENERATE_FACE", "NON_PLANAR_FACE", "SELF_INTERSECTION", "INCONSISTENT_RING_ORIENTATION", "SHELL_NOT_CLOSED", "SHELL_ORIENTATION", "SOLID_OVERLAP", "CONSTRAINT_CONFLICT", "UNDERCONSTRAINED_GEOMETRY", "INVALID_CRS", "INVALID_MEASUREMENT", "SEMANTIC_MAPPING_ERROR", "EXPORT_SCHEMA_ERROR", "PRECISION_LOSS", "INCONSISTENT_JUNCTION"]
+      "enum": [
+        "OPEN_BOUNDARY",
+        "NON_MANIFOLD_EDGE",
+        "NON_MANIFOLD_VERTEX",
+        "DEGENERATE_EDGE",
+        "DEGENERATE_FACE",
+        "NON_PLANAR_FACE",
+        "SELF_INTERSECTION",
+        "INCONSISTENT_RING_ORIENTATION",
+        "SHELL_NOT_CLOSED",
+        "SHELL_ORIENTATION",
+        "SOLID_OVERLAP",
+        "CONSTRAINT_CONFLICT",
+        "UNDERCONSTRAINED_GEOMETRY",
+        "INVALID_CRS",
+        "INVALID_MEASUREMENT",
+        "SEMANTIC_MAPPING_ERROR",
+        "EXPORT_SCHEMA_ERROR",
+        "PRECISION_LOSS",
+        "INCONSISTENT_JUNCTION"
+      ]
     },
     "ValidationIssue": {
       "description": "v0.2 B.5.",
@@ -46,18 +66,91 @@
       "additionalProperties": false
     },
     "SeverityInDraftSolid": {
-      "description": "Spec §8 rule 4, column DRAFT_SOLID.",
+      "description": "Spec §8 rule 4, column DRAFT_SOLID; the last two rules are Q-21 (D-3D06-3).",
       "type": "object",
       "allOf": [
-        { "if": { "properties": { "code": { "enum": ["OPEN_BOUNDARY", "SHELL_NOT_CLOSED", "NON_MANIFOLD_EDGE", "NON_MANIFOLD_VERTEX", "SELF_INTERSECTION", "SHELL_ORIENTATION", "INCONSISTENT_RING_ORIENTATION", "INCONSISTENT_JUNCTION", "NON_PLANAR_FACE", "SEMANTIC_MAPPING_ERROR"] } } }, "then": { "properties": { "severity": { "const": "WARNING" } } } },
-        { "if": { "properties": { "code": { "enum": ["DEGENERATE_EDGE", "DEGENERATE_FACE", "CONSTRAINT_CONFLICT", "INVALID_CRS"] } } }, "then": { "properties": { "severity": { "const": "ERROR" } } } }
+        {
+          "if": {
+            "properties": {
+              "code": {
+                "enum": [
+                  "OPEN_BOUNDARY",
+                  "SHELL_NOT_CLOSED",
+                  "NON_MANIFOLD_EDGE",
+                  "NON_MANIFOLD_VERTEX",
+                  "SELF_INTERSECTION",
+                  "SHELL_ORIENTATION",
+                  "INCONSISTENT_RING_ORIENTATION",
+                  "INCONSISTENT_JUNCTION",
+                  "NON_PLANAR_FACE",
+                  "SEMANTIC_MAPPING_ERROR"
+                ]
+              }
+            }
+          },
+          "then": { "properties": { "severity": { "const": "WARNING" } } }
+        },
+        {
+          "if": {
+            "properties": {
+              "code": { "enum": ["DEGENERATE_EDGE", "DEGENERATE_FACE", "CONSTRAINT_CONFLICT", "INVALID_CRS"] }
+            }
+          },
+          "then": { "properties": { "severity": { "const": "ERROR" } } }
+        },
+        {
+          "if": {
+            "properties": {
+              "code": { "enum": ["SOLID_OVERLAP", "INVALID_MEASUREMENT", "EXPORT_SCHEMA_ERROR", "PRECISION_LOSS"] }
+            }
+          },
+          "then": { "properties": { "severity": { "const": "WARNING" } } }
+        },
+        {
+          "if": { "properties": { "code": { "const": "UNDERCONSTRAINED_GEOMETRY" } } },
+          "then": { "properties": { "severity": { "const": "ERROR" } } }
+        }
       ]
     },
     "SeverityInValidSolid": {
-      "description": "Spec §8 rule 4, column VALID_SOLID.",
+      "description": "Spec §8 rule 4, column VALID_SOLID; the last two rules are Q-21 (D-3D06-3).",
       "type": "object",
       "allOf": [
-        { "if": { "properties": { "code": { "enum": ["OPEN_BOUNDARY", "SHELL_NOT_CLOSED", "NON_MANIFOLD_EDGE", "NON_MANIFOLD_VERTEX", "SELF_INTERSECTION", "SHELL_ORIENTATION", "INCONSISTENT_RING_ORIENTATION", "INCONSISTENT_JUNCTION", "NON_PLANAR_FACE", "SEMANTIC_MAPPING_ERROR", "DEGENERATE_EDGE", "DEGENERATE_FACE", "CONSTRAINT_CONFLICT", "INVALID_CRS"] } } }, "then": { "properties": { "severity": { "const": "ERROR" } } } }
+        {
+          "if": {
+            "properties": {
+              "code": {
+                "enum": [
+                  "OPEN_BOUNDARY",
+                  "SHELL_NOT_CLOSED",
+                  "NON_MANIFOLD_EDGE",
+                  "NON_MANIFOLD_VERTEX",
+                  "SELF_INTERSECTION",
+                  "SHELL_ORIENTATION",
+                  "INCONSISTENT_RING_ORIENTATION",
+                  "INCONSISTENT_JUNCTION",
+                  "NON_PLANAR_FACE",
+                  "SEMANTIC_MAPPING_ERROR",
+                  "DEGENERATE_EDGE",
+                  "DEGENERATE_FACE",
+                  "CONSTRAINT_CONFLICT",
+                  "INVALID_CRS"
+                ]
+              }
+            }
+          },
+          "then": { "properties": { "severity": { "const": "ERROR" } } }
+        },
+        {
+          "if": {
+            "properties": { "code": { "enum": ["SOLID_OVERLAP", "UNDERCONSTRAINED_GEOMETRY", "EXPORT_SCHEMA_ERROR"] } }
+          },
+          "then": { "properties": { "severity": { "const": "ERROR" } } }
+        },
+        {
+          "if": { "properties": { "code": { "enum": ["INVALID_MEASUREMENT", "PRECISION_LOSS"] } } },
+          "then": { "properties": { "severity": { "const": "WARNING" } } }
+        }
       ]
     }
   }

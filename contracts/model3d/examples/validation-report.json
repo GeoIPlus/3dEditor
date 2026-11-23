@@ -39,7 +39,7 @@
       "targetState": "DRAFT_SOLID",
       "isValidForTargetState": true,
       "issues": [
-        { "code": "PRECISION_LOSS", "scope": "EXPORT", "severity": "INFO", "entityIds": [], "message": "rounded" }
+        { "code": "PRECISION_LOSS", "scope": "EXPORT", "severity": "WARNING", "entityIds": [], "message": "rounded" }
       ],
       "validatorVersion": "geo-model3d 0.0.0",
       "createdAt": "2026-11-21T10:00:00Z"
@@ -119,6 +119,44 @@
           }
         ],
         "validatorVersion": "geo-model3d 0.0.0"
+      }
+    },
+    {
+      "why": "Q-21: INVALID_MEASUREMENT is WARNING in VALID_SOLID (D-3D06-3)",
+      "instance": {
+        "modelVersion": 3,
+        "targetState": "VALID_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "INVALID_MEASUREMENT",
+            "scope": "MEASUREMENT",
+            "severity": "ERROR",
+            "entityIds": ["m-1"],
+            "message": "x"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
+      }
+    },
+    {
+      "why": "Q-21: UNDERCONSTRAINED_GEOMETRY is ERROR in DRAFT_SOLID (D-3D06-3)",
+      "instance": {
+        "modelVersion": 3,
+        "targetState": "DRAFT_SOLID",
+        "isValidForTargetState": true,
+        "issues": [
+          {
+            "code": "UNDERCONSTRAINED_GEOMETRY",
+            "scope": "CONSTRAINT",
+            "severity": "WARNING",
+            "entityIds": ["f-1"],
+            "message": "x"
+          }
+        ],
+        "validatorVersion": "geo-model3d 0.0.0",
+        "createdAt": "2026-11-21T10:00:00Z"
       }
     }
   ]

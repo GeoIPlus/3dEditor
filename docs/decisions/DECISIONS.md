@@ -87,6 +87,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-71 | 3D-04 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-04 provisional ids became D-68..D-70 and Q-17..Q-25 | Owner, chat, 2026-11-21 |
 | D-72 | 3D-31 runs in the cloud session only: the checksum-verified codebase-memory-mcp release binary (0.12.1) from the session scratchpad, isolated `CBM_CACHE_DIR`, no `install` command, no hooks, no client config; not the owner's PC install (its user-level hooks would contaminate the runs without the tool) | Owner, dialog, 2026-11-19 |
 | D-73 | 3D-31 accepted (done; result: defer the code-graph tool until kernel code exists, [eval](../agent-evals/3D-31-code-graph.md)); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-21 |
+| D-3D06-1 | 3D-06 `model3d` contract schemas accepted (D-18): 53 JSON Schema 2020-12 files in `contracts/model3d/`, `$id` `urn:geoiplus:schema:model3d-<name>:v1`, one payload file per `OperationKind`, shared `common`, `schemaVersion: "1"`; proposals P1-P10 of the [module card](../../contracts/model3d/README.md#proposals-accepted-by-the-owner-d-3d06-1) decided; open items Q-3D06-1..14 stay `TBD` for the rows named | Owner, dialog, 2026-11-23 (3D-06) |
+| D-3D06-2 | Q-20: FIT_TO_SHARED_EDGE over `maxDisplacementM` -> `CONSTRAINT_CONFLICT`, no unique pairing -> `INVALID_TOPOLOGY`, no default maximum displacement (required in the payload); HEAL_HOLE no closing -> `INVALID_GEOMETRY`, several closings -> `UNDERCONSTRAINED_GEOMETRY`, both with `details.admissibleModes`; SPLIT_FACE line outside / zero area -> `INVALID_GEOMETRY`, ambiguous hole components -> `INVALID_TOPOLOGY`, fixed plane -> `CONSTRAINT_CONFLICT`; R-01 errors -> `INVALID_GEOMETRY` | Owner, dialog, 2026-11-23 (3D-06) |
+| D-3D06-3 | Q-21: severity DRAFT_SOLID / VALID_SOLID: `SOLID_OVERLAP` WARNING/ERROR, `UNDERCONSTRAINED_GEOMETRY` ERROR/ERROR, `INVALID_MEASUREMENT` WARNING/WARNING, `EXPORT_SCHEMA_ERROR` WARNING/ERROR, `PRECISION_LOSS` WARNING/WARNING; enforced by `validation-report` | Owner, dialog, 2026-11-23 (3D-06) |
 
 ## Open questions
 
@@ -164,3 +167,5 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-19 | 2026-11-21, owner (3D-04) | closed by D-70 | Imported vertices explicit until edited |
 | Q-22 | 2026-11-21, owner (3D-04) | closed by D-69 | CP lease only |
 | Q-23 | 2026-11-21, owner (3D-04) | closed by D-68 | GT-13 -> 3D-23 |
+| Q-20 | 2026-11-23, owner (3D-06) | closed by D-3D06-2 | Refusal map of the module card accepted |
+| Q-21 | 2026-11-23, owner (3D-06) | closed by D-3D06-3 | Severities accepted, enforced in `validation-report` |

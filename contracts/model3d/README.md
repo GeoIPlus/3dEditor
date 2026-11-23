@@ -1,6 +1,6 @@
 # contracts/model3d
 
-- Status: **proposed** (3D-06). Becomes `accepted` only on the owner's approval in a dialog (D-18).
+- Status: **accepted** by the owner in a dialog, 2026-11-23 (D-18; D-3D06-1). Q-20 and Q-21 closed by D-3D06-2, D-3D06-3.
 - Protection: none (contracts are public messages; the kernel behind them is P4).
 - WP: 3D-06   Spec: [docs/specs/3dqm-spec.md §2](../../docs/specs/3dqm-spec.md#2-contracts---contractsmodel3d-3d-06)
 - Source/donor: new, from v0.2 Appendix B/D, v0.3 §4, §9, §10 and the spec; no third-party code.
@@ -40,8 +40,8 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 
 ## Rules and invariants
 
-- Marks inside the schemas: `[P]` in a `$comment` = a name or shape the sources do not give, **proposed by 3D-06 for
-  owner approval**; `[A]` = this schema's reading of a source; `TBD (Q-3D06-n)` = left open, never guessed.
+- Marks inside the schemas: `[P]` in a `$comment` = a name or shape the sources do not give, proposed by 3D-06 and
+  accepted by the owner (D-3D06-1); `[A]` = this schema's reading of a source; `TBD (Q-3D06-n)` = left open, never guessed.
 - Every object is closed (`additionalProperties: false`) except `SemanticNode.attributes`, `ConstraintBody` (closed by
   its users with `unevaluatedProperties`) and the `FIT_PLANE` `selection` (shape open, Q-18).
 - Values: the only defaults are the D-13 tolerances. No limit, threshold or default that the sources do not give
@@ -49,7 +49,7 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 - `schemaVersion` of model and command is `"1"` and equals the `$id` major `v1` [P]. A breaking change bumps both.
 - Ajv: strict mode except `strictRequired` (it rejects the standard `if`/`then` `required` idiom).
 
-### Proposals for owner approval (D-18)
+### Proposals accepted by the owner (D-3D06-1)
 
 | # | Proposal | Where |
 |---|---|---|
@@ -63,10 +63,10 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 | P8 | Patch entity `type` = v0.2 B.2 entity names | `model-patch` |
 | P9 | Payload field names of all 37 kinds (each file's `$comment` lists the sourced and the proposed names); the strategy of `FIT_TO_SHARED_EDGE` written as `movableFaceIds` | `command-payload-*` |
 | P10 | Shapes of `import-report`, `command-status`, `plane-fit-result`, `heatmap-result` (per-face values, client colours them), `export-report` (`reasonKey`), `journal-entry.validationSummary` = full report, `journal-entry.warnings` | result schemas |
-| P11 | Q-20 refusal map below | op rows 3D-14, 3D-15, 3D-17 |
-| P12 | Q-21 severities below | `validation-report` (encoded after approval) |
+| P11 | Q-20 refusal map below (D-3D06-2) | op rows 3D-14, 3D-15, 3D-17 |
+| P12 | Q-21 severities below (D-3D06-3) | `validation-report` (enforced) |
 
-### Q-20 proposal: refusal codes the sources leave open
+### Q-20: refusal codes the sources leave open (accepted, D-3D06-2)
 
 Meanings follow v0.2 D.4 (`INVALID_GEOMETRY` = self-intersection, degenerate, impossible; `INVALID_TOPOLOGY` = ring /
 manifold; `CONSTRAINT_CONFLICT` = hard constraints cannot hold).
@@ -83,7 +83,7 @@ manifold; `CONSTRAINT_CONFLICT` = hard constraints cannot hold).
 | `SPLIT_FACE`: incompatible fixed support plane | `CONSTRAINT_CONFLICT` | constraint ids |
 | R-01: self-intersecting footprint; vertical plane; `roofZ < baseZ`; zero area | `INVALID_GEOMETRY` | footprint id |
 
-### Q-21 proposal: severity by state of the five open codes
+### Q-21: severity by state of the five open codes (accepted, D-3D06-3)
 
 | Code | `DRAFT_SOLID` | `VALID_SOLID` | Reason |
 |---|---|---|---|
