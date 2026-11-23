@@ -1,7 +1,7 @@
 # 3D-ADR-0003: storage of building versions, edit journal, baseline and results
 
-- Status: proposed
-- WP: 3D-03   Questions closed: Q-02 (on acceptance)   Applies: Q-15 groups C, D (D-51)
+- Status: accepted (owner, 2026-11-23, D-3D03-4)
+- WP: 3D-03   Questions closed: Q-02; Q-3D03-1..3 (D-3D03-1..3)   Open: Q-3D03-4   Applies: Q-15 groups C, D (D-51)
 
 Revisions read (read-only): `CS` = `GeoIPlus/crowdsource@ad61fb5` (2026-11-22), `OF` = `GeoIPlus/Operaflow@61954ca`
 (2026-11-22). Markers as in [AGENTS.md §6](../../../AGENTS.md#6-documentation-rules).
@@ -66,7 +66,7 @@ the workplace.
 
 ## Decision
 
-**O1** (proposed). It meets S1-S8 with one primitive both interim adapters have (create-if-absent), keeps the service
+**O1** (accepted, D-3D03-4). It meets S1-S8 with one primitive both interim adapters have (create-if-absent), keeps the service
 stateless apart from short-lived previews, reuses CS's locking pattern, and keeps the later move a relocation (D-31).
 
 ### 1. Two ports, not one
@@ -77,7 +77,7 @@ whether Operaflow defines them:
 | Port (`services/kernel/src/ports/`) | Holds | Interim adapter (D-35) | After crowdsource supports 3D (3D-63) |
 |---|---|---|---|
 | `datasets` | Reading input CityJSON and points named by the document; saving to `progress.save`; putting delivered bytes in the own https store (Q-15 B, C, D-bytes) | file/S3 objects standing in for the DP's datasets | Operaflow HTTP adapter against CS datasets (3D-60, 3D-61, grant 3D-62) |
-| `history` | S1-S5: baseline, versions/snapshots, journal, idempotency records, previews | file/S3 (layout below); previews in memory | **stays 3DQM's own** (recommended; owner question Q-3D03-1): the format has no journal and CS has no place for one |
+| `history` | S1-S5: baseline, versions/snapshots, journal, idempotency records, previews | file/S3 (layout below); previews in memory | **stays 3DQM's own** [D] (D-3D03-1): the format has no journal and CS has no place for one; 3D-63 migrates no journals |
 
 ### 2. `history` key layout (per project `p`, building `b`)
 
@@ -113,8 +113,8 @@ No operation deletes or overwrites anything (S1, S3, S8). `K` (snapshot interval
   (`progress.md:26`); no tag -> not saved, operator told (`:31`); `412` -> kept and told, never overwritten (`:42`).
   Part 4 (`ogc-api-features`) is not used for CityJSON: the format's feature forms exclude `cityjson` (`:44`).
 - **Granularity.** A `location` dataset holding many buildings makes every save of one building a whole-file `PUT`
-  that conflicts with any other building's save (`412`, kept). Recommended convention for 3DQM documents (input to 3D-43
-  and 3D-60): **one `progress.save` dataset per building**. Owner question Q-3D03-2.
+  that conflicts with any other building's save (`412`, kept). Convention for 3DQM documents (input to 3D-43
+  and 3D-60): **one `progress.save` dataset per building** [D] (D-3D03-2).
 - **Deliver (D, bytes).** Export bytes go to the `datasets` port's own store under a content-addressed key (digest),
   write-once, served by the service at an `https` address **without a secret** (`acceptance.md:17`): read access by the
   caller's bearer token, so **no pre-signed URLs** (their signature is a secret in the address). Bytes are never changed
@@ -127,7 +127,8 @@ No operation deletes or overwrites anything (S1, S3, S8). `K` (snapshot interval
   also turned on (recovery from an overwrite by another tool) is ADR-OPS's choice [A]: its interplay with conditional
   writes was not checked here.
 - >= 90 days is met by keeping everything; the upper bound and archiving are a per-project policy (v0.2 §13.6) not
-  defined by any source: `TBD`, owner question Q-3D03-3. Until answered, no lifecycle expiry is configured.
+  defined by any source; the interim store keeps everything and configures no lifecycle expiry [D] (D-3D03-3). A
+  later per-project policy comes through intake.
 - Previews are not "versions or journal" and expire (Q-24).
 
 ### 6. What stays open, outside this ADR
@@ -151,4 +152,4 @@ No operation deletes or overwrites anything (S1, S3, S8). `K` (snapshot interval
 - 3D-23: a `PUT` to `progress.save` without a stored entity tag is not sent; a `412` leaves the result kept (Operaflow
   suite `progress/` cases as fixtures, 3D-01 §9.3).
 - Deployment (ADR-OPS): bucket policy requires `If-None-Match` / `If-Match` on `PutObject`; no lifecycle
-  expiry before Q-3D03-3 is answered.
+  expiry (D-3D03-3).

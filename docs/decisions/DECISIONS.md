@@ -88,6 +88,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-72 | 3D-31 runs in the cloud session only: the checksum-verified codebase-memory-mcp release binary (0.12.1) from the session scratchpad, isolated `CBM_CACHE_DIR`, no `install` command, no hooks, no client config; not the owner's PC install (its user-level hooks would contaminate the runs without the tool) | Owner, dialog, 2026-11-19 |
 | D-73 | 3D-31 accepted (done; result: defer the code-graph tool until kernel code exists, [eval](../agent-evals/3D-31-code-graph.md)); merged into the base without PR via the `merge-wp` skill | Owner, chat, 2026-11-21 |
 | D-74 | 3D-03 set `ready` and started in a fresh session in parallel with 3D-06 | Owner, dialog, 2026-11-21 |
+| D-3D03-1 | Q-3D03-1: the `history` port (baseline, versions/snapshots, journal, idempotency records, previews) stays 3DQM's own store for good; only the `datasets` port (input CityJSON, points, `progress.save`, delivered bytes) swaps to crowdsource adapters in 3D-63, which therefore migrates no journals. Refines D-35 | Owner, dialog, 2026-11-23 (3D-03) |
+| D-3D03-2 | Q-3D03-2: 3DQM documents name one `progress.save` dataset per building (`location`, whole-body `PUT` + `If-Match`); input to 3D-43 (extension/document convention) and 3D-60 (crowdsource) | Owner, dialog, 2026-11-23 (3D-03) |
+| D-3D03-3 | Q-3D03-3: retention - the interim store keeps everything; no delete operation in either port, no lifecycle expiry. An upper bound or archiving is a later per-project policy through intake (v0.2 §13.6); >= 90 days (v0.3 §11) is met | Owner, dialog, 2026-11-23 (3D-03) |
+| D-3D03-4 | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md) accepted: O1 - append-only object store (S3 production, file system dev/tests), commit = one create-if-absent of `journal/{N+1}`, ports `history` and `datasets`, nothing deleted or overwritten, delivered bytes content-addressed and served without pre-signed URLs. Closes Q-02 | Owner, dialog, 2026-11-23 (3D-03) |
 
 ## Open questions
 
@@ -118,6 +122,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-23 | GT-13 (commandId idempotency, expectedVersion) needs the service's store, but BACKLOG maps it to 3D-18 (module `geo-model3d`, no dependency on 3D-23) | 3D-ADR-0002 C1 rule 1 (no I/O in the kernel); spec §13 | Owner |
 | Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, heatmap default threshold, RANSAC parameters, `measurementTolM` | spec §2.3, §2.4, §9, §11 | 3D-22 / 3D-23, owner approval |
 | Q-25 | CityJSON mapping of faces tagged OVERHANG on export | v0.2 F-30 (depends on export profile); spec §7 r6 | 3D-11 / 3D-19, owner |
+| Q-3D03-4 | Is `APPROVED` / return-for-rework a new version with a journal entry? If yes, `history` needs no new operation; if no, a state-record operation is added. The reviewer must not count as an author of such an entry (v0.3 §8.1) | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md) §6 | 3D-24 / 3D-06, owner |
 
 ## Open-question status updates
 
@@ -151,3 +156,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-19 | 2026-11-21, owner (3D-04) | closed by D-70 | Imported vertices explicit until edited |
 | Q-22 | 2026-11-21, owner (3D-04) | closed by D-69 | CP lease only |
 | Q-23 | 2026-11-21, owner (3D-04) | closed by D-68 | GT-13 -> 3D-23 |
+| Q-02 | 2026-11-23, owner (3D-03) | closed by D-3D03-4 | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md): own append-only object store behind `history` + `datasets` ports; history stays own (D-3D03-1) |

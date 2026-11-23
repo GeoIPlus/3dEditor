@@ -26,7 +26,7 @@ tsconfig.json, vitest.config.mjs     `tsc --checkJs` (no DOM lib); Vitest projec
 packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node ESM, no I/O; one `exports` entry
   src/index.js canary.js                                 public API (commands, import, export, validate); P4 marker
   src/brep/ solve/ import/ export/ validate/ cloud/ ops/ modules (3D-ADR-0002 C1)
-services/kernel/       (3D-23)        host: createKernelHandler(ports) + own server for the image (D-33)
+services/kernel/       (3D-23)        host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
   src/ports/ adapters/ operaflow/                        storage, points, validator, auth; interim adapters (D-35)
 contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
 fixtures/              (3D-07)        small synthetic golden fixtures and their generator
