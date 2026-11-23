@@ -36,6 +36,7 @@ import { buildIndex, faceRings, edgeFaceIds } from '../brep/index.js';
  * @property {boolean} all true when `faces` is every face of the model
  * @property {(faceId: string) => string[][]} ringIds vertex ids of each ring, outer first
  * @property {(faceId: string) => P3[][]} ringPts points of each ring, outer first
+ * @property {<T>(key: string, make: () => T) => T} memo per-run cache (2D views, boxes) shared by the checks
  */
 
 /**
@@ -91,7 +92,14 @@ export function makeContext(model, tol, affected) {
     if (!r) ptCache.set(f, (r = ringIds(f).map((ring) => ring.map((v) => /** @type {P3} */ (model.vertices[v].p)))));
     return r;
   };
-  return { model, tol, index, faces, all: !affected, ringIds, ringPts };
+  /** @type {Map<string, any>} */
+  const memoMap = new Map();
+  /** @template T @param {string} key @param {() => T} make @returns {T} */
+  const memo = (key, make) => {
+    if (!memoMap.has(key)) memoMap.set(key, make());
+    return memoMap.get(key);
+  };
+  return { model, tol, index, faces, all: !affected, ringIds, ringPts, memo };
 }
 
 /** Faces of a shell that exist. @param {Ctx} ctx @param {string} shellId @returns {string[]} */

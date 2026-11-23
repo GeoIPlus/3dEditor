@@ -16,6 +16,11 @@ import { shellFaces } from './context.js';
  * @returns {{ rings: P2[][], basis: { u: P3, v: P3 }, origin: P3 }}
  */
 export function face2d(ctx, f) {
+  return ctx.memo(`2d:${f}`, () => makeFace2d(ctx, f));
+}
+
+/** @param {Ctx} ctx @param {string} f */
+function makeFace2d(ctx, f) {
   const n = /** @type {P3} */ (ctx.model.faces[f].supportPlane.normal);
   const basis = planeBasis(n);
   const origin = /** @type {P3} */ (scale(n, -ctx.model.faces[f].supportPlane.d));
@@ -30,24 +35,31 @@ export function face2d(ctx, f) {
 export function ringIntersection(ctx, f) {
   const { rings } = face2d(ctx, f);
   const tol = ctx.tol.topologySnapTolM;
-  for (let ri = 0; ri < rings.length; ri++) {
-    const r = rings[ri];
-    const m = r.length;
-    for (let i = 0; i < m; i++) {
-      for (let j = i + 1; j < m; j++) {
-        if (j === i + 1 || (i === 0 && j === m - 1)) continue;
-        if (segmentsMeet(r[i], r[(i + 1) % m], r[j], r[(j + 1) % m], tol)) return `ring ${ri} segments ${i} and ${j} meet`;
+  /** @type {{ r: number, i: number, a: P2, b: P2, x0: number, x1: number, y0: number, y1: number }[]} */
+  const segs = [];
+  rings.forEach((r, ri) => r.forEach((a, i) => {
+    const b = r[(i + 1) % r.length];
+    segs.push({ r: ri, i, a, b, x0: Math.min(a[0], b[0]) - tol, x1: Math.max(a[0], b[0]) + tol, y0: Math.min(a[1], b[1]) - tol, y1: Math.max(a[1], b[1]) + tol });
+  }));
+  segs.sort((s1, s2) => s1.x0 - s2.x0);
+  // sweep in x: only segments whose boxes overlap are compared; adjacent segments of one ring share a vertex
+  for (let k = 0; k < segs.length; k++) {
+    const s1 = segs[k];
+    for (let l = k + 1; l < segs.length && segs[l].x0 <= s1.x1; l++) {
+      const s2 = segs[l];
+      if (s2.y0 > s1.y1 || s1.y0 > s2.y1) continue;
+      if (s1.r === s2.r) {
+        const m = rings[s1.r].length;
+        const d = Math.abs(s1.i - s2.i);
+        if (d === 1 || d === m - 1) continue;
+      }
+      if (segmentsMeet(s1.a, s1.b, s2.a, s2.b, tol)) {
+        return s1.r === s2.r ? `ring ${s1.r} segments ${Math.min(s1.i, s2.i)} and ${Math.max(s1.i, s2.i)} meet` : `rings ${Math.min(s1.r, s2.r)} and ${Math.max(s1.r, s2.r)} meet`;
       }
     }
-    for (let rj = ri + 1; rj < rings.length; rj++) {
-      const s = rings[rj];
-      for (let i = 0; i < m; i++) {
-        for (let j = 0; j < s.length; j++) {
-          if (segmentsMeet(r[i], r[(i + 1) % m], s[j], s[(j + 1) % s.length], tol)) return `rings ${ri} and ${rj} meet`;
-        }
-      }
-    }
-    if (ri > 0 && r.length && !inRing(r[0], rings[0])) return `inner ring ${ri} outside the outer ring`;
+  }
+  for (let ri = 1; ri < rings.length; ri++) {
+    if (rings[ri].length && !inRing(rings[ri][0], rings[0])) return `inner ring ${ri} outside the outer ring`;
   }
   return null;
 }
@@ -63,8 +75,10 @@ export function ringIntersection(ctx, f) {
 export function facePierces(ctx, a, b, coplanar = true) {
   const { model, tol } = ctx;
   const pb = model.faces[b].supportPlane;
-  const vb = new Set(ctx.ringIds(b).flat());
+  const vb = ctx.memo(`vset:${b}`, () => new Set(ctx.ringIds(b).flat()));
   const fb = face2d(ctx, b);
+  const bb = faceBox(ctx, b);
+  const t = tol.planarTolM;
   /** @param {P3} p */
   const inside = (p) => strictlyInside(to2d([p], fb.basis, fb.origin)[0], fb.rings, tol.topologySnapTolM);
   const ids = ctx.ringIds(a);
@@ -74,6 +88,7 @@ export function facePierces(ctx, a, b, coplanar = true) {
     for (let i = 0; i < r.length; i++) {
       const p = r[i];
       const q = r[(i + 1) % r.length];
+      if ([0, 1, 2].some((k) => Math.min(p[k], q[k]) > bb.max[k] + t || Math.max(p[k], q[k]) < bb.min[k] - t)) continue;
       const dp = signedDistance(pb, p);
       const dq = signedDistance(pb, q);
       if (coplanar && !vb.has(ids[ri][i]) && Math.abs(dp) <= tol.planarTolM && inside(p)) return p;
@@ -87,7 +102,7 @@ export function facePierces(ctx, a, b, coplanar = true) {
 }
 
 /** @param {Ctx} ctx @param {string} f */
-export const faceBox = (ctx, f) => bbox(ctx.ringPts(f).flat());
+export const faceBox = (ctx, f) => ctx.memo(`box:${f}`, () => bbox(ctx.ringPts(f).flat()));
 
 /**
  * SELF_INTERSECTION for the checked faces: ring-level, then face pairs of the same shell. With an affected set the pair

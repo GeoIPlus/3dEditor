@@ -37,8 +37,8 @@ export const CODE_TABLE = Object.freeze({
 export const CODES = Object.freeze(Object.keys(CODE_TABLE));
 
 /**
- * Column of the severity table for a target state. The spec has two columns; [A] `DRAFT_SURFACE` reads the draft column
- * and `APPROVED` (= VALID_SOLID + review, v0.3 §8.1) the valid column (Q-3D12-1).
+ * Column of the severity table for a target state. The spec has two columns; `DRAFT_SURFACE` reads the draft column
+ * and `APPROVED` (= VALID_SOLID + review, v0.3 §8.1) the valid column (D-3D12-6).
  * @param {string} state contract `ModelState`
  * @returns {0 | 1}
  */

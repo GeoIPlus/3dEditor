@@ -1,7 +1,7 @@
 // brep (3D-09): vertices derived from planes (D-08; spec §4 rules 2-5; D-70). The shared invariant helper of every op
 // row (spec §4 Accept 2) and the INCONSISTENT_JUNCTION test (spec §4 rule 5) live here.
 import { derivePoint, signedDistance } from './plane.js';
-import { unsign0 } from './vec.js';
+import { unsign0, distance } from './vec.js';
 
 /** @typedef {import('./types.js').BuildingModel} BuildingModel */
 /** @typedef {import('./types.js').CoreTolerances} CoreTolerances */
@@ -49,13 +49,36 @@ export function vertexPlaneViolations(model, tol) {
  * @typedef {object} Junction
  * @property {'INCONSISTENT_JUNCTION'} code validation code (contract validation-report `ValidationCode`)
  * @property {string[]} entityIds the vertex, then its defining faces
- * @property {number} residual metres
+ * @property {number} residual metres: `junctionSpread` of the node
  */
 
 /**
- * Nodes of four or more planes that do not meet in one point within `topologySnapTolM` (spec §4 rule 5). The residual
- * is the largest distance of the planes' least-squares point to any of them [A: the spec does not define the measure;
- * the same as 3D-08's spike].
+ * Spread of a node: the largest distance between the points where triples of its independent planes meet (D-3D12-5;
+ * replaces the 3D-09 reading "largest distance of the least-squares point", which passed GT-19's 0.05 m divergence at
+ * 0.00997 m). 0 when fewer than two triples are independent.
+ * @param {Plane[]} planes
+ * @param {number} rankEps
+ * @returns {number} metres
+ */
+export function junctionSpread(planes, rankEps) {
+  /** @type {import('./vec.js').P3[]} */
+  const pts = [];
+  for (let i = 0; i < planes.length; i++) {
+    for (let j = i + 1; j < planes.length; j++) {
+      for (let k = j + 1; k < planes.length; k++) {
+        const r = derivePoint([planes[i], planes[j], planes[k]], rankEps);
+        if (r) pts.push(r.p);
+      }
+    }
+  }
+  let spread = 0;
+  for (let a = 0; a < pts.length; a++) for (let b = a + 1; b < pts.length; b++) spread = Math.max(spread, distance(pts[a], pts[b]));
+  return spread;
+}
+
+/**
+ * Nodes of four or more planes that do not meet in one point within `topologySnapTolM` (spec §4 rule 5), measured by
+ * `junctionSpread` (D-3D12-5).
  * @param {BuildingModel} model
  * @param {CoreTolerances} tol
  * @param {Iterable<string>} [vertexIds] default: every vertex
@@ -67,8 +90,8 @@ export function inconsistentJunctions(model, tol, vertexIds = Object.keys(model.
   for (const id of vertexIds) {
     const v = model.vertices[id];
     if (v.definingFaceIds.length < 4) continue;
-    const r = derivePoint(planesOf(model, v), tol.numericEpsilon);
-    if (r && r.residual > tol.topologySnapTolM) out.push({ code: 'INCONSISTENT_JUNCTION', entityIds: [v.id, ...v.definingFaceIds], residual: r.residual });
+    const residual = junctionSpread(planesOf(model, v), tol.numericEpsilon);
+    if (residual > tol.topologySnapTolM) out.push({ code: 'INCONSISTENT_JUNCTION', entityIds: [v.id, ...v.definingFaceIds], residual });
   }
   return out;
 }
@@ -104,8 +127,9 @@ export function rederive(draft, faceIds, tol) {
       if (p[0] !== v.p[0] || p[1] !== v.p[1] || p[2] !== v.p[2] || v.positionMode !== 'DERIVED') res.changed.push(v.id);
       v.p = p;
       v.positionMode = 'DERIVED';
-      if (planes.length >= 4 && r.residual > tol.topologySnapTolM) {
-        res.junctions.push({ code: 'INCONSISTENT_JUNCTION', entityIds: [v.id, ...v.definingFaceIds], residual: r.residual });
+      const spread = planes.length >= 4 ? junctionSpread(planes, tol.numericEpsilon) : 0;
+      if (spread > tol.topologySnapTolM) {
+        res.junctions.push({ code: 'INCONSISTENT_JUNCTION', entityIds: [v.id, ...v.definingFaceIds], residual: spread });
       }
     } else {
       if (v.positionMode !== 'EXPLICIT') { v.positionMode = 'EXPLICIT'; res.changed.push(v.id); }
