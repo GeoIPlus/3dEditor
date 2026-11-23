@@ -3,7 +3,8 @@
 - Status: planned (empty skeleton from 3D-05; layout decided by 3D-02, code from 3D-09)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap)   Spec: `docs/specs/3dqm-spec.md` (3D-04, not written yet)
-- Source/donor: new; licence of third-party code: none
+- Source/donor: new; licence of third-party code: none (proposed rule: permissive only, 3D-ADR-0004)
+- Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
 
 ## Purpose
 Geometry kernel for editing LoD2 building models (planes primary, vertices derived, D-08). Runs in Node unchanged.

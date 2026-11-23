@@ -26,6 +26,7 @@ tsconfig.json, vitest.config.mjs     `tsc --checkJs` (no DOM lib); Vitest projec
 packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node ESM, no I/O; one `exports` entry
   src/index.js canary.js                                 public API (commands, import, export, validate); P4 marker
   src/brep/ solve/ import/ export/ validate/ cloud/ ops/ modules (3D-ADR-0002 C1)
+  spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
 services/kernel/       (3D-23)        host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
   src/ports/ adapters/ operaflow/                        storage, points, validator, auth; interim adapters (D-35)
 contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
@@ -36,6 +37,7 @@ tools/check-docs.mjs                 document consistency check, Node built-ins 
 tools/check-docs-run.mjs             `npm run check:docs`: strict on every branch except `wp/*` (D-38) (3D-05)
 tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05)
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
+tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006)
 tools/hooks/                         Claude Code hook scripts (3D-30)
 tools/agent-evals/                   agent eval runner: headless sessions in throwaway clones, rubric grading (3D-28; costs money, not in `npm run check`)
 ```
