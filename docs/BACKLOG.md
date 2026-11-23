@@ -18,15 +18,15 @@ Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 
 | Progress | Rows |
 |---|---:|
 | Done | 14 / 51 |
-| Review | 0 |
-| In progress | 1 |
+| Review | 1 |
+| In progress | 0 |
 | Ready | 4 |
 | Proposed (waiting for the owner to set `ready`) | 31 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 14/51 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98).
-**Running:** SC 3D view port + host 3D-47 (D-61), latency spike and kernel ADRs 3D-08 (D-104), CRS support 3D-32 (D-95).
+**Running:** SC 3D view port + host 3D-47 (D-61), latency spike and kernel ADRs 3D-08 (D-104), CRS support 3D-32 (D-95; in review).
 
 ```mermaid
 flowchart TB
@@ -46,9 +46,11 @@ flowchart TB
     D03["3D-03 ADR storage (Operaflow)"]
     D64["3D-64 Spec: apply D-76, D-77"]
   end
+  subgraph review["REVIEW"]
+    D32["3D-32 CRS support (geographic)"]
+  end
   subgraph ready["READY"]
     D08["3D-08 Latency spike + kernel ADRs"]
-    D32["3D-32 CRS support (geographic)"]
     D47["3D-47 SC: 3D view port + host"]
     D48["3D-48 SC: apps/3dqm host"]
     D51["3D-51 geoviewer scene3d adapter"]
@@ -229,7 +231,7 @@ flowchart TB
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
 | 3D-63 | Swap 3DQM interim `datasets` adapters for crowdsource datasets; migrate stored input buildings (the `history` store stays own, D-82) | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | proposed (D-35) |
 | 3D-64 | Spec update: apply D-76 (Q-20 refusal codes) and D-77 (Q-21 severities) to `docs/specs/3dqm-spec.md`; list contract questions Q-26..Q-39 | here | docs/specs | 04, 06 | G0 | S | done (D-98; merged into base, no PR) |
-| 3D-32 | CRS support: server-only transform module, local metric frame (ENU) per building, ADR for the library; spec and schema update for geographic CRSs (D-92) | here | geo-model3d (frame), services/kernel, docs, contracts | 02, 06, 64 | G1 | M | in-progress (wp/3d-32-crs-support) |
+| 3D-32 | CRS support: server-only transform module, local metric frame (ENU) per building, ADR for the library; spec and schema update for geographic CRSs (D-92) | here | geo-model3d (frame), services/kernel, docs, contracts | 02, 06, 64 | G1 | M | review (local, PR not requested; [3D-ADR-0004](decisions/adr/3D-ADR-0004-crs-transform.md) proposed; D-3D32-1..4, Q-3D32-1) |
 | 3D-33 | Inter-building validation (shared walls, overlaps between buildings), P1 (D-89) | here | geo-model3d/validate | 12 | P1 | M | proposed |
 | 3D-65 | Schema text: `FIT_TO_SHARED_EDGE` `maxDisplacementM` description cites D-76 instead of open Q-20 / "3D-06 proposes" | here | contracts | 06 | G0 | S | proposed (D-97) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |

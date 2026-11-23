@@ -26,6 +26,7 @@ tsconfig.json, vitest.config.mjs     `tsc --checkJs` (no DOM lib); Vitest projec
 packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node ESM, no I/O; one `exports` entry
   src/index.js canary.js                                 public API (commands, import, export, validate); P4 marker
   src/brep/ solve/ import/ export/ validate/ cloud/ ops/ modules (3D-ADR-0002 C1)
+  src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0004)
 services/kernel/       (3D-23)        host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
   src/ports/ adapters/ operaflow/                        storage, points, validator, auth; interim adapters (D-35)
 contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
@@ -37,6 +38,7 @@ tools/check-docs-run.mjs             `npm run check:docs`: strict on every branc
 tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05)
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
 tools/hooks/                         Claude Code hook scripts (3D-30)
+tools/crs-table/                     generator of `geo-model3d/src/crs/epsg-table.json` from PROJ proj.db (3D-32)
 tools/agent-evals/                   agent eval runner: headless sessions in throwaway clones, rubric grading (3D-28; costs money, not in `npm run check`)
 ```
 
@@ -50,5 +52,6 @@ tools/agent-evals/                   agent eval runner: headless sessions in thr
    [3D-ADR-0001](docs/decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md)).
 3. Public API of a package only through its `index.js`.
 3a. Inside `geo-model3d` (3D-ADR-0002 C1): `brep` <- `solve`, `import`, `export`, `validate`, `cloud`; `ops` <- `brep`,
-    `solve`, `validate`; `index.js` <- all. No I/O, clock or randomness in the kernel; only `services/kernel` imports it.
+    `solve`, `validate`; `crs` (leaf, third party `proj4` only) <- `brep`, `import`, `export` (3D-ADR-0004, proposed);
+    `index.js` <- all. No I/O, clock or randomness in the kernel; only `services/kernel` imports it.
 4. A new dependency between packages needs an ADR.
