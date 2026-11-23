@@ -142,6 +142,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-126 | Point cloud in another horizontal CRS than a geographic-CRS building (reprojection out of 3D-32) becomes a new `proposed` row (3D-69); reproject vs. refuse is decided when it is set `ready` | Owner, dialog, 2026-11-23 (3D-32) |
 | D-127 | 3D-32 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids became D-121..D-126 and Q-43 (EPSG terms, still open); id clashes with the parallel 3D-08 resolved at merge: CRS ADR 3D-ADR-0004 -> 3D-ADR-0007, row 3D-66 (cloud CRS) -> 3D-69 | Owner, chat, 2026-11-23 |
 | D-128 | Per D-114: 3D-10 (import) and 3D-12 (validation) set `ready` (3D-09 and 3D-32 done) and started in parallel fresh sessions | Owner, chat, 2026-11-23 (D-114) |
+| D-3D12-1 | Q-10: val3dity (GPL-3.0, links CGAL and GEOS) runs in its **own container**, version pinned (2.7.0 at decision time), called by `services/kernel` through the validator port of `validate`; the kernel and the service image stay permissive (D-109). [3D-ADR-0008](adr/3D-ADR-0008-val3dity-binding.md) `proposed` | Owner, dialog, 2026-11-23 (3D-12) |
+| D-3D12-2 | 3D-12 delivers `src/validate` (three modes, severity by state, "new" issues via lineage), the in-process validator port with a stub, and the ADR; the val3dity image and its binding in `services/kernel` are a new intake row that depends on 3D-23 | Owner, dialog, 2026-11-23 (3D-12) |
+| D-3D12-3 | D-118: `robust-predicates` is not adopted in 3D-12; ring and face-crossing tests use tolerance-based predicates in own code; reopen only if a test shows a sign error near zero | Owner, dialog, 2026-11-23 (3D-12) |
+| D-3D12-4 | `validateModel` takes findings of other modules (solve, crs, export, cloud, import) and of the external validator port and assigns scope and severity from one table; `validate` itself detects the geometry and topology codes and `SOLID_OVERLAP` between bodies of one building (D-89) | Owner, dialog, 2026-11-23 (3D-12) |
 
 ## Open questions
 
@@ -156,7 +160,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-07 | Path to sample CityJSON (roofer, TerraSolid) with point clouds; geoviewer `LOD2-8` samples | Owner promised a repository or bucket path | Owner |
 | Q-08 | Where `contracts/model3d/` schemas live: `shared_compnents` (client consumes them) or here (kernel owns them) | Contract crosses the repository boundary; one location must be authoritative | 3D-27 ADR (D-24) |
 | Q-09 | How P4 isolation is checked mechanically when the kernel is in a separate repository (no client package may depend on `geo-model3d`; no plan chunk references it) | Canary marker in build output (D-24) + dependency rule in `shared_compnents` | 3D-27 ADR (D-24) |
-| Q-10 | External validation: val3dity (native) in a Node host and the Docker image, version pin (v0.3 Д-08) | Sidecar binary, container, or service | 3D-12 |
+| Q-10 | External validation: val3dity (native) in a Node host and the Docker image, version pin (v0.3 Д-08) | Sidecar binary, container, or service | Closed by D-3D12-1 (3D-12) |
 | Q-11 | v0.3 §15 assumptions Д-01..Д-12 are not confirmed by the owner; must be confirmed before G1-equivalent rows start. Д-01 is partly overtaken by D-10 (auth and assignment from CP) | List in v0.3 §15 | Owner, dialog, before 3D-09 |
 | Q-12 | Does `shared_compnents` plan a 3D scene module in `geo-render`, or does the 3D scene stay in geoviewer? (HANDOVER §6, not checked) | Determines where 3D-40 lands | 3D-01 |
 | Q-13 | Can `workspace/plan` describe a remote (network) port, not only a Worker port? (HANDOVER §7 Q2) | If not, a library row is needed | 3D-01, 3D-02 |
