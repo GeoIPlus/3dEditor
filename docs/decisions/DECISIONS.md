@@ -143,6 +143,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-127 | 3D-32 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids became D-121..D-126 and Q-43 (EPSG terms, still open); id clashes with the parallel 3D-08 resolved at merge: CRS ADR 3D-ADR-0004 -> 3D-ADR-0007, row 3D-66 (cloud CRS) -> 3D-69 | Owner, chat, 2026-11-23 |
 | D-128 | Per D-114: 3D-10 (import) and 3D-12 (validation) set `ready` (3D-09 and 3D-32 done) and started in parallel fresh sessions | Owner, chat, 2026-11-23 (D-114) |
 | D-129 | 3D-13 (solver), 3D-22 (point cloud), 3D-66 (3D-08 ADRs into spec and AGENTS.md) and 3D-67 (licence allow-list check) set `ready` and started in parallel fresh sessions, beside 3D-10 and 3D-12 | Owner, dialog, 2026-11-24 |
+| D-3D13-1 | Per-kind reading of constraints (sources give names only): the plane-terms table of the [solve module card](../../packages/geo-model3d/README.md#solve-3d-13) - spec-stated FIXED_POINT, ON_PLANE, FIXED_LINE/EAVE/RIDGE, EQUAL_Z, MINIMIZE_DISPLACEMENT (= O1) plus COINCIDENT, PLANAR_FACE, SHARED_EDGE (by construction), HORIZONTAL, VERTICAL, PARALLEL, PERPENDICULAR, ROOF_SLOPE, PREFERRED_AXIS, SYMMETRY as proposed; BOUNDARY_ON_FOOTPRINT and CLOSE_TO_MEASUREMENT refused as `TBD` (footprint segment, Q-28); spec §5 gets the table through an intake row | Owner, dialog, 2026-11-23 (3D-13) |
+| D-3D13-2 | Hard-constraint check tolerances: point / line / plane distances `planarTolM`; EQUAL_Z `zAlignTolM`; COINCIDENT `topologySnapTolM`; angular kinds exact up to `numericEpsilon` on sin / cos (an inconsistent angle demand is always a conflict) | Owner, dialog, 2026-11-23 (3D-13) |
+| D-3D13-3 | Q-29: `details.missingDegreesOfFreedom` stays `string[]` (no schema change); one entry per free degree `"<faceId>:OFFSET"` or `"<faceId>:ROTATION"`; `entityIds` lists the faces | Owner, dialog, 2026-11-23 (3D-13) |
+| D-3D13-4 | Underconstrained threshold (3D-ADR-0005): eigenvalue gap of O1 / smallest singular value of the reduced stage-2 system <= `numericEpsilon` of the profile (default 1e-9, the spike value) | Owner, dialog, 2026-11-23 (3D-13) |
 
 ## Open questions
 
@@ -230,3 +234,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-11 | 2026-11-23, owner (coordinating session) | closed by D-88..D-94 | Д-01/Д-02 overtaken (D-88); Д-04 changed to geographic CRS support (D-92, row 3D-32); rest confirmed |
 | Q-01 | 2026-11-23, owner (3D-08) | closed by D-109 | [3D-ADR-0004](adr/3D-ADR-0004-kernel-language-boolean-licences.md): JavaScript on Node; MOVE_EDGE PREVIEW p95 5.411 ms on 199 faces vs 150 ms ([3D-08 note](../verification/3D-08.md)) |
 | Q-17 | 2026-11-23, owner (3D-08) | closed by D-110 | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices (least squares to their old positions, hard conditions exact) |
+| Q-29 | 2026-11-23, owner (3D-13) | closed by D-3D13-3 | `"<faceId>:OFFSET" | "<faceId>:ROTATION"` strings, contract unchanged |
