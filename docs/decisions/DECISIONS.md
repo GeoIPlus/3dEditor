@@ -101,6 +101,13 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-85 | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md) accepted: O1 - append-only object store (S3 production, file system dev/tests), commit = one create-if-absent of `journal/{N+1}`, ports `history` and `datasets`, nothing deleted or overwritten, delivered bytes content-addressed and served without pre-signed URLs. Closes Q-02 | Owner, dialog, 2026-11-23 (3D-03) |
 | D-86 | After 3D-03 no further row is set `ready` and no handoff is written; next step is the merge of 3D-03 by the coordinating session (`merge-wp`), then 3D-06 finishes and the kernel chain opens | Owner, dialog, 2026-11-23 (3D-03) |
 | D-87 | 3D-03 accepted (done); merged into the base without PR via the `merge-wp` skill, run in the 3D-03 session on the owner's word there; the 3D-03 provisional ids became D-82..D-86 and Q-40 | Owner, dialog, 2026-11-23 |
+| D-88 | v0.3 Д-01 and Д-02 are taken as overtaken by earlier decisions, not re-asked: the server part is built here and ships as its own image (D-33, 3D-ADR-0002), auth and assignments come from the CP (D-10); points are read by box by the kernel service itself, COPC by box / LAS whole, later crowdsource (D-35) | Coordinating session, 2026-11-23 (Q-11), from D-10, D-33, D-35 |
+| D-89 | v0.3 Д-05 confirmed: adjacent buildings are edited independently; shared walls and overlaps between different buildings are not checked in P0. Inter-building validation is P1 (row 3D-33) | Owner, dialog, 2026-11-23 (Q-11) |
+| D-90 | v0.3 Д-03 confirmed: `exportRequiresApproval` is a project setting, default `false` | Owner, dialog, 2026-11-23 (Q-11) |
+| D-91 | v0.3 Д-06..Д-11 confirmed: desktop Chrome and Edge; output LoD = input LoD, installations as `BuildingInstallation` of the same LoD; CityJSON 2.0.x (exact version and val3dity version pinned by 3D-07 / 3D-12); each `BuildingPart` its own body, creating/splitting parts P1; no underground parts; UI in English, error texts as localisation keys | Owner, dialog, 2026-11-23 (Q-11) |
+| D-92 | v0.3 Д-04 changed: geographic CRSs are supported. The kernel service converts each building into a local metric frame (ENU) on import and back on export; only vertices changed by an edit are converted back, untouched vertices keep their file coordinates (D-70, GT-I4). Server-only transform module, library chosen by ADR (row 3D-32); `INVALID_CRS` narrows to unknown or unsupported CRSs | Owner, dialog, 2026-11-23 (Q-11) |
+| D-93 | Heights and the vertical CRS are kept as in the file, not transformed; the point cloud must share the model's vertical CRS | Owner, dialog, 2026-11-23 (Q-11) |
+| D-94 | v0.3 Д-12 confirmed: up to 500 faces per building; more imports with a warning and no latency guarantee | Owner, dialog, 2026-11-23 (Q-11) |
 
 ## Open questions
 
@@ -182,3 +189,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-20 | 2026-11-23, owner (3D-06) | closed by D-76 | Refusal map of the module card accepted |
 | Q-21 | 2026-11-23, owner (3D-06) | closed by D-77 | Severities accepted, enforced in `validation-report` |
 | Q-02 | 2026-11-23, owner (3D-03) | closed by D-85 | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md): own append-only object store behind `history` + `datasets` ports; history stays own (D-82) |
+| Q-11 | 2026-11-23, owner (coordinating session) | closed by D-88..D-94 | Д-01/Д-02 overtaken (D-88); Д-04 changed to geographic CRS support (D-92, row 3D-32); rest confirmed |

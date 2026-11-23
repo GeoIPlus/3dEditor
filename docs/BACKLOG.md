@@ -13,18 +13,18 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged).
+Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33).
 
 | Progress | Rows |
 |---|---:|
-| Done | 12 / 48 |
+| Done | 12 / 50 |
 | Review | 0 |
 | In progress | 0 |
 | Ready | 5 |
-| Proposed (waiting for the owner to set `ready`) | 30 |
+| Proposed (waiting for the owner to set `ready`) | 32 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 12/48 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 12/50 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87).
 **Running:** SC 3D view port + host 3D-47 (D-61), golden fixtures 3D-07 (D-79), spec update 3D-64 (D-81).
 
@@ -59,6 +59,7 @@ flowchart TB
     D10["3D-10 CityJSON import"]
     D11["3D-11 CityJSON export"]
     D12["3D-12 Validation"]
+    D32["3D-32 CRS support (geographic)"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D13["3D-13 Constraint solver"]
@@ -71,6 +72,7 @@ flowchart TB
     D20["3D-20 Installations"]
     D21["3D-21 Semantics, constraints cmds"]
     D22["3D-22 Point cloud functions"]
+    D33["3D-33 Inter-building validation (P1)"]
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D23["3D-23 Kernel service"]
@@ -128,6 +130,11 @@ flowchart TB
   D07 --> D08
   D08 --> D09
   D09 --> D10
+  D32 --> D10
+  D02 --> D32
+  D06 --> D32
+  D64 --> D32
+  D12 --> D33
   D09 --> D12
   D10 --> D11
   D12 --> D11
@@ -193,7 +200,7 @@ flowchart TB
 | 3D-07 | Golden fixtures: format and synthetic CityJSON/point sets for GT-I1..GT-25 | here | fixtures | 06 | G0 | M | ready (D-79) |
 | 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | proposed |
 | 3D-09 | Kernel core: half-edge B-Rep, primary planes, derived vertices, local frame, transactions, versions | here | geo-model3d/brep | 08 | G1 | L | proposed |
-| 3D-10 | Import I-01: CityJSON -> canonical model + RTG + baseline | here | geo-model3d/import | 09 | G1 | L | proposed |
+| 3D-10 | Import I-01: CityJSON -> canonical model + RTG + baseline | here | geo-model3d/import | 09, 32 | G1 | L | proposed |
 | 3D-11 | Export: canonical model -> CityJSON, opaque data round-trip | here | geo-model3d/export | 10, 12 | G1 | M | proposed |
 | 3D-12 | Validation: FAST_PREVIEW, COMMIT_VALIDATION, FINAL_VALIDATION (val3dity), severity by state | here | geo-model3d/validate | 09 | G1 | L | proposed |
 | 3D-13 | Constraint solver and conflict diagnostics | here | geo-model3d/solve | 09 | G3 | L | proposed |
@@ -220,6 +227,8 @@ flowchart TB
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
 | 3D-63 | Swap 3DQM interim `datasets` adapters for crowdsource datasets; migrate stored input buildings (the `history` store stays own, D-82) | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | proposed (D-35) |
 | 3D-64 | Spec update: apply D-76 (Q-20 refusal codes) and D-77 (Q-21 severities) to `docs/specs/3dqm-spec.md`; list contract questions Q-26..Q-39 | here | docs/specs | 04, 06 | G0 | S | ready (D-81; started in a fresh session) |
+| 3D-32 | CRS support: server-only transform module, local metric frame (ENU) per building, ADR for the library; spec and schema update for geographic CRSs (D-92) | here | geo-model3d (frame), services/kernel, docs, contracts | 02, 06, 64 | G1 | M | proposed |
+| 3D-33 | Inter-building validation (shared walls, overlaps between buildings), P1 (D-89) | here | geo-model3d/validate | 12 | P1 | M | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -354,6 +363,25 @@ flowchart TB
   recommendation (adopt / defer until kernel code exists / reject) that follows from the numbers; noise stated
   (n=2 per arm). Vendor claims are cited as claims, not results.
 - Decisions: D-43, D-50  Open: -
+
+### 3D-32 CRS support (D-92, D-93)
+- Source: owner dialog 2026-11-23 (Q-11, v0.3 Д-04 changed). Goal: import, edit and export buildings in geographic CRSs
+  without losing the exact round trip.
+- Scope in: ADR for the transform library (server-only, licence, version pin; P4: nothing in a browser bundle); a module
+  that maps a building to a local metric ENU frame and back; export converts back only vertices changed by an edit,
+  untouched vertices keep their file coordinates (D-70); spec import/export rules and `INVALID_CRS` wording updated
+  (after 3D-64), and every `Q-11` marker in the spec replaced by D-88..D-94; schema change only if a field is needed
+  (owner approval, D-18). Scope out: vertical datum transforms
+  (D-93: heights as in the file), point cloud reprojection.
+- Accept: round trip of a geographic-CRS fixture with no edits is exact (GT-I4 rule, 0.001 m); an edited building
+  re-exports with changed vertices within the tolerance profile; a projected-CRS file takes the same path unchanged;
+  unknown CRS -> `INVALID_CRS`; `check:arch` shows the module unreachable from client bundles.
+- Decisions: D-04, D-06, D-07, D-70, D-88..D-94  Open: -
+
+### 3D-33 Inter-building validation, P1 (D-89)
+- Source: owner dialog 2026-11-23 (Q-11, v0.3 Д-05). Goal: find shared-wall gaps and overlaps between adjacent buildings.
+- Accept: TBD when P1 is planned (spec section and golden tests to be written first).
+- Decisions: D-89  Open: -
 
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under
