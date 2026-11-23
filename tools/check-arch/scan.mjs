@@ -49,7 +49,9 @@ function scriptKind(file) {
 /**
  * @typedef {{specifier: string, line: number}} ImportRef
  * @typedef {{name: string, line: number}} GlobalRef
- * @typedef {{imports: ImportRef[], identifiers: GlobalRef[]}} Parsed
+ * @typedef {{object: string, property: string, line: number}} MemberRef `object.property` with an identifier object
+ * @typedef {{name: string, args: number, line: number}} NewRef `new Name(...)` with an identifier callee
+ * @typedef {{imports: ImportRef[], identifiers: GlobalRef[], members: MemberRef[], news: NewRef[]}} Parsed
  */
 
 /**
@@ -65,6 +67,10 @@ export function parseSource(file, text) {
   const imports = [];
   /** @type {GlobalRef[]} */
   const identifiers = [];
+  /** @type {MemberRef[]} */
+  const members = [];
+  /** @type {NewRef[]} */
+  const news = [];
   /** @param {ts.Node} node */
   const lineOf = (node) => sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1;
   /** @param {ts.Node} node */
@@ -80,10 +86,15 @@ export function parseSource(file, text) {
     } else if (ts.isIdentifier(node) && isReference(node)) {
       identifiers.push({ name: node.text, line: lineOf(node) });
     }
+    if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression)) {
+      members.push({ object: node.expression.text, property: node.name.text, line: lineOf(node) });
+    } else if (ts.isNewExpression(node) && ts.isIdentifier(node.expression)) {
+      news.push({ name: node.expression.text, args: node.arguments?.length ?? 0, line: lineOf(node) });
+    }
     ts.forEachChild(node, visit);
   };
   visit(sf);
-  return { imports, identifiers };
+  return { imports, identifiers, members, news };
 }
 
 const GLOBAL_ALIASES = new Set(['globalThis', 'window', 'self', 'global']);

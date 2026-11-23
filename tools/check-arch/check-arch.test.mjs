@@ -66,10 +66,10 @@ describe('check:arch', () => {
     expect(p).toContainEqual(expect.stringMatching(/^packages\/ui\/package.json:1: dependencies names the P4 kernel/));
   });
 
-  it('allows the kernel itself, services/ and tools/ to import it; ignores comments and strings', async () => {
+  it('allows the kernel itself, services/kernel and tools/bench to import it; ignores comments and strings', async () => {
     expect(await problems(repo({
       'services/kernel/src/server.js': "import { add } from '@geoiplus/geo-model3d';\nexport default add;\n",
-      'tools/x.mjs': "import '@geoiplus/geo-model3d';\n",
+      'tools/bench/x.mjs': "import '@geoiplus/geo-model3d';\n",
       'apps/web/src/doc.js': "// import '@geoiplus/geo-model3d'\nexport const s = \"import '@geoiplus/geo-model3d'\";\n",
     }))).toEqual([]);
   });
