@@ -1,0 +1,29 @@
+{
+  "gt": "GT-20",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G4",
+    "input": "500 точек на z = 0,75·y + 5, шум σ = 0,01 м + 10 % выбросов → `FIT_PLANE`",
+    "expected": "Отклонение нормали ≤ 0,2°; RMSE ≤ 0,015 м; доля inliers ≥ 0,85"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "plane": "z = 0.75 y + 5",
+    "normalDeviationDegMax": 0.2,
+    "rmseMMax": 0.015,
+    "inlierRatioMin": 0.85,
+    "points": 500,
+    "sigmaM": 0.01,
+    "outlierPercent": 10
+  },
+  "decided": [],
+  "owner": {
+    "module": "`cloud`",
+    "row": "3D-22"
+  }
+}

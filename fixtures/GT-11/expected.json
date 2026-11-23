@@ -1,0 +1,34 @@
+{
+  "gt": "GT-11",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G3",
+    "input": "GT-03 → `REMOVE_FACE` одного ската",
+    "expected": "`DRAFT_SOLID`; экспорт запрещён; затем `HEAL_HOLE` `COPY_NEIGHBOR_PLANE` невозможен → отказ с перечнем допустимых режимов"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "state": "DRAFT_SOLID",
+    "exportRefused": true,
+    "healRefused": true,
+    "listsAdmissibleModes": true
+  },
+  "decided": [
+    {
+      "source": "D-76",
+      "assert": {
+        "healRefusalCode": "INVALID_GEOMETRY",
+        "details": "admissibleModes"
+      }
+    }
+  ],
+  "owner": {
+    "module": "`ops` (`REMOVE_FACE`, `HEAL_HOLE`)",
+    "row": "3D-17"
+  }
+}

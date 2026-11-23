@@ -1,0 +1,44 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-11-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-11",
+      "actorId": "usr-operator",
+      "operation": "REMOVE_FACE",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "faceId": "f-roof-n"
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "DRAFT_SOLID"
+    }
+  },
+  {
+    "step": "EXPORT",
+    "note": "export of the DRAFT_SOLID model: refused"
+  },
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-11-2",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-11",
+      "actorId": "usr-operator",
+      "operation": "HEAL_HOLE",
+      "phase": "COMMIT",
+      "expectedVersion": 2,
+      "payload": {
+        "boundaryEdgeIds": ["he-f-wall-n-2", "he-f-wall-w-3", "he-f-roof-s-2", "he-f-wall-e-2"],
+        "mode": "COPY_NEIGHBOR_PLANE",
+        "neighborFaceId": "f-roof-s"
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "DRAFT_SOLID"
+    }
+  }
+]

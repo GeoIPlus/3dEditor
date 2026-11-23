@@ -1,0 +1,30 @@
+{
+  "gt": "GT-23",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G5",
+    "input": "Здание вне пакета оператора",
+    "expected": "`403 FORBIDDEN` на чтение и запись"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "read": {
+      "httpStatus": 403,
+      "code": "FORBIDDEN"
+    },
+    "write": {
+      "httpStatus": 403,
+      "code": "FORBIDDEN"
+    }
+  },
+  "decided": [],
+  "owner": {
+    "module": "`services/kernel`",
+    "row": "3D-25"
+  }
+}

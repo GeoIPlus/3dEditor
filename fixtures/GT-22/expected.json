@@ -1,0 +1,28 @@
+{
+  "gt": "GT-22",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G5",
+    "input": "Двое пользователей: оператор правит, пытается поставить `APPROVED`",
+    "expected": "`403 FORBIDDEN`; проверяющий-не-автор ставит успешно; правка после этого сбрасывает статус"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "operatorApprove": {
+      "httpStatus": 403,
+      "code": "FORBIDDEN"
+    },
+    "reviewerNonAuthorApproves": true,
+    "laterEditResetsStatus": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`services/kernel`",
+    "row": "3D-24"
+  }
+}

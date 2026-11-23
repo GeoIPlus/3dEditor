@@ -1,0 +1,30 @@
+{
+  "gt": "GT-12",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G3",
+    "input": "Undo/Redo после GT-07",
+    "expected": "Undo: 520 м³ и исходные ID; Redo: 540 м³; каждая операция — новая версия"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "afterUndo": {
+      "volumeM3": 520,
+      "originalIds": true
+    },
+    "afterRedo": {
+      "volumeM3": 540
+    },
+    "newVersionPerOperation": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`UNDO`, `REDO`)",
+    "row": "3D-18"
+  }
+}

@@ -94,6 +94,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-78 | 3D-06 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-06 provisional ids became D-75..D-77 and Q-26..Q-39 | Owner, chat, 2026-11-23 |
 | D-79 | 3D-07 set `ready` and started in a fresh session | Owner, chat, 2026-11-23 |
 | D-80 | Branch `chore/context7-mcp` (unmerged, Context7 MCP server) is kept on the remote; not merged, not deleted (context7 stays deferred per D-46) | Owner, chat, 2026-11-23 |
+| D-3D07-1 | 3D-07 fixture inputs that v0.3 §12 leaves unspecified (GT-05 L-shape, GT-10 fixed vertex, GT-17/18 positions and dormer height, GT-19 node, GT-20 extent and outlier law, GT-22..24 actors and buildings) are proposed by the generator, each marked `[P]` with its reason and listed in [fixtures/README.md](../../fixtures/README.md) for review; expected values stay verbatim from §12 | Owner, dialog, 2026-11-23 (3D-07) |
+| D-3D07-2 | GT-01..GT-04 start from the GT-I1 gable as a canonical model (10 x 8, eave 5, ridge 8); GT-05 starts from an L-shaped flat block at Z = 5 | Owner, dialog, 2026-11-23 (3D-07) |
+| D-3D07-3 | GT-I2 construction: the second slope's ridge edge at y = 4.03 m (horizontal 0.03 m gap), gable walls hexagons with a 0.03 m top edge; §12 text kept verbatim; the "two edges" reading is Q-3D07-1 | Owner, dialog, 2026-11-23 (3D-07) |
+| D-3D07-4 | GT-20 outliers lie 1.5..3 m off the plane (beyond `heatmapBufferM` 1.0); GT-21 reuses all GT-20 points shifted +0.10 m in Z and the heatmap buffer excludes the outliers | Owner, dialog, 2026-11-23 (3D-07) |
 
 ## Open questions
 
@@ -138,6 +142,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | v0.2 F-29 | 3D-19 |
 | Q-38 | Dimensions of `ADD_DORMER` FLAT/GABLE and `ADD_CHIMNEY` beyond outline / box | v0.3 §6, v0.2 C.16, GT-17, GT-18 | 3D-20 |
 | Q-39 | Does the command carry `leaseRef` / `leaseEpoch`, or does the service take them from the session | spec §11 rule 11, D-69 | 3D-23 |
+| Q-3D07-1 | GT-I2: which edges carry `OPEN_BOUNDARY` - the two ridge edges only (the 0.03 m wall edges reported as degenerate, < `minEdgeLengthM`) or all four edges of the gap loop | v0.3 §12 GT-I2, D-3D07-3 | 3D-10 |
 
 ## Open-question status updates
 

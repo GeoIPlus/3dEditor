@@ -1,0 +1,22 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-01-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-01",
+      "actorId": "usr-operator",
+      "operation": "REPLACE_ROOF",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "footprintId": "fp-1",
+        "template": "FLAT",
+        "roofZ": 5
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

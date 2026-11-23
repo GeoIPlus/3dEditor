@@ -1,0 +1,24 @@
+{
+  "gt": "GT-05",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G2",
+    "input": "R-03 на L-образном footprint",
+    "expected": "`UNSUPPORTED_FOOTPRINT`; модель не изменена"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "refusal": "UNSUPPORTED_FOOTPRINT",
+    "modelUnchanged": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`REPLACE_ROOF`)",
+    "row": "3D-14"
+  }
+}

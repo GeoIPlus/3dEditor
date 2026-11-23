@@ -1,0 +1,26 @@
+{
+  "gt": "GT-21",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G4",
+    "input": "Heatmap GT-03 по точкам GT-20, сдвинутым на +0,10 м по Z",
+    "expected": "Среднее отклонение ската 0,080 ± 0,005 м (расстояние по нормали)"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "meanSlopeDeviationM": 0.08,
+    "toleranceM": 0.005,
+    "distance": "normal",
+    "shiftZM": 0.1
+  },
+  "decided": [],
+  "owner": {
+    "module": "`cloud`",
+    "row": "3D-22"
+  }
+}

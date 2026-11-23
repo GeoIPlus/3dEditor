@@ -1,0 +1,7 @@
+[
+  {
+    "step": "WORLD_LOCAL_ROUNDTRIP",
+    "points": "input.world.json",
+    "note": "world -> local -> world with the model frame (spec §4)"
+  }
+]

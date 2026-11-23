@@ -1,0 +1,27 @@
+{
+  "gt": "GT-04",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G2",
+    "input": "R-04, eave 5, все уклоны rise 3 / run 4",
+    "expected": "Конёк Z = 8, длина 2 м; 4 ската; крыша 100 м²; объём 488 м³"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "ridgeZ": 8,
+    "ridgeLengthM": 2,
+    "roofFaces": 4,
+    "roofAreaM2": 100,
+    "volumeM3": 488
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`REPLACE_ROOF`)",
+    "row": "3D-14"
+  }
+}

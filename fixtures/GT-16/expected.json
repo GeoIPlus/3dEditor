@@ -1,0 +1,25 @@
+{
+  "gt": "GT-16",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G4",
+    "input": "GT-03 → `TRANSLATE_BUILDING` (100; 50; 2)",
+    "expected": "Объём и площади неизменны; все вершины сдвинуты ровно на вектор"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "vector": [100, 50, 2],
+    "volumeUnchanged": true,
+    "areasUnchanged": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`TRANSLATE_BUILDING`)",
+    "row": "3D-19"
+  }
+}

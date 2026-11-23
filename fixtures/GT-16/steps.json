@@ -1,0 +1,20 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-16-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-16",
+      "actorId": "usr-operator",
+      "operation": "TRANSLATE_BUILDING",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "vector": [100, 50, 2]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

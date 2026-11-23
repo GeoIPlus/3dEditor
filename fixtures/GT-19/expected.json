@@ -1,0 +1,27 @@
+{
+  "gt": "GT-19",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G4",
+    "input": "4 плоскости, расходящиеся в узле на 0,05 м → `ALIGN_JUNCTION` `KEEP_PRIMARY_PLANE`",
+    "expected": "Узел сведён в `topologySnapTolM`; основная плоскость неизменна; либо отказ с перечнем конфликтующих граней при Fixed"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "nodeWithin": "topologySnapTolM",
+    "primaryPlaneUnchanged": true,
+    "fixedVariant": "refusal listing the conflicting faces",
+    "divergenceM": 0.05,
+    "planes": 4
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`ALIGN_JUNCTION`)",
+    "row": "3D-17"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "gt": "GT-01",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G2",
+    "input": "`REPLACE_ROOF` R-01 на 10×8, Z = 5",
+    "expected": "Крыша 80 м², объём 400 м³"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "roofAreaM2": 80,
+    "volumeM3": 400
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`REPLACE_ROOF`)",
+    "row": "3D-14"
+  }
+}

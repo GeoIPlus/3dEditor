@@ -1,0 +1,24 @@
+{
+  "gt": "GT-15",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G4",
+    "input": "GT-03 → `SET_HEIGHT BASE` = −1",
+    "expected": "Объём 600 м³; крыша 100 м²"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "volumeM3": 600,
+    "roofAreaM2": 100
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`SET_HEIGHT`)",
+    "row": "3D-19"
+  }
+}

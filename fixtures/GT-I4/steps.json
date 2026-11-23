@@ -1,0 +1,12 @@
+[
+  {
+    "step": "IMPORT",
+    "document": "input.cityjson.json",
+    "cityObjectId": "bld-gt-i1",
+    "toleranceProfile": "default"
+  },
+  {
+    "step": "EXPORT",
+    "note": "kernel export API (spec §7); compare with the input, then val3dity (binding Q-10)"
+  }
+]

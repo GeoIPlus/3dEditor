@@ -1,0 +1,23 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-06-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-06",
+      "actorId": "usr-operator",
+      "operation": "FIT_TO_SHARED_EDGE",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "edgeIds": ["he-f-roof-s-2", "he-f-roof-n-2"],
+        "leadingFaceId": "f-roof-s",
+        "maxDisplacementM": 0.05,
+        "movableFaceIds": ["f-roof-n"]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

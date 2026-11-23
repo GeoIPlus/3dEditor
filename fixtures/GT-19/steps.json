@@ -1,0 +1,46 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-19-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-19",
+      "actorId": "usr-operator",
+      "operation": "ALIGN_JUNCTION",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "vertexId": "v-a",
+        "faceIds": ["f-roof-s", "f-roof-e", "f-roof-n", "f-roof-w"],
+        "mode": "KEEP_PRIMARY_PLANE",
+        "primaryFaceId": "f-roof-s"
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    },
+    "model": "input.model.json"
+  },
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-19-2",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-19",
+      "actorId": "usr-operator",
+      "operation": "ALIGN_JUNCTION",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "vertexId": "v-a",
+        "faceIds": ["f-roof-s", "f-roof-e", "f-roof-n", "f-roof-w"],
+        "mode": "KEEP_PRIMARY_PLANE",
+        "primaryFaceId": "f-roof-s"
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    },
+    "model": "input.model.fixed.json"
+  }
+]

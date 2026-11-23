@@ -18,6 +18,7 @@
     "check:docs": "node tools/check-docs-run.mjs",
     "backlog:sync": "node tools/backlog-sync/cli.mjs",
     "golden": "vitest run --project golden --passWithNoTests",
+    "fixtures": "node tools/golden-fixtures/cli.mjs",
     "bench": "vitest bench --run --passWithNoTests"
   },
   "devDependencies": {

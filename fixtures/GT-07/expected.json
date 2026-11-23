@@ -1,0 +1,25 @@
+{
+  "gt": "GT-07",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G3",
+    "input": "GT-03 → `ALIGN_RIDGE`, `KEEP_EAVES`, новый Z = 8,5",
+    "expected": "Карнизы на Z = 5; крыша 2·10·√(16+12,25) = 106,301 м²; объём 540 м³"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "eaveZ": 5,
+    "roofAreaM2": 106.301,
+    "volumeM3": 540
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`ALIGN_RIDGE`)",
+    "row": "3D-16"
+  }
+}

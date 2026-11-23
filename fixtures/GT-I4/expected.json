@@ -1,0 +1,26 @@
+{
+  "gt": "GT-I4",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G1",
+    "input": "Импорт GT-I1 → экспорт без правок",
+    "expected": "Геометрия совпадает в пределах 0,001 м; семантика и ID объектов идентичны; val3dity без ошибок"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "geometryToleranceM": 0.001,
+    "semanticsIdentical": true,
+    "objectIdsIdentical": true,
+    "val3dityWithoutErrors": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`export`",
+    "row": "3D-11"
+  }
+}
