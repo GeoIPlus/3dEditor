@@ -1,0 +1,26 @@
+{
+  "gt": "GT-14",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G4",
+    "input": "GT-03 → `SET_OVERHANG` 0,5 м на оба карниза",
+    "expected": "Footprint 80 м²; крыша 112,5 м²; край свеса Z = 4,625; стены неизменны"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "footprintAreaM2": 80,
+    "roofAreaM2": 112.5,
+    "overhangEdgeZ": 4.625,
+    "wallsUnchanged": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`SET_OVERHANG`)",
+    "row": "3D-19"
+  }
+}

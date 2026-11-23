@@ -1,0 +1,12 @@
+[
+  {
+    "step": "REQUEST",
+    "name": "HEATMAP",
+    "actorId": "usr-operator",
+    "params": {
+      "faceIds": ["f-roof-s"],
+      "points": "input.points.json"
+    },
+    "shape": "TBD (3D-22): service request, not a command; wire shape set by the row"
+  }
+]

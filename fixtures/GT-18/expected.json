@@ -1,0 +1,27 @@
+{
+  "gt": "GT-18",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G4",
+    "input": "GT-03 → `ADD_DORMER` `FLAT` по контуру 2×1,5 м",
+    "expected": "`BuildingInstallation` валиден; нет пересечения тел сверх `planarTolM`; здание `VALID_SOLID`"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "installation": "BuildingInstallation",
+    "installationValid": true,
+    "noIntersectionBeyond": "planarTolM",
+    "state": "VALID_SOLID",
+    "outlineM": [2, 1.5]
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`ADD_DORMER`)",
+    "row": "3D-20"
+  }
+}

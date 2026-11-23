@@ -1,0 +1,24 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-20-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-20",
+      "actorId": "usr-operator",
+      "operation": "FIT_PLANE",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "selection": {
+          "fixturePoints": "all of input.points.json",
+          "TBD": "Q-18: selection shape (rectangle / lasso) set by 3D-22"
+        },
+        "apply": "MEASUREMENT"
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

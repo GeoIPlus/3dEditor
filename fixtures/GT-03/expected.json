@@ -1,0 +1,25 @@
+{
+  "gt": "GT-03",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G2",
+    "input": "R-03, eave 5, ridge 8 вдоль 10",
+    "expected": "Крыша 100 м², объём 520 м³; 2 грани крыши"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "roofAreaM2": 100,
+    "volumeM3": 520,
+    "roofFaces": 2
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`REPLACE_ROOF`)",
+    "row": "3D-14"
+  }
+}

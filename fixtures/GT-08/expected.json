@@ -1,0 +1,28 @@
+{
+  "gt": "GT-08",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G3",
+    "input": "GT-03 → `SPLIT_FACE` без новой плоскости",
+    "expected": "2 копланарные грани; объём 520 м³; lineage 1 → 2"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "coplanarFaces": 2,
+    "volumeM3": 520,
+    "lineage": {
+      "from": 1,
+      "to": 2
+    }
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`SPLIT_FACE`)",
+    "row": "3D-15"
+  }
+}

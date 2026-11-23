@@ -1,0 +1,20 @@
+[
+  {
+    "step": "REQUEST",
+    "name": "FINAL_VALIDATION",
+    "actorId": "usr-reviewer",
+    "params": {
+      "buildingIds": ["bld-gt-24-a", "bld-gt-24-c"]
+    },
+    "shape": "TBD (3D-24): service request, not a command; wire shape set by the row"
+  },
+  {
+    "step": "REQUEST",
+    "name": "EXPORT_BATCH",
+    "actorId": "usr-reviewer",
+    "params": {
+      "assignmentId": "asg-1"
+    },
+    "shape": "TBD (3D-24): service request, not a command; wire shape set by the row"
+  }
+]

@@ -1,0 +1,25 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-07-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-07",
+      "actorId": "usr-operator",
+      "operation": "ALIGN_RIDGE",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "edgeId": "he-f-roof-s-2",
+        "mode": "KEEP_EAVES",
+        "targetLine": [
+          [0, 4, 8.5],
+          [10, 4, 8.5]
+        ]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

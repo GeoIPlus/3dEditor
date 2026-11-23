@@ -1,0 +1,24 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-17-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-17",
+      "actorId": "usr-operator",
+      "operation": "ADD_CHIMNEY",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "roofFaceId": "f-roof-s",
+        "center": [5, 2, 6.5],
+        "widthM": 1,
+        "depthM": 1,
+        "heightAboveRoofM": 1
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

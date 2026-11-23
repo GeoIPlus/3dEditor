@@ -1,0 +1,29 @@
+{
+  "gt": "GT-17",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G4",
+    "input": "GT-03 → `ADD_CHIMNEY` 1×1 м, высота 1 м над скатом, в середине ската",
+    "expected": "`BuildingInstallation` — отдельное замкнутое тело; основание лежит в плоскости ската; здание `VALID_SOLID`, объём 520 м³"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "installation": "BuildingInstallation",
+    "separateClosedBody": true,
+    "baseInSlopePlane": true,
+    "state": "VALID_SOLID",
+    "volumeM3": 520,
+    "sizeM": [1, 1],
+    "heightAboveSlopeM": 1
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`ADD_CHIMNEY`)",
+    "row": "3D-20"
+  }
+}

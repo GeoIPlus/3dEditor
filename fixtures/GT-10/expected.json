@@ -1,0 +1,24 @@
+{
+  "gt": "GT-10",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G3",
+    "input": "`MOVE_VERTEX` для вершины с `FIXED_POINT`",
+    "expected": "`CONSTRAINT_CONFLICT`; версия не изменилась"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "refusal": "CONSTRAINT_CONFLICT",
+    "versionUnchanged": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`MOVE_VERTEX`)",
+    "row": "3D-15"
+  }
+}

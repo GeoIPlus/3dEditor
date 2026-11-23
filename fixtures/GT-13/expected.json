@@ -1,0 +1,26 @@
+{
+  "gt": "GT-13",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G3",
+    "input": "Повтор `commandId`; устаревший `expectedVersion`",
+    "expected": "Один commit, тот же ответ; `409 VERSION_CONFLICT`"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "commits": 1,
+    "sameReply": true,
+    "httpStatus": 409,
+    "code": "VERSION_CONFLICT"
+  },
+  "decided": [],
+  "owner": {
+    "module": "`services/kernel`",
+    "row": "3D-23 (D-68)"
+  }
+}

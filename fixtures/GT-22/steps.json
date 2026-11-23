@@ -1,0 +1,69 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-22-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-22",
+      "actorId": "usr-operator",
+      "operation": "ALIGN_RIDGE",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "edgeId": "he-f-roof-s-2",
+        "mode": "KEEP_EAVES",
+        "targetLine": [
+          [0, 4, 8.5],
+          [10, 4, 8.5]
+        ]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  },
+  {
+    "step": "REQUEST",
+    "name": "SET_STATUS",
+    "actorId": "usr-operator",
+    "params": {
+      "status": "APPROVED"
+    },
+    "shape": "TBD (3D-24): service request, not a command; wire shape set by the row"
+  },
+  {
+    "step": "REQUEST",
+    "name": "FINAL_VALIDATION",
+    "actorId": "usr-reviewer",
+    "params": {},
+    "shape": "TBD (3D-24): service request, not a command; wire shape set by the row"
+  },
+  {
+    "step": "REQUEST",
+    "name": "SET_STATUS",
+    "actorId": "usr-reviewer",
+    "params": {
+      "status": "APPROVED"
+    },
+    "shape": "TBD (3D-24): service request, not a command; wire shape set by the row"
+  },
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-22-2",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-22",
+      "actorId": "usr-operator",
+      "operation": "TRANSLATE_BUILDING",
+      "phase": "COMMIT",
+      "expectedVersion": 2,
+      "payload": {
+        "vector": [1, 0, 0]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    },
+    "note": "expectedVersion 2 assumes approval creates no model version: TBD (3D-24)"
+  }
+]

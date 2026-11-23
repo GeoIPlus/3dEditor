@@ -1,0 +1,8 @@
+[
+  {
+    "step": "IMPORT",
+    "document": "input.cityjson.json",
+    "cityObjectId": "bld-gt-i3",
+    "toleranceProfile": "default"
+  }
+]

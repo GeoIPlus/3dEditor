@@ -1,0 +1,26 @@
+{
+  "gt": "GT-24",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G5",
+    "input": "Экспорт пакета с одним `DRAFT_SOLID`",
+    "expected": "Файл без этого здания; оно названо в отчёте"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "skipped": "bld-gt-24-b",
+    "skippedState": "DRAFT_SOLID",
+    "namedInExportReport": true,
+    "exported": ["bld-gt-24-a", "bld-gt-24-c"]
+  },
+  "decided": [],
+  "owner": {
+    "module": "`services/kernel`",
+    "row": "3D-24"
+  }
+}

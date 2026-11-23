@@ -1,0 +1,29 @@
+[
+  {
+    "step": "REQUEST",
+    "name": "READ_MODEL",
+    "actorId": "usr-operator",
+    "params": {
+      "buildingId": "bld-gt-23"
+    },
+    "shape": "TBD (3D-23): service request, not a command; wire shape set by the row"
+  },
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-23-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-23",
+      "actorId": "usr-operator",
+      "operation": "TRANSLATE_BUILDING",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "vector": [1, 0, 0]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

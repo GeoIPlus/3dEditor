@@ -1,0 +1,21 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-14-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-14",
+      "actorId": "usr-operator",
+      "operation": "SET_OVERHANG",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "eaveEdgeIds": ["he-f-roof-s-0", "he-f-roof-n-0"],
+        "overhangM": 0.5
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

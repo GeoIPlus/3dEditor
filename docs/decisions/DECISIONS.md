@@ -112,6 +112,12 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-96 | 3D-64 spec diff accepted: D-77 severities in §8 rule 4, D-76 codes in §2.4, §10.1 r6, §10.3 r6, §10.5 (API, r5), §10.6 r2 and also §10.8 r2 (HEAL_HOLE, required by the Accept line though not in the scope-in list); §14 closes Q-20 / Q-21 and lists Q-26..Q-39; row -> `review` | Owner, dialog, 2026-11-23 (3D-64) |
 | D-97 | Stale `maxDisplacementM` description in the `FIT_TO_SHARED_EDGE` payload schema (cites Q-20 as open) is fixed through a new `proposed` row (3D-65), not inside 3D-64 | Owner, dialog, 2026-11-23 (3D-64) |
 | D-98 | 3D-64 accepted (done); merged into the base without PR via the `merge-wp` skill, run in the 3D-64 session on the owner's word there ("merge", chat); the 3D-64 provisional ids became D-96, D-97 | Owner, chat, 2026-11-23 |
+| D-99 | 3D-07 fixture inputs that v0.3 §12 leaves unspecified (GT-05 L-shape, GT-10 fixed vertex, GT-17/18 positions and dormer height, GT-19 node, GT-20 extent and outlier law, GT-22..24 actors and buildings) are proposed by the generator, each marked `[P]` with its reason and listed in [fixtures/README.md](../../fixtures/README.md) for review; expected values stay verbatim from §12 | Owner, dialog, 2026-11-23 (3D-07) |
+| D-100 | GT-01..GT-04 start from the GT-I1 gable as a canonical model (10 x 8, eave 5, ridge 8); GT-05 starts from an L-shaped flat block at Z = 5 | Owner, dialog, 2026-11-23 (3D-07) |
+| D-101 | GT-I2 construction: the second slope's ridge edge at y = 4.03 m (horizontal 0.03 m gap), gable walls hexagons with a 0.03 m top edge; §12 text kept verbatim; the "two edges" reading is Q-41 | Owner, dialog, 2026-11-23 (3D-07) |
+| D-102 | GT-20 outliers lie 1.5..3 m off the plane (beyond `heatmapBufferM` 1.0); GT-21 reuses all GT-20 points shifted +0.10 m in Z and the heatmap buffer excludes the outliers | Owner, dialog, 2026-11-23 (3D-07) |
+| D-103 | 3D-07 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-07 provisional ids became D-99..D-102 and Q-41 | Owner, dialog, 2026-11-23 |
+| D-104 | 3D-08 (latency spike, kernel ADRs) set `ready` and started in a fresh session | Owner, dialog, 2026-11-23 |
 
 ## Open questions
 
@@ -157,6 +163,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-38 | Dimensions of `ADD_DORMER` FLAT/GABLE and `ADD_CHIMNEY` beyond outline / box | v0.3 §6, v0.2 C.16, GT-17, GT-18 | 3D-20 |
 | Q-39 | Does the command carry `leaseRef` / `leaseEpoch`, or does the service take them from the session | spec §11 rule 11, D-69 | 3D-23 |
 | Q-40 | Is `APPROVED` / return-for-rework a new version with a journal entry? If yes, `history` needs no new operation; if no, a state-record operation is added. The reviewer must not count as an author of such an entry (v0.3 §8.1) | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md) §6 | 3D-24 / 3D-06, owner |
+| Q-41 | GT-I2: which edges carry `OPEN_BOUNDARY` - the two ridge edges only (the 0.03 m wall edges reported as degenerate, < `minEdgeLengthM`) or all four edges of the gap loop | v0.3 §12 GT-I2, D-101 | 3D-10 |
 
 ## Open-question status updates
 

@@ -1,0 +1,57 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-12-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-12",
+      "actorId": "usr-operator",
+      "operation": "ALIGN_RIDGE",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "edgeId": "he-f-roof-s-2",
+        "mode": "KEEP_EAVES",
+        "targetLine": [
+          [0, 4, 8.5],
+          [10, 4, 8.5]
+        ]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  },
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-12-2",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-12",
+      "actorId": "usr-operator",
+      "operation": "UNDO",
+      "phase": "COMMIT",
+      "expectedVersion": 2,
+      "payload": {},
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  },
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-12-3",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-12",
+      "actorId": "usr-operator",
+      "operation": "REDO",
+      "phase": "COMMIT",
+      "expectedVersion": 3,
+      "payload": {},
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

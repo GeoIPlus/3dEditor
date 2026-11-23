@@ -1,0 +1,24 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-04-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-04",
+      "actorId": "usr-operator",
+      "operation": "REPLACE_ROOF",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "footprintId": "fp-1",
+        "template": "HIP",
+        "ridgeAxis": "LOCAL_X",
+        "eaveZ": 5,
+        "slopesDeg": [36.86989764584402, 36.86989764584402, 36.86989764584402, 36.86989764584402]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]
