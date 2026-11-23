@@ -5,12 +5,12 @@ import { importBuilding } from '@geoiplus/geo-model3d';
 import { classifySurface } from '../../src/import/semantics.js';
 import { PROFILE, goldenImport } from './helpers.js';
 
-const { document, step } = goldenImport('GT-I1');
+const { cityjson, step } = goldenImport('GT-I1');
 /** @param {(g: any) => void} edit */
 const importEdited = (edit) => {
-  const doc = structuredClone(document);
+  const doc = structuredClone(cityjson);
   edit(doc.CityObjects[step.cityObjectId].geometry[0]);
-  return importBuilding({ document: doc, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'p' });
+  return importBuilding({ cityjson: doc, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'p' });
 };
 const kinds = (/** @type {any} */ m) => Object.values(m.faces).map((/** @type {any} */ f) => f.surfaceKind).sort();
 

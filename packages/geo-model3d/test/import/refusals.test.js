@@ -5,28 +5,28 @@ import { importBuilding } from '@geoiplus/geo-model3d';
 import { selectGeometry } from '../../src/import/cityjson.js';
 import { PROFILE, goldenImport, makeDoc } from './helpers.js';
 
-const { document, step } = goldenImport('GT-I1');
-const run = (/** @type {any} */ doc, id = step.cityObjectId) => importBuilding({ document: doc, cityObjectId: id, toleranceProfile: PROFILE, projectId: 'p' });
+const { cityjson, step } = goldenImport('GT-I1');
+const run = (/** @type {any} */ doc, id = step.cityObjectId) => importBuilding({ cityjson: doc, cityObjectId: id, toleranceProfile: PROFILE, projectId: 'p' });
 const code = (/** @type {string} */ c) => expect.objectContaining({ code: c });
 
 describe('refusals', () => {
-  it('not a CityJSON document -> INVALID_PAYLOAD', () => {
+  it('not a CityJSON cityjson -> INVALID_PAYLOAD', () => {
     expect(() => run({ type: 'FeatureCollection' })).toThrow(code('INVALID_PAYLOAD'));
-    expect(() => run({ ...structuredClone(document), vertices: null })).toThrow(code('INVALID_PAYLOAD'));
+    expect(() => run({ ...structuredClone(cityjson), vertices: null })).toThrow(code('INVALID_PAYLOAD'));
   });
   it('an index outside the vertex list -> INVALID_PAYLOAD', () => {
-    const doc = structuredClone(document);
+    const doc = structuredClone(cityjson);
     doc.CityObjects[step.cityObjectId].geometry[0].boundaries[0][0][0][0] = 999;
     expect(() => run(doc)).toThrow(code('INVALID_PAYLOAD'));
   });
   it('missing CityObject, or one that is not a Building -> NOT_FOUND', () => {
-    expect(() => run(document, 'nope')).toThrow(code('NOT_FOUND'));
-    const doc = structuredClone(document);
+    expect(() => run(cityjson, 'nope')).toThrow(code('NOT_FOUND'));
+    const doc = structuredClone(cityjson);
     doc.CityObjects[step.cityObjectId].type = 'Bridge';
     expect(() => run(doc)).toThrow(code('NOT_FOUND'));
   });
   it('no LoD 2.x geometry -> INVALID_GEOMETRY', () => {
-    const doc = structuredClone(document);
+    const doc = structuredClone(cityjson);
     doc.CityObjects[step.cityObjectId].geometry[0].lod = '1.2';
     expect(() => run(doc)).toThrow(code('INVALID_GEOMETRY'));
   });

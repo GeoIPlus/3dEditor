@@ -1,5 +1,5 @@
 // import (3D-10): outputs are contract shapes (building-model, import-report; Ajv), the core invariants hold, the input
-// document is not written, and import is deterministic (spec §6, §4; 3D-ADR-0002 C1 rule 3).
+// cityjson is not written, and import is deterministic (spec §6, §4; 3D-ADR-0002 C1 rule 3).
 import { describe, expect, it } from 'vitest';
 import { importBuilding, canonicalJson } from '@geoiplus/geo-model3d';
 import { checkTopology, vertexPlaneViolations, roofGraph } from '../../src/brep/index.js';
@@ -10,13 +10,13 @@ import { PROFILE, goldenImport } from './helpers.js';
 const ajv = createAjv();
 const validModel = /** @type {any} */ (ajv.getSchema('urn:geoiplus:schema:model3d-building-model:v1'));
 const validReport = /** @type {any} */ (ajv.getSchema('urn:geoiplus:schema:model3d-import-report:v1'));
-const run = (/** @type {any} */ document, /** @type {string} */ id) =>
-  importBuilding({ document, cityObjectId: id, toleranceProfile: PROFILE, projectId: 'prj-golden' });
+const run = (/** @type {any} */ cityjson, /** @type {string} */ id) =>
+  importBuilding({ cityjson, cityObjectId: id, toleranceProfile: PROFILE, projectId: 'prj-golden' });
 
 describe.each(['GT-I1', 'GT-I2', 'GT-I3'])('%s import outputs', (gt) => {
-  const { document, step } = goldenImport(gt);
-  deepFreeze(document); // proves import never writes its input (opaque members stay as they are, spec §6 rule 12)
-  const { model, baseline, report } = run(document, step.cityObjectId);
+  const { cityjson, step } = goldenImport(gt);
+  deepFreeze(cityjson); // proves import never writes its input (opaque members stay as they are, spec §6 rule 12)
+  const { model, baseline, report } = run(cityjson, step.cityObjectId);
 
   it('model, baseline and report are valid contract shapes', () => {
     expect(validModel(model), JSON.stringify(validModel.errors)).toBe(true);
@@ -52,10 +52,10 @@ describe.each(['GT-I1', 'GT-I2', 'GT-I3'])('%s import outputs', (gt) => {
 
 describe('injected ids and building id', () => {
   it('uses the caller id source and buildingId (Q-26, Q-32 stay open)', () => {
-    const { document, step } = goldenImport('GT-I1');
+    const { cityjson, step } = goldenImport('GT-I1');
     let n = 0;
     const { model, report } = importBuilding({
-      document, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'p', buildingId: 'b-1',
+      cityjson, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'p', buildingId: 'b-1',
       ids: (kind) => `${kind}:${++n}`,
     });
     expect(model.buildingId).toBe('b-1');
@@ -63,9 +63,9 @@ describe('injected ids and building id', () => {
     expect(Object.keys(model.faces).every((id) => id.startsWith('face:'))).toBe(true);
   });
   it('without a profile id the import is refused (INVALID_PAYLOAD)', () => {
-    const { document, step } = goldenImport('GT-I1');
+    const { cityjson, step } = goldenImport('GT-I1');
     const { id: _, ...anonymous } = PROFILE;
-    expect(() => importBuilding({ document, cityObjectId: step.cityObjectId, toleranceProfile: anonymous, projectId: 'p' }))
+    expect(() => importBuilding({ cityjson, cityObjectId: step.cityObjectId, toleranceProfile: anonymous, projectId: 'p' }))
       .toThrow(expect.objectContaining({ code: 'INVALID_PAYLOAD' }));
   });
 });

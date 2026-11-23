@@ -8,10 +8,10 @@ import { fileURLToPath } from 'node:url';
 import { decodeVertex } from '../../src/crs/index.js';
 import { PROFILE, faceArea, goldenImport, volume } from './helpers.js';
 
-const { document, step } = goldenImport('GT-I1');
+const { cityjson, step } = goldenImport('GT-I1');
 const GEO = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'crs', 'fixtures', 'gt-i1-epsg4937.cityjson.json'), 'utf8'));
 const run = (/** @type {any} */ doc, id = step.cityObjectId) =>
-  importBuilding({ document: doc, cityObjectId: id, toleranceProfile: PROFILE, projectId: 'p' });
+  importBuilding({ cityjson: doc, cityObjectId: id, toleranceProfile: PROFILE, projectId: 'p' });
 
 describe('CRS at import', () => {
   it.each([
@@ -20,19 +20,19 @@ describe('CRS at import', () => {
     ['malformed reference', 'not a crs'],
     ['missing reference', undefined],
   ])('%s -> INVALID_CRS', (_, ref) => {
-    const doc = structuredClone(document);
+    const doc = structuredClone(cityjson);
     if (ref === undefined) delete doc.metadata.referenceSystem; else doc.metadata.referenceSystem = ref;
     expect(() => run(doc)).toThrow(expect.objectContaining({ code: 'INVALID_CRS' }));
   });
 
   it('projected: frame = translation by the box centre; local -> world gives the file coordinates', () => {
-    const { model } = run(document);
+    const { model } = run(cityjson);
     expect(model.frame).toMatchObject({ horizontalCrs: 'EPSG:25832', axisOrder: 'EAST_NORTH_UP', unit: 'm', buildingAxisDeg: 0 });
     expect(model.frame.originWorld).toEqual([512005, 6170004, 4]);
     let max = 0;
     for (const v of Object.values(model.vertices)) {
       const [w] = localToWorld(model.frame, [v.p]);
-      const f = decodeVertex(document.vertices[Number(String(v.sourceRef).split(',')[0])], document.transform);
+      const f = decodeVertex(cityjson.vertices[Number(String(v.sourceRef).split(',')[0])], cityjson.transform);
       max = Math.max(max, Math.hypot(w[0] - f[0], w[1] - f[1], w[2] - f[2]));
     }
     expect(max).toBeLessThanOrEqual(1e-9);

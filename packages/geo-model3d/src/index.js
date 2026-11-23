@@ -48,6 +48,7 @@ export const canonicalJson = (value) => canon(value);
  * and the contract `import-report`. Refusals throw: `ImportError` (`code` INVALID_PAYLOAD / NOT_FOUND /
  * INVALID_GEOMETRY) or the `crs` error with `code` INVALID_CRS.
  * @param {import('./import/index.js').ImportInput} input
- * @returns {{ model: object, baseline: object, report: object }} contract `building-model` x 2, `import-report`
+ * @returns {{ model: import('./brep/types.js').BuildingModel, baseline: import('./brep/types.js').BuildingModel,
+ *   report: import('./import/index.js').ImportReport }} contract `building-model` x 2, `import-report`
  */
 export const importBuilding = (input) => importCityObject(input);

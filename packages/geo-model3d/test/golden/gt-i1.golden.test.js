@@ -5,9 +5,9 @@ import { describe, expect, it } from 'vitest';
 import { importBuilding } from '@geoiplus/geo-model3d';
 import { PROFILE, faceArea, goldenImport, roleCounts, volume } from '../import/helpers.js';
 
-const { document, step, expected } = goldenImport('GT-I1');
+const { cityjson, step, expected } = goldenImport('GT-I1');
 const a = expected.assert;
-const { model, report } = importBuilding({ document, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'prj-golden' });
+const { model, report } = importBuilding({ cityjson, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'prj-golden' });
 const faces = Object.values(model.faces);
 
 describe('GT-I1 import of a gable', () => {

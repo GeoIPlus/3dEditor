@@ -5,9 +5,9 @@ import { describe, expect, it } from 'vitest';
 import { importBuilding } from '@geoiplus/geo-model3d';
 import { PROFILE, goldenImport } from '../import/helpers.js';
 
-const { document, step, expected } = goldenImport('GT-I2');
+const { cityjson, step, expected } = goldenImport('GT-I2');
 const a = expected.assert;
-const { model, report } = importBuilding({ document, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'prj-golden' });
+const { model, report } = importBuilding({ cityjson, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'prj-golden' });
 const length = (/** @type {string} */ heId) => {
   const he = model.halfEdges[heId];
   const p = model.vertices[he.startVertexId].p, q = model.vertices[model.halfEdges[he.nextId].startVertexId].p;
@@ -42,7 +42,7 @@ describe('GT-I2 import with a duplicated ridge', () => {
     expect(report.issues.length).toBe(4);
   });
   it('the model is loaded completely: every input surface is a face, nothing dropped', () => {
-    const surfaces = document.CityObjects[step.cityObjectId].geometry[0].boundaries[0].length;
+    const surfaces = cityjson.CityObjects[step.cityObjectId].geometry[0].boundaries[0].length;
     expect(a.fullyLoaded).toBe(true);
     expect(Object.keys(model.faces).length).toBe(surfaces);
     expect(report.warnings).toEqual([]);

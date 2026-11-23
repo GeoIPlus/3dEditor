@@ -26,7 +26,8 @@ tsconfig.json, vitest.config.mjs     `tsc --checkJs` (no DOM lib); Vitest projec
 packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node ESM, no I/O; one `exports` entry
   src/index.js canary.js                                 public API (commands, import, export, validate); P4 marker
   src/brep/                                             half-edge, planes, derived vertices, frame, transactions (3D-09)
-  src/solve/ import/ export/ validate/ cloud/ ops/      modules (3D-ADR-0002 C1; later rows)
+  src/import/                                            CityJSON -> canonical model, RTG roles, baseline, report (3D-10)
+  src/solve/ export/ validate/ cloud/ ops/              modules (3D-ADR-0002 C1; later rows)
   test/brep/ test/golden/                               unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
   src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007)

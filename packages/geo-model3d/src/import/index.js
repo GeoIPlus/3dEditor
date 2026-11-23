@@ -18,15 +18,29 @@ export { ImportError } from './errors.js';
 export { counterIds } from './ids.js';
 
 /** @typedef {import('../brep/types.js').BuildingModel} BuildingModel */
+/** @typedef {import('./state.js').ValidationIssue} ValidationIssue */
+/**
+ * Tolerance values import reads (contract `tolerance-profile`, spec §2.3).
+ * @typedef {{ id?: string, topologySnapTolM: number, planarTolM: number, coplanarTolDeg: number, zAlignTolM: number,
+ *   minEdgeLengthM: number } & Record<string, unknown>} ImportTolerances
+ */
+/**
+ * Contract `import-report`.
+ * @typedef {object} ImportReport
+ * @property {string} buildingId @property {number} modelVersion
+ * @property {'VALID_SOLID' | 'DRAFT_SOLID'} assignedState @property {ValidationIssue[]} issues
+ * @property {Record<string, string[]>} mergedFaces @property {string[]} inferredSemanticsFaceIds
+ * @property {string[]} nonPlanarFaceIds @property {number} faceCount @property {string[]} warnings
+ */
 
 /** Faces per building above which import warns (spec §6 rule 15, D-94). */
 export const FACE_LIMIT = 500;
 
 /**
  * @typedef {object} ImportInput
- * @property {any} document parsed CityJSON document (the service reads the bytes)
+ * @property {any} cityjson parsed CityJSON document (the service reads the bytes)
  * @property {string} cityObjectId the Building's CityObject id
- * @property {Record<string, any>} toleranceProfile contract `tolerance-profile`
+ * @property {ImportTolerances} toleranceProfile contract `tolerance-profile`
  * @property {string} projectId
  * @property {string} [buildingId] model `buildingId`; default the CityObject id [A] (mapping: Q-32)
  * @property {string} [toleranceProfileId] default `toleranceProfile.id`
@@ -36,16 +50,16 @@ export const FACE_LIMIT = 500;
 
 /**
  * @param {ImportInput} input
- * @returns {{ model: BuildingModel, baseline: BuildingModel, report: Record<string, any> }}
+ * @returns {{ model: BuildingModel, baseline: BuildingModel, report: ImportReport }}
  */
 export function importCityObject(input) {
   const tol = input.toleranceProfile;
   const toleranceProfileId = input.toleranceProfileId ?? tol?.id;
   if (typeof toleranceProfileId !== 'string' || toleranceProfileId === '') throw new ImportError('INVALID_PAYLOAD', 'no tolerance profile id');
   const ids = input.ids ?? counterIds();
-  const bodies = readBodies(input.document, input.cityObjectId);
+  const bodies = readBodies(input.cityjson, input.cityObjectId);
   const used = new Set(bodies.flatMap((b) => b.solids.flatMap((s) => s.shells.flatMap((h) => h.surfaces.flatMap((f) => f.rings.flat())))));
-  const iv = importVertices(input.document, used, tol.topologySnapTolM);
+  const iv = importVertices(input.cityjson, used, tol.topologySnapTolM);
   const { faces: raw, dropped } = rawFaces(bodies, iv.repOf, iv.local);
   const merged = mergeCoplanar(raw, iv.local, tol);
   const topo = buildTopology(merged, iv.local, iv.members, ids, tol.planarTolM);
@@ -118,6 +132,7 @@ export function importCityObject(input) {
   const faceList = Object.values(model.faces);
   const warnings = dropped.map((ref) => `model3d.import.droppedSurface:${ref}`);
   if (faceList.length > FACE_LIMIT) warnings.push(`model3d.import.faceLimitExceeded:${faceList.length}>${FACE_LIMIT}`);
+  /** @type {ImportReport} */
   const report = {
     buildingId: model.buildingId, modelVersion: model.version, assignedState: state, issues,
     mergedFaces: Object.fromEntries(merged.flatMap((f, k) => (f.refs.length > 1 ? [[topo.faceIds[k], [...f.refs]]] : []))),

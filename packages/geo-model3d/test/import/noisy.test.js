@@ -6,12 +6,12 @@ import { importBuilding, localToWorld } from '@geoiplus/geo-model3d';
 import { createMetricFrame, decodeVertex, writeBackVertices } from '../../src/crs/index.js';
 import { PROFILE, goldenImport } from './helpers.js';
 
-const { document, step } = goldenImport('GT-I1');
+const { cityjson, step } = goldenImport('GT-I1');
 // deterministic noise of +-15 mm in Z on the eave and ridge vertices (integers in mm)
 const NOISE = [0, 0, 0, 0, 15, -15, 15, -15, 15, -15];
-const noisy = structuredClone(document);
+const noisy = structuredClone(cityjson);
 noisy.vertices = noisy.vertices.map((/** @type {number[]} */ v, /** @type {number} */ i) => [v[0], v[1], v[2] + NOISE[i]]);
-const { model, report } = importBuilding({ document: noisy, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'p' });
+const { model, report } = importBuilding({ cityjson: noisy, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'p' });
 
 describe('noisy input keeps file positions (D-70)', () => {
   it('vertices are off their fitted planes by more than the noise floor, but within planarTolM: no NON_PLANAR_FACE', () => {
@@ -45,9 +45,9 @@ describe('noisy input keeps file positions (D-70)', () => {
     expect(out.vertices).toEqual(noisy.vertices);
   });
   it('a face beyond planarTolM is tagged NON_PLANAR_FACE, kept, and its vertices stay (spec §6 rules 4, 16)', () => {
-    const bent = structuredClone(document);
+    const bent = structuredClone(cityjson);
     bent.vertices[8] = [bent.vertices[8][0], bent.vertices[8][1], bent.vertices[8][2] + 200]; // ridge end +0.2 m
-    const r = importBuilding({ document: bent, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'p' });
+    const r = importBuilding({ cityjson: bent, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'p' });
     expect(r.report.nonPlanarFaceIds.length).toBeGreaterThan(0);
     expect(r.report.issues.filter((i) => i.code === 'NON_PLANAR_FACE').map((i) => i.entityIds[0]).sort()).toEqual([...r.report.nonPlanarFaceIds].sort());
     expect(r.model.state).toBe('DRAFT_SOLID');

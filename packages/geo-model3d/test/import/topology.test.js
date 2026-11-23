@@ -5,7 +5,7 @@ import { importBuilding } from '@geoiplus/geo-model3d';
 import { checkTopology } from '../../src/brep/index.js';
 import { PROFILE, boxGeometry, goldenImport, makeDoc, roleCounts, solid } from './helpers.js';
 
-const run = (/** @type {any} */ doc, id = 'b') => importBuilding({ document: doc, cityObjectId: id, toleranceProfile: PROFILE, projectId: 'p' });
+const run = (/** @type {any} */ doc, id = 'b') => importBuilding({ cityjson: doc, cityObjectId: id, toleranceProfile: PROFILE, projectId: 'p' });
 const BASE = [[0, 0, 0], [10, 0, 0], [10, 8, 0], [0, 8, 0]];
 const W = 'WallSurface', R = 'RoofSurface', G = 'GroundSurface';
 
@@ -44,7 +44,7 @@ describe('twins (rule 6)', () => {
     expect(Object.values(model.shells)[0].isClosed).toBe(false);
   });
   it('a closed solid has every half-edge paired with an opposite twin on another face', () => {
-    const { model } = run(goldenImport('GT-I1').document, 'bld-gt-i1');
+    const { model } = run(goldenImport('GT-I1').cityjson, 'bld-gt-i1');
     for (const h of Object.values(model.halfEdges)) {
       const t = model.halfEdges[/** @type {string} */ (h.twinId)];
       expect(t.twinId).toBe(h.id);
@@ -57,8 +57,8 @@ describe('twins (rule 6)', () => {
 
 describe('welding (rule 3)', () => {
   it('a duplicate vertex 5 mm away is merged; the vertex keeps the first file position and lists both indices', () => {
-    const { document } = goldenImport('GT-I1');
-    const doc = structuredClone(document);
+    const { cityjson } = goldenImport('GT-I1');
+    const doc = structuredClone(cityjson);
     const v4 = doc.vertices[4];
     doc.vertices.push([v4[0] + 3, v4[1] + 4, v4[2]]); // index 10, 5 mm from vertex 4
     const walls = doc.CityObjects['bld-gt-i1'].geometry[0].boundaries[0];

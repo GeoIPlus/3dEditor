@@ -10,11 +10,11 @@ export const PROFILE = Object.freeze({
   planeFitMinPoints: 30, planeFitMinInlierRatio: 0.6, exportRoundDecimals: 3,
 });
 
-/** @param {string} gt @returns {{ document: any, step: any, expected: any }} */
+/** @param {string} gt @returns {{ cityjson: any, step: any, expected: any }} */
 export function goldenImport(gt) {
   const steps = readFixture(gt, 'steps.json');
   const step = steps.find((/** @type {any} */ s) => s.step === 'IMPORT');
-  return { document: readFixture(gt, step.document), step, expected: readFixture(gt, 'expected.json') };
+  return { cityjson: readFixture(gt, step.document), step, expected: readFixture(gt, 'expected.json') };
 }
 
 /** @param {any} m @param {string} start @returns {number[][]} ring positions */
@@ -72,7 +72,7 @@ export function roleCounts(m) {
 }
 
 /**
- * A CityJSON 2.0 document in EPSG:25832 with millimetre integers (the golden writer conventions, fixtures/README.md).
+ * A CityJSON 2.0 cityjson in EPSG:25832 with millimetre integers (the golden writer conventions, fixtures/README.md).
  * @param {number[][]} pointsM local metres
  * @param {Record<string, any>} objects CityObjects
  * @param {string} [crs]

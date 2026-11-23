@@ -4,9 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { importBuilding } from '@geoiplus/geo-model3d';
 import { PROFILE, faceArea, goldenImport } from '../import/helpers.js';
 
-const { document, step, expected } = goldenImport('GT-I3');
+const { cityjson, step, expected } = goldenImport('GT-I3');
 const a = expected.assert;
-const { model, report } = importBuilding({ document, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'prj-golden' });
+const { model, report } = importBuilding({ cityjson, cityObjectId: step.cityObjectId, toleranceProfile: PROFILE, projectId: 'prj-golden' });
 const roof = Object.values(model.faces).filter((f) => f.surfaceKind === 'RoofSurface');
 const base = `${step.cityObjectId}/geometry/0/boundaries/0`;
 
