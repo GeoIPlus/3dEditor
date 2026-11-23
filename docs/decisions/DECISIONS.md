@@ -92,6 +92,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-76 | Q-20: FIT_TO_SHARED_EDGE over `maxDisplacementM` -> `CONSTRAINT_CONFLICT`, no unique pairing -> `INVALID_TOPOLOGY`, no default maximum displacement (required in the payload); HEAL_HOLE no closing -> `INVALID_GEOMETRY`, several closings -> `UNDERCONSTRAINED_GEOMETRY`, both with `details.admissibleModes`; SPLIT_FACE line outside / zero area -> `INVALID_GEOMETRY`, ambiguous hole components -> `INVALID_TOPOLOGY`, fixed plane -> `CONSTRAINT_CONFLICT`; R-01 errors -> `INVALID_GEOMETRY` | Owner, dialog, 2026-11-23 (3D-06) |
 | D-77 | Q-21: severity DRAFT_SOLID / VALID_SOLID: `SOLID_OVERLAP` WARNING/ERROR, `UNDERCONSTRAINED_GEOMETRY` ERROR/ERROR, `INVALID_MEASUREMENT` WARNING/WARNING, `EXPORT_SCHEMA_ERROR` WARNING/ERROR, `PRECISION_LOSS` WARNING/WARNING; enforced by `validation-report` | Owner, dialog, 2026-11-23 (3D-06) |
 | D-78 | 3D-06 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-06 provisional ids became D-75..D-77 and Q-26..Q-39 | Owner, chat, 2026-11-23 |
+| D-79 | 3D-07 set `ready` and started in a fresh session | Owner, chat, 2026-11-23 |
+| D-80 | Branch `chore/context7-mcp` (unmerged, Context7 MCP server) is kept on the remote; not merged, not deleted (context7 stays deferred per D-46) | Owner, chat, 2026-11-23 |
 
 ## Open questions
 
