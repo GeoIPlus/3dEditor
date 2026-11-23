@@ -92,6 +92,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D03-2 | Q-3D03-2: 3DQM documents name one `progress.save` dataset per building (`location`, whole-body `PUT` + `If-Match`); input to 3D-43 (extension/document convention) and 3D-60 (crowdsource) | Owner, dialog, 2026-11-23 (3D-03) |
 | D-3D03-3 | Q-3D03-3: retention - the interim store keeps everything; no delete operation in either port, no lifecycle expiry. An upper bound or archiving is a later per-project policy through intake (v0.2 §13.6); >= 90 days (v0.3 §11) is met | Owner, dialog, 2026-11-23 (3D-03) |
 | D-3D03-4 | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md) accepted: O1 - append-only object store (S3 production, file system dev/tests), commit = one create-if-absent of `journal/{N+1}`, ports `history` and `datasets`, nothing deleted or overwritten, delivered bytes content-addressed and served without pre-signed URLs. Closes Q-02 | Owner, dialog, 2026-11-23 (3D-03) |
+| D-3D03-5 | After 3D-03 no further row is set `ready` and no handoff is written; next step is the merge of 3D-03 by the coordinating session (`merge-wp`), then 3D-06 finishes and the kernel chain opens | Owner, dialog, 2026-11-23 (3D-03) |
 
 ## Open questions
 
