@@ -13,15 +13,15 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33).
+Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95).
 
 | Progress | Rows |
 |---|---:|
 | Done | 12 / 50 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 5 |
-| Proposed (waiting for the owner to set `ready`) | 32 |
+| Ready | 6 |
+| Proposed (waiting for the owner to set `ready`) | 31 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 12/50 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
@@ -45,6 +45,7 @@ flowchart TB
     D03["3D-03 ADR storage (Operaflow)"]
   end
   subgraph ready["READY"]
+    D32["3D-32 CRS support (geographic)"]
     D64["3D-64 Spec: apply D-76, D-77"]
     D07["3D-07 Golden fixtures"]
     D47["3D-47 SC: 3D view port + host"]
@@ -59,7 +60,6 @@ flowchart TB
     D10["3D-10 CityJSON import"]
     D11["3D-11 CityJSON export"]
     D12["3D-12 Validation"]
-    D32["3D-32 CRS support (geographic)"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D13["3D-13 Constraint solver"]
@@ -227,7 +227,7 @@ flowchart TB
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | proposed (D-35) |
 | 3D-63 | Swap 3DQM interim `datasets` adapters for crowdsource datasets; migrate stored input buildings (the `history` store stays own, D-82) | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | proposed (D-35) |
 | 3D-64 | Spec update: apply D-76 (Q-20 refusal codes) and D-77 (Q-21 severities) to `docs/specs/3dqm-spec.md`; list contract questions Q-26..Q-39 | here | docs/specs | 04, 06 | G0 | S | ready (D-81; started in a fresh session) |
-| 3D-32 | CRS support: server-only transform module, local metric frame (ENU) per building, ADR for the library; spec and schema update for geographic CRSs (D-92) | here | geo-model3d (frame), services/kernel, docs, contracts | 02, 06, 64 | G1 | M | proposed |
+| 3D-32 | CRS support: server-only transform module, local metric frame (ENU) per building, ADR for the library; spec and schema update for geographic CRSs (D-92) | here | geo-model3d (frame), services/kernel, docs, contracts | 02, 06, 64 | G1 | M | ready (D-95; starts after 3D-64 is done) |
 | 3D-33 | Inter-building validation (shared walls, overlaps between buildings), P1 (D-89) | here | geo-model3d/validate | 12 | P1 | M | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |

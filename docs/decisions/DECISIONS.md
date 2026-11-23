@@ -108,6 +108,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-92 | v0.3 Д-04 changed: geographic CRSs are supported. The kernel service converts each building into a local metric frame (ENU) on import and back on export; only vertices changed by an edit are converted back, untouched vertices keep their file coordinates (D-70, GT-I4). Server-only transform module, library chosen by ADR (row 3D-32); `INVALID_CRS` narrows to unknown or unsupported CRSs | Owner, dialog, 2026-11-23 (Q-11) |
 | D-93 | Heights and the vertical CRS are kept as in the file, not transformed; the point cloud must share the model's vertical CRS | Owner, dialog, 2026-11-23 (Q-11) |
 | D-94 | v0.3 Д-12 confirmed: up to 500 faces per building; more imports with a warning and no latency guarantee | Owner, dialog, 2026-11-23 (Q-11) |
+| D-95 | 3D-32 set `ready`; its session starts once its dependency 3D-64 (spec update) is done (AGENTS.md §4) | Owner, chat, 2026-11-23 |
 
 ## Open questions
 
