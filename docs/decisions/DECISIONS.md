@@ -198,6 +198,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-41 | GT-I2: which edges carry `OPEN_BOUNDARY` - the two ridge edges only (the 0.03 m wall edges reported as degenerate, < `minEdgeLengthM`) or all four edges of the gap loop | v0.3 §12 GT-I2, D-101 | 3D-10 |
 | Q-42 | On which machine class is the latency verdict re-measured once the kernel service image exists (production instance class of the Tools Plane, unknown today: HANDOVER §8 q3) | [3D-ADR-0006](adr/3D-ADR-0006-bench-rig-and-scenes.md) step 5; 3D-08 measured on the cloud agent container | 3D-23, owner |
 | Q-43 | Do the EPSG dataset terms of use allow shipping a table derived from it (via PROJ `proj.db`) inside the kernel image? PROJ code and data are MIT (`LICENSE_proj` in pyproj 3.8.0); the EPSG terms could not be read (epsg.org blocked by the network policy) | 3D-ADR-0004 licence section | owner / legal, before 3D-32 is accepted |
+| Q-3D22-1 | May a small COPC test file (a few KB, LAZ-compressed) be committed for 3D-70? The `laz-perf` JS build decodes only, so the test cannot write one in code (AGENTS.md §2.13, Q-07) | Alternative: generate it once with PDAL outside the repository and keep it in the sample-data location of Q-07 | owner, before 3D-70 is `ready` |
 
 ## Open-question status updates
 

@@ -26,14 +26,16 @@ tsconfig.json, vitest.config.mjs     `tsc --checkJs` (no DOM lib); Vitest projec
 packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node ESM, no I/O; one `exports` entry
   src/index.js canary.js                                 public API (commands, import, export, validate); P4 marker
   src/brep/                                             half-edge, planes, derived vertices, frame, transactions (3D-09)
-  src/solve/ import/ export/ validate/ cloud/ ops/      modules (3D-ADR-0002 C1; later rows)
-  test/brep/ test/golden/                               unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09)
+  src/cloud/                                             plane fit (RANSAC + SVD), deviation heatmap (3D-22)
+  src/solve/ import/ export/ validate/ ops/             modules (3D-ADR-0002 C1; later rows)
+  test/brep/ test/cloud/ test/golden/                   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
   src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007)
-services/kernel/       (3D-23)        host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
+services/kernel/       (3D-22, 3D-23) host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
   src/ports/ adapters/ operaflow/                        storage, points, validator, auth; interim adapters (D-35)
+  src/ports/points.js adapters/las-*.js cloud-points.js  points port, LAS-whole adapter, selection -> local points (3D-22; card README.md)
 contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
-  <name>.schema.json examples/<name>.json test/           53 schemas ($id urn:geoiplus:schema:model3d-<name>:v1), valid/invalid examples, Ajv test (3D-06; card README.md)
+  <name>.schema.json examples/<name>.json test/           54 schemas ($id urn:geoiplus:schema:model3d-<name>:v1), valid/invalid examples, Ajv test (3D-06; card README.md)
 fixtures/GT-<id>/                    golden fixtures of v0.3 §12, generated; format in fixtures/README.md (3D-07)
 tools/golden-fixtures/               fixture generator (`npm run fixtures`) and its tests (3D-07)
 tools/check-docs.mjs                 document consistency check, Node built-ins (3D-30)

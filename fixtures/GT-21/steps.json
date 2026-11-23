@@ -5,8 +5,13 @@
     "actorId": "usr-operator",
     "params": {
       "faceIds": ["f-roof-s"],
-      "points": "input.points.json"
+      "points": "input.points.json",
+      "selection": {
+        "kind": "BOX",
+        "min": [0, 0, 2],
+        "max": [10, 4, 12]
+      }
     },
-    "shape": "TBD (3D-22): service request, not a command; wire shape set by the row"
+    "shape": "contracts/model3d heatmap-request (D-3D22-7); thresholdM is required but not asserted by GT-21: the runner sets it"
   }
 ]

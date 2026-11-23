@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { deviationStats } from '@geoiplus/geo-model3d';
 import { readFixture } from '../brep/helpers.js';
-import { ALL, PROFILE, validator } from '../cloud/helpers.js';
+import { PROFILE, validator } from '../cloud/helpers.js';
 
 const model = readFixture('GT-21', 'input.model.json');
 const input = readFixture('GT-21', 'input.points.json');
@@ -19,7 +19,7 @@ describe('GT-21 heatmap', () => {
   });
 
   // [A] thresholdM has no default (D-3D22-2) and GT-21 asserts no share: 0.05 m is a test value only.
-  const request = { buildingId: model.buildingId, modelVersion: model.version, selection: ALL, faceIds: steps[0].params.faceIds, thresholdM: 0.05 };
+  const request = { buildingId: model.buildingId, modelVersion: model.version, selection: steps[0].params.selection, faceIds: steps[0].params.faceIds, thresholdM: 0.05 };
   const r = /** @type {any} */ (deviationStats(model, Float64Array.from(input.points.flat()), request, PROFILE));
 
   it(`mean slope deviation ${expected.assert.meanSlopeDeviationM} +/- ${expected.assert.toleranceM} m`, () => {

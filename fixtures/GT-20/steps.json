@@ -12,8 +12,9 @@
       "expectedVersion": 1,
       "payload": {
         "selection": {
-          "fixturePoints": "all of input.points.json",
-          "TBD": "Q-18: selection shape (rectangle / lasso) set by 3D-22"
+          "kind": "BOX",
+          "min": [0, 0, 2],
+          "max": [10, 4, 11]
         },
         "apply": "MEASUREMENT"
       },
