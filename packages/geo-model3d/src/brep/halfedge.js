@@ -29,12 +29,12 @@ export const FINALISED_STATES = new Set(['VALID_SOLID', 'APPROVED']);
  * Walk one ring from its first half-edge.
  * @param {BuildingModel} model @param {string} faceId @param {string} start
  * @param {TopologyProblem[]} problems
+ * @param {number} limit number of half-edges in the model (no ring is longer)
  * @returns {string[]} half-edge ids (empty when the ring is broken)
  */
-function walk(model, faceId, start, problems) {
+function walk(model, faceId, start, problems, limit) {
   /** @type {string[]} */
   const ids = [];
-  const limit = Object.keys(model.halfEdges).length;
   let id = start;
   for (let guard = 0; guard <= limit; guard++) {
     const he = model.halfEdges[id];
@@ -78,9 +78,10 @@ export function buildIndex(model) {
       s.add(faceId);
     }
   };
+  const limit = Object.keys(model.halfEdges).length;
   for (const f of Object.values(model.faces)) {
-    const o = walk(model, f.id, f.outerLoopId, problems);
-    const ins = f.innerLoopIds.map((h) => walk(model, f.id, h, problems));
+    const o = walk(model, f.id, f.outerLoopId, problems, limit);
+    const ins = f.innerLoopIds.map((h) => walk(model, f.id, h, problems, limit));
     outer.set(f.id, o);
     inner.set(f.id, ins);
     take(f.id, o);

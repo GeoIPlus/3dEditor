@@ -1,7 +1,7 @@
 // brep (3D-09): transactions and versions (spec §4 rule 9; §3 rules 2, 6). Patches and lineage validate against the
 // model3d contracts (D-75).
 import { describe, expect, it } from 'vitest';
-import { applyPatch, canonicalJson, isolatedCopy, rederive, saveModel, transact, transactPatch } from '../../src/brep/index.js';
+import { applyPatch, canonicalJson, isolatedCopy, rederive, sameValue, saveModel, transact, transactPatch } from '../../src/brep/index.js';
 import { createAjv } from '../../../../contracts/model3d/test/load.mjs';
 import { TOL, deepFreeze, readFixture } from './helpers.js';
 
@@ -123,5 +123,16 @@ describe('transact', () => {
     expect(() => applyPatch(m, { added: [], updated: [], deleted: [{ type: 'Face', id: 'f-none' }], affectedMetrics: [] })).toThrow(/missing/);
     expect(() => applyPatch(m, { added: [{ type: 'Face', entity: { ...m.faces['f-roof-n'] } }], updated: [], deleted: [], affectedMetrics: [] })).toThrow(/existing/);
     expect(() => applyPatch(m, { added: [], updated: [], deleted: [{ type: 'Nope', id: 'x' }], affectedMetrics: [] })).toThrow(/unknown entity type/);
+  });
+});
+
+describe('sameValue (patch comparison)', () => {
+  it('equals canonical-JSON equality: key order ignored, -0 equals 0, undefined members ignored', () => {
+    expect(sameValue({ a: [1, { b: -0 }], c: 'x' }, { c: 'x', a: [1, { b: 0 }] })).toBe(true);
+    expect(sameValue({ a: 1, u: undefined }, { a: 1 })).toBe(true);
+    expect(sameValue({ a: [1, 2] }, { a: [2, 1] })).toBe(false);
+    expect(sameValue({ a: null }, { a: {} })).toBe(false);
+    expect(sameValue([], {})).toBe(false);
+    expect(sameValue({ a: 1 }, { a: 1, b: 2 })).toBe(false);
   });
 });

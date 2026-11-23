@@ -1,7 +1,7 @@
 // brep (3D-09): patch between two versions in canonical entities (contract `model-patch`, v0.2 D.2, §13.6): forward
 // and inverse patch from a before/after pair, and applying a patch. Model-level members (`state`, `frame`, ...) have no
 // entity type in the contract (Q-31): they are reported by `modelLevelChanges`, not put into a patch.
-import { canonicalJson, isolatedCopy } from './serialize.js';
+import { isolatedCopy } from './serialize.js';
 
 /** @typedef {import('./types.js').BuildingModel} BuildingModel */
 /** @typedef {{ type: string, entity: Record<string, any> & { id: string } }} EntityChange */
@@ -36,7 +36,29 @@ function collectionOf(type) {
 const sorted = (a) => [...a].sort();
 
 /**
- * Forward and inverse patch from `before` to `after`. Entities are compared by canonical JSON; ids are listed in
+ * Structural equality of JSON values (key order ignored, 0 equals -0: the same as comparing canonical JSON, without
+ * building strings, which cost 5.4 ms per diff on the 199-face bench scene in 3D-09).
+ * @param {unknown} a @param {unknown} b
+ * @returns {boolean}
+ */
+export function sameValue(a, b) {
+  if (a === b) return true;
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
+  if (Array.isArray(a)) {
+    if (!Array.isArray(b) || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (!sameValue(a[i], b[i])) return false;
+    return true;
+  }
+  if (Array.isArray(b)) return false;
+  const ka = Object.keys(a).filter((k) => /** @type {any} */ (a)[k] !== undefined);
+  const kb = Object.keys(b).filter((k) => /** @type {any} */ (b)[k] !== undefined);
+  if (ka.length !== kb.length) return false;
+  for (const k of ka) if (!sameValue(/** @type {any} */ (a)[k], /** @type {any} */ (b)[k])) return false;
+  return true;
+}
+
+/**
+ * Forward and inverse patch from `before` to `after`. Entities are compared structurally (`sameValue`); ids are listed in
  * collection order, then sorted. `affectedMetrics` is empty: the metric names are TBD (Q-31).
  * @param {BuildingModel} before
  * @param {BuildingModel} after
@@ -56,7 +78,7 @@ export function diffModels(before, after) {
       if (!(id in b)) {
         forward.added.push({ type, entity: isolatedCopy(a[id]) });
         inverse.deleted.push({ type, id });
-      } else if (canonicalJson(a[id]) !== canonicalJson(b[id])) {
+      } else if (!sameValue(a[id], b[id])) {
         forward.updated.push({ type, entity: isolatedCopy(a[id]) });
         inverse.updated.push({ type, entity: isolatedCopy(b[id]) });
       }
@@ -111,5 +133,5 @@ export function applyPatch(model, patch) {
 export function modelLevelChanges(before, after) {
   const keys = new Set([...Object.keys(before), ...Object.keys(after)]);
   return sorted([...keys].filter((k) => !COLLECTION_KEYS.has(k) && k !== 'version'
-    && canonicalJson(/** @type {any} */ (before)[k] ?? null) !== canonicalJson(/** @type {any} */ (after)[k] ?? null)));
+    && !sameValue(/** @type {any} */ (before)[k] ?? null, /** @type {any} */ (after)[k] ?? null)));
 }

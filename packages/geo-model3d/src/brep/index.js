@@ -8,5 +8,5 @@ export { buildIndex, checkTopology, faceRings, edgeFaceIds, endVertexId, FINALIS
 export { vertexPlaneViolations, inconsistentJunctions, rederive } from './derive.js';
 export { roofGraph, isRoofFace } from './rtg.js';
 export { canonicalJson, saveModel, loadModel, isolatedCopy } from './serialize.js';
-export { diffModels, applyPatch, modelLevelChanges, COLLECTIONS } from './patch.js';
+export { diffModels, applyPatch, modelLevelChanges, sameValue, COLLECTIONS } from './patch.js';
 export { transact, transactPatch } from './transaction.js';
