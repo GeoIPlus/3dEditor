@@ -19,8 +19,8 @@ Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 
 |---|---:|
 | Done | 11 / 48 |
 | Review | 0 |
-| In progress | 0 |
-| Ready | 6 |
+| In progress | 1 |
+| Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 30 |
 | Blocked (external access or data) | 1 |
 
