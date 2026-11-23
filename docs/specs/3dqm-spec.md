@@ -118,6 +118,9 @@ copy [D] (D-37, 3D-ADR-0001). Internal kernel structures never leave the package
 The 3DQM extension of the CP document (building list, roles, tolerance profile, endpoints) is an SC schema (3D-43; Q-03),
 not part of this list.
 
+The schemas are accepted (D-75). Contract details they leave `TBD` are the open questions Q-26..Q-39 of
+[contracts/model3d](../../contracts/model3d/README.md#open-questions-provisional-ids-d-38), listed in §14.
+
 ### 2.1 Command envelope (`command`)
 
 Fields (v0.2 D.2): `schemaVersion`, `commandId`, `projectId`, `buildingId`, `actorId`, `operation` (`OperationKind`),
@@ -177,7 +180,8 @@ CP assignment lease applies [D] (D-69; amends D-13 for this field). The profile 
 | 500 / 503 | `INTERNAL`, `UNAVAILABLE` | Failure; model unchanged |
 
 `GEOMETRY_INVALID` of v0.2 C.0 is replaced by `INVALID_GEOMETRY`. "403 because of a package" (v0.3) reads "building
-outside the signed assignment" (D-10). Refusals whose code the sources do not name are listed in Q-20.
+outside the signed assignment" (D-10). Codes of the refusals the sources leave without one are decided by D-76 (Q-20
+closed) and named where each refusal is listed (§10.3 rule 6, §10.5 rule 5, §10.6 rule 2, §10.8 rule 2).
 
 **Accept:**
 - Accept: one JSON Schema 2020-12 per row of the schema list (or a `$defs` entry, as 3D-06 decides), each `$id` matching
@@ -403,9 +407,14 @@ service).
    | `DEGENERATE_EDGE`, `DEGENERATE_FACE` | ERROR | ERROR |
    | `CONSTRAINT_CONFLICT`, `INVALID_CRS` | ERROR | ERROR |
    | `SEMANTIC_MAPPING_ERROR` | WARNING | ERROR |
+   | `SOLID_OVERLAP` | WARNING | ERROR |
+   | `UNDERCONSTRAINED_GEOMETRY` | ERROR | ERROR |
+   | `INVALID_MEASUREMENT` | WARNING | WARNING |
+   | `EXPORT_SCHEMA_ERROR` | WARNING | ERROR |
+   | `PRECISION_LOSS` | WARNING | WARNING |
 
-   Severity of `SOLID_OVERLAP`, `UNDERCONSTRAINED_GEOMETRY`, `INVALID_MEASUREMENT`, `EXPORT_SCHEMA_ERROR`,
-   `PRECISION_LOSS` (in v0.2 B.5, absent from v0.3 §8.3): `TBD` (Q-21).
+   The last five codes are in v0.2 B.5 but absent from v0.3 §8.3; their severities are decided by D-77 (Q-21 closed) and
+   enforced by the `validation-report` schema.
 5. Degenerate thresholds: edge shorter than `minEdgeLengthM`, face smaller than `minFaceAreaM2` (v0.3 §10).
 6. `isValidForTargetState = true` is never set from client-side validation (v0.2 D.5).
 7. A `VALID_SOLID` commit that adds a new `ERROR` is refused; a defective import may be saved as `DRAFT_SOLID` through
@@ -473,7 +482,8 @@ semantic inputs listed per operation below; their schema names are 3D-06's.
 4. `targetState: DRAFT_SOLID` on a `VALID_SOLID` model needs explicit confirmation in the UI (v0.3 §8.1); the kernel sees
    only `targetState`.
 5. Orthogonal is a construction constraint, not a snap type (v0.3 §6).
-6. Where a source names a refusal without a code, the code is `TBD` (Q-20).
+6. Where a source names a refusal without a code, the code is the one decided by D-76 (Q-20 closed) and named in the
+   operation's rule; a refusal not covered by D-76 gets its code through an open question, never a guess.
 7. Operations stated in the sources only as intent (no Appendix C algorithm) are listed in Q-18; their WP specifies
    the plane-terms algorithm in this spec (through intake) before code.
 
@@ -519,7 +529,7 @@ P0) (v0.2 §11.4).
 5. R-02 with fewer than three independent conditions, R-04 with undetermined ridge length -> `UNDERCONSTRAINED_GEOMETRY`;
    the ridge is never guessed (v0.2 C.2, C.4).
 6. R-01 errors: self-intersecting footprint; vertical plane that gives no `z(x, y)` over the footprint; `roofZ < baseZ`;
-   zero area (v0.2 C.1) - codes `TBD` (Q-20).
+   zero area (v0.2 C.1) -> `INVALID_GEOMETRY` with the footprint id (D-76).
 7. Walls: the wall footprint is the reference, not the overhang outline; one wall surface per outer footprint edge up to
    the actual roof; gable/end walls decompose into planar faces; no T-junctions, zero faces, self-intersections or double
    inner walls (v0.2 §11.4). In plane terms: each wall plane is the vertical plane through its footprint edge [A].
@@ -580,7 +590,7 @@ of vertices (v0.2 C.8). The typical input is GT-I2 (ridge duplicated with a 0.03
 **API.** Inputs: the two open boundary edges (half-edges with `twinId = null`) on faces A and B; the leading face (A); the
 maximum displacement allowed; the priority strategy (which planes may move). Both the tolerance and the strategy are
 required by the schema: without them the source asks for a diagnostic error (v0.2 C.8) -> `INVALID_PAYLOAD` [A].
-Default values: none in the sources (Q-20).
+Default values: none; the payload requires `maxDisplacementM`, there is no default maximum displacement (D-76).
 
 **Rules** (restatement; v0.2 C.8 "move admissible free vertices by constrained projection" becomes a plane solve):
 1. Unknowns: the planes the strategy marks movable; the leading plane A is fixed (GT-06: "the plane of the leading slope
@@ -595,7 +605,8 @@ Default values: none in the sources (Q-20).
    copies it replaces. If B is movable: B's plane is solved with the hard constraint "contains the leading edge of A"
    (`ON_PLANE` for the edge's endpoints on A, which lie on plane A by construction); its remaining degree of freedom is
    the ADR-S objective (`TBD`, Q-17).
-5. Displacement over the maximum, or no unique pairing -> refusal with the offending ids; the code is `TBD` (Q-20).
+5. Displacement over the maximum -> `CONSTRAINT_CONFLICT` with the offending vertex ids; no unique pairing ->
+   `INVALID_TOPOLOGY` with the edge ids (D-76).
 6. Dependent faces whose vertices change are re-derived; rule 8 checks of §10.4 apply. Result: the two `OPEN_BOUNDARY`
    issues disappear; the state becomes `VALID_SOLID` when no errors remain (§8 rule 8).
 
@@ -617,8 +628,9 @@ intersection line (`TRIM_FACE`); face + new boundary within its plane (`EXTEND_F
    re-intersected; a fixed boundary/ridge/eave mode is a hard constraint; conflict -> refusal (v0.2 F-31).
 2. `SPLIT_FACE`: project the split line onto the support plane, intersect with the face polygon including holes, create
    faces on **exactly the same** support plane, rewire half-edges, keep boundary, semantics and lineage; no new slope
-   (v0.2 C.5, §13.5). Errors: line outside the face; tangent giving zero area; split through a hole with ambiguous
-   components; incompatible fixed support plane (codes: Q-20).
+   (v0.2 C.5, §13.5). Errors (D-76): line outside the face, or tangent giving zero area -> `INVALID_GEOMETRY` with the
+   face id; split through a hole with ambiguous components -> `INVALID_TOPOLOGY` with the face id; incompatible fixed
+   support plane -> `CONSTRAINT_CONFLICT` with the constraint ids.
 3. `INSERT_ROOF_BREAK`: requires a new plane / ridge constraint; changes the affected support planes, solves adjacency,
    rebuilds the envelope; it is a separate command from `SPLIT_FACE` (v0.2 C.5, §13.5).
 4. `MERGE_FACES` `MERGE_COPLANAR`: adjacent faces with normals/offset within `coplanarTolDeg` / `planarTolM`, union is one
@@ -673,6 +685,8 @@ constraints (v0.2 F-34).
 2. `HEAL_HOLE`: the operator chooses `COPY_NEIGHBOR_PLANE`, `FIT_MEASUREMENTS` or `FILL_PLANAR` and the allowed
    corrections; the hole region and the number of compatible closings are analysed; no unique closing without
    self-intersection -> refusal and a request for an explicit choice, listing the admissible modes (v0.2 C.14; GT-11).
+   Codes (D-76): no closing without self-intersection -> `INVALID_GEOMETRY`; more than one compatible closing ->
+   `UNDERCONSTRAINED_GEOMETRY`; both carry `details.admissibleModes`.
 3. `ALIGN_JUNCTION`: a node of 3+ planes. General planes `n_i · p + d_i = 0` with a rank / residual check (least squares on
    `z_i(x, y)` only for non-vertical planes); a solution is admissible only if all hard constraints and displacement
    limits hold. Modes `KEEP_PRIMARY_PLANE`, `REFIT_SELECTED_PLANES` (v0.3 §6; v0.2 `CANCEL` is a client cancel). No hidden
@@ -933,19 +947,39 @@ Count: 29 tests (GT-I1..GT-I4, GT-01..GT-25); per module: `import` 3, `export` 1
 
 Final ids assigned at merge (D-38, D-71). Each is recorded in DECISIONS.md. Owner answers of
 2026-11-21 (dialog): D-68 (GT-13 -> 3D-23), D-69 (CP lease only, no own lock), D-70 (imported vertices
-explicit until edited).
+explicit until edited). Owner answers of 2026-11-23 (dialog, 3D-06): D-76 (refusal codes), D-77 (severities).
 
 | Id | Question | Used in |
 |---|---|---|
 | Q-17 | Objective that fixes the remaining degrees of freedom of a movable plane (e.g. minimal displacement of its other derived vertices); the sources name only soft `MINIMIZE_DISPLACEMENT` | §5 r8, §10.4 r5, §10.5 r4, §10.7 r3, §10.8 r3 |
 | Q-18 | Operations given only as intent: movable planes of `MATCH_ELEVATIONS` and `SET_HEIGHT EAVE`; solid closure of `SET_OVERHANG` (soffit or not); collinearity tolerance of `STRAIGHTEN_FACE`; how the `FIT_PLANE` selection reaches the server | §10.1 r7, §10.6 r6, §10.7 r3, §10.10 r1, r5, §10.12 r4 |
 | Q-19 | **Closed by D-70** (keep explicit until edit). Import: are vertex positions replaced by plane intersections (moves up to `planarTolM`, changes an unedited round trip of real data) or kept explicit until the first edit; how a `NON_PLANAR_FACE` keeps its vertices under the vertex-plane invariant | §6 r16 |
-| Q-20 | Refusal codes the sources leave open: `FIT_TO_SHARED_EDGE` over the displacement limit / no unique pairing; `HEAL_HOLE` mode impossible (GT-11); `SPLIT_FACE` errors; R-01 errors; and the default maximum displacement of `FIT_TO_SHARED_EDGE` | §2.4, §10.1 r6, §10.3 r6, §10.5, §10.6 r2 |
-| Q-21 | Severity by state of `SOLID_OVERLAP`, `UNDERCONSTRAINED_GEOMETRY`, `INVALID_MEASUREMENT`, `EXPORT_SCHEMA_ERROR`, `PRECISION_LOSS` | §8 r4 |
+| Q-20 | **Closed by D-76** (codes in §10.3 r6, §10.5 r5, §10.6 r2, §10.8 r2; no default maximum displacement). Refusal codes the sources leave open: `FIT_TO_SHARED_EDGE` over the displacement limit / no unique pairing; `HEAL_HOLE` mode impossible (GT-11); `SPLIT_FACE` errors; R-01 errors; and the default maximum displacement of `FIT_TO_SHARED_EDGE` | §2.4, §10.1 r6, §10.3 r6, §10.5, §10.6 r2 |
+| Q-21 | **Closed by D-77** (table of §8 r4). Severity by state of `SOLID_OVERLAP`, `UNDERCONSTRAINED_GEOMETRY`, `INVALID_MEASUREMENT`, `EXPORT_SCHEMA_ERROR`, `PRECISION_LOSS` | §8 r4 |
 | Q-22 | **Closed by D-69** (CP lease only). Lock: own building lock with `lockTtlMin` (v0.3 §8.5) or the CP assignment lease (`leaseRef`, `leaseEpoch`); defines "own operations" for Undo | §2.3, §10.9 r5, §11 r11 |
 | Q-23 | **Closed by D-68** (GT-13 -> 3D-23). GT-13 (idempotency, `expectedVersion`) needs the service's store, but BACKLOG puts it on 3D-18 (module `geo-model3d`, no dependency on 3D-23) | §11, §13 |
 | Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, heatmap default threshold, RANSAC parameters, `measurementTolM` | §2.3, §2.4, §9 r3, r6, §11 r5, r6 |
 | Q-25 | CityJSON mapping of `OVERHANG` faces on export | §7 r6 |
+
+Contract open questions of 3D-06 (D-75; source and wording:
+[contracts/model3d](../../contracts/model3d/README.md#open-questions-provisional-ids-d-38)):
+
+| Id | Question | Closed by |
+|---|---|---|
+| Q-26 | `EntityId` format: UUID only, or any string; syntax of the PREVIEW ephemeral namespace (v0.2 B.6) | 3D-09 / 3D-23 |
+| Q-27 | Per-kind geometry of `ConstructionEntity` (v0.2 B.2 says "per-kind JSON Schema") | the row that first creates one |
+| Q-28 | Per-kind layout of `Measurement3D.geometry.coordinates`, e.g. how a `PLANE` is written | 3D-22 |
+| Q-29 | Shape of the missing degrees of freedom in `UNDERCONSTRAINED_GEOMETRY` | 3D-13 (with Q-17) |
+| Q-30 | `needsRebind` of v0.2 B.6 in the lineage | 3D-09 |
+| Q-31 | Names of `affectedMetrics`; how a patch carries model-level changes (`state`, `frame`) | 3D-09 / 3D-12 |
+| Q-32 | How the CityJSON CityObject of `IMPORT_BUILDING` maps to `buildingId` (CP assignment unit) | 3D-10 / 3D-43 |
+| Q-33 | `INSERT_ROOF_BREAK` with a ridge constraint instead of a new plane | 3D-15 |
+| Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | 3D-15 |
+| Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-15 |
+| Q-36 | `HEAL_HOLE` "allowed corrections" (read as `maxDisplacementM`) | 3D-17 |
+| Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | 3D-19 |
+| Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
+| Q-39 | Whether the command carries `leaseRef` / `leaseEpoch` (§11 rule 11) or the service takes them from the session | 3D-23 |
 
 Existing questions this spec depends on: Q-01 (kernel language, 3D-08), Q-03 (CP extension content, 3D-43), Q-10
 (val3dity binding, 3D-12), Q-11 (v0.3 assumptions Д-01..Д-12, owner before 3D-09).

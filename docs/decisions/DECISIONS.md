@@ -109,6 +109,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-93 | Heights and the vertical CRS are kept as in the file, not transformed; the point cloud must share the model's vertical CRS | Owner, dialog, 2026-11-23 (Q-11) |
 | D-94 | v0.3 Д-12 confirmed: up to 500 faces per building; more imports with a warning and no latency guarantee | Owner, dialog, 2026-11-23 (Q-11) |
 | D-95 | 3D-32 set `ready`; its session starts once its dependency 3D-64 (spec update) is done (AGENTS.md §4) | Owner, chat, 2026-11-23 |
+| D-96 | 3D-64 spec diff accepted: D-77 severities in §8 rule 4, D-76 codes in §2.4, §10.1 r6, §10.3 r6, §10.5 (API, r5), §10.6 r2 and also §10.8 r2 (HEAL_HOLE, required by the Accept line though not in the scope-in list); §14 closes Q-20 / Q-21 and lists Q-26..Q-39; row -> `review` | Owner, dialog, 2026-11-23 (3D-64) |
+| D-97 | Stale `maxDisplacementM` description in the `FIT_TO_SHARED_EDGE` payload schema (cites Q-20 as open) is fixed through a new `proposed` row (3D-65), not inside 3D-64 | Owner, dialog, 2026-11-23 (3D-64) |
+| D-98 | 3D-64 accepted (done); merged into the base without PR via the `merge-wp` skill, run in the 3D-64 session on the owner's word there ("merge", chat); the 3D-64 provisional ids became D-96, D-97 | Owner, chat, 2026-11-23 |
 
 ## Open questions
 
