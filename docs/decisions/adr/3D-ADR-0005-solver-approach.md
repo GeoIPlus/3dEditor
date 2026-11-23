@@ -1,7 +1,7 @@
 # 3D-ADR-0005: constraint solver approach and the objective for free degrees of freedom (ADR-S)
 
-- Status: proposed
-- WP: 3D-08   Questions closed: Q-17 (on acceptance)   Related: Q-29 (shape of missing degrees of freedom, 3D-13)
+- Status: accepted (owner, 2026-11-23, D-3D08-2)
+- WP: 3D-08   Questions closed: Q-17   Related: Q-29 (shape of missing degrees of freedom, 3D-13)
 
 ## Context
 
@@ -35,7 +35,7 @@
 | A2. External geometric constraint solver (e.g. FreeCAD planegcs, SolveSpace) | Mature point/line/sketch solvers | Point-based, not plane-primary (D-08); C++ (native build in the service image); licences not permissive [A] (not verified in this WP) |
 | A3. General nonlinear optimiser (e.g. Ceres, IPOPT) | Robust numerics | Native toolchain next to a JS kernel; still needs our own plane-terms formulation and conflict diagnostics |
 
-## Decision (proposed)
+## Decision
 
 O1 + A1. O1 is the objective of stage 1 and the start of stage 2; soft constraints of spec §5 rule 1 add weighted terms
 to the same least-squares objective (measurements with `1/σ²`). O2 is not adopted now; it is reconsidered only if a

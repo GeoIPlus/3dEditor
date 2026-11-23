@@ -17,16 +17,16 @@ Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 
 
 | Progress | Rows |
 |---|---:|
-| Done | 14 / 51 |
+| Done | 14 / 54 |
 | Review | 1 |
 | In progress | 0 |
 | Ready | 4 |
-| Proposed (waiting for the owner to set `ready`) | 31 |
+| Proposed (waiting for the owner to set `ready`) | 34 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 14/51 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 14/54 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98).
-**Running:** SC 3D view port + host 3D-47 (D-61), latency spike and kernel ADRs 3D-08 (D-104), CRS support 3D-32 (D-95).
+**Running:** SC 3D view port + host 3D-47 (D-61), CRS support 3D-32 (D-95). **Review:** latency spike and kernel ADRs 3D-08 (p95 5.4 ms / 150 ms; ADRs accepted D-3D08-1..3).
 
 ```mermaid
 flowchart TB
@@ -57,12 +57,14 @@ flowchart TB
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
     D65["3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
+    D66["3D-66 Apply 3D-08 ADRs to spec, AGENTS"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
     D09["3D-09 B-Rep core"]
     D10["3D-10 CityJSON import"]
     D11["3D-11 CityJSON export"]
     D12["3D-12 Validation"]
+    D67["3D-67 Licence allow-list check"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D13["3D-13 Constraint solver"]
@@ -79,6 +81,7 @@ flowchart TB
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D23["3D-23 Kernel service"]
+    D68["3D-68 Latency bench: COMMIT, import, concurrency"]
     D24["3D-24 QC and export rules"]
     D25["3D-25 E2E on mock"]
   end
@@ -129,6 +132,13 @@ flowchart TB
   D04 --> D64
   D06 --> D64
   D06 --> D65
+  D08 --> D66
+  D05 --> D67
+  D08 --> D67
+  D08 --> D68
+  D10 --> D68
+  D15 --> D68
+  D23 --> D68
   D05 --> D08
   D06 --> D08
   D07 --> D08
@@ -202,7 +212,7 @@ flowchart TB
 | 3D-05 | Repository bootstrap: npm workspace, Vitest, `tsc --checkJs`, `check:arch` (300 lines, P4 canary + negative control per 3D-ADR-0001), `check:docs`, `backlog:sync`, CI | here | root, tools | 00, 27 | G0 | M | done (D-59; merged into base, no PR) |
 | 3D-06 | Contract schemas `model3d`: model, commands (all `OperationKind`), patch, lineage, validation report, error registry, tolerance profile | here (D-37) | contracts | 04, 27 | G0 | L | done (D-78; merged into base, no PR; schemas [contracts/model3d](../contracts/model3d/README.md), D-75..D-77) |
 | 3D-07 | Golden fixtures: format and synthetic CityJSON/point sets for GT-I1..GT-25 | here | fixtures | 06 | G0 | M | done (D-103; merged into base, no PR; [fixtures](../fixtures/README.md)) |
-| 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | review (local, PR not requested; [note](verification/3D-08.md): p95 5.4 ms / 150 ms; 3D-ADR-0004..0006 proposed) |
+| 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | review (local, PR not requested; [note](verification/3D-08.md): p95 5.4 ms / 150 ms; 3D-ADR-0004..0006 accepted D-3D08-1..3) |
 | 3D-09 | Kernel core: half-edge B-Rep, primary planes, derived vertices, local frame, transactions, versions | here | geo-model3d/brep | 08 | G1 | L | proposed |
 | 3D-10 | Import I-01: CityJSON -> canonical model + RTG + baseline | here | geo-model3d/import | 09, 32 | G1 | L | proposed |
 | 3D-11 | Export: canonical model -> CityJSON, opaque data round-trip | here | geo-model3d/export | 10, 12 | G1 | M | proposed |
@@ -234,6 +244,9 @@ flowchart TB
 | 3D-32 | CRS support: server-only transform module, local metric frame (ENU) per building, ADR for the library; spec and schema update for geographic CRSs (D-92) | here | geo-model3d (frame), services/kernel, docs, contracts | 02, 06, 64 | G1 | M | ready (D-95; starts after 3D-64 is done) |
 | 3D-33 | Inter-building validation (shared walls, overlaps between buildings), P1 (D-89) | here | geo-model3d/validate | 12 | P1 | M | proposed |
 | 3D-65 | Schema text: `FIT_TO_SHARED_EDGE` `maxDisplacementM` description cites D-76 instead of open Q-20 / "3D-06 proposes" | here | contracts | 06 | G0 | S | proposed (D-97) |
+| 3D-66 | Apply accepted 3D-08 ADRs to spec and AGENTS.md: spec §1.3, §5 r8, §10.4 r5, §11 r14; AGENTS.md §2 rule 8 cites 3D-ADR-0004 | here | docs | 08 | G0 | S | proposed (D-3D08-4) |
+| 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | proposed (D-3D08-4) |
+| 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23 | G5 | M | proposed (D-3D08-4) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -309,6 +322,8 @@ flowchart TB
   `http(s)`/`child_process`/`process.env`, no `Date.now`/`Math.random`), only `services/kernel` imports it.
   3D-23 Accept adds: `services/kernel` exports `createKernelHandler(ports)` (plain Node, mountable by geoviewer, 3D-50) and
   its own server for the image (D-33); every request and reply validates against `contracts/model3d/`.
+- 3D-08 changes (`change-wp`, D-3D08-3, Q-3D08-1): 3D-23 Accept adds: `npm run bench` gate re-run on the production
+  instance class of the service image; numbers and fingerprint recorded; a miss is an owner escalation (D-06).
 - Accept lines come from `docs/specs/3dqm-spec.md` (3D-04). Golden tests per row:
   3D-09 GT-25; 3D-10 GT-I1..GT-I3; 3D-11 GT-I4; 3D-14 GT-01..GT-05; 3D-15 GT-08, GT-10; 3D-16 GT-07, GT-09;
   3D-17 GT-06, GT-11, GT-19; 3D-18 GT-12; 3D-19 GT-14..GT-16; 3D-20 GT-17, GT-18; 3D-22 GT-20, GT-21;
@@ -465,3 +480,33 @@ flowchart TB
 - Accept: `grep -rn "Q-20\|proposes" contracts/model3d/*.json` finds no stale wording; the schema's validation behaviour
   is unchanged (contract tests pass unchanged); `npm run check` passes; owner approves the text (D-18).
 - Decisions: D-75, D-76, D-97  Open: -
+
+### 3D-66 Apply the accepted 3D-08 ADRs to the spec and AGENTS.md
+- Source: 3D-08 session 2026-11-23, owner dialog (D-3D08-1..4).
+- Goal: the spec and the agent manual state the accepted decisions instead of `TBD` / "working rule".
+- Scope in: spec §1.3 row "Compiled kernel" -> D-3D08-1; §5 rule 8 and §10.4 rule 5 -> 3D-ADR-0005 O1 (Q-17 closed);
+  §11 rule 14 -> 3D-ADR-0006; §14 Q-17 row closed; AGENTS.md §2 rule 8 cites 3D-ADR-0004 (owner approves the AGENTS.md
+  text, §10). Scope out: any other spec change; §10.5 / §10.7 / §10.8 keep their wording (they link Q-17, now closed).
+- Accept: `grep -n "Q-17\|ADR-S" docs/specs/3dqm-spec.md` shows only references to the closed question / accepted ADR;
+  AGENTS.md §2 rule 8 no longer says "not yet an owner decision"; `npm run check` passes.
+- Decisions: D-3D08-1, D-3D08-2, D-3D08-3  Open: -
+
+### 3D-67 Licence allow-list check in `check:arch`
+- Source: 3D-08, 3D-ADR-0004 decision 3 (D-3D08-1, D-3D08-4).
+- Goal: a runtime dependency with a non-permissive licence cannot enter the kernel or the service unnoticed.
+- Scope in: rule in `tools/check-arch` over the installed runtime dependency tree of `packages/geo-model3d` and
+  `services/*`: licence in the allow list (MIT, ISC, BSD-2-Clause, BSD-3-Clause, Apache-2.0, Unlicense, BSL-1.0), else a
+  problem. Scope out: devDependencies; other repositories.
+- Accept: a negative-control test with a fake GPL dependency fails the rule; the current tree passes; `npm run check`
+  passes.
+- Decisions: D-3D08-1  Open: -
+
+### 3D-68 Latency bench beyond PREVIEW
+- Source: 3D-08 (v0.3 §11 rows 2 and 4 not measured; 3D-ADR-0006 "not covered"), D-3D08-4.
+- Goal: measured numbers for COMMIT of a simple operation (p95 <= 1 s), import of a building up to 500 faces (<= 2 s,
+  assumption) and PREVIEW under concurrent requests, on the 3D-ADR-0006 rig.
+- Scope in: bench scenes and modes in `tools/bench` against the real kernel (3D-10, 3D-15) and service (3D-23).
+  Scope out: FINAL_VALIDATION (external validator, Q-10); network.
+- Accept: `npm run bench` reports COMMIT and import p95 and PREVIEW p95 at a stated concurrency with the rig
+  fingerprint; results vs v0.3 §11 recorded in a verification note; a miss is an owner escalation (D-06).
+- Decisions: D-3D08-3  Open: Q-3D08-1

@@ -1,7 +1,7 @@
 # 3D-ADR-0004: kernel language, Boolean library and licences (ADR-001)
 
-- Status: proposed
-- WP: 3D-08   Questions closed: Q-01 (on acceptance)
+- Status: accepted (owner, 2026-11-23, D-3D08-1)
+- WP: 3D-08   Questions closed: Q-01
 
 ## Context
 
@@ -46,7 +46,7 @@
 | B2. `manifold-3d` (Apache-2.0) as WASM inside the Node service | Robust general mesh Booleans | Triangle-mesh based: results must be re-planarised and re-mapped to faces/ids; heavy for three P0 cases |
 | B3. OCCT via `opencascade.js` (LGPL-2.1-only) | Full B-Rep Booleans | LGPL obligations for the service image; large WASM; not plane-primary |
 
-## Decision (proposed)
+## Decision
 
 1. **L1**: the kernel stays JavaScript ESM + JSDoc on Node (closes Q-01). AGENTS.md §2 rule 8 then cites this ADR
    instead of "working rule". Reopen trigger [P]: the gate scene's p95 in any later bench (3D-ADR-0006 step 5) above

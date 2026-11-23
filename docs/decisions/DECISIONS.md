@@ -118,6 +118,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-102 | GT-20 outliers lie 1.5..3 m off the plane (beyond `heatmapBufferM` 1.0); GT-21 reuses all GT-20 points shifted +0.10 m in Z and the heatmap buffer excludes the outliers | Owner, dialog, 2026-11-23 (3D-07) |
 | D-103 | 3D-07 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-07 provisional ids became D-99..D-102 and Q-41 | Owner, dialog, 2026-11-23 |
 | D-104 | 3D-08 (latency spike, kernel ADRs) set `ready` and started in a fresh session | Owner, dialog, 2026-11-23 |
+| D-3D08-1 | [3D-ADR-0004](adr/3D-ADR-0004-kernel-language-boolean-licences.md) accepted: kernel in JavaScript ESM + JSDoc on Node (Q-01 closed; MOVE_EDGE PREVIEW p95 5.411 ms on 199 faces vs 150 ms); own planar Boolean operations for the K-12 P0 scope, no third-party Boolean library; kernel and service image use only permissive licences; reopen if a later gate p95 > 50 ms | Owner, dialog, 2026-11-23 (3D-08) |
+| D-3D08-2 | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) accepted: own two-stage solver in JS (closed form per plane, then Gauss-Newton/LM for coupled constraints, deletion filter for conflict sets); objective O1 for free degrees of freedom: keep the face's other vertices (least squares to their old positions, hard conditions exact) (Q-17 closed) | Owner, dialog, 2026-11-23 (3D-08) |
+| D-3D08-3 | [3D-ADR-0006](adr/3D-ADR-0006-bench-rig-and-scenes.md) accepted: reference rig = cloud agent container (fingerprint recorded), scenes GT-03 / sawtooth-199 (gate) / sawtooth-499, protocol 300 warm-up + 5 x 1000 requests, verdict on pooled and worst-run p95; re-measure on the production class in 3D-23 (Q-3D08-1) | Owner, dialog, 2026-11-23 (3D-08) |
+| D-3D08-4 | 3D-08 follow-ups go to intake as `proposed` rows: licence allow-list check, COMMIT / import / concurrency latency bench, production re-measure | Owner, dialog, 2026-11-23 (3D-08) |
 
 ## Open questions
 
@@ -202,5 +206,5 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-21 | 2026-11-23, owner (3D-06) | closed by D-77 | Severities accepted, enforced in `validation-report` |
 | Q-02 | 2026-11-23, owner (3D-03) | closed by D-85 | [3D-ADR-0003](adr/3D-ADR-0003-storage-of-versions-journal-results.md): own append-only object store behind `history` + `datasets` ports; history stays own (D-82) |
 | Q-11 | 2026-11-23, owner (coordinating session) | closed by D-88..D-94 | Д-01/Д-02 overtaken (D-88); Д-04 changed to geographic CRS support (D-92, row 3D-32); rest confirmed |
-| Q-01 | 2026-11-23, 3D-08 | proposal, waits for owner (D-18) | [3D-ADR-0004](adr/3D-ADR-0004-kernel-language-boolean-licences.md): JavaScript on Node; MOVE_EDGE PREVIEW p95 5.411 ms on 199 faces vs 150 ms ([3D-08 note](../verification/3D-08.md)) |
-| Q-17 | 2026-11-23, 3D-08 | proposal, waits for owner (D-18) | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices (least squares to their old positions, hard conditions exact) |
+| Q-01 | 2026-11-23, owner (3D-08) | closed by D-3D08-1 | [3D-ADR-0004](adr/3D-ADR-0004-kernel-language-boolean-licences.md): JavaScript on Node; MOVE_EDGE PREVIEW p95 5.411 ms on 199 faces vs 150 ms ([3D-08 note](../verification/3D-08.md)) |
+| Q-17 | 2026-11-23, owner (3D-08) | closed by D-3D08-2 | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices (least squares to their old positions, hard conditions exact) |

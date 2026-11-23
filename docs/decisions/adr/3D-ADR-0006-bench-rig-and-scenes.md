@@ -1,6 +1,6 @@
 # 3D-ADR-0006: bench rig, scenes and protocol for the latency targets (ADR-012)
 
-- Status: proposed
+- Status: accepted (owner, 2026-11-23, D-3D08-3)
 - WP: 3D-08   Questions closed: none (v0.3 §11 "Эталонный стенд ... фиксируется в G0 (ADR-012)")   Open: Q-3D08-1
 
 ## Context
@@ -29,7 +29,7 @@
 | S1. Scenes: GT-03 (7 faces, the v0.3 G0 scene), **sawtooth-199** (gate: 97 gable bays, 199 faces <= 200, 394 vertices, 1182 half-edges), sawtooth-499 (D-94, informative) | Deterministic, generated from the fixture generator's envelope and model writer; the gate scene has two 197-vertex walls that every valley move touches (pessimistic for the checks) | Synthetic shape; a real 200-face roof has more, smaller faces |
 | S2. Scenes from real roofer / TerraSolid buildings | Realistic | Samples not in the repository (Q-07, 3D-26) |
 
-## Decision (proposed)
+## Decision
 
 R1 + S1, with this protocol, implemented by `npm run bench` ([tools/bench/cli.mjs](../../../tools/bench/cli.mjs)):
 
