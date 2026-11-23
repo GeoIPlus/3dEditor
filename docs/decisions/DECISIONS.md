@@ -118,6 +118,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-102 | GT-20 outliers lie 1.5..3 m off the plane (beyond `heatmapBufferM` 1.0); GT-21 reuses all GT-20 points shifted +0.10 m in Z and the heatmap buffer excludes the outliers | Owner, dialog, 2026-11-23 (3D-07) |
 | D-103 | 3D-07 accepted (done); merged into the base without PR via the `merge-wp` skill; the 3D-07 provisional ids became D-99..D-102 and Q-41 | Owner, dialog, 2026-11-23 |
 | D-104 | 3D-08 (latency spike, kernel ADRs) set `ready` and started in a fresh session | Owner, dialog, 2026-11-23 |
+| D-105 | 3D-65 (schema description of `FIT_TO_SHARED_EDGE` `maxDisplacementM` cites D-76) set `ready` and started in a fresh session; 3D-32 is already owned by its session (wp/3d-32-crs-support) | Owner, dialog, 2026-11-23 (3D-64 session) |
 
 ## Open questions
 
