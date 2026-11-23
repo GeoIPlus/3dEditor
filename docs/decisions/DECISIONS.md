@@ -124,6 +124,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-108 | 3D-46 (SC P4 canary scan + "no `geo-model3d` dependency" rule; mirror, `GeoIPlus/shared_compnents` row authoritative) set `ready` as the next fresh-session WP; the other `ready` rows are owned (3D-08, 3D-32, 3D-47) or wait on dependencies (3D-48, 3D-51) | Owner, dialog, 2026-11-23 |
 | D-3D46-1 | 3D-46: `GeoIPlus/shared_compnents` had no mirror row; the owner approved adding it there as **SC row 76** (branch `wp/76-p4-canary-scan`) and implementing it in this session. SC records the approval in its own DECISIONS.md | Owner, dialog, 2026-11-23 (3D-46) |
 | D-3D46-2 | 3D-46 delivery: the SC branch is pushed **without a pull request** (overrides SC AGENTS.md §4.8 for this WP); the owner opens it or asks for one later. 3dEditor bookkeeping stays on its branch without a PR | Owner, dialog, 2026-11-23 (3D-46) |
+| D-3D46-3 | Intake from 3D-46: `backlog:sync` cannot link mirror rows to SC (SC row ids are bare numbers; no SC pin vendored); filed as row 3D-66 `proposed` (bug of 3D-05). 3D-46's repo cell stays `shared` until 3D-66 is done | Owner, dialog, 2026-11-23 (3D-46) |
 
 ## Open questions
 
