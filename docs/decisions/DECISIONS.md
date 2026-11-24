@@ -152,6 +152,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-136 | Contract change (D-18), approved: new `heatmap-request` schema v1 (model version, optional `faceIds`, point selection, required `thresholdM`); 3D-23 binds it to the wire | Owner, dialog, 2026-11-23 (3D-22) |
 | D-137 | 3D-22 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids of 3D-22 became D-130..D-136 and Q-44; intake rows 3D-70..3D-72 keep their ids | Owner, chat, 2026-11-24 |
 | D-138 | 3D-72 (spec text for the 3D-22 decisions D-130..D-136) set `ready` and started in a fresh session, in parallel with 3D-66 (different spec sections) | Owner, chat, 2026-11-24 |
+| D-139 | 3D-70 (COPC-by-box points adapter, `laz-perf` ADR) set `ready` and started in a fresh session while its dependency 3D-67 (licence allow-list check) is still running: the ADR and adapter proceed now; the allow-list part of the 3D-70 acceptance is checked once 3D-67 is merged | Owner, chat, 2026-11-24 |
+| D-140 | Q-44: yes - a small LAZ-compressed COPC test file (a few KB) may be committed for 3D-70 | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
@@ -242,3 +244,5 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-17 | 2026-11-23, owner (3D-08) | closed by D-110 | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices (least squares to their old positions, hard conditions exact) |
 | Q-24 | 2026-11-23, owner (3D-22) | narrowed, open | RANSAC parameters closed by D-130; heatmap threshold closed by D-131 (no default, required); `measurementTolM`, PREVIEW rate / expiry, payload size stay open (3D-23) |
 | Q-18 | 2026-11-23, owner (3D-22) | narrowed, open | `FIT_PLANE` selection closed by D-132; the other operations of Q-18 stay open |
+
+| Q-44 | 2026-11-24, owner | closed by D-140 | Small committed COPC test file allowed for 3D-70 |
