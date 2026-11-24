@@ -1,8 +1,8 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13); other modules follow their rows (3D-11, 3D-14..3D-21)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11); other modules follow their rows (3D-14..3D-21)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
-- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §8, §9
+- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
   `robust-predicates` not adopted (D-118, D-150)
 - Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
@@ -35,7 +35,11 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   column's severities; a shell is `isClosed` unless it has `SHELL_NOT_CLOSED`. Refusals throw `ImportError` (`code`
   `INVALID_PAYLOAD` / `NOT_FOUND` / `INVALID_GEOMETRY`) or `CrsError` (`INVALID_CRS`). The input is named `cityjson`, not
   `document`: `check:arch` rejects the DOM global name in kernel files.
-- Names fixed for later rows (D-119): `executeCommand` (3D-14..3D-21), `exportBuilding` (3D-11).
+- `exportBuilding({ model, cityjson, toleranceProfile })` -> `{ cityjson, findings }` (3D-11, spec §7, D-119):
+  `cityjson` is the parsed document the model was imported from (kept by the service, never written); the output is a
+  CityJSON document with this building only (D-192); `findings` (`PRECISION_LOSS`) go to `validateModel` (D-151).
+  Refusals throw `ExportError` (`INVALID_PAYLOAD` / `NOT_FOUND`) or the `crs` error (`INVALID_CRS`).
+- Names fixed for later rows (D-119): `executeCommand` (3D-14..3D-21).
 
 ## Modules (`src/`, DAG of 3D-ADR-0002 C1 rule 2, enforced by `check:arch`)
 `brep` (3D-09) is the leaf every other module imports. Its surface (`src/brep/index.js`), for kernel modules only:
@@ -150,6 +154,19 @@ run spread ~0.1 ms).
   and state come from `validate` (see Public API; the interim `import/state.js` of D-157 is removed by 3D-75). Opaque `GeometryInstance`, `appearance` and extensions
   are not copied: export (3D-11) writes them from the original document, which import never writes (frozen-input test).
 
+- `src/export/` (3D-11; spec §7; imports `brep`, `crs`): `index` (bodies = model semantics with a CityObject
+  `sourceRef`; the Building and all its `children` in input order; root members copied), `geometry` (LoD 2.x selection
+  restated from import, index walkers, surface paths), `rings` (half-edge loops, match with the original surface),
+  `body` (one body's geometry: verbatim when every surface is reused in file order, else rebuilt in model order with
+  `semantics` / `material` / `texture` per surface), `vertices` (untouched vs changed, `crs.writeBackVertices`,
+  in place or appended, compaction). Decided: D-189..D-193 (untouched = within 1e-6 m of its first file index, any
+  `positionMode`). Readings [A] for the owner's review: the 1e-6 m threshold; a reused semantic surface drops `parent` / `children`;
+  regenerated surfaces write `{ type: surfaceKind }`, but null for `Unclassified` and SEMANTICS_INFERRED faces;
+  regenerated surfaces carry no material (null) or texture (`[null]` per ring); a `-0` from re-quantisation is written
+  as 0; PRECISION_LOSS only when a vertex was changed. TBD: OVERHANG tag (Q-25) is not written; a body with model
+  solids but no LoD 2.x geometry in the file, a new body without `sourceRef`, and a surface geometry with several
+  shells are refused (`INVALID_PAYLOAD`), not guessed.
+
 ## Rules and invariants
 - Every target of `package.json` `exports` imports `./src/canary.js`; `canary.js` is listed in `sideEffects`.
 - `check:arch`: no DOM / `three`; no file over 300 lines; kernel source imports no I/O modules and references no
@@ -186,6 +203,11 @@ run spread ~0.1 ms).
   with `sourceRef` (D-70); frozen input; determinism; semantics inference thresholds; CRS refusals and ENU import;
   noisy input (±15 mm) maps back to the file within 0.001 m and writes back identical integers; refusals; LoD
   selection; 500-face warning; HIP / RIDGE / VALLEY / EAVE / RAKE; non-manifold edge; welding; parts and installations.
+- `test/export/` (3D-11): unedited GT-I1, GT-I2, noisy GT-I1, parts + installation, EPSG:4937 and an opaque-rich
+  document come back byte-identical; GT-I3 merged faces; re-import equality; rounding and grid (projected, geographic),
+  PRECISION_LOSS, append vs in place, compaction; opaque members unchanged after an edit; frozen inputs; determinism.
+- Golden: `test/golden/gt-i4.golden.test.js` (GT-I4: largest coordinate difference 0 m, semantics and ids identical,
+  `validateModel` FINAL with a stub port clean; val3dity assertion is `todo` for 3D-74, D-189).
 - Golden: `test/golden/gt-i1..gt-i3.golden.test.js` (GT-I1 volume 520 m3, roof 100 m2, measured by the test's own code;
   GT-I2 per D-156; GT-I3 merged roof faces with their `sourceRef`s).
 - `test/crs/`: registry, ENU accuracy against closed-form ECEF and GeographicLib oracles, round trip of
