@@ -170,6 +170,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-156 | Q-41: GT-I2 `OPEN_BOUNDARY` is reported on the two ridge edges only; an edge with one face shorter than `minEdgeLengthM` (the two 0.03 m gable-wall edges) is reported as `DEGENERATE_EDGE`, not `OPEN_BOUNDARY`. 3D-12 applies the same rule | Owner, dialog, 2026-11-23 (3D-10) |
 | D-157 | 3D-10 import computes its own interim issues and state (`import/state.js`: `OPEN_BOUNDARY`, `NON_MANIFOLD_EDGE`, `DEGENERATE_EDGE`, `NON_PLANAR_FACE` from `brep` topology), because the module DAG allows `import` -> `brep`, `crs` only and 3D-12 is not merged. Once 3D-10 and 3D-12 are both merged, `importBuilding` in `index.js` takes the state from `validateModel` and `import/state.js` is removed (intake row) | Owner, dialog, 2026-11-23 (3D-10) |
 | D-158 | 3D-10 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids of 3D-10 became D-156, D-157; its intake row (written as 3D-70) became 3D-75 and also covers applying D-156 in `validate` (merged 3D-12 reports `OPEN_BOUNDARY` on every twin-less half-edge) | Owner, dialog, 2026-11-24 |
+| D-159 | 3D-73 (`backlog:sync` links mirror rows to `shared_compnents`: bare-number SC row ids, first SC pin, 3D-46 linked as `shared (76)`) set `ready` and started in a fresh session; dependencies 3D-05 and 3D-46 are done | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
