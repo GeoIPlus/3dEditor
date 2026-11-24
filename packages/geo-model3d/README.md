@@ -2,7 +2,7 @@
 
 - Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11); other modules follow their rows (3D-14..3D-21)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
-- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
+- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
   `robust-predicates` not adopted (D-118, D-150)
 - Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
@@ -18,10 +18,12 @@ no I/O, clock or randomness (3D-ADR-0002 C1 rule 1).
 ## Public API (index.js)
 Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
 - `P4_CANARY` - the canary literal (format `geoiplus-p4-canary:geo-model3d:<32 hex>`, [3D-ADR-0001](../../docs/decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md)).
-- `worldToLocal(frame, points)`, `localToWorld(frame, points)` - contract `CoordinateFrame` + `V3[]`; projected CRS
-  (translation by `originWorld`, rotation by `buildingAxisDeg`). Geographic CRSs: import (3D-10) composes `crs` (3D-32).
-  [V] Not correct for a geographic or a north-first projected building (no ENU, no axis swap); point clouds use the two
-  entries below (follow-up for intake, 3D-69 checkpoint).
+- `worldToLocal(frame, points)`, `localToWorld(frame, points)` - contract `CoordinateFrame` + `V3[]`, world in the units
+  and axis order of `horizontalCrs`; the import mapping for every supported CRS (3D-81): `crs` metric frame
+  (`createMetricFrame(horizontalCrs, originWorld)`: projected translation, axis swap when north-first; geographic local
+  ENU) + `brep` rotation by `buildingAxisDeg`; equal to `cloudToLocal(frame, frame.horizontalCrs, ...)`. East-first
+  projected: the 3D-09 translation bit for bit (GT-25 0 m). Unknown CRS -> `CrsError` `INVALID_CRS`.
+  [V] `test/golden/world-local.golden.test.js`: GT-I1 from EPSG:25832, EPSG:4937 and EPSG:31467, <= 1.3e-9 m.
 - `cloudToLocal(frame, cloudCrs, points)`, `localBoxToCloud(frame, cloudCrs, box)` (3D-69) - cloud world (its own
   horizontal CRS from the dataset descriptor, D-196; `V3[]` in its axis order) <-> LOCAL; the building side is the
   import mapping (`createMetricFrame` + rotation). Same CRS: no reprojection; same CRS and a projected building: the

@@ -19,25 +19,34 @@ export { fitPlane, deviationStats } from './cloud/index.js';
 /** @typedef {[number, number, number]} V3 */
 
 /**
- * World -> local coordinates of a building (spec §1.2, §4; M-02). Projected CRS (translation by `originWorld`, then
- * the `buildingAxisDeg` rotation); geographic CRSs go through the `crs` module (3D-32) at import.
+ * The building's local frame as import builds it (3D-81): `crs` gives the metric frame of `horizontalCrs` about
+ * `originWorld` (projected: translation, axis swap when north-first; geographic: local ENU; 3D-32, 3D-10), `brep`
+ * adds the `buildingAxisDeg` rotation (D-116). Equal to `cloudToLocal(frame, frame.horizontalCrs, ...)` (3D-69).
+ * @param {CoordinateFrame} frame
+ */
+const buildingFrame = (frame) => localFrame(frame, createMetricFrame(frame.horizontalCrs, frame.originWorld));
+
+/**
+ * World -> local coordinates of a building (spec §1.2, §4; M-02), for every CRS import supports (3D-81). World points
+ * are in `horizontalCrs` units and file axis order (e.g. lat, lon, h for EPSG:4937). Throws the `crs` error
+ * (`code` INVALID_CRS) for a CRS import would refuse.
  * @param {CoordinateFrame} frame contract `CoordinateFrame`
  * @param {V3[]} points contract `V3`, world
  * @returns {V3[]} local
  */
 export function worldToLocal(frame, points) {
-  const lf = localFrame(frame);
+  const lf = buildingFrame(frame);
   return points.map((p) => lf.toLocal(p));
 }
 
 /**
- * Local -> world coordinates (inverse of `worldToLocal`).
+ * Local -> world coordinates (inverse of `worldToLocal`; world in the axis order of `horizontalCrs`).
  * @param {CoordinateFrame} frame
  * @param {V3[]} points local
  * @returns {V3[]} world
  */
 export function localToWorld(frame, points) {
-  const lf = localFrame(frame);
+  const lf = buildingFrame(frame);
   return points.map((p) => lf.toWorld(p));
 }
 
