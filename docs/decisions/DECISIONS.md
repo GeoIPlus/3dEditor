@@ -151,6 +151,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-135 | Heatmap point assignment: a point counts if its 3D distance to the nearest face polygon is <= `heatmapBufferM`; it is assigned to that face; its value is the signed distance along that face's normal; request `faceIds` optionally limits the reported faces | Owner, dialog, 2026-11-23 (3D-22) |
 | D-136 | Contract change (D-18), approved: new `heatmap-request` schema v1 (model version, optional `faceIds`, point selection, required `thresholdM`); 3D-23 binds it to the wire | Owner, dialog, 2026-11-23 (3D-22) |
 | D-137 | 3D-22 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids of 3D-22 became D-130..D-136 and Q-44; intake rows 3D-70..3D-72 keep their ids | Owner, chat, 2026-11-24 |
+| D-138 | 3D-72 (spec text for the 3D-22 decisions D-130..D-136) set `ready` and started in a fresh session, in parallel with 3D-66 (different spec sections) | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
