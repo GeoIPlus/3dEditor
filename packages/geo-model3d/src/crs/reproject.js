@@ -17,7 +17,7 @@ import { resolveCrs, CrsError } from './registry.js';
 
 /** @type {Record<string, string[]>} */
 const GEOGRAPHIC = TABLE.geographic;
-/** @type {Record<string, [string, string]>} */
+/** @type {Record<string, string[]>} [datum, proj4 definition] */
 const PROJECTIONS = TABLE.projections;
 
 /** @param {'EN'|'NE'} order @param {P3} p @returns {P3} */

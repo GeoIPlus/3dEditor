@@ -3,10 +3,13 @@
 // 2026-11-24 and written here as numbers (as the 3D-32 oracles; no PROJ at test time).
 import { describe, it, expect } from 'vitest';
 import { createCrsMapping, CrsError } from '../../src/crs/index.js';
-import TABLE from '../../src/crs/epsg-table.json' with { type: 'json' };
+import RAW from '../../src/crs/epsg-table.json' with { type: 'json' };
+
+/** @type {Record<string, Record<string, any>>} */
+const TABLE = /** @type {any} */ (RAW);
 
 /** Angle error in degrees -> metres (upper bound, 111.32 km per degree). */
-const degM = (d) => Math.abs(d) * 111320;
+const degM = (/** @type {number} */ d) => Math.abs(d) * 111320;
 
 /** [from, to, input in `from` order, PROJ output in `to` order]; methods: UTM, TM (north-first), Swiss oblique
  *  Mercator, Krovak, pseudo-Mercator (sphere), oblique stereographic, LCC 2SP, UTM -> UTM. */
@@ -49,6 +52,7 @@ describe('createCrsMapping (3D-69)', () => {
   }
 
   it('different datums are refused: INVALID_CRS, DATUM_MISMATCH naming both (D-3D69-2)', () => {
+    /** @type {any} */
     let e;
     try { createCrsMapping('EPSG:32632', 'EPSG:4937'); } catch (x) { e = x; }
     expect(e).toBeInstanceOf(CrsError);
