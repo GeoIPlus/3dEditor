@@ -1,8 +1,7 @@
 # 3D-ADR-0008: val3dity binding for FINAL_VALIDATION
 
-- Status: proposed. The owner chose the option in a dialog on 2026-11-23 (D-148); the ADR text itself waits for the
-  owner's acceptance (D-18). It may be renumbered at merge (D-38).
-- WP: 3D-12   Questions closed: Q-10 (by D-148)   Opened: -
+- Status: accepted (owner, 2026-11-24, D-161). Option chosen in a dialog on 2026-11-23 (D-148).
+- WP: 3D-12   Questions closed: Q-10 (by D-148), Q-45 (by D-162)   Opened: -
 
 ## Context
 
@@ -38,7 +37,7 @@ Option A. The binding is split in two:
 1. **Kernel side (3D-12, this WP).** `validateModel(model, { mode: 'FINAL_VALIDATION', externalValidator, ... })`
    awaits `externalValidator.validate({ model, tolerances })`, which returns `{ validatorVersion, findings: [{
    externalValidatorCode, entityIds?, location?, suggestedFix? }] }`. `validate` maps val3dity codes to contract codes
-   (`src/validate/external.js`, `VAL3DITY_CODES`, [A] pending review Q-45) and assigns severity from the one table
+   (`src/validate/external.js`, `VAL3DITY_CODES`, accepted D-162) and assigns severity from the one table
    (D-151). `validatorVersion` of the report = `geo-model3d-validate/1+<port version>`. A port failure rejects the
    promise; the service answers `UNAVAILABLE` and the model is unchanged (spec §2.4).
 2. **Service side (new row after 3D-23).** The adapter exports the model (3D-11, `exportBuilding`), sends the CityJSON

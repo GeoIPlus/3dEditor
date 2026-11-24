@@ -6,10 +6,9 @@ import { readBodies } from './cityjson.js';
 import { importVertices } from './vertices.js';
 import { rawFaces } from './faces.js';
 import { mergeCoplanar } from './coplanar.js';
-import { buildTopology } from './halfedges.js';
+import { buildTopology, NON_PLANAR_FACE } from './halfedges.js';
 import { assignRoles } from './roles.js';
 import { deriveFootprints } from './footprint.js';
-import { assessImport } from './state.js';
 import { counterIds } from './ids.js';
 import { ImportError } from './errors.js';
 import { SEMANTICS_INFERRED } from './semantics.js';
@@ -18,7 +17,20 @@ export { ImportError } from './errors.js';
 export { counterIds } from './ids.js';
 
 /** @typedef {import('../brep/types.js').BuildingModel} BuildingModel */
-/** @typedef {import('./state.js').ValidationIssue} ValidationIssue */
+/**
+ * Contract validation-report `ValidationIssue`.
+ * @typedef {object} ValidationIssue
+ * @property {string} code @property {string} scope @property {string} severity @property {string[]} entityIds
+ * @property {[number, number, number]} [location] @property {string} message @property {string} [suggestedFix]
+ */
+/**
+ * State and issues of the imported model (spec §6 rule 10). Import does not validate: `index.js` passes the `validate`
+ * module's assessment (D-157, 3D-75; the module DAG keeps `import` -> brep, crs only).
+ * @callback AssessImport
+ * @param {BuildingModel} model the imported model (state not yet assigned, every shell `isClosed: false`)
+ * @param {ImportTolerances} tolerances
+ * @returns {{ state: 'VALID_SOLID' | 'DRAFT_SOLID', issues: ValidationIssue[], openShellIds: Set<string> }}
+ */
 /**
  * Tolerance values import reads (contract `tolerance-profile`, spec §2.3).
  * @typedef {{ id?: string, topologySnapTolM: number, planarTolM: number, coplanarTolDeg: number, zAlignTolM: number,
@@ -50,9 +62,10 @@ export const FACE_LIMIT = 500;
 
 /**
  * @param {ImportInput} input
+ * @param {AssessImport} assess
  * @returns {{ model: BuildingModel, baseline: BuildingModel, report: ImportReport }}
  */
-export function importCityObject(input) {
+export function importCityObject(input, assess) {
   const tol = input.toleranceProfile;
   const toleranceProfileId = input.toleranceProfileId ?? tol?.id;
   if (typeof toleranceProfileId !== 'string' || toleranceProfileId === '') throw new ImportError('INVALID_PAYLOAD', 'no tolerance profile id');
@@ -124,10 +137,9 @@ export function importCityObject(input) {
   }
   model.footprints = deriveFootprints(model, partOfFace, ids);
 
-  const { state, issues, openEdges } = assessImport(model, topo.edges, tol);
+  const { state, issues, openShellIds } = assess(model, tol);
   model.state = state;
-  const openFaces = new Set([...openEdges].map((e) => model.halfEdges[e.halfEdgeIds[0]].faceId));
-  for (const sh of Object.values(model.shells)) sh.isClosed = sh.faceIds.length > 0 && !sh.faceIds.some((f) => openFaces.has(f));
+  for (const sh of Object.values(model.shells)) sh.isClosed = sh.faceIds.length > 0 && !openShellIds.has(sh.id);
 
   const faceList = Object.values(model.faces);
   const warnings = dropped.map((ref) => `model3d.import.droppedSurface:${ref}`);
@@ -137,7 +149,7 @@ export function importCityObject(input) {
     buildingId: model.buildingId, modelVersion: model.version, assignedState: state, issues,
     mergedFaces: Object.fromEntries(merged.flatMap((f, k) => (f.refs.length > 1 ? [[topo.faceIds[k], [...f.refs]]] : []))),
     inferredSemanticsFaceIds: faceList.filter((f) => f.tags.includes(SEMANTICS_INFERRED)).map((f) => f.id),
-    nonPlanarFaceIds: faceList.filter((f) => f.tags.includes('NON_PLANAR_FACE')).map((f) => f.id),
+    nonPlanarFaceIds: faceList.filter((f) => f.tags.includes(NON_PLANAR_FACE)).map((f) => f.id),
     faceCount: faceList.length, warnings,
   };
   return { model, baseline: isolatedCopy(model), report };

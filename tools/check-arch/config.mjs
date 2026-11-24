@@ -70,6 +70,16 @@ export const CONFIG = {
    */
   clientOutputs: /** @type {string[]} */ ([]),
   clientOutputDirNames: ['dist', 'build', 'public', 'storybook-static'],
+  /**
+   * Licence allow-list (3D-67): runtime dependencies of the kernel and of every `services/<name>` package
+   * (3D-ADR-0004 decision 3, D-109). SPDX ids; read offline from the lockfile.
+   */
+  licences: {
+    allowed: ['MIT', 'ISC', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2.0', 'Unlicense', 'BSL-1.0'],
+    servicesDir: 'services',
+    lockFile: 'package-lock.json',
+  },
+
   /** Server artefacts legitimately carry the marker (3D-ADR-0001 Q-09 point 3). */
   serverDirs: ['packages/geo-model3d/', 'services/'],
 };

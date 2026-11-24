@@ -117,9 +117,15 @@ copy [D] (D-37, 3D-ADR-0001). Internal kernel structures never leave the package
 | 14 | `plane-fit-result` | Plane, inlier count, inlier ratio, RMSE (§9) | v0.3 §7 |
 | 15 | `heatmap-result` | Per-face colouring + summary: RMSE, maximum, share of points beyond the threshold (§9) | v0.3 §7 |
 | 16 | `export-report` | Batch export: exported buildings, skipped buildings with reason (§11) | v0.3 §8.4 |
+| 17 | `heatmap-request` | Heatmap request, not a command (changes nothing): `buildingId`, `modelVersion`, `selection` (`PointSelection`), optional `faceIds`, required `thresholdM` (§9 r6) | v0.3 §7; D-136 |
 
 The 3DQM extension of the CP document (building list, roles, tolerance profile, endpoints) is an SC schema (3D-43; Q-03),
 not part of this list.
+
+`PointSelection` is a shared definition of `common` (`$defs` only, no row): the cloud points chosen by the operator
+(rectangle or lasso in the view) as `{ kind: BOX, min, max }` or `{ kind: POLYGON, ringXY, zMin, zMax }` in the LOCAL
+frame of the building. The `FIT_PLANE` payload `selection` and the `heatmap-request` `selection` use it [D] (D-132,
+D-136).
 
 The schemas are accepted (D-75). Contract details they leave `TBD` are the open questions Q-26..Q-39 of
 [contracts/model3d](../../contracts/model3d/README.md#open-questions-provisional-ids-d-38), listed in §14.
@@ -165,7 +171,8 @@ Fields (v0.2 D.2): `schemaVersion`, `commandId`, `projectId`, `buildingId`, `act
 | `exportRoundDecimals` | 3 | rounding on export (mm) |
 
 The profile is set per project and delivered with the workplace (3DQM extension, Q-03 / 3D-43) [A]. `measurementTolM`
-(v0.2 B.4) has no v0.3 value: `TBD` (Q-24). `lockTtlMin = 15` of v0.3 §10 is dropped: 3DQM keeps no own lock, the
+(v0.2 B.4) has no v0.3 value: `TBD` (Q-24). The RANSAC parameters of the plane fit are kernel settings, not profile
+fields (§9 r3, D-130); the heatmap threshold is a field of each `heatmap-request`, not of the profile (§9 r6, D-131). `lockTtlMin = 15` of v0.3 §10 is dropped: 3DQM keeps no own lock, the
 CP assignment lease applies [D] (D-69; amends D-13 for this field). The profile has 14 fields.
 
 ### 2.4 Error registry (v0.3 §9.2)
@@ -481,20 +488,25 @@ service).
 (v0.3 §7). Snapping to points is a client function (§12).
 
 **API.** Input: points as typed arrays in the local frame, supplied by the service through the points port (box query;
-interim COPC by box / LAS whole, D-35) (3D-ADR-0002 C1/C2). Plane fit -> `plane-fit-result`; heatmap -> `heatmap-result`.
+interim own adapters, D-35: uncompressed LAS read whole by 3D-22, COPC by box by 3D-70, D-133) (3D-ADR-0002 C1/C2). Plane fit -> `plane-fit-result`; heatmap -> `heatmap-result`.
 
 **Rules.**
 1. Plane fit: robust fit (RANSAC + SVD refinement on inliers); returns plane, inlier count, inlier ratio, RMSE (v0.3 §7).
 2. Refusal: fewer than `planeFitMinPoints` points, or inlier ratio below `planeFitMinInlierRatio` -> `INVALID_MEASUREMENT`
    with the numbers (v0.3 §7).
-3. RANSAC parameters (iterations, inlier distance) are not given by the sources; fixed thresholds of v0.1 are heuristics,
-   not guarantees (v0.2 C.16): `TBD` (Q-24).
+3. RANSAC parameters [D] (D-130): inlier distance = `planarTolM`, measured along the candidate plane's normal (precedent
+   v0.1 C.7 `threshold=tol.planar`); iterations adaptive for 99.9 % confidence, capped at 1000; samples drawn from a
+   seeded pseudo-random generator with a fixed seed inside the kernel (no `Math.random`), so equal inputs give equal
+   results. No profile field is added (§2.3).
 4. The result is applied either as a `PLANE` measurement or directly as the new `supportPlane` of a selected face through
    PREVIEW/COMMIT (`FIT_PLANE`, §10.12) (v0.3 §7).
 5. Measurements are soft with weight `1/σ²` by default; hard only after an explicit Fix by the operator (v0.3 §7).
-6. Heatmap: point-to-surface distance (along the normal, GT-21) for points within `heatmapBufferM` of the building;
-   computed on the server; the client receives the face colouring and a summary: RMSE, maximum, share of points beyond
-   the threshold. The threshold is configurable; its default: `TBD` (Q-24) (v0.3 §7).
+6. Heatmap, requested with a `heatmap-request` (§2 row 17, D-136), computed on the server; the client receives the face
+   colouring and a summary: RMSE, maximum, share of points beyond the threshold (v0.3 §7). Point assignment [D] (D-135):
+   a point of the `selection` counts if its 3D distance to the nearest face polygon is <= `heatmapBufferM`; it is assigned
+   to that face; its value is the signed distance along that face's normal (GT-21). `faceIds`, when given, limits the
+   reported faces; points are still assigned to their nearest face of the whole model. The threshold `thresholdM` is
+   configurable (v0.3 §7): a required request field with no server default [D] (D-131).
 7. Point coordinates come from the source double-precision data (v0.3 §7).
 
 **Accept:**
@@ -817,8 +829,10 @@ face ids + `SurfaceKind`; a constraint (§5 rule 1) or its id; point selection +
    `REMOVE_CONSTRAINT` of a `FIXED_POINT` is the explicit unlock of v0.2 C.11.
 3. Setting a hard constraint that the current model violates -> `CONSTRAINT_CONFLICT`, model unchanged [A].
 4. `FIT_PLANE`: runs the plane fit of §9 on the selected points and applies the result as a `PLANE` measurement or as the
-   new `supportPlane` of the selected face through PREVIEW/COMMIT (v0.3 §7). How the selection (rectangle or lasso in the
-   view) reaches the server: Q-18.
+   new `supportPlane` of the selected face through PREVIEW/COMMIT (v0.3 §7). The selection (rectangle or lasso in the
+   view) reaches the server as the payload `selection`, a `PointSelection` in the LOCAL frame (§2); the service queries
+   the points port by its bounding box and filters by its shape [D] (D-132). 3D-22 ships `fitPlane` (D-119); the command
+   wiring is row 3D-71, after the `executeCommand` pipeline (D-134).
 
 **Accept:**
 - Accept: `SET_SEMANTICS` on one roof face changes only its `surfaceKind`; geometry patch empty.
@@ -990,18 +1004,19 @@ Count: 29 tests (GT-I1..GT-I4, GT-01..GT-25); per module: `import` 3, `export` 1
 
 Final ids assigned at merge (D-38, D-71). Each is recorded in DECISIONS.md. Owner answers of
 2026-11-21 (dialog): D-68 (GT-13 -> 3D-23), D-69 (CP lease only, no own lock), D-70 (imported vertices
-explicit until edited). Owner answers of 2026-11-23 (dialog, 3D-06): D-76 (refusal codes), D-77 (severities).
+explicit until edited). Owner answers of 2026-11-23 (dialog, 3D-06): D-76 (refusal codes), D-77 (severities). Owner answers of 2026-11-23 (dialog, 3D-22): D-130, D-131 (Q-24 narrowed),
+D-132 (Q-18 narrowed), D-135, D-136.
 
 | Id | Question | Used in |
 |---|---|---|
 | Q-17 | **Closed by D-110** ([3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices). Objective that fixes the remaining degrees of freedom of a movable plane (e.g. minimal displacement of its other derived vertices); the sources name only soft `MINIMIZE_DISPLACEMENT` | §5 r8, §10.4 r5, §10.5 r4, §10.7 r3, §10.8 r3 |
-| Q-18 | Operations given only as intent: movable planes of `MATCH_ELEVATIONS` and `SET_HEIGHT EAVE`; solid closure of `SET_OVERHANG` (soffit or not); collinearity tolerance of `STRAIGHTEN_FACE`; how the `FIT_PLANE` selection reaches the server | §10.1 r7, §10.6 r6, §10.7 r3, §10.10 r1, r5, §10.12 r4 |
+| Q-18 | Operations given only as intent: movable planes of `MATCH_ELEVATIONS` and `SET_HEIGHT EAVE`; solid closure of `SET_OVERHANG` (soffit or not); collinearity tolerance of `STRAIGHTEN_FACE`. **Narrowed by D-132**: how the `FIT_PLANE` selection reaches the server (§10.12 r4) | §10.1 r7, §10.6 r6, §10.7 r3, §10.10 r1, r5 |
 | Q-19 | **Closed by D-70** (keep explicit until edit). Import: are vertex positions replaced by plane intersections (moves up to `planarTolM`, changes an unedited round trip of real data) or kept explicit until the first edit; how a `NON_PLANAR_FACE` keeps its vertices under the vertex-plane invariant | §6 r16 |
 | Q-20 | **Closed by D-76** (codes in §10.3 r6, §10.5 r5, §10.6 r2, §10.8 r2; no default maximum displacement). Refusal codes the sources leave open: `FIT_TO_SHARED_EDGE` over the displacement limit / no unique pairing; `HEAL_HOLE` mode impossible (GT-11); `SPLIT_FACE` errors; R-01 errors; and the default maximum displacement of `FIT_TO_SHARED_EDGE` | §2.4, §10.1 r6, §10.3 r6, §10.5, §10.6 r2 |
 | Q-21 | **Closed by D-77** (table of §8 r4). Severity by state of `SOLID_OVERLAP`, `UNDERCONSTRAINED_GEOMETRY`, `INVALID_MEASUREMENT`, `EXPORT_SCHEMA_ERROR`, `PRECISION_LOSS` | §8 r4 |
 | Q-22 | **Closed by D-69** (CP lease only). Lock: own building lock with `lockTtlMin` (v0.3 §8.5) or the CP assignment lease (`leaseRef`, `leaseEpoch`); defines "own operations" for Undo | §2.3, §10.9 r5, §11 r11 |
 | Q-23 | **Closed by D-68** (GT-13 -> 3D-23). GT-13 (idempotency, `expectedVersion`) needs the service's store, but BACKLOG puts it on 3D-18 (module `geo-model3d`, no dependency on 3D-23) | §11, §13 |
-| Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, heatmap default threshold, RANSAC parameters, `measurementTolM` | §2.3, §2.4, §9 r3, r6, §11 r5, r6 |
+| Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, `measurementTolM`. **Narrowed by D-130** (RANSAC parameters, §9 r3) and **D-131** (heatmap threshold required, no default, §9 r6) | §2.3, §2.4, §11 r5, r6 |
 | Q-25 | CityJSON mapping of `OVERHANG` faces on export | §7 r6 |
 
 Contract open questions of 3D-06 (D-75; source and wording:

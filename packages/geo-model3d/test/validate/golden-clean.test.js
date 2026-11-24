@@ -3,7 +3,7 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { validate, readFixture } from './helpers.js';
+import { validate, readFixture, TOLS } from './helpers.js';
 import { FIXTURES } from '../brep/helpers.js';
 
 const inputs = readdirSync(FIXTURES).filter((d) => d.startsWith('GT-')).sort()
@@ -34,6 +34,36 @@ describe('golden inputs', () => {
         expect(r.isValidForTargetState).toBe(true);
       } else {
         expect(got).toEqual(want);
+      }
+    });
+  }
+});
+
+// D-156 (Q-41; 3D-75): on the GT-I2 shape OPEN_BOUNDARY lies on the two ridge half-edges only; the 0.03 m one-face
+// gable edges (< minEdgeLengthM) are DEGENERATE_EDGE, not OPEN_BOUNDARY.
+describe('GT-I2 shape: open ridge, degenerate gable edges (D-156)', () => {
+  for (const [gt, file] of [['GT-06', 'input.model.json'], ['GT-24', 'input.model.bld-gt-24-b.json']]) {
+    it(`${gt}/${file}`, async () => {
+      const m = readFixture(gt, file);
+      const r = await validate(m, { mode: 'COMMIT_VALIDATION', targetState: m.state, fullSolid: true });
+      /** @param {string} h */
+      const len = (h) => {
+        const he = m.halfEdges[h];
+        const p = m.vertices[he.startVertexId].p, q = m.vertices[m.halfEdges[he.nextId].startVertexId].p;
+        return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+      };
+      const open = r.issues.filter((/** @type {any} */ i) => i.code === 'OPEN_BOUNDARY').map((/** @type {any} */ i) => i.entityIds[0]);
+      expect(open.length).toBe(2);
+      for (const h of open) {
+        expect(m.halfEdges[h].twinId).toBeNull();
+        expect(m.faces[m.halfEdges[h].faceId].surfaceKind).toBe('RoofSurface');
+        expect(len(h)).toBeGreaterThanOrEqual(TOLS.minEdgeLengthM);
+      }
+      const deg = r.issues.filter((/** @type {any} */ i) => i.code === 'DEGENERATE_EDGE').map((/** @type {any} */ i) => i.entityIds[0]);
+      expect(deg.length).toBe(2);
+      for (const h of deg) {
+        expect(m.halfEdges[h].twinId).toBeNull();
+        expect(len(h)).toBeCloseTo(0.03, 9);
       }
     });
   }

@@ -3,8 +3,10 @@
 // opposite directions -> twin pair; used three or more times -> every half-edge gets one `nonManifoldGroupId` and no
 // twin [A: the contract allows a group id, not a choice of twin]. Two uses in the same direction stay unpaired [A].
 // Vertices stay EXPLICIT at their file position with the file indices as `sourceRef` (D-70).
-import { NON_PLANAR_FACE } from './state.js';
 import { SEMANTICS_INFERRED } from './semantics.js';
+
+/** Face tag of a merged face farther than `planarTolM` from its plane; `validate` reports the issue (3D-75). */
+export const NON_PLANAR_FACE = 'NON_PLANAR_FACE';
 
 /** @typedef {[number, number, number]} P3 */
 /** @typedef {import('./faces.js').RawFace} RawFace */

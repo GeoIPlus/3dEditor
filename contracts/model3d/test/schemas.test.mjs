@@ -26,7 +26,7 @@ describe('schema files', () => {
 
   it('cover every row of the spec §2 schema list (row 5 as one file per OperationKind)', () => {
     const names = tableRows(specSection('## 2. ')).map((r) => /`([a-z0-9-]+)/.exec(r[1])?.[1]);
-    expect(names.length).toBe(16);
+    expect(names.length).toBe(17);
     for (const n of names) {
       if (n === 'command-payload-') continue;
       expect(schemas.has(/** @type {string} */ (n)), String(n)).toBe(true);

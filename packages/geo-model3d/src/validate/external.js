@@ -23,7 +23,7 @@
  */
 
 /**
- * val3dity code -> contract `ValidationCode`. [A] (Q-45): the spec maps nothing; each line reads the val3dity
+ * val3dity code -> contract `ValidationCode`. (D-162): the spec maps nothing; each line reads the val3dity
  * meaning onto the nearest code. Codes without a counterpart (503 disconnected solids of a CompositeSolid, 7xx
  * IndoorGML, 9xx input / format) and unknown codes become EXPORT_SCHEMA_ERROR: the exported file fails the
  * independent check.
