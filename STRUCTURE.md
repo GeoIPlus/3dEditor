@@ -34,6 +34,7 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
 services/kernel/       (3D-22, 3D-23) host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
   src/ports/ adapters/ operaflow/                        storage, points, validator, auth; interim adapters (D-35)
   src/ports/points.js adapters/las-*.js cloud-points.js  points port, LAS-whole adapter, selection -> local points (3D-22; card README.md)
+  src/adapters/copc-*.js test/data/*.copc.laz            COPC-by-box adapter, `laz-perf` decoder (3D-70, 3D-ADR-0009); committed COPC test files (D-140)
 contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
   <name>.schema.json examples/<name>.json test/           54 schemas ($id urn:geoiplus:schema:model3d-<name>:v1), valid/invalid examples, Ajv test (3D-06; card README.md)
 fixtures/GT-<id>/                    golden fixtures of v0.3 §12, generated; format in fixtures/README.md (3D-07)
@@ -45,6 +46,7 @@ tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/
 tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006)
 tools/hooks/                         Claude Code hook scripts (3D-30)
 tools/crs-table/                     generator of `geo-model3d/src/crs/epsg-table.json` from PROJ proj.db (3D-32)
+tools/copc-fixture/                  generator of `services/kernel/test/data/*.copc.laz` (Python `copclib`, dev-time only, not run by `npm run check`) (3D-70)
 tools/agent-evals/                   agent eval runner: headless sessions in throwaway clones, rubric grading (3D-28; costs money, not in `npm run check`)
 ```
 
