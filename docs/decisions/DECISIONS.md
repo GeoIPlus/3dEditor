@@ -181,6 +181,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-165 | The cloud's horizontal CRS always comes from the context, not from the file's CRS records: the CRS of the already opened dataset, a CRS the user defined, or one passed by the CP. Where it enters the contracts (CP 3DQM extension or the request) is proposed by 3D-69; a contract change needs approval (D-18) | Owner, dialog, 2026-11-24 |
 | D-166 | 3D-75 (import state from `validateModel`, D-156 applied in `validate`) set `ready` (3D-10 and 3D-12 done); no session started yet | Owner, chat, 2026-11-24 |
 | D-167 | Intake 3D-76 (`proposed`): `check:docs` checks that `D-NN` / `Q-NN` rows of "Open-question status updates" have the status-row shape and name existing ids, after the 3D-66 merge put D-141..D-143 into that table unnoticed (fixed in 30c4360) | Owner, dialog, 2026-11-24 |
+| D-168 | 3D-75 started in a fresh session, in parallel with 3D-11 (both touch `geo-model3d/src/index.js`; the later merge resolves it) | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
