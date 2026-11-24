@@ -509,7 +509,7 @@ flowchart TB
 - Accept: ADR accepted by the owner (D-18, D-109); a COPC test file gives exactly the points of the same box as its LAS
   copy through `createLasPointsAdapter`; only nodes meeting the box are decoded (counted in the test); GT-20 / GT-21
   results unchanged when the points come from the COPC adapter.
-- Decisions: D-35, D-109, D-133  Open: Q-44 (committed COPC test file)
+- Decisions: D-35, D-109, D-133, D-139, D-140 (Q-44: committed COPC test file allowed)  Open: none
 
 ### 3D-71 `FIT_PLANE` command (D-134)
 - Source: 3D-22 session 2026-11-23, owner dialog (D-134): the command needs the `executeCommand` pipeline.
