@@ -234,6 +234,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-218 | A footprint whose body cannot be resolved uniquely (its Building / BuildingPart semantic node has no solid or several) -> `INVALID_TOPOLOGY` with the footprint and semantic node ids | Owner, dialog, 2026-11-24 (3D-14) |
 | D-219 | 3D-14 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-212..D-218; the `executeCommand` pipeline is in the base, operation rows 3D-15..3D-21 and 3D-71 can build on it | Owner, WP session 3D-14, 2026-11-24 |
 | D-220 | Operations 3D-15, 3D-16, 3D-17, 3D-20, 3D-21 set `ready` and started in parallel fresh sessions on the 3D-14 pipeline; each adds only its own entries to `ops/registry.js` and its own `ops/*` files; merged one at a time | Owner, chat, 2026-11-24 |
+| D-3D16-1 | Q-18 for `MATCH_ELEVATIONS`: the movable planes are the non-vertical roof faces that define the selected vertices; walls, ground and faces with a hard constraint stay fixed; no solution -> `CONSTRAINT_CONFLICT`; the footprint never changes | Owner, dialog, 2026-11-24 (3D-16) |
+| D-3D16-2 | `ALIGN_EAVE`: only the roof face of the eave moves; walls stay fixed; a target line off the adjacent wall plane -> `CONSTRAINT_CONFLICT` (overhangs are `SET_OVERHANG`, 3D-19) | Owner, dialog, 2026-11-24 (3D-16) |
+| D-3D16-3 | `FIT_MEASUREMENTS` of `ALIGN_RIDGE` / `ALIGN_EAVE`: each `POINT` measurement (D-215 layout) is a soft term on its nearest adjacent roof plane with weight 1/σz²; `targetLine`, if given, is hard; `LINE` / `PLANE` measurements -> `INVALID_MEASUREMENT` (TBD, Q-28) | Owner, dialog, 2026-11-24 (3D-16) |
+| D-3D16-4 | Payload `hardConstraintIds` (`ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS`; v0.2 D.3): each id must be a model constraint (unknown -> `INVALID_PAYLOAD`); a listed constraint is held hard for this command even if stored soft; hard model constraints apply in any case | Owner, dialog, 2026-11-24 (3D-16) |
 
 ## Open questions
 
@@ -330,3 +334,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-45 | 2026-11-24, owner | closed by D-162 | Maps of `validate` (scope, structural problems, val3dity codes) accepted as written |
 | Q-41 | 2026-11-23, owner (3D-10) | closed by D-156 | Two ridge edges; short one-face edges are `DEGENERATE_EDGE` |
 | Q-29 | 2026-11-23, owner (3D-13) | closed by D-171 | `"<faceId>:OFFSET" | "<faceId>:ROTATION"` strings, contract unchanged |
+| Q-18 | 2026-11-24, owner (3D-16) | narrowed, open | `MATCH_ELEVATIONS` movable planes closed by D-3D16-1; SET_HEIGHT EAVE, SET_OVERHANG, STRAIGHTEN_FACE stay open |

@@ -112,6 +112,9 @@ checked only when the candidate has an ERROR. A PREVIEW report never confirms (s
 | `footprint.js` | footprint body (D-218), rings normalised (outer CCW, courtyards CW), R-01 errors, rectangle test, axis pairing (exact tie -> `UNDERCONSTRAINED_GEOMETRY`) |
 | `envelope.js`, `topology.js` | ground + one vertical wall per footprint edge (top through every roof vertex on the edge: no T-junction) + roof faces; twins by opposite traversal; RTG roles (import's rule restated); ids per D-212; vertices re-derived from their planes |
 | `geom2.js`, `errors.js`, `ids.js`, `registry.js` | plan helpers; error objects (HTTP table of spec §2.4); default id source skipping every id of the input (deterministic) |
+| `align-line.js` (3D-16) | `ALIGN_RIDGE` / `ALIGN_EAVE` (spec §10.7 r1, r2; v0.2 C.7): both `targetLine` points on every face of the edge (hard, `planarTolM`); movable = adjacent roof faces without a hard constraint, walls fixed (D-3D16-2); `KEEP_PLANES` moves nothing (off-line target -> `CONSTRAINT_CONFLICT`, GT-09); `KEEP_EAVES` / `KEEP_RIDGE` lock the `EAVE` / `RIDGE` lines of each movable face as fixed points on its plane; `FIT_MEASUREMENTS` adds POINT terms; other modes `INVALID_PAYLOAD` `INVALID_MODE` |
+| `match-elevations.js` (3D-16) | `MATCH_ELEVATIONS` (spec §10.7 r3): `EQUAL_Z` hard per vertex (`zAlignTolM`), target number (WORLD mapped) / MIN / MAX / MEAN of current z; movable = non-vertical roof faces defining the vertices, no hard constraint (D-3D16-1) |
+| `align-common.js` (3D-16) | payload `hardConstraintIds` held hard (D-3D16-4); POINT measurements soft on the nearest adjacent roof plane, weight 1/σz² (D-3D16-3) |
 
 Readings [A] for the owner's review: unknown `footprintId` / measurement id -> `INVALID_PAYLOAD`; a non-POINT
 measurement for SHED -> `INVALID_MEASUREMENT`; plan point identity on a 1e-7 m grid; degenerate hip when the ridge is
@@ -119,6 +122,11 @@ within `topologySnapTolM` (apex = midpoint of both ridge ends); a footprint zero
 `REBUILD_ENVELOPE` uses the building's own footprint (no `buildingPartId`) and writes `baseZ` into `baseElevationM`;
 new roof faces join the replaced roof's component. R-04 "undetermined ridge length" (spec §10.3 r5) cannot occur with
 the accepted payload (four slopes required); only the axis tie gives UNDERCONSTRAINED_GEOMETRY.
+3D-16 readings [A]: unknown edge / vertex / constraint / measurement id -> `INVALID_PAYLOAD` with the id; edge role
+must match the kind (`RIDGE` / `EAVE`); `INVALID_MODE` is the message prefix of `INVALID_PAYLOAD`; a missing or zero
+`sigmaZ` -> `INVALID_MEASUREMENT`; a listed soft constraint the solver cannot hold hard (soft-only kind) -> `INVALID_PAYLOAD`;
+condition ids in conflicts are the edge (target line), the locked half-edges, the vertices (EQUAL_Z) and constraint ids;
+`KEEP_PLANES` with no target or a target on the line commits a version with unchanged planes (C.7 "rebuild on that line").
 Lineage (D-212): kept ids are not in `mapped`; old roof faces map to all new roof faces; new half-edges and
 vertices without a predecessor are only in the patch `added` (the owner's reading of spec §10.1 Accept 3).
 
@@ -252,6 +260,12 @@ run spread ~0.1 ms).
 - Golden GT-01..GT-05 (`gt-0[1-5].golden.test.js`, PREVIEW then COMMIT with the `previewId`): GT-01 roof 80 m2 /
   400 m3; GT-02 85.440 / 520, 1 face; GT-03 100 / 520, 2 faces; GT-04 ridge Z 8, length 2, 4 faces, 100 / 488; GT-05
   `UNSUPPORTED_FOOTPRINT`, model unchanged.
+- `test/ops/align-line.test.js`, `match-elevations.test.js` (3D-16): KEEP_RIDGE on ALIGN_RIDGE -> `INVALID_MODE`;
+  off-centre ridge; target skew to the locked eave -> `CONSTRAINT_CONFLICT` (spec §10.7 r2); KEEP_PLANES on / without a
+  target; FIT_MEASUREMENTS and its refusals; ALIGN_EAVE KEEP_RIDGE, off-wall target conflict (D-3D16-2), soft vs held-hard
+  `FIXED_EAVE` (D-3D16-4); MATCH_ELEVATIONS number / MIN / MAX / MEAN, ground-vertex and hard-face conflicts.
+- Golden GT-07, GT-09 (3D-16, `align.golden.helpers.js`): GT-07 eaves Z 5, roof 106.3015 m2, volume 540 m3, only the
+  two slope planes change; GT-09 `CONSTRAINT_CONFLICT`, version and model unchanged.
 - Bench (`npm run bench`, non-gate scenes `*-roof`, REPLACE_ROOF PREVIEW through `executeCommand`, 3 x 1000): GT-03
   p95 1.7 ms; sawtooth-199 p95 30.3 ms (kernel mean 9.3 ms; the rest is the bench's Ajv check of the 199-face reply).
 - Golden: `test/golden/gt-25.golden.test.js` (GT-25, world -> local -> world <= 0.001 m; measured 0 m).
