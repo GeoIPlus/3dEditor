@@ -27,8 +27,9 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
   src/index.js canary.js                                 public API (commands, import, export, validate); P4 marker
   src/brep/                                             half-edge, planes, derived vertices, frame, transactions (3D-09)
   src/cloud/                                             plane fit (RANSAC + SVD), deviation heatmap (3D-22)
-  src/solve/ import/ export/ validate/ ops/             modules (3D-ADR-0002 C1; later rows)
-  test/brep/ test/cloud/ test/golden/                   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22)
+  src/validate/                                         progressive validation, severity by state, val3dity port (3D-12)
+  src/solve/ import/ export/ ops/                       modules (3D-ADR-0002 C1; later rows)
+  test/brep/ test/cloud/ test/validate/ test/golden/    unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
   src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007)
 services/kernel/       (3D-22, 3D-23) host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003

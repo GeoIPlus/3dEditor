@@ -6,6 +6,7 @@ import './canary.js';
 import { canonicalJson as canon, localFrame } from './brep/index.js';
 
 export { P4_CANARY } from './canary.js';
+export { validateModel } from './validate/index.js';
 // Point cloud (3D-22, spec §9; names D-119): `fitPlane(points, selection, profile)`, `deviationStats(model, points,
 // request, profile)`; points are a Float64Array, x y z interleaved, LOCAL frame. Both return `{ result }` or `{ error }`.
 export { fitPlane, deviationStats } from './cloud/index.js';

@@ -151,6 +151,14 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-135 | Heatmap point assignment: a point counts if its 3D distance to the nearest face polygon is <= `heatmapBufferM`; it is assigned to that face; its value is the signed distance along that face's normal; request `faceIds` optionally limits the reported faces | Owner, dialog, 2026-11-23 (3D-22) |
 | D-136 | Contract change (D-18), approved: new `heatmap-request` schema v1 (model version, optional `faceIds`, point selection, required `thresholdM`); 3D-23 binds it to the wire | Owner, dialog, 2026-11-23 (3D-22) |
 | D-137 | 3D-22 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids of 3D-22 became D-130..D-136 and Q-44; intake rows 3D-70..3D-72 keep their ids | Owner, chat, 2026-11-24 |
+| D-141 | Q-10: val3dity (GPL-3.0, links CGAL and GEOS) runs in its **own container**, version pinned (2.7.0 at decision time), called by `services/kernel` through the validator port of `validate`; the kernel and the service image stay permissive (D-109). [3D-ADR-0008](adr/3D-ADR-0008-val3dity-binding.md) `proposed` | Owner, dialog, 2026-11-23 (3D-12) |
+| D-142 | 3D-12 delivers `src/validate` (three modes, severity by state, "new" issues via lineage), the in-process validator port with a stub, and the ADR; the val3dity image and its binding in `services/kernel` are a new intake row that depends on 3D-23 | Owner, dialog, 2026-11-23 (3D-12) |
+| D-143 | D-118: `robust-predicates` is not adopted in 3D-12; ring and face-crossing tests use tolerance-based predicates in own code; reopen only if a test shows a sign error near zero | Owner, dialog, 2026-11-23 (3D-12) |
+| D-144 | `validateModel` takes findings of other modules (solve, crs, export, cloud, import) and of the external validator port and assigns scope and severity from one table; `validate` itself detects the geometry and topology codes and `SOLID_OVERLAP` between bodies of one building (D-89) | Owner, dialog, 2026-11-23 (3D-12) |
+| D-145 | `INCONSISTENT_JUNCTION` measure (spec §4 rule 5): the spread of a node = largest distance between the points where triples of its independent planes meet; reported when > `topologySnapTolM`. Replaces the 3D-09 [A] reading (largest distance of the least-squares point), under which GT-19's 0.05 m divergence measured 0.00997 m and passed; `brep.inconsistentJunctions` and `rederive` use it | Owner, dialog, 2026-11-23 (3D-12) |
+| D-146 | Severity columns beyond spec §8 rule 4: target state `DRAFT_SURFACE` uses the `DRAFT_SOLID` column, `APPROVED` the `VALID_SOLID` column | Owner, dialog, 2026-11-23 (3D-12) |
+| D-147 | 3D-12 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids became D-141..D-146 and Q-45; its intake row 3D-70 (val3dity binding) became 3D-73 (id clash with the parallel 3D-22) | Owner, chat, 2026-11-24 |
+| D-148 | 3D-73 (val3dity image + binding) set `ready`; it starts only when its dependencies 3D-11 and 3D-23 are done (AGENTS.md §4) | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
@@ -165,7 +173,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-07 | Path to sample CityJSON (roofer, TerraSolid) with point clouds; geoviewer `LOD2-8` samples | Owner promised a repository or bucket path | Owner |
 | Q-08 | Where `contracts/model3d/` schemas live: `shared_compnents` (client consumes them) or here (kernel owns them) | Contract crosses the repository boundary; one location must be authoritative | 3D-27 ADR (D-24) |
 | Q-09 | How P4 isolation is checked mechanically when the kernel is in a separate repository (no client package may depend on `geo-model3d`; no plan chunk references it) | Canary marker in build output (D-24) + dependency rule in `shared_compnents` | 3D-27 ADR (D-24) |
-| Q-10 | External validation: val3dity (native) in a Node host and the Docker image, version pin (v0.3 Д-08) | Sidecar binary, container, or service | 3D-12 |
+| Q-10 | External validation: val3dity (native) in a Node host and the Docker image, version pin (v0.3 Д-08) | Sidecar binary, container, or service | Closed by D-141 (3D-12) |
 | Q-11 | v0.3 §15 assumptions Д-01..Д-12 are not confirmed by the owner; must be confirmed before G1-equivalent rows start. Д-01 is partly overtaken by D-10 (auth and assignment from CP) | List in v0.3 §15 | Owner, dialog, before 3D-09 |
 | Q-12 | Does `shared_compnents` plan a 3D scene module in `geo-render`, or does the 3D scene stay in geoviewer? (HANDOVER §6, not checked) | Determines where 3D-40 lands | 3D-01 |
 | Q-13 | Can `workspace/plan` describe a remote (network) port, not only a Worker port? (HANDOVER §7 Q2) | If not, a library row is needed | 3D-01, 3D-02 |
@@ -200,6 +208,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-42 | On which machine class is the latency verdict re-measured once the kernel service image exists (production instance class of the Tools Plane, unknown today: HANDOVER §8 q3) | [3D-ADR-0006](adr/3D-ADR-0006-bench-rig-and-scenes.md) step 5; 3D-08 measured on the cloud agent container | 3D-23, owner |
 | Q-43 | Do the EPSG dataset terms of use allow shipping a table derived from it (via PROJ `proj.db`) inside the kernel image? PROJ code and data are MIT (`LICENSE_proj` in pyproj 3.8.0); the EPSG terms could not be read (epsg.org blocked by the network policy) | 3D-ADR-0004 licence section | owner / legal, before 3D-32 is accepted |
 | Q-44 | May a small COPC test file (a few KB, LAZ-compressed) be committed for 3D-70? The `laz-perf` JS build decodes only, so the test cannot write one in code (AGENTS.md §2.13, Q-07) | Alternative: generate it once with PDAL outside the repository and keep it in the sample-data location of Q-07 | owner, before 3D-70 is `ready` |
+| Q-45 | Review of the three [A] maps of `validate`: code -> scope (`codes.js`), brep structural problem -> code (`structure.js`), val3dity code -> code with fallback `EXPORT_SCHEMA_ERROR` (`external.js`) | Spec §8 names codes and scopes, no map; owner: review at acceptance of 3D-12 | Owner, at 3D-12 acceptance |
 
 ## Open-question status updates
 

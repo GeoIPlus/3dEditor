@@ -1,10 +1,10 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22); other modules follow their rows (3D-10..3D-21)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12); other modules follow their rows (3D-10..3D-21)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
-- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §9
+- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
-  `robust-predicates` not adopted (D-118)
+  `robust-predicates` not adopted (D-118, D-143)
 - Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
 - Third-party runtime code: `proj4` 2.23.0 (MIT; deps `mgrs` 1.0.0 MIT, `wkt-parser` 1.9.0 MIT), used by
   `src/crs/` only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0007-crs-transform.md), accepted D-125); `src/crs/epsg-table.json`
@@ -25,8 +25,10 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   `inlierRatio`; `INVALID_PAYLOAD` for malformed points or selection).
 - `deviationStats(model, points, request, profile)` (3D-22) - contract `heatmap-request` -> `{ result: heatmap-result }`
   or `{ error }` (`INVALID_PAYLOAD`: unknown `faceIds`, missing threshold, bad selection).
+- `validateModel(model, { mode, targetState, tolerances, clock, affectedEntityIds?, fullSolid?, findings?,
+  externalValidator? }) -> Promise<ValidationReport>` (3D-12, spec §8): contract `validation-report` out; see `validate` below.
 - Names fixed for later rows (D-119): `executeCommand` (3D-14..3D-21), `importBuilding` (3D-10),
-  `exportBuilding` (3D-11), `validateModel` (3D-12).
+  `exportBuilding` (3D-11).
 
 ## Modules (`src/`, DAG of 3D-ADR-0002 C1 rule 2, enforced by `check:arch`)
 `brep` (3D-09) is the leaf every other module imports. Its surface (`src/brep/index.js`), for kernel modules only:
@@ -36,9 +38,28 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
 | `vec.js`, `plane.js` | vectors; `normal · p + d = 0`; `derivePoint(planes, numericEpsilon)`: 3 planes exact, 4+ least squares with residual; null below the Gram-determinant rank threshold |
 | `frame.js` | `localFrame(frame, metric?)`: local = Rz(-buildingAxisDeg) · metric; metric mapping injected (D-116), default `world - originWorld` |
 | `halfedge.js` | `buildIndex` (rings by `nextId`, faces of vertex, shell of face), `checkTopology` (spec §4 r7; internal kinds `LINK`, `TWIN_*`, `SHELL_FACE`, `VERTEX_FACE`; `validate` maps them to codes) |
-| `derive.js` | `vertexPlaneViolations` (shared invariant helper for every op row, spec §4 Accept 2), `inconsistentJunctions` (`INCONSISTENT_JUNCTION`, residual > `topologySnapTolM`), `rederive` (D-70: EXPLICIT -> DERIVED when a face changes) |
+| `derive.js` | `vertexPlaneViolations` (shared invariant helper for every op row, spec §4 Accept 2), `inconsistentJunctions` / `junctionSpread` (`INCONSISTENT_JUNCTION`: spread of the 3-plane points > `topologySnapTolM`, D-145), `rederive` (D-70: EXPLICIT -> DERIVED when a face changes) |
 | `patch.js`, `transaction.js` | `diffModels`, `applyPatch`; `transact(model, mutate)`: isolated copy, version + 1, forward / inverse patch, lineage; `transactPatch` for Undo / Redo as new versions |
 | `rtg.js`, `serialize.js` | `roofGraph` (projection, canonical ids only); `saveModel` / `loadModel` / `isolatedCopy` |
+
+## `validate` (3D-12; spec §8; imports `brep` only)
+Surface `src/validate/index.js` for kernel modules (`ops` uses `runChecks` and `newErrors` in its pipeline):
+
+| File | Contents |
+|---|---|
+| `codes.js` | one table code -> severity in DRAFT_SOLID / VALID_SOLID (spec §8 rule 4, D-77) + scope [A]; `DRAFT_SURFACE` -> draft column, `APPROVED` -> valid column (D-146) |
+| `modes.js` | `runChecks`: FAST_PREVIEW = local checks of the affected faces + one ring of neighbours [A]; COMMIT_VALIDATION = whole-model invariants, shell closure / orientation, self-intersection of the affected volume, everything with `fullSolid`; FINAL = full COMMIT + external port |
+| `structure.js` | open boundary, non-manifold edge / vertex (fans), shell closure and connectivity; brep structural kinds -> codes [A] |
+| `geometry.js` | degenerate edge / face (`minEdgeLengthM`, `minFaceAreaM2`), non-planar face (`planarTolM`), ring orientation vs support-plane normal, shell orientation by signed volume, junctions |
+| `intersect.js`, `polygon.js` | ring self-intersection (x-sweep), face pairs piercing / overlapping in one shell; tolerance predicates only (D-143) |
+| `overlap.js` | `SOLID_OVERLAP` between bodies of one building (crossing faces, vertex deeper than `planarTolM`, centroid; winding number); never between buildings (D-89) |
+| `lineage.js` | "new" issues: an old issue's ids mapped through `topology-lineage` meet the new issue's ids -> not new [A]; `newErrors` = commit gate of spec §8 rule 7 |
+| `external.js` | external validator port type; val3dity code -> contract code, fallback `EXPORT_SCHEMA_ERROR` [A]; binding = 3D-73 (D-141/2, [3D-ADR-0008](../../docs/decisions/adr/3D-ADR-0008-val3dity-binding.md)) |
+| `report.js` | dedupe, deterministic order, message = localisation key `model3d.validation.<camelCode>` [A] (D-91), `validatorVersion` `geo-model3d-validate/1` (+ port version in FINAL) [A] |
+
+Readings [A] (maps of `codes.js`, `structure.js`, `external.js`) are reviewed by the owner at acceptance (Q-45).
+Findings of other modules (solve, crs, export, cloud, import) enter as `findings` and get scope and severity from the
+same table (D-144). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 rule 1).
 
 ## Internal modules
 - `src/crs/` (3D-32): `resolveCrs`, `createMetricFrame` (projected: translation; geographic: local ENU),
@@ -66,6 +87,10 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
 ## Tests and golden tests
 - `test/brep/` (geometry, model, transaction; 3D-09): every golden input sound, on its planes, byte-identical
   `save -> load -> save`; broken copies reported; patches and lineage valid against the contracts (Ajv).
+- `test/validate/` (3D-12): every code x {DRAFT_SOLID, VALID_SOLID} (Accept 1), lineage "new" via real transactions
+  (Accept 2), FINAL with a stub port (Accept 3), modes, every golden input (VALID_SOLID inputs clean); all reports valid
+  against `validation-report` (Ajv). Cost (3D-12, warm, this container): sawtooth-199 FAST 6.4 ms p50 / 9.1 ms p95,
+  COMMIT (one face affected) 12.1 / 16.6, full solid 23.3 / 32.4; sawtooth-499 FAST 29.1 / 41.5, full 111.8 / 150.3.
 - Golden: `test/golden/gt-25.golden.test.js` (GT-25, world -> local -> world <= 0.001 m; measured 0 m).
 - Golden GT-20 (`gt-20.golden.test.js`): normal deviation 0.0051 deg (<= 0.2), RMSE 0.00778 m (<= 0.015), inliers
   444 / 500 = 0.888 (>= 0.85). GT-21 (`gt-21.golden.test.js`): south slope mean 0.07935 m over 447 points
