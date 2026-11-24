@@ -1,9 +1,10 @@
 // cloud (3D-22): robust plane fit (M-06; v0.3 §7; spec §9 rules 1-3). RANSAC on point triples, then an SVD
 // least-squares refinement on the consensus set. Parameters (D-130, Q-24): inlier distance = `planarTolM` along the
 // normal; iterations adaptive for 99.9 % confidence, at most 1000; fixed seed, so the result is deterministic.
+// The selected points are put in a canonical order first, so the result does not depend on the input order (3D-80).
 import { planeFromPoints, unsign0 } from '../brep/index.js';
 import { symmetricEigen3 } from './eigen.js';
-import { invalidPayload, pointAt, pointCount, selectPoints, selectionProblem } from './points.js';
+import { canonicalOrder, invalidPayload, pointAt, pointCount, selectPoints, selectionProblem } from './points.js';
 import { mulberry32, randomIndex } from './rng.js';
 
 /** @typedef {import('./points.js').PointSelection} PointSelection */
@@ -119,7 +120,8 @@ export function leastSquaresPlane(pts, ids) {
 }
 
 /**
- * Robust plane fit on the selected points (spec §9 rules 1-2). Refusal: fewer than `planeFitMinPoints` points, or
+ * Robust plane fit on the selected points (spec §9 rules 1-2). The result depends on the set of points only, not on
+ * their order (3D-80). Refusal: fewer than `planeFitMinPoints` points, or
  * inlier ratio below `planeFitMinInlierRatio` -> `INVALID_MEASUREMENT` with the numbers.
  * @param {Float64Array} points x y z interleaved, LOCAL frame (from the points port)
  * @param {PointSelection} selection contract `PointSelection`
@@ -132,7 +134,7 @@ export function fitPlane(points, selection, profile) {
   }
   const problem = selectionProblem(selection);
   if (problem) return { error: invalidPayload(problem) };
-  const pts = selectPoints(points, selection);
+  const pts = canonicalOrder(selectPoints(points, selection));
   const n = pointCount(pts);
   if (n < Math.max(3, profile.planeFitMinPoints)) return { error: refusal(n) };
   const ids = ransacInliers(pts, profile.planarTolM);

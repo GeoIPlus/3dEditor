@@ -105,37 +105,24 @@ describe('GT-20 / GT-21 unchanged when the points come from the COPC adapter', (
   /** The fixture frame, moved to a UTM origin (the golden fixtures use origin 0, a LAS file never does). @param {string} gt */
   const frameOf = (gt) => ({ ...readFixture(gt, 'input.model.json').frame, originWorld: ORIGIN });
 
-  /**
-   * The fixture points in the order the adapter returned them (matched by their 0.1 mm integers). `fitPlane` (RANSAC)
-   * depends on the input order: the JSON order gives 444 inliers, the COPC node order 439 (both inside the GT-20
-   * bounds) - recorded in the 3D-70 checkpoint.
-   * @param {string} gt @param {Float64Array} pts
-   */
-  const jsonInOrderOf = (gt, pts) => {
-    const json = readFixture(gt, 'input.points.json').points;
-    const key = (/** @type {number[]} */ p) => p.map((v) => Math.round(v * 1e4)).join(',');
-    const at = new Map(json.map((/** @type {number[]} */ p, /** @type {number} */ i) => [key(p), i]));
-    const out = new Float64Array(pts.length);
-    for (let i = 0; i < pts.length; i += 3) out.set(json[/** @type {number} */ (at.get(key([pts[i], pts[i + 1], pts[i + 2]])))], i);
-    return out;
-  };
-
-  it('GT-20 FIT_PLANE: the expected.json bounds hold and the result equals the run on the JSON points in the same order', async () => {
+  it('GT-20 FIT_PLANE: the expected.json bounds hold and the result equals the run on the JSON points (3D-80: order-independent)', async () => {
     const expected = readFixture('GT-20', 'expected.json');
     const sel = readFixture('GT-20', 'steps.json')[0].command.payload.selection;
     const pts = await readLocalPoints(copcOf('GT-20').port, /** @type {any} */ (frameOf('GT-20')), sel);
-    const json = jsonInOrderOf('GT-20', pts);
-    pts.forEach((v, i) => expect(Math.abs(v - json[i])).toBeLessThan(1e-9));
+    const jsonPoints = readFixture('GT-20', 'input.points.json').points;
+    const json = Float64Array.from(jsonPoints.flat());
+    const reversed = Float64Array.from(jsonPoints.slice().reverse().flat());
     const viaCopc = /** @type {any} */ (fitPlane(pts, sel, PROFILE)).result;
-    const viaJson = /** @type {any} */ (fitPlane(json, sel, PROFILE)).result;
     expect(viaCopc.pointCount).toBe(expected.assert.points);
     expect(viaCopc.rmseM).toBeLessThanOrEqual(expected.assert.rmseMMax);
     expect(viaCopc.inlierRatio).toBeGreaterThanOrEqual(expected.assert.inlierRatioMin);
     const len = Math.hypot(0.75, 1); // GT-20 truth z = 0.75 y + 5, as gt-20.golden.test.js
     expect(angleDeg(viaCopc.plane.normal, [0, -0.75 / len, 1 / len])).toBeLessThanOrEqual(expected.assert.normalDeviationDegMax);
-    expect(viaCopc.inlierCount).toBe(viaJson.inlierCount);
-    viaJson.plane.normal.forEach((/** @type {number} */ v, /** @type {number} */ k) => expect(viaCopc.plane.normal[k]).toBeCloseTo(v, 9));
-    expect(viaCopc.rmseM).toBeCloseTo(viaJson.rmseM, 9);
+    for (const viaJson of [json, reversed].map((p) => /** @type {any} */ (fitPlane(p, sel, PROFILE)).result)) {
+      expect(viaCopc.inlierCount).toBe(viaJson.inlierCount);
+      viaJson.plane.normal.forEach((/** @type {number} */ v, /** @type {number} */ k) => expect(viaCopc.plane.normal[k]).toBeCloseTo(v, 9));
+      expect(viaCopc.rmseM).toBeCloseTo(viaJson.rmseM, 9);
+    }
   });
 
   it('GT-21 heatmap: mean slope deviation within the expected.json tolerance and equal to the run on the JSON points', async () => {

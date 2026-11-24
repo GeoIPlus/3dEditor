@@ -69,6 +69,22 @@ export function selectPoints(pts, sel) {
 }
 
 /**
+ * The same points in a canonical order: lexicographic by x, then y, then z (3D-80). Equal sets of points give equal
+ * arrays whatever order the points port returned them in, so RANSAC sampling (D-130) and the floating-point sums of
+ * the refinement do not depend on the adapter (D-187). Points with equal coordinates are interchangeable.
+ * @param {Float64Array} pts
+ * @returns {Float64Array}
+ */
+export function canonicalOrder(pts) {
+  const n = pointCount(pts);
+  const idx = Array.from({ length: n }, (_, i) => i);
+  idx.sort((a, b) => pts[3 * a] - pts[3 * b] || pts[3 * a + 1] - pts[3 * b + 1] || pts[3 * a + 2] - pts[3 * b + 2]);
+  const out = new Float64Array(3 * n);
+  idx.forEach((i, m) => out.set(pts.subarray(3 * i, 3 * i + 3), 3 * m));
+  return out;
+}
+
+/**
  * Error contract value for a selection or point array the kernel cannot use.
  * @param {string} message
  */

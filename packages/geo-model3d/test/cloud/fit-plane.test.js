@@ -2,6 +2,9 @@
 import { describe, expect, it } from 'vitest';
 import { canonicalJson, fitPlane } from '@geoiplus/geo-model3d';
 import { RANSAC } from '../../src/cloud/fit-plane.js';
+import { canonicalOrder } from '../../src/cloud/points.js';
+import { mulberry32 } from '../../src/cloud/rng.js';
+import { readFixture } from '../brep/helpers.js';
 import { ALL, PROFILE, angleDeg, synthetic, validator } from './helpers.js';
 
 const resultOk = validator('plane-fit-result');
@@ -68,5 +71,45 @@ describe('fitPlane', () => {
       expect(r.error.code).toBe('INVALID_PAYLOAD');
       expect(errorOk(r.error), JSON.stringify(errorOk.errors)).toBe(true);
     }
+  });
+
+  /** Points of `pts` in the order `order` (indices of points). @param {Float64Array} pts @param {number[]} order */
+  const permute = (pts, order) => {
+    const out = new Float64Array(pts.length);
+    order.forEach((i, m) => out.set(pts.subarray(3 * i, 3 * i + 3), 3 * m));
+    return out;
+  };
+  /** A seeded Fisher-Yates permutation of 0..n-1. @param {number} n @param {number} seed */
+  const shuffled = (n, seed) => {
+    const rnd = mulberry32(seed);
+    const o = Array.from({ length: n }, (_, i) => i);
+    for (let i = n - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [o[i], o[j]] = [o[j], o[i]];
+    }
+    return o;
+  };
+
+  it('is independent of the input point order: reversed and shuffled give the byte-identical result (3D-80)', () => {
+    const gt20 = readFixture('GT-20', 'input.points.json');
+    const sel = readFixture('GT-20', 'steps.json')[0].command.payload.selection;
+    for (const [pts, s] of /** @type {[Float64Array, any][]} */ ([
+      [synthetic({ n: 150, outliers: 60, amp: 0.015 }), ALL],
+      [Float64Array.from(gt20.points.flat()), sel],
+    ])) {
+      const n = pts.length / 3;
+      const want = canonicalJson(fitPlane(pts, s, PROFILE));
+      expect(/** @type {any} */ (fitPlane(pts, s, PROFILE)).result).toBeDefined();
+      const reversed = Array.from({ length: n }, (_, i) => n - 1 - i);
+      for (const order of [reversed, shuffled(n, 1), shuffled(n, 2), shuffled(n, 3)]) {
+        expect(canonicalJson(fitPlane(permute(pts, order), s, PROFILE))).toBe(want);
+      }
+    }
+  });
+
+  it('canonicalOrder sorts by x, then y, then z and keeps every point', () => {
+    const pts = Float64Array.from([1, 2, 3, 0, 5, 5, 1, 2, 2, 1, 1, 9, 0, 5, 5]);
+    expect(Array.from(canonicalOrder(pts))).toEqual([0, 5, 5, 0, 5, 5, 1, 1, 9, 1, 2, 2, 1, 2, 3]);
+    expect(canonicalOrder(new Float64Array(0))).toHaveLength(0);
   });
 });
