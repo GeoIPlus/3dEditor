@@ -3,9 +3,10 @@
 Usage (pinned pyproj 3.8.0 = PROJ 9.8.1, the wheel that also supplies proj.db; see README.md):
     python3 -I tools/crs-table/proj-defs.py <out.json>
 
-For each non-deprecated EPSG / OGC projected CRS: the proj-string PROJ writes for it, and nine sample points inside its
-area of use (a 3 x 3 grid at 5 %, 50 % and 95 % of its bounds) as PROJ computes them (geodetic lon/lat on the CRS's own datum -> easting/northing). generate.mjs keeps a
-projection only when proj4js reproduces these samples (README.md). No datum shift is involved: source and target of
+For each non-deprecated EPSG / OGC projected CRS: the proj-string PROJ writes for it, and nine sample points inside
+its area of use (a 3 x 3 grid at 5 %, 50 % and 95 % of its bounds) as PROJ computes them (geodetic lon/lat on the
+CRS's own datum -> easting/northing). generate.mjs keeps a projection only when proj4js reproduces these samples
+(README.md). No datum shift is involved: source and target of
 every sample share the datum of the CRS.
 """
 import json
