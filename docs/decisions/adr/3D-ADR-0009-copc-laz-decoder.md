@@ -1,6 +1,6 @@
 # 3D-ADR-0009: LAZ decoder for the COPC points adapter
 
-- Status: proposed
+- Status: accepted (owner, 2026-11-24, D-3D70-1)
 - WP: 3D-70   Questions closed: -
 
 ## Context
@@ -26,6 +26,10 @@
   "Apache Public License 2.0" (`cpp/lazperf/las.hpp`). The npm tarball holds no licence file.
 - [V] npm `copc` 0.0.9 (MIT) is a full COPC reader, but depends on `cross-fetch` ^4.1.0 (HTTP, not needed for a local
   file) and on `laz-perf` ^0.0.7 itself.
+- [V] Cross-check with copc.js 0.0.9 (scratch install, not a dependency): on both test files it reads the same 24 / 26
+  nodes and 500 points, its node cubes (`Bounds.stepTo(info.cube, key)`) equal `nodeCube` of this reader exactly, and no
+  decoded point lies outside its node's cube. copclib 2.6.3 `Box(key, header)` instead builds cubes from the LAS header
+  bounds.
 - [V] Measured in this WP (`services/kernel/test/copc.test.js`): the decoder reproduces the integers of the committed
   test files exactly (equality with the LAS copy over six boxes); GT-20 / GT-21 hold through the adapter.
 
@@ -33,20 +37,20 @@
 | Option | Consequences | Risk |
 |---|---|---|
 | **A. `laz-perf` 0.0.7 (WASM) for the chunks + own COPC reader (header, `info` VLR, hierarchy, node selection, ~140 lines)** | One small dependency, no transitive ones, Apache-2.0; the reader is testable on synthetic bytes; the same reader takes a range-read source, so 3D-61 can swap the local file for HTTP ranges | Pre-1.0 version, low release cadence (0.0.6 2023-06, 0.0.7 2025-02); Emscripten module is CommonJS; no licence file in the tarball (Apache-2.0 text must be shipped with the image) |
-| B. npm `copc` 0.0.9 (MIT) | Ready reader | Pulls `cross-fetch` (network client in the service for no need) and `laz-perf` anyway; two dependencies instead of one |
+| B. npm `copc` 0.0.9 (MIT, copc.js) | Ready reader (header, hierarchy, node data; local file or HTTP ranges); widely used | Still needs `laz-perf`; adds 5 packages: `cross-fetch` 4.1.0 -> `node-fetch` 2.7.0 -> `whatwg-url` 5.0.0, `tr46` 0.0.3, `webidl-conversions` 3.0.1 (all MIT / BSD-2-Clause [V] npm lockfile), an HTTP polyfill Node 22 does not need, imported at load time even for local files; node selection by box is still own code |
 | C. Own LAZ decoder in JavaScript | No dependency | LAZ 1.4 layered arithmetic coding is a large, error-prone codec; far beyond an M row |
 | D. Native LASzip / PDAL in the image | Reference implementations | LASzip is LGPL (not on the allow-list, [A] not re-verified here); native build in the image; PDAL is heavy |
 
 ## Decision
 
-Recommended: **A**.
+**A** (owner, dialog, 2026-11-24, D-3D70-1; option B was offered in the same dialog and not chosen).
 1. `laz-perf` 0.0.7, pinned exactly, is a runtime dependency of `services/kernel` only (`services/kernel/package.json`);
    never of `packages/geo-model3d` and never in a browser bundle. `services/*` becomes an npm workspace so `npm ci`
    installs it and the licence allow-list check of 3D-67 sees the service as a root.
 2. COPC structure (header checks, `info` VLR, hierarchy pages, node cubes, node selection by box) is own code in
    `services/kernel/src/adapters/copc-format.js`; `laz-perf` is called in one function (`decodeChunk` in
    `copc-points.js`), so a later decoder swap touches one function.
-3. Accepted only after the owner's word in a dialog (D-18).
+3. Accepted by the owner in a dialog (D-18): D-3D70-1.
 
 ## Checks
 - `services/kernel/test/copc.test.js`: COPC = LAS copy by box; decoded-node counts; GT-20 / GT-21 through the adapter;

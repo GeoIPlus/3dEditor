@@ -18,8 +18,8 @@ Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 
 | Progress | Rows |
 |---|---:|
 | Done | 26 / 65 |
-| Review | 0 |
-| In progress | 1 |
+| Review | 1 |
+| In progress | 0 |
 | Ready | 10 |
 | Proposed (waiting for the owner to set `ready`) | 27 |
 | Blocked (external access or data) | 1 |
@@ -59,6 +59,7 @@ flowchart TB
     D65["3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D70["3D-70 COPC-by-box points adapter"]
   end
   subgraph ready["READY"]
     D78["3D-78 Single writer + provisional ids"]
@@ -68,7 +69,6 @@ flowchart TB
     D11["3D-11 CityJSON export"]
     D73["3D-73 backlog:sync: SC row ids"]
     D74["3D-74 val3dity image + binding"]
-    D70["3D-70 COPC-by-box points adapter"]
     D47["3D-47 SC: 3D view port + host"]
     D48["3D-48 SC: apps/3dqm host"]
     D51["3D-51 geoviewer scene3d adapter"]
@@ -89,6 +89,7 @@ flowchart TB
     D21["3D-21 Semantics, constraints cmds"]
     D33["3D-33 Inter-building validation (P1)"]
     D71["3D-71 FIT_PLANE command"]
+    D70_1["3D-70.1 fitPlane order-independent"]
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["3D-79 Service image licence check"]
@@ -164,6 +165,7 @@ flowchart TB
   D12 --> D75
   D23 --> D79
   D67 --> D79
+  D22 --> D70_1
   D05 --> D08
   D06 --> D08
   D07 --> D08
@@ -281,7 +283,8 @@ flowchart TB
 | 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | done (D-182; merged into base, no PR) |
 | 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23 | G5 | M | proposed (D-112) |
 | 3D-69 | Point cloud CRS vs. a geographic-CRS building: reproject points into the building metric frame on the server, or refuse a mismatch (D-126) | here | geo-model3d/cloud, services/kernel | 22, 32 | G4 | M | ready (D-164) |
-| 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | in-progress (wp/3d-70-copc-adapter) |
+| 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | review (local, PR not requested; branch wp/3d-70-copc-adapter) |
+| 3D-70.1 | `fitPlane` result independent of the input point order (same cloud through the LAS or COPC adapter gives the same `FIT_PLANE` result) | here | geo-model3d/cloud | 22 | G4 | S | proposed |
 | 3D-71 | `FIT_PLANE` command: apply the plane fit as a `PLANE` measurement or as a face's new `supportPlane` through PREVIEW/COMMIT (spec §10.12 r4, D-134) | here | geo-model3d/ops | 14, 22 | G4 | M | proposed |
 | 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | done (D-176; merged into base, no PR) |
 | 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | ready (D-159; bug of 3D-05, found by 3D-46, D-146) |
@@ -558,6 +561,17 @@ flowchart TB
   copy through `createLasPointsAdapter`; only nodes meeting the box are decoded (counted in the test); GT-20 / GT-21
   results unchanged when the points come from the COPC adapter.
 - Decisions: D-35, D-109, D-133, D-139, D-140 (Q-44: committed COPC test file allowed)  Open: none
+
+### 3D-70.1 `fitPlane` result independent of the input point order
+- Source: 3D-70 session 2026-11-24, owner dialog (D-3D70-2): GT-20 points give 444 inliers in the JSON order and 439 in
+  the COPC node order (both inside the GT-20 bounds); the JSON points permuted into the COPC order give 439 as well.
+- Goal: the same set of points gives the same `fitPlane` result whatever order a points adapter returns them in.
+- Scope in: `geo-model3d/cloud/fit-plane.js` (e.g. a canonical order before RANSAC sampling; the method is the row's
+  choice, D-130 stays: fixed seed, no `Math.random`); test with permuted inputs. Scope out: adapters (3D-22, 3D-70),
+  RANSAC parameters (D-130).
+- Accept: GT-20 points in JSON order, reversed order and COPC node order (`services/kernel/test/data/gt-20.copc.laz`)
+  give identical `fitPlane` results (inlier count, normal, RMSE); GT-20 / GT-21 golden tests pass.
+- Decisions: D-130, D-3D70-2  Open: none
 
 ### 3D-71 `FIT_PLANE` command (D-134)
 - Source: 3D-22 session 2026-11-23, owner dialog (D-134): the command needs the `executeCommand` pipeline.
