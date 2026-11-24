@@ -20,4 +20,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # 3D-78 (D-179): on a wp/* branch `check:docs` compares ids with the base; tools/base-branch.mjs names it.
+      - run: git fetch --no-tags --depth=1 origin +refs/heads/claude/keen-pascal-u7z2gk:refs/remotes/origin/claude/keen-pascal-u7z2gk
       - run: npm run check

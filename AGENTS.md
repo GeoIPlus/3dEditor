@@ -69,6 +69,8 @@ audit PDF are background only. Read source specs with an offset by section, neve
 - **Every WP starts in a new session with fresh context.** Use the session-creation tool when it is available; otherwise
   write the handoff and tell the owner that a new session is required. Never claim the current context was reset.
 - Before starting, check that no other session or branch owns the WP (BACKLOG status `in-progress` with a branch).
+- **Single writer (D-178).** Only the coordinating session writes the base branch; a WP session pushes only its own
+  branch and hands over by send_message. A hook refuses other pushes to the base.
 - The **handoff** is compact: WP id and goal, base branch/commit, working repository, checkpoint path, relevant decision
   ids, open checks and questions. Never paste conversation history. The skill [wp-session](.claude/skills/wp-session/SKILL.md)
   holds the start and end procedure.
@@ -112,8 +114,8 @@ audit PDF are background only. Read source specs with an offset by section, neve
 
 | Document | Owner of change | When it changes |
 |---|---|---|
-| `docs/BACKLOG.md` | the session that changes a status; new rows only via `task-intake` | status change, intake, handoff |
-| `docs/decisions/DECISIONS.md` | the session that got the owner's answer | same session as the answer. A WP session writes **provisional** ids `D-3D<wp>-<n>` / `Q-3D<wp>-<n>` (e.g. `D-3D27-1`); the session that merges the WP into the base assigns the final append-only `D-NN` / `Q-NN` and rewrites every reference (D-38) |
+| `docs/BACKLOG.md` | the session that changes a status; new rows only via `task-intake` | status change, intake, handoff; overview only via `node tools/check-docs.mjs --fix` (D-180) |
+| `docs/decisions/DECISIONS.md` | the session that got the owner's answer | same session as the answer. A WP session writes **provisional** ids `D-3D<wp>-<n>` / `Q-3D<wp>-<n>` (e.g. `D-3D27-1`), rows `3D-<wp>.<n>`, ADRs `3D-ADR-<wp>-<n>` (D-179); the session that merges the WP into the base assigns the final append-only `D-NN` / `Q-NN` and rewrites every reference (D-38) |
 | `docs/decisions/adr/3D-ADR-NNNN-*.md` | WP that needs the design choice | from [docs/templates/adr.md](docs/templates/adr.md); `proposed` until the owner accepts |
 | `docs/specs/*` | spec WPs; others only through intake | spec defect found -> question, not silent edit |
 | `.agent/checkpoints/3D-<id>.md` | the WP's session only | every stop, handoff and finish |

@@ -1,14 +1,16 @@
 // Planted-fault tests for tools/check-docs.mjs (3D-30). Run: node --test tools/check-docs.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { checkDocs } from './check-docs.mjs';
+import { checkDocs, fixDocs, readIdDocs } from './check-docs.mjs';
 
 const BACKLOG = `# BACKLOG
 
 ## Progress overview
+
+Updated: 2026-01-01
 
 | Progress | Rows |
 |---|---:|
@@ -20,6 +22,7 @@ const BACKLOG = `# BACKLOG
 | Blocked (data) | 0 |
 
 **Implementation progress: 0 %**; 1/3 rows done. See [decisions](decisions/DECISIONS.md#decisions).
+**Running:** none.
 
 \`\`\`mermaid
 flowchart TB
@@ -72,9 +75,17 @@ const DECISIONS = `# DECISIONS
 | Q-01 | today | open | repeated id is fine here |
 `;
 
-/** @param {(files: Record<string, string>) => void} [plant] @param {object} [opts] */
-function run(plant, opts) {
-  const files = { 'docs/BACKLOG.md': BACKLOG, 'docs/decisions/DECISIONS.md': DECISIONS, 'README.md': 'See [backlog](docs/BACKLOG.md) and `[x](nowhere.md)`.\n' };
+const fixture = () => ({ 'docs/BACKLOG.md': BACKLOG, 'docs/decisions/DECISIONS.md': DECISIONS, 'docs/decisions/adr/3D-ADR-0001-first.md': '# ADR 1\n', 'README.md': 'See [backlog](docs/BACKLOG.md) and `[x](nowhere.md)`.\n' });
+
+/**
+ * @template T
+ * @param {((files: Record<string, string>) => void) | undefined} plant
+ * @param {(root: string) => T} fn
+ * @returns {T}
+ */
+function inRoot(plant, fn) {
+  /** @type {Record<string, string>} */
+  const files = fixture();
   if (plant) plant(files);
   const root = mkdtempSync(join(tmpdir(), 'check-docs-'));
   try {
@@ -82,11 +93,17 @@ function run(plant, opts) {
       mkdirSync(join(root, p, '..'), { recursive: true });
       writeFileSync(join(root, p), text);
     }
-    return checkDocs(root, opts);
+    return fn(root);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
 }
+
+/** @param {(files: Record<string, string>) => void} [plant] @param {object} [opts] */
+const run = (plant, opts) => inRoot(plant, (root) => checkDocs(root, opts));
+
+/** The clean fixture as the base branch's documents (D-179 rule). */
+const BASE = inRoot(undefined, readIdDocs);
 
 /** @param {string[]} problems @param {RegExp} re */
 function expectOne(problems, re) {
@@ -146,3 +163,90 @@ test('unknown status', () => {
 
 test('docs/source is not scanned', () =>
   assert.deepEqual(run((f) => { f['docs/source/old.md'] = 'D-3D1-1 [x](gone.md)\n'; }), []));
+
+// --- 3D-78: provisional ids for rows and ADRs, new final ids on a WP branch (D-179) ---
+
+/** Plant a provisional row 3D-03.1 with node, edge and Details entry. */
+const provisionalRow = (/** @type {Record<string, string>} */ f) => {
+  edit('| Proposed (waiting) | 1 |', '| Proposed (waiting) | 2 |')(f);
+  edit('| Done | 1 / 3 |', '| Done | 1 / 4 |')(f);
+  edit('1/3 rows done', '1/4 rows done')(f);
+  edit('    D03["3D-03 Third"]\n', '    D03["3D-03 Third"]\n    D03_1["3D-03.1 Found later"]\n')(f);
+  edit('  D02 --> D03\n', '  D02 --> D03\n  D03 --> D03_1\n')(f);
+  edit('| 3D-03 | Third | here | docs | 02 | G0 | S | proposed |\n', '| 3D-03 | Third | here | docs | 02 | G0 | S | proposed |\n| 3D-03.1 | Found later | here | docs | 03 | G0 | S | proposed |\n')(f);
+  f['docs/BACKLOG.md'] += '### 3D-03.1 Found later\n- Accept: x.\n';
+};
+
+test('provisional row 3D-<wp>.n: full row on a WP branch, rejected on the base', () => {
+  assert.deepEqual(run(provisionalRow, { allowProvisional: true, base: BASE }), []);
+  const strict = run(provisionalRow);
+  assert.ok(strict.length > 0 && strict.every((p) => /provisional id 3D-03\.1/.test(p)), strict.join('\n'));
+});
+
+test('provisional ADR file 3D-ADR-<wp>-n: accepted on a WP branch, rejected on the base', () => {
+  const plant = (/** @type {Record<string, string>} */ f) => { f['docs/decisions/adr/3D-ADR-78-1-guard.md'] = '# ADR\n'; };
+  assert.deepEqual(run(plant, { allowProvisional: true, base: BASE }), []);
+  expectOne(run(plant), /3D-ADR-78-1-guard\.md: provisional ADR file name/);
+});
+
+test('provisional decision and question rows are accepted on a WP branch and checked for duplicates', () => {
+  const f = 'docs/decisions/DECISIONS.md';
+  assert.deepEqual(run((x) => { edit('| D-02 | Two | |\n', '| D-02 | Two | |\n| D-3D78-1 | New | |\n', f)(x); edit('| Q-01 | Why | | |\n', '| Q-01 | Why | | |\n| Q-3D78-1 | Who | | |\n', f)(x); }, { allowProvisional: true, base: BASE }), []);
+  expectOne(run((x) => edit('| D-02 | Two | |\n', '| D-02 | Two | |\n| D-3D78-1 | New | |\n| D-3D78-1 | Again | |\n', f)(x), { allowProvisional: true, base: BASE }), /duplicate id D-3D78-1/);
+});
+
+test('new final ids on a WP branch fail: D-NN, Q-NN, 3D-NN row, 3D-ADR-NNNN file', () => {
+  const f = 'docs/decisions/DECISIONS.md';
+  const p = run((x) => {
+    edit('| D-02 | Two | |\n', '| D-02 | Two | |\n| D-03 | Three | |\n', f)(x);
+    edit('| Q-01 | Why | | |\n', '| Q-01 | Why | | |\n| Q-02 | Who | | |\n', f)(x);
+    x['docs/decisions/adr/3D-ADR-0002-second.md'] = '# ADR 2\n';
+    edit('| Proposed (waiting) | 1 |', '| Proposed (waiting) | 2 |')(x);
+    edit('| Done | 1 / 3 |', '| Done | 1 / 4 |')(x);
+    edit('1/3 rows done', '1/4 rows done')(x);
+    edit('    D03["3D-03 Third"]\n', '    D03["3D-03 Third"]\n    D04["3D-04 Fourth"]\n')(x);
+    edit('| 3D-03 | Third | here | docs | 02 | G0 | S | proposed |\n', '| 3D-03 | Third | here | docs | 02 | G0 | S | proposed |\n| 3D-04 | Fourth | here | docs | 03 | G0 | S | proposed |\n')(x);
+    x['docs/BACKLOG.md'] += '### 3D-04 Fourth\n- Accept: x.\n';
+  }, { allowProvisional: true, base: BASE });
+  assert.equal(p.length, 4, p.join('\n'));
+  for (const [id, hint] of [['3D-04', '3D-<wp>.n'], ['D-03', 'D-3D<wp>-n'], ['Q-02', 'Q-3D<wp>-n'], ['3D-ADR-0002', '3D-ADR-<wp>-n']])
+    assert.ok(p.some((x) => x.includes(`new final id ${id} `) && x.includes(hint)), `${id}:\n${p.join('\n')}`);
+});
+
+test('ids already on the base pass on a WP branch; without a base the rule is off (Stop hook)', () => {
+  assert.deepEqual(run(undefined, { allowProvisional: true, base: BASE }), []);
+  const plant = (/** @type {Record<string, string>} */ x) => { x['docs/decisions/adr/3D-ADR-0002-second.md'] = '# ADR 2\n'; };
+  assert.deepEqual(run(plant, { allowProvisional: true }), []);
+});
+
+// --- 3D-78: generated overview (D-180) ---
+
+test('"Updated:" with history text fails', () =>
+  expectOne(run(edit('Updated: 2026-01-01', 'Updated: 2026-01-01 (3D-01 done D-01)')), /"Updated:" must be a bare date/));
+
+test('"Running:" must list the in-progress rows', () => {
+  expectOne(run(edit('**Running:** none.', '**Running:** 3D-02 Second.')), /"Running:" differs from the in-progress rows/);
+  const started = (/** @type {Record<string, string>} */ f) => {
+    edit('| ready (D-02) |', '| in-progress (wp/3d-02-x) |')(f);
+    edit('| In progress | 0 |', '| In progress | 1 |')(f);
+    edit('| Ready | 1 |', '| Ready | 0 |')(f);
+  };
+  expectOne(run(started), /"Running:" differs/);
+  assert.deepEqual(run((f) => { started(f); edit('**Running:** none.', '**Running:** 3D-02 Second.')(f); }), []);
+});
+
+test('--fix regenerates hand-broken counts, prose, Running and the date', () =>
+  inRoot((f) => {
+    edit('| ready (D-02) |', '| in-progress (wp/3d-02-x) |')(f);
+    edit('| Done | 1 / 3 |', '| Done | 2 / 7 |')(f);
+    edit('1/3 rows done', '0/3 rows done')(f);
+    edit('Updated: 2026-01-01', 'Updated: 2026-01-01 (long history)')(f);
+  }, (root) => {
+    assert.ok(checkDocs(root).length >= 5);
+    assert.ok(fixDocs(root, '2026-11-24') >= 5);
+    assert.deepEqual(checkDocs(root), []);
+    const text = readFileSync(join(root, 'docs/BACKLOG.md'), 'utf8');
+    for (const want of ['Updated: 2026-11-24\n', '| Done | 1 / 3 |', '| In progress | 1 |', '| Ready | 0 |', '1/3 rows done', '**Running:** 3D-02 Second.'])
+      assert.ok(text.includes(want), want);
+    assert.equal(fixDocs(root, '2026-12-31'), 0, 'a consistent file is left alone, date included');
+  }));

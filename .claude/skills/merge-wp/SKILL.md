@@ -1,6 +1,6 @@
 ---
 name: merge-wp
-description: Merge a finished 3DQM work-package branch into the base branch after the owner accepted it. Use only in the coordinating session, only when the owner has said in a dialog that WP 3D-<id> is accepted and may be merged without a PR. Covers ancestry check, merge, provisional ids D-3D<wp>-n / Q-3D<wp>-n -> final D-NN / Q-NN with every reference rewritten, backlog recount, the strict docs check, branch deletion attempt and session archive (D-38, D-42).
+description: Merge a finished 3DQM work-package branch into the base branch after the owner accepted it. Use only in the coordinating session, only when the owner has said in a dialog that WP 3D-<id> is accepted and may be merged without a PR. Covers ancestry check, merge, provisional ids D-3D<wp>-n / Q-3D<wp>-n / rows 3D-<wp>.n / ADRs 3D-ADR-<wp>-n -> final ids with every reference rewritten, backlog recount, the strict docs check, branch deletion attempt and session archive (D-38, D-42).
 owner: 3DQM maintainers (owner: Andy)
 ---
 
@@ -8,6 +8,8 @@ owner: 3DQM maintainers (owner: Andy)
 
 AGENTS.md §2.12 still holds: you never merge on your own initiative. This procedure runs only on the owner's explicit
 "accepted, merge" for one WP, given in a dialog and recorded as a decision (as D-34, D-36, D-39 were). One WP per run.
+The acceptance is given in the WP window; the WP session hands over by send_message "WP 3D-<id> done, owner accepted,
+<branch>@<sha>" (D-178). Merge exactly that sha. The base-push hook needs the coordinator marker ([3D-00 checkpoint](../../../.agent/checkpoints/3D-00.md)).
 
 ## 0. Inputs
 
@@ -31,9 +33,12 @@ checkpoint). Stop and ask the owner (dialog with proposed answers) if any of the
 
 ## 3. Final ids (D-38)
 
-1. List the WP's provisional ids: `git grep -noE '\b[DQ]-3D<id>-[0-9]+\b' -- . ':!docs/source'`.
+1. List the WP's provisional ids: `git grep -noE '\b([DQ]-3D<id>-[0-9]+|3D-<id>\.[0-9]+|3D-ADR-<id>-[0-9]+)\b' -- . ':!docs/source'`
+   and `ls docs/decisions/adr | grep '^3D-ADR-<id>-'` (D-179).
 2. Next free ids: the highest `| D-NN |` in "## Decisions" + 1, the highest `| Q-NN |` in "## Open questions" + 1.
-   Assign in order of `n` (D-3D<id>-1 first). Write the mapping into the merge commit message.
+   Rows `3D-<id>.n` -> highest `| 3D-NN |` row + 1 (mermaid node `D<id>_n` -> `D<NN>`); ADRs `3D-ADR-<id>-n` -> highest
+   `3D-ADR-NNNN` + 1, file renamed with `git mv`. Assign in order of `n` (D-3D<id>-1 first). Write the mapping into the
+   merge commit message.
 3. Rewrite every occurrence in all tracked files except `docs/source/` (read-only) with word boundaries, highest `n`
    first, e.g. `git grep -lE '\bD-3D30-2\b' -- . ':!docs/source' | xargs sed -i -E 's/\bD-3D30-2\b/D-48/g'`.
    AGENTS.md's example `D-3D27-1` is not a real id and stays.
@@ -45,7 +50,7 @@ checkpoint). Stop and ask the owner (dialog with proposed answers) if any of the
 ## 4. Backlog
 
 1. Row 3D-<id>: status `done (D-NN; merged into base, no PR)`.
-2. Overview: recount every status from the table, total rows, the prose "N/M rows done", the `Updated:` line.
+2. Overview: `node tools/check-docs.mjs --fix` regenerates counts, "N/M rows done", `Running:` and the date (D-180).
 3. Mermaid: move node `D<id>` into the `done` subgraph.
 4. Checkpoint stays as the WP left it; add one log line "merged into <base> @<commit>".
 
