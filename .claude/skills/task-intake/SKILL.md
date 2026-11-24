@@ -39,8 +39,9 @@ Intake writes documents only. It never writes code, schemas or fixtures and neve
    If the owner's request is wrong or weak (contradicts a decision, adds risk, duplicates work), say so directly with the
    reason before asking.
 5. **Write** in one commit, using the formats below:
-   - the BACKLOG row (status `proposed`), its Details entry, the dependency edge in the mermaid graph, the overview
-     (`node tools/check-docs.mjs --fix`);
+   - the BACKLOG row (status `proposed`, `Type` one of `spec`, `kernel`, `service`, `tests`, `tooling`, `mirror`;
+     D-221), its Details entry, the node and dependency edge in the mermaid graph, then node icons, legend and
+     overview by `node tools/check-docs.mjs --fix` (D-180, D-208);
    - DECISIONS: every owner answer as a decision (append-only, with date and "owner, dialog"), every unresolved point as a
      question. Inside a WP session hand over, never write the base (D-178): write on the WP branch with provisional ids
      `D-3D<wp>-<n>`, `Q-3D<wp>-<n>`, rows `3D-<wp>.<n>` (node `D<wp>_<n>`), ADRs `3D-ADR-<wp>-<n>`; only the coordinator
@@ -54,7 +55,7 @@ Intake writes documents only. It never writes code, schemas or fixtures and neve
 Table row in `docs/BACKLOG.md`:
 
 ```
-| 3D-NN | <title> | <repo: here/shared/geoviewer> | <modules> | <depends on ids> | <S/M/L> | proposed |
+| 3D-NN | <title> | <repo: here/shared/geoviewer> | <modules> | <depends on ids> | <G0..G5> | <S/M/L> | <type> | proposed |
 ```
 
 Details entry under `## Details`:
