@@ -566,7 +566,6 @@ flowchart TB
 - Source: 3D-69 session 2026-11-24 (owner dialog: intake all four follow-ups). Introduced by 3D-09 (`index.js`
   `worldToLocal` / `localToWorld` with the default translation mapping, D-116), not adapted when 3D-32 / 3D-10 added
   geographic CRSs and the north-first axis swap. Renumbered from a provisional id at the 3D-69 merge (D-199).
-  merge assigns the final id.
 - Goal: `worldToLocal(frame, points)` / `localToWorld` give the same local coordinates as import for every CRS the
   kernel supports.
 - Scope in: compose the `crs` metric frame as import does (`createMetricFrame(frame.horizontalCrs, frame.originWorld)`
