@@ -5,6 +5,7 @@
 import './canary.js';
 import { canonicalJson as canon, localFrame } from './brep/index.js';
 import { importCityObject } from './import/index.js';
+import { createCloudFrame } from './cloud-crs.js';
 
 export { P4_CANARY } from './canary.js';
 export { validateModel } from './validate/index.js';
@@ -36,6 +37,34 @@ export function worldToLocal(frame, points) {
 export function localToWorld(frame, points) {
   const lf = localFrame(frame);
   return points.map((p) => lf.toWorld(p));
+}
+
+/**
+ * Cloud world -> building LOCAL (3D-69): points in the cloud's own horizontal CRS (from the dataset descriptor,
+ * D-3D69-1) are reprojected through geodetic coordinates on the shared datum into the building's local frame, built
+ * as import builds it (projected: translation; geographic: local ENU). Same CRS: no reprojection. Heights unchanged
+ * (D-93). Throws the `crs` error (`code` INVALID_CRS) for an unknown CRS, a datum mismatch (D-3D69-2) or a projected
+ * CRS without a verified projection (D-3D69-3).
+ * @param {CoordinateFrame} frame contract `CoordinateFrame`
+ * @param {string} cloudCrs `EPSG:nnnn` or the CityJSON OGC URL
+ * @param {V3[]} points cloud world, axis order of `cloudCrs`
+ * @returns {V3[]} local
+ */
+export function cloudToLocal(frame, cloudCrs, points) {
+  const cf = createCloudFrame(frame, cloudCrs);
+  return points.map((p) => cf.toLocal(p));
+}
+
+/**
+ * Building LOCAL -> cloud world (inverse of `cloudToLocal`; e.g. the corners of a selection for the box query).
+ * @param {CoordinateFrame} frame
+ * @param {string} cloudCrs
+ * @param {V3[]} points local
+ * @returns {V3[]} cloud world, axis order of `cloudCrs`
+ */
+export function localToCloud(frame, cloudCrs, points) {
+  const cf = createCloudFrame(frame, cloudCrs);
+  return points.map((p) => cf.toCloud(p));
 }
 
 /**

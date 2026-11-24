@@ -3,3 +3,4 @@
 export { resolveCrs, normaliseCrsRef, CrsError, INVALID_CRS, CRS_TABLE_SOURCE } from './registry.js';
 export { createMetricFrame, boxCentre } from './frame.js';
 export { writeBackVertices, decodeVertex, roundingDecimals, DEGREE_EXTRA_DECIMALS } from './write-back.js';
+export { createCrsMapping } from './reproject.js';
