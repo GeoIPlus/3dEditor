@@ -70,9 +70,10 @@ const DECISIONS = `# DECISIONS
 
 ## Open-question status updates
 
-| Q | Date | Status | Finding |
+| Q | Date, source | Status | Finding |
 |---|---|---|---|
-| Q-01 | today | open | repeated id is fine here |
+| Q-01 | 2026-01-01, owner | open | repeated id is fine here |
+| D-01 | 2026-01-02, 3D-02 | verified | a \\| b |
 `;
 
 const fixture = () => ({ 'docs/BACKLOG.md': BACKLOG, 'docs/decisions/DECISIONS.md': DECISIONS, 'docs/decisions/adr/3D-ADR-0001-first.md': '# ADR 1\n', 'README.md': 'See [backlog](docs/BACKLOG.md) and `[x](nowhere.md)`.\n' });
@@ -143,6 +144,30 @@ test('done row outside the DONE subgraph', () =>
 
 test('duplicate decision id', () =>
   expectOne(run(edit('| D-02 | Two |', '| D-01 | Two |', 'docs/decisions/DECISIONS.md')), /DECISIONS\.md:\d+: duplicate id D-01/));
+
+const DF = 'docs/decisions/DECISIONS.md';
+const UPD = '| D-01 | 2026-01-02, 3D-02 | verified | a \\| b |\n';
+
+test('3D-76: decision row under "Open-question status updates" fails (3D-66 merge)', () =>
+  expectOne(run(edit(UPD, `${UPD}| D-03 | Three | Owner, dialog, 2026-01-03 |\n`, DF)), /DECISIONS\.md:\d+: D-03 under "## Open-question status updates" is not a status row/));
+
+test('3D-76: status row naming an unknown id fails; known D and Q ids pass', () => {
+  expectOne(run(edit(UPD, `${UPD}| Q-09 | 2026-01-03, owner | open | x |\n`, DF)), /status row names unknown id Q-09/);
+  expectOne(run(edit(UPD, `${UPD}| D-09 | 2026-01-03, owner | open | x |\n`, DF)), /status row names unknown id D-09/);
+});
+
+test('3D-76: status row shape - date and source required', () => {
+  for (const bad of ['2026-01-03', '2026-1-3, owner', 'owner, 2026-01-03', '2026-01-03,owner'])
+    expectOne(run(edit(UPD, `${UPD}| Q-01 | ${bad} | open | x |\n`, DF)), /Q-01 under .* is not a status row/);
+});
+
+test('3D-76: D/Q row outside the three tables fails; provisional status rows need provisional ids', () => {
+  expectOne(run(edit('## Decisions\n', '| D-05 | Stray | |\n\n## Decisions\n', DF)), /D-05 row outside "## Decisions"/);
+  expectOne(run((x) => { x[DF] += '\n## Later\n\n| Q-01 | Moved | |\n'; }), /DECISIONS\.md:\d+: Q-01 row outside/);
+  const prov = `${UPD}| D-3D76-1 | 2026-01-03, 3D-76 | verified | x |\n`;
+  expectOne(run(edit(UPD, prov, DF), { allowProvisional: true }), /unknown id D-3D76-1/);
+  assert.deepEqual(run((x) => { edit(UPD, prov, DF)(x); edit('| D-02 | Two | |\n', '| D-02 | Two | |\n| D-3D76-1 | New | |\n', DF)(x); }, { allowProvisional: true }), []);
+});
 
 test('provisional id rejected unless allowed', () => {
   const plant = edit('| D-02 | Two |', '| D-02 | Two (was D-3D27-1) |', 'docs/decisions/DECISIONS.md');
