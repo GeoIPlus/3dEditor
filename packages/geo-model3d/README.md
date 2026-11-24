@@ -31,7 +31,8 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
 - `canonicalJson(value)` - canonical JSON (sorted keys, no `-0`); `save -> load -> save` is byte-identical (K-11).
 - `fitPlane(points, selection, profile)` (3D-22) - points `Float64Array` x y z interleaved, LOCAL frame; contract
   `PointSelection`; `{ result: plane-fit-result }` or `{ error }` (`INVALID_MEASUREMENT` with `pointCount` /
-  `inlierRatio`; `INVALID_PAYLOAD` for malformed points or selection).
+  `inlierRatio`; `INVALID_PAYLOAD` for malformed points or selection). The result depends on the set of selected
+  points only, not on their order (3D-80, D-187): the same cloud through the LAS or the COPC adapter fits the same.
 - `deviationStats(model, points, request, profile)` (3D-22) - contract `heatmap-request` -> `{ result: heatmap-result }`
   or `{ error }` (`INVALID_PAYLOAD`: unknown `faceIds`, missing threshold, bad selection).
 - `validateModel(model, { mode, targetState, tolerances, clock, affectedEntityIds?, fullSolid?, findings?,
@@ -146,9 +147,10 @@ run spread ~0.1 ms).
 
 - `src/cloud/` (3D-22, spec §9): `fit-plane.js` (RANSAC on triples, then least squares on the consensus set:
   centroid + smallest eigenvector of the scatter matrix, `eigen.js` Jacobi), `deviation.js` + `polygon.js` (nearest face
-  polygon within `heatmapBufferM`, signed normal distance, D-135), `points.js` (selection filter), `rng.js`
+  polygon within `heatmapBufferM`, signed normal distance, D-135), `points.js` (selection filter, `canonicalOrder`), `rng.js`
   (mulberry32). RANSAC (D-130): inlier distance `planarTolM`, adaptive iterations for 99.9 %, at most 1000, fixed
-  seed. Readings marked [A]: fitted normal oriented z > 0 (then y, x); a point on a ring boundary follows the crossing
+  seed; the selected points are sorted by x, then y, then z before sampling (3D-80), so the input order does not
+  change the result. Readings marked [A]: fitted normal oriented z > 0 (then y, x); a point on a ring boundary follows the crossing
   rule; empty heatmap summary reports zeros.
 - `src/import/` (3D-10; spec §6): `cityjson` (Building + BuildingPart / BuildingInstallation children, LoD 2.x and
   Solid-first selection), `vertices` (transform, `crs` metric frame, `brep` local frame, weld within
