@@ -26,7 +26,7 @@ Updated: 2026-11-24
 
 **Implementation progress: 0 %** of code; 32/69 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-14 Replace roof, rebuild envelope; 3D-77 Spec §5 solver text; 3D-81 Bug: worldToLocal for all CRSs (provisional); 3D-47 SC: 3D view port + host.
+**Running:** 3D-14 Replace roof, rebuild envelope; 3D-77 Spec §5 solver text; 3D-81 Bug: worldToLocal for all CRSs; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -77,7 +77,7 @@ flowchart TB
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
-    D81["3D-81 Bug: worldToLocal for all CRSs (provisional)"]
+    D81["3D-81 Bug: worldToLocal for all CRSs"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D82["3D-82 Spec: 3D-69 cloud CRS (provisional)"]
@@ -565,7 +565,7 @@ flowchart TB
 ### 3D-81 Public world <-> local mapping for every supported CRS (bug, found by 3D-69)
 - Source: 3D-69 session 2026-11-24 (owner dialog: intake all four follow-ups). Introduced by 3D-09 (`index.js`
   `worldToLocal` / `localToWorld` with the default translation mapping, D-116), not adapted when 3D-32 / 3D-10 added
-  geographic CRSs and the north-first axis swap. Provisional id (coordinator rule 2026-11-24); no mermaid node until the
+  geographic CRSs and the north-first axis swap. Renumbered from a provisional id at the 3D-69 merge (D-199).
   merge assigns the final id.
 - Goal: `worldToLocal(frame, points)` / `localToWorld` give the same local coordinates as import for every CRS the
   kernel supports.
