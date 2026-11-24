@@ -143,6 +143,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-127 | 3D-32 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids became D-121..D-126 and Q-43 (EPSG terms, still open); id clashes with the parallel 3D-08 resolved at merge: CRS ADR 3D-ADR-0004 -> 3D-ADR-0007, row 3D-66 (cloud CRS) -> 3D-69 | Owner, chat, 2026-11-23 |
 | D-128 | Per D-114: 3D-10 (import) and 3D-12 (validation) set `ready` (3D-09 and 3D-32 done) and started in parallel fresh sessions | Owner, chat, 2026-11-23 (D-114) |
 | D-129 | 3D-13 (solver), 3D-22 (point cloud), 3D-66 (3D-08 ADRs into spec and AGENTS.md) and 3D-67 (licence allow-list check) set `ready` and started in parallel fresh sessions, beside 3D-10 and 3D-12 | Owner, dialog, 2026-11-24 |
+| D-3D67-1 | The kernel service container image follows 3D-ADR-0004 decision 3 literally: no GPL, LGPL or AGPL package or file ("by all means"), with no exception for system libraries (glibc), GCC runtime-exception libraries or GPL tools in the base layer; the check becomes row 3D-70. Offered and not chosen: a two-tier rule (ADR amendment), an inventory without a gate, deferral to ADR-OPS | Owner, dialog, 2026-11-24 (3D-67) |
 
 ## Open questions
 
@@ -191,6 +192,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-41 | GT-I2: which edges carry `OPEN_BOUNDARY` - the two ridge edges only (the 0.03 m wall edges reported as degenerate, < `minEdgeLengthM`) or all four edges of the gap loop | v0.3 §12 GT-I2, D-101 | 3D-10 |
 | Q-42 | On which machine class is the latency verdict re-measured once the kernel service image exists (production instance class of the Tools Plane, unknown today: HANDOVER §8 q3) | [3D-ADR-0006](adr/3D-ADR-0006-bench-rig-and-scenes.md) step 5; 3D-08 measured on the cloud agent container | 3D-23, owner |
 | Q-43 | Do the EPSG dataset terms of use allow shipping a table derived from it (via PROJ `proj.db`) inside the kernel image? PROJ code and data are MIT (`LICENSE_proj` in pyproj 3.8.0); the EPSG terms could not be read (epsg.org blocked by the network policy) | 3D-ADR-0004 licence section | owner / legal, before 3D-32 is accepted |
+| Q-3D67-1 | The allow list of 3D-ADR-0004 decision 3 has 7 ids. A Node runtime image probably also needs other permissive, non-GPL licences: Zlib and Unicode-3.0 (ICU) bundled in Node, MPL-2.0 (CA certificate bundle; file-level copyleft), Apache-2.0 WITH LLVM-exception (libc++, compiler-rt). Extend the list (ADR change, D-18), or refuse each and find replacements? | [A] to verify from Node's `LICENSE` file and the built SBOM; the 3D-67 rule fails any id outside the list and any `WITH` exception | owner, before 3D-70 is `ready` |
 
 ## Open-question status updates
 

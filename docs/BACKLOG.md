@@ -17,14 +17,14 @@ Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 
 
 | Progress | Rows |
 |---|---:|
-| Done | 18 / 55 |
+| Done | 18 / 56 |
 | Review | 1 |
 | In progress | 0 |
 | Ready | 9 |
-| Proposed (waiting for the owner to set `ready`) | 26 |
+| Proposed (waiting for the owner to set `ready`) | 27 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 18/55 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 18/56 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113).
 **Running:** SC 3D view port + host 3D-47 (D-61), CityJSON import 3D-10 and validation 3D-12 (D-128); solver 3D-13, point cloud 3D-22, spec/AGENTS ADR refs 3D-66, licence check 3D-67 (D-129).
 
@@ -82,6 +82,7 @@ flowchart TB
     D69["3D-69 Point cloud CRS vs. building CRS"]
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
+    D70["3D-70 Service image licence check"]
     D23["3D-23 Kernel service"]
     D68["3D-68 Latency bench: COMMIT, import, concurrency"]
     D24["3D-24 QC and export rules"]
@@ -142,6 +143,8 @@ flowchart TB
   D23 --> D68
   D22 --> D69
   D32 --> D69
+  D23 --> D70
+  D67 --> D70
   D05 --> D08
   D06 --> D08
   D07 --> D08
@@ -251,6 +254,7 @@ flowchart TB
 | 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | review (wp/3d-67-licence-check; local, PR not requested) |
 | 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23 | G5 | M | proposed (D-112) |
 | 3D-69 | Point cloud CRS vs. a geographic-CRS building: reproject points into the building metric frame on the server, or refuse a mismatch (D-126) | here | geo-model3d/cloud, services/kernel | 22, 32 | G4 | M | proposed |
+| 3D-70 | Service image licence check: no GPL, LGPL or AGPL in the kernel service container image (3D-ADR-0004 decision 3, D-3D67-1) | here | service image, tools/check-arch | 23, 67 | G5 | M | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -488,6 +492,24 @@ flowchart TB
   the same CRS takes the path unchanged.
 - Decisions: D-92, D-93, D-126  Open: choice A/B (owner, at `ready`)
 
+
+### 3D-70 Service image licence check (D-3D67-1)
+- Source: 3D-67 session 2026-11-24 (the npm check of 3D-67 cannot see OS packages of the image); owner dialog
+  (D-3D67-1).
+- Goal: the kernel service container image (D-33) contains no GPL, LGPL or AGPL code, as 3D-ADR-0004 decision 3 says
+  literally, and CI proves it on every image build.
+- Scope in: a base image and Node runtime build chosen so that no copyleft package or file is in the image [A: Debian,
+  distroless and Alpine bases carry glibc (LGPL-2.1), GCC runtime libraries (GPL-3.0 with runtime exception) or
+  busybox (GPL-2.0), so a stock base will not pass; candidates such as `scratch` + a static Node built against musl and
+  LLVM libc++ are to be verified, not assumed]; an offline SBOM of the built image (every OS package and every file
+  with a licence, the Node binary's bundled third-party components from its `LICENSE` file included) checked against
+  the allow list; a planted copyleft package fails the check (negative control). Scope out: npm tree (3D-67);
+  deployment target (ADR-OPS, D-33); EPSG data terms (Q-43).
+- Accept: the image build in CI produces an SBOM and the check reports zero GPL / LGPL / AGPL entries; a planted GPL
+  package in a test image fails it; a licence without an SPDX id fails (fail closed); the image passes the GT-13
+  service smoke test. If no copyleft-free image can run Node, the row stops with an owner escalation and the evidence,
+  not a relaxed rule (D-3D67-1).
+- Decisions: D-33, D-109, D-3D67-1  Open: Q-3D67-1 (blocks `ready`)
 ### 3D-65 Schema text: D-76 in the `FIT_TO_SHARED_EDGE` payload
 - Source: 3D-64 session 2026-11-23, owner dialog (D-97). Found while applying D-76 to the spec.
 - Goal: the `maxDisplacementM` description of `contracts/model3d/command-payload-fit-to-shared-edge.schema.json` states
