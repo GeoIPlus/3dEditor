@@ -1,8 +1,8 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12); other modules follow their rows (3D-10..3D-21)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10); other modules follow their rows (3D-11, 3D-13..3D-21)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
-- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §8, §9
+- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
   `robust-predicates` not adopted (D-118, D-150)
 - Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
@@ -27,8 +27,12 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   or `{ error }` (`INVALID_PAYLOAD`: unknown `faceIds`, missing threshold, bad selection).
 - `validateModel(model, { mode, targetState, tolerances, clock, affectedEntityIds?, fullSolid?, findings?,
   externalValidator? }) -> Promise<ValidationReport>` (3D-12, spec §8): contract `validation-report` out; see `validate` below.
-- Names fixed for later rows (D-119): `executeCommand` (3D-14..3D-21), `importBuilding` (3D-10),
-  `exportBuilding` (3D-11).
+- `importBuilding({ cityjson, cityObjectId, toleranceProfile, projectId, buildingId?, toleranceProfileId?, ids?,
+  originalSourceRef? })` -> `{ model, baseline, report }` (3D-10, spec §6): contract `building-model` at version 0,
+  baseline = isolated copy (3D-ADR-0003 S1), contract `import-report`. Refusals throw `ImportError` (`code`
+  `INVALID_PAYLOAD` / `NOT_FOUND` / `INVALID_GEOMETRY`) or `CrsError` (`INVALID_CRS`). The input is named `cityjson`, not
+  `document`: `check:arch` rejects the DOM global name in kernel files.
+- Names fixed for later rows (D-119): `executeCommand` (3D-14..3D-21), `exportBuilding` (3D-11).
 
 ## Modules (`src/`, DAG of 3D-ADR-0002 C1 rule 2, enforced by `check:arch`)
 `brep` (3D-09) is the leaf every other module imports. Its surface (`src/brep/index.js`), for kernel modules only:
@@ -72,6 +76,24 @@ same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 ru
   (mulberry32). RANSAC (D-130): inlier distance `planarTolM`, adaptive iterations for 99.9 %, at most 1000, fixed
   seed. Readings marked [A]: fitted normal oriented z > 0 (then y, x); a point on a ring boundary follows the crossing
   rule; empty heatmap summary reports zeros.
+- `src/import/` (3D-10; spec §6): `cityjson` (Building + BuildingPart / BuildingInstallation children, LoD 2.x and
+  Solid-first selection), `vertices` (transform, `crs` metric frame, `brep` local frame, weld within
+  `topologySnapTolM`), `fit` (least-squares plane by 3 x 3 Jacobi eigen, Newell orientation), `faces`, `semantics`
+  (rule 7), `coplanar` (rule 5, union-find, boundary rings), `halfedges` (twins per shell, `nonManifoldGroupId`),
+  `roles` (rule 8), `footprint` (rule 9), `state` (interim issues and state, D-157), `ids` (default id source).
+  Readings [A] of import, for the owner's review: model `buildingId` defaults to the CityObject id (Q-32);
+  default ids `<kind>-<n>` (Q-26); `buildingAxisDeg` 0 and origin = box centre of the used file vertices;
+  `verticalCrs` null (the CRS table resolves only the horizontal part; D-93 keeps heights as in the file);
+  `Vtx.sourceRef` = file vertex indices of the welded group, comma-separated; `Face.sourceRef` =
+  `<CityObject>/geometry/<i>/boundaries/<path>` of its first input surface (all in `mergedFaces`); vertices are per
+  body (parts share no vertex); "offset" of rule 5 = every vertex of each face within `planarTolM` of the other's
+  plane; "horizontal" edge = end heights within `zAlignTolM`; roles outside rule 8 -> `GENERIC`, one-face edge
+  `BOUNDARY`; roof components per Building / BuildingPart (an installation's roof faces go to its owner); one
+  footprint per ground face, outer ring counter-clockwise from above, `baseElevationM` = lowest local height;
+  a surface that keeps < 3 vertices or spans no plane is dropped with warning `model3d.import.droppedSurface:<ref>`;
+  > 500 faces warns `model3d.import.faceLimitExceeded:<n>>500` (D-94); refusal codes as listed above; issue
+  messages are localisation keys `model3d.issue.*` (D-91). Opaque `GeometryInstance`, `appearance` and extensions
+  are not copied: export (3D-11) writes them from the original document, which import never writes (frozen-input test).
 
 ## Rules and invariants
 - Every target of `package.json` `exports` imports `./src/canary.js`; `canary.js` is listed in `sideEffects`.
@@ -102,5 +124,11 @@ same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 ru
   re-derivation 3.9 ms p50 / 6.8 ms p95; sawtooth-499 transaction 14.2 / 22.5 ms. Clone and diff dominate (~2 ms each
   at 199 faces); a dirty-tracking draft is the next step if a gate needs it.
 - `test/canary.test.js`: marker format, entry exports it.
+- `test/import/` (3D-10): contract validity (Ajv) of model, baseline, report; `checkTopology` clean; vertices EXPLICIT
+  with `sourceRef` (D-70); frozen input; determinism; semantics inference thresholds; CRS refusals and ENU import;
+  noisy input (±15 mm) maps back to the file within 0.001 m and writes back identical integers; refusals; LoD
+  selection; 500-face warning; HIP / RIDGE / VALLEY / EAVE / RAKE; non-manifold edge; welding; parts and installations.
+- Golden: `test/golden/gt-i1..gt-i3.golden.test.js` (GT-I1 volume 520 m3, roof 100 m2, measured by the test's own code;
+  GT-I2 per D-156; GT-I3 merged roof faces with their `sourceRef`s).
 - `test/crs/`: registry, ENU accuracy against closed-form ECEF and GeographicLib oracles, round trip of
   `test/crs/fixtures/gt-i1-epsg4937.cityjson.json` (made by `test/crs/make-fixture.mjs` from GT-I1). Golden tests: none yet (3D-07).

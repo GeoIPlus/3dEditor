@@ -4,6 +4,7 @@
 // Names of the entries later rows add are fixed in the module card (README.md "Public API"), 3D-09.
 import './canary.js';
 import { canonicalJson as canon, localFrame } from './brep/index.js';
+import { importCityObject } from './import/index.js';
 
 export { P4_CANARY } from './canary.js';
 export { validateModel } from './validate/index.js';
@@ -44,3 +45,14 @@ export function localToWorld(frame, points) {
  * @returns {string}
  */
 export const canonicalJson = (value) => canon(value);
+
+/**
+ * Import one CityJSON Building (with its BuildingPart / BuildingInstallation children) into the canonical model
+ * (spec §6, I-01; 3D-10). Returns the model at version 0, the immutable baseline (an isolated copy, 3D-ADR-0003 S1)
+ * and the contract `import-report`. Refusals throw: `ImportError` (`code` INVALID_PAYLOAD / NOT_FOUND /
+ * INVALID_GEOMETRY) or the `crs` error with `code` INVALID_CRS.
+ * @param {import('./import/index.js').ImportInput} input
+ * @returns {{ model: import('./brep/types.js').BuildingModel, baseline: import('./brep/types.js').BuildingModel,
+ *   report: import('./import/index.js').ImportReport }} contract `building-model` x 2, `import-report`
+ */
+export const importBuilding = (input) => importCityObject(input);

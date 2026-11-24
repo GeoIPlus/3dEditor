@@ -13,24 +13,25 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155).
+Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10)).
 
 | Progress | Rows |
 |---|---:|
-| Done | 22 / 60 |
+| Done | 23 / 61 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 9 |
-| Proposed (waiting for the owner to set `ready`) | 28 |
+| Ready | 8 |
+| Proposed (waiting for the owner to set `ready`) | 29 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 22/60 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 23/61 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** SC 3D view port + host 3D-47 (D-61), CityJSON import 3D-10 (D-128); solver 3D-13, licence check 3D-67 (D-129); spec text for 3D-22 decisions 3D-72 (D-138); COPC adapter 3D-70 (D-139).
+**Running:** SC 3D view port + host 3D-47 (D-61); solver 3D-13, licence check 3D-67 (D-129); spec text for 3D-22 decisions 3D-72 (D-138); COPC adapter 3D-70 (D-139).
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D10["3D-10 CityJSON import"]
     D46["3D-46 SC: P4 canary scan"]
     D66["3D-66 Apply 3D-08 ADRs to spec, AGENTS"]
     D12["3D-12 Validation"]
@@ -62,7 +63,6 @@ flowchart TB
     D72["3D-72 Spec: 3D-22 decisions"]
     D67["3D-67 Licence allow-list check"]
     D13["3D-13 Constraint solver"]
-    D10["3D-10 CityJSON import"]
     D47["3D-47 SC: 3D view port + host"]
     D48["3D-48 SC: apps/3dqm host"]
     D51["3D-51 geoviewer scene3d adapter"]
@@ -72,6 +72,7 @@ flowchart TB
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
     D11["3D-11 CityJSON export"]
+    D75["3D-75 Import state from validateModel"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D14["3D-14 Replace roof, rebuild envelope"]
@@ -155,6 +156,8 @@ flowchart TB
   D14 --> D71
   D22 --> D71
   D22 --> D72
+  D10 --> D75
+  D12 --> D75
   D05 --> D08
   D06 --> D08
   D07 --> D08
@@ -232,7 +235,7 @@ flowchart TB
 | 3D-07 | Golden fixtures: format and synthetic CityJSON/point sets for GT-I1..GT-25 | here | fixtures | 06 | G0 | M | done (D-103; merged into base, no PR; [fixtures](../fixtures/README.md)) |
 | 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | done (D-113; merged into base, no PR; [note](verification/3D-08.md): p95 5.4 ms / 150 ms; 3D-ADR-0004..0006 accepted D-109..D-111) |
 | 3D-09 | Kernel core: half-edge B-Rep, primary planes, derived vertices, local frame, transactions, versions | here | geo-model3d/brep | 08 | G1 | L | done (D-120; merged into base, no PR) |
-| 3D-10 | Import I-01: CityJSON -> canonical model + RTG + baseline | here | geo-model3d/import | 09, 32 | G1 | L | ready (D-128) |
+| 3D-10 | Import I-01: CityJSON -> canonical model + RTG + baseline | here | geo-model3d/import | 09, 32 | G1 | L | done (D-158; merged into base, no PR) |
 | 3D-11 | Export: canonical model -> CityJSON, opaque data round-trip | here | geo-model3d/export | 10, 12 | G1 | M | proposed |
 | 3D-12 | Validation: FAST_PREVIEW, COMMIT_VALIDATION, FINAL_VALIDATION (val3dity), severity by state | here | geo-model3d/validate | 09 | G1 | L | done (D-154; merged into base, no PR; [3D-ADR-0008](decisions/adr/3D-ADR-0008-val3dity-binding.md) proposed) |
 | 3D-13 | Constraint solver and conflict diagnostics | here | geo-model3d/solve | 09 | G3 | L | ready (D-129) |
@@ -271,6 +274,7 @@ flowchart TB
 | 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | ready (D-138) |
 | 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | proposed (bug of 3D-05, found by 3D-46; D-146) |
 | 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 23 | G5 | M | ready (D-155) |
+| 3D-75 | Import state from `validateModel`: replace the interim `import/state.js` (D-157) | here | geo-model3d (index, import, validate) | 10, 12 | G1 | S | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -539,6 +543,16 @@ flowchart TB
   for RANSAC parameters or the heatmap threshold.
 - Decisions: D-130..D-136  Open: none
 
+### 3D-75 Import state from `validateModel` (D-157)
+- Source: 3D-10 session 2026-11-23, owner dialog (D-157). Written as 3D-70; renumbered to 3D-75 at merge (ids taken meanwhile).
+- Goal: one implementation of import issues and state: `importBuilding` takes them from 3D-12's `validateModel`.
+- Scope in: `packages/geo-model3d/src/index.js` composes `importCityObject` and `validateModel` (the module DAG keeps
+  `import` -> `brep`, `crs` only); delete `src/import/state.js` and its uses; `import-report.issues` and
+  `assignedState` from the validation report (spec §6 rule 10); `src/validate/structure.js` applies D-156 (a one-face edge shorter than
+  `minEdgeLengthM` is `DEGENERATE_EDGE`, not `OPEN_BOUNDARY`; merged 3D-12 still reports `OPEN_BOUNDARY` on every
+  half-edge without a twin). Scope out: new validation codes (3D-12).
+- Accept: GT-I1..GT-I3 green unchanged; `src/import/state.js` gone; `test/import/` green; `check:arch` passes.
+- Decisions: D-156, D-157  Open: -
 ### 3D-65 Schema text: D-76 in the `FIT_TO_SHARED_EDGE` payload
 - Source: 3D-64 session 2026-11-23, owner dialog (D-97). Found while applying D-76 to the spec.
 - Goal: the `maxDisplacementM` description of `contracts/model3d/command-payload-fit-to-shared-edge.schema.json` states
