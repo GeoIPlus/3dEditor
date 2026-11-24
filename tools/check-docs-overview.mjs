@@ -8,11 +8,11 @@ const BACKLOG = 'docs/BACKLOG.md';
 export const OVERVIEW = { done: 'done', review: 'review', 'in progress': 'in-progress', ready: 'ready', proposed: 'proposed', blocked: 'blocked' };
 const DATE_LINE = /^Updated: \d{4}-\d{2}-\d{2}$/;
 
-/** @param {string[]} lines @returns {Map<string, string>} row id -> mermaid label text without the id */
+/** @param {string[]} lines @returns {Map<string, string>} row id -> mermaid label text without icons and id */
 function labels(lines) {
   const map = new Map();
   for (const l of lines) {
-    const m = /^\s*D[\d_]+\["(3D-\d+(?:\.\d+)?)\s+([^"]*)"\]/.exec(l);
+    const m = /^\s*D[\d_]+\["[^"]*?(3D-\d+(?:\.\d+)?)\s+([^"]*)"\]/.exec(l); // icons before the id dropped (D-208)
     if (m) map.set(m[1], m[2].trim());
   }
   return map;

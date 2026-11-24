@@ -2,7 +2,8 @@
 // Document consistency check for 3DQM (3D-30, D-46). Node built-ins only.
 // Usage: node tools/check-docs.mjs [--root <dir>] [--allow-provisional] [--fix]
 // Exit 0 and no output when consistent; exit 1 with one line per problem otherwise. `--fix` first rewrites the
-// generated parts of the BACKLOG overview (D-180, tools/check-docs-overview.mjs), then checks.
+// generated parts of the BACKLOG (graph icons and legend, D-208, tools/check-docs-icons.mjs; overview, D-180,
+// tools/check-docs-overview.mjs), then checks.
 // 3D-05 folds this script into `npm run check` (`npm run check:docs`).
 import { readFileSync, readdirSync, existsSync, statSync, writeFileSync } from 'node:fs';
 import { join, dirname, resolve, relative, sep } from 'node:path';
@@ -11,6 +12,7 @@ import { section, cells } from './check-docs-md.mjs';
 import { PROVISIONAL, PROVISIONAL_ADR, definedFinalIds, newFinalIds } from './check-docs-ids.mjs';
 import { overview } from './check-docs-overview.mjs';
 import { checkDecisionTables } from './check-docs-decisions.mjs';
+import { icons, TYPES } from './check-docs-icons.mjs';
 
 export { section };
 
@@ -23,18 +25,22 @@ const SKIP_DIRS = new Set(['.git', 'node_modules']);
 
 /**
  * @param {string[]} lines BACKLOG lines
- * @returns {{id: string, num: number, status: string, line: number}[]}
+ * @returns {{id: string, num: number, status: string, type: string, line: number}[]}
+ *   type: the `Type` cell (D-3D84-1), '' when the table has no such column
  */
 export function parseRows(lines) {
   const sec = section(lines, '## Work-package status');
-  /** @type {{id: string, num: number, status: string, line: number}[]} */
+  /** @type {{id: string, num: number, status: string, type: string, line: number}[]} */
   const rows = [];
+  const header = sec.lines.find((l) => /^\|\s*WP\s*\|/.test(l));
+  const typeAt = header ? cells(header).indexOf('Type') : -1;
   sec.lines.forEach((l, i) => {
     const m = /^\|\s*3D-(\d+(?:\.\d+)?)\s*\|/.exec(l);
     if (!m) return;
     const c = cells(l);
     const word = (c[c.length - 1].match(/^[a-z-]+/) || [''])[0];
-    rows.push({ id: `3D-${m[1]}`, num: Number(m[1]), status: word, line: sec.start + i + 2 });
+    const type = typeAt >= 0 ? (c[typeAt] ?? '') : '';
+    rows.push({ id: `3D-${m[1]}`, num: Number(m[1]), status: word, type, line: sec.start + i + 2 });
   });
   return rows;
 }
@@ -46,6 +52,7 @@ function checkRows(lines, rows, out) {
     if (seen.has(r.id)) out.push(`${BACKLOG}:${r.line}: duplicate row ${r.id}`);
     seen.add(r.id);
     if (!STATUSES.includes(r.status)) out.push(`${BACKLOG}:${r.line}: ${r.id} has unknown status "${r.status}"`);
+    if (!TYPES.includes(r.type)) out.push(`${BACKLOG}:${r.line}: ${r.id} has unknown type "${r.type}" (one of ${TYPES.join(', ')}; D-3D84-1)`);
   }
 }
 
@@ -71,7 +78,7 @@ function checkMermaid(lines, rows, out) {
     let m;
     if ((m = /^subgraph\s+([\w-]+)/.exec(l))) group = m[1];
     else if (l === 'end') group = '';
-    else if ((m = /^D(\d+(?:_\d+)?)\["3D-(\d+(?:\.\d+)?)(?![\d.])/.exec(l))) {
+    else if ((m = /^D(\d+(?:_\d+)?)\["[^"]*?3D-(\d+(?:\.\d+)?)(?![\d.])/.exec(l))) {
       const key = m[1].replace('_', '.');
       if (key !== m[2]) out.push(`${at}: node D${m[1]} is labelled 3D-${m[2]}`);
       if (nodes.has(key)) out.push(`${at}: duplicate mermaid node D${m[1]}`);
@@ -188,6 +195,7 @@ export function checkDocs(root, opts = {}) {
     checkRows(lines, rows, out);
     checkOverview(lines, rows, out);
     checkMermaid(lines, rows, out);
+    out.push(...icons(lines, rows).problems);
     checkDetails(lines, rows, out);
   }
   checkDecisionIds(root, out);
@@ -204,8 +212,8 @@ export function readIdDocs(root) {
 }
 
 /**
- * Rewrite the generated parts of the BACKLOG overview (D-180). `Updated:` becomes `today` when anything else changed
- * or the line is not a bare date.
+ * Rewrite the generated parts of the BACKLOG: graph icons and legend (D-208), then the overview (D-180). `Updated:`
+ * becomes `today` when an overview line changed or the line is not a bare date.
  * @param {string} root
  * @param {string} today YYYY-MM-DD
  * @returns {number} lines changed
@@ -213,14 +221,15 @@ export function readIdDocs(root) {
 export function fixDocs(root, today) {
   const file = join(root, BACKLOG);
   if (!existsSync(file)) return 0;
-  const lines = readFileSync(file, 'utf8').split('\n');
+  const before = readFileSync(file, 'utf8').split('\n');
+  const { fixed: lines, problems: iconFixes } = icons(before, parseRows(before));
   const sec = section(lines, '## Progress overview');
   if (sec.start < 0) return 0;
   const { edits, dateOk, dateAt } = overview(lines, parseRows(lines), sec);
   if (dateAt >= 0 && (edits.size > 0 || !dateOk) && lines[dateAt] !== `Updated: ${today}`) edits.set(dateAt, `Updated: ${today}`);
   for (const [i, text] of edits) lines[i] = text;
-  if (edits.size > 0) writeFileSync(file, lines.join('\n'));
-  return edits.size;
+  if (edits.size > 0 || iconFixes.length > 0) writeFileSync(file, lines.join('\n'));
+  return edits.size + iconFixes.length;
 }
 
 const isMain = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
