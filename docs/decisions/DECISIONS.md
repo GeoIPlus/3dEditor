@@ -208,6 +208,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-192 | `exportBuilding` returns a CityJSON document with this building only: the Building and all its descendants (`children`, any type), the root members of the input (`type`, `version`, `transform`, `metadata`, `extensions`, `appearance`, `geometry-templates`, `+`members) copied, and only the vertices the output uses, re-indexed in ascending input order; integers of untouched vertices are kept | Owner, dialog, 2026-11-24 (3D-11) |
 | D-193 | Amends D-190: a vertex counts as untouched (keeps its file integers, lets its faces reuse their original surface) when it is still within 1e-6 m of its first file index, whatever its `positionMode`; under D-70 a single edit makes every neighbouring face's vertices DERIVED, and the EXPLICIT reading regenerated every face of the body | Owner, dialog, 2026-11-24 (3D-11) |
 | D-194 | 3D-11 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-189..D-193; GT-I4 val3dity assertion stays `it.todo` until 3D-74 (D-189) | Owner, WP session 3D-11, 2026-11-24 |
+| D-195 | 3D-80 (`fitPlane` independent of input point order) set `ready` and started in a fresh session | Owner, WP session 3D-70 ("set 3D-80 ready"), 2026-11-24 |
 
 ## Open questions
 
