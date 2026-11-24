@@ -176,6 +176,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-163 | 3D-71 (`FIT_PLANE` command) stays `proposed` until 3D-14 (`executeCommand` pipeline) is done; then it is set `ready` (keeps D-134) | Owner, dialog, 2026-11-24 (written first as D-141, a duplicate of the 3D-66 id; renumbered) |
 | D-164 | 3D-69, D-126 option A: a point cloud in another horizontal CRS than the building is reprojected on the server into the building's local metric frame (`proj4` and the `crs` module of 3D-32, 3D-ADR-0007); a mismatch is not refused. 3D-69 set `ready` and started in a fresh session | Owner, dialog, 2026-11-24 |
 | D-165 | The cloud's horizontal CRS always comes from the context, not from the file's CRS records: the CRS of the already opened dataset, a CRS the user defined, or one passed by the CP. Where it enters the contracts (CP 3DQM extension or the request) is proposed by 3D-69; a contract change needs approval (D-18) | Owner, dialog, 2026-11-24 |
+| D-166 | 3D-75 (import state from `validateModel`, D-156 applied in `validate`) set `ready` (3D-10 and 3D-12 done); no session started yet | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
