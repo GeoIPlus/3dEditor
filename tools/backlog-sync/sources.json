@@ -1,5 +1,5 @@
 {
-  "shared": { "repository": "GeoIPlus/shared_compnents", "path": "docs/BACKLOG.md", "dir": "tools/backlog-sync/pins/shared" },
+  "shared": { "repository": "GeoIPlus/shared_compnents", "path": "docs/BACKLOG.md", "dir": "tools/backlog-sync/pins/shared", "idPattern": "^\\d+$", "section": "## Work-package status and PRs" },
   "geoviewer": { "repository": "GeoIPlus/geoviewer", "path": "BACKLOG.md", "dir": "tools/backlog-sync/pins/geoviewer" },
   "crowdsource": { "repository": "GeoIPlus/crowdsource", "path": "docs/BACKLOG.md", "dir": "tools/backlog-sync/pins/crowdsource" }
 }

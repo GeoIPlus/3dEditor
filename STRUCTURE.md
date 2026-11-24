@@ -49,7 +49,7 @@ tools/check-docs-{md,ids,overview}.mjs  check-docs parts: markdown helpers, id r
 tools/check-docs-decisions.mjs       check-docs DECISIONS.md tables: id tables, status-row shape and ids, rows outside the tables (D-167) (3D-76)
 tools/base-branch.mjs                base branch name and coordinator marker (D-178) (3D-78)
 tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09)
-tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
+tools/backlog-sync/                  `npm run backlog:sync`: sources.json (row id rule per source), pins/<repo>/ snapshots + provenance (3D-05; first pin pins/shared, 3D-73)
 tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006); `solve-cost.mjs` (3D-13)
 tools/hooks/                         Claude Code hook scripts (3D-30)
 tools/crs-table/                     generator of `geo-model3d/src/crs/epsg-table.json` from PROJ proj.db (3D-32) and PROJ proj-strings (3D-69)
