@@ -154,6 +154,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-138 | 3D-72 (spec text for the 3D-22 decisions D-130..D-136) set `ready` and started in a fresh session, in parallel with 3D-66 (different spec sections) | Owner, chat, 2026-11-24 |
 | D-139 | 3D-70 (COPC-by-box points adapter, `laz-perf` ADR) set `ready` and started in a fresh session while its dependency 3D-67 (licence allow-list check) is still running: the ADR and adapter proceed now; the allow-list part of the 3D-70 acceptance is checked once 3D-67 is merged | Owner, chat, 2026-11-24 |
 | D-140 | Q-44: yes - a small LAZ-compressed COPC test file (a few KB) may be committed for 3D-70 | Owner, chat, 2026-11-24 |
+| D-144 | 3D-46: `GeoIPlus/shared_compnents` had no mirror row; the owner approved adding it there as **SC row 76** (branch `wp/76-p4-canary-scan`) and implementing it in this session. SC records the approval in its own DECISIONS.md | Owner, dialog, 2026-11-23 (3D-46) |
+| D-145 | 3D-46 delivery: the SC branch is pushed **without a pull request** (overrides SC AGENTS.md §4.8 for this WP); the owner opens it or asks for one later. 3dEditor bookkeeping stays on its branch without a PR | Owner, dialog, 2026-11-23 (3D-46) |
+| D-146 | Intake from 3D-46: `backlog:sync` cannot link mirror rows to SC (SC row ids are bare numbers; no SC pin vendored); filed as row 3D-73 `proposed` (bug of 3D-05). 3D-46's repo cell stays `shared` until 3D-73 is done | Owner, dialog, 2026-11-23 (3D-46) |
+| D-147 | 3D-46 accepted (done); merged into the base without PR via the `merge-wp` skill; SC pull request #67 opened and merged on the owner's word (replaces D-145's "no pull request"; SC D-125). Provisional ids became D-144..D-146; the intake row filed as 3D-66 on the branch became 3D-73 (3D-66 and 3D-70 were taken on the base) | Owner, chat ("open a PR ... Accept and merge"), 2026-11-24 |
 
 ## Open questions
 

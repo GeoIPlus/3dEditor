@@ -13,24 +13,25 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged).
+Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146).
 
 | Progress | Rows |
 |---|---:|
-| Done | 20 / 58 |
+| Done | 21 / 59 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 10 |
-| Proposed (waiting for the owner to set `ready`) | 27 |
+| Ready | 9 |
+| Proposed (waiting for the owner to set `ready`) | 28 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 20/58 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 21/59 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** SC 3D view port + host 3D-47 (D-61), CityJSON import 3D-10 and validation 3D-12 (D-128); solver 3D-13, licence check 3D-67 (D-129); spec text for 3D-22 decisions 3D-72 (D-138); COPC adapter 3D-70 (D-139).
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D46["3D-46 SC: P4 canary scan"]
     D66["3D-66 Apply 3D-08 ADRs to spec, AGENTS"]
     D22["3D-22 Point cloud functions"]
     D32["3D-32 CRS support (geographic)"]
@@ -61,12 +62,12 @@ flowchart TB
     D13["3D-13 Constraint solver"]
     D12["3D-12 Validation"]
     D10["3D-10 CityJSON import"]
-    D46["3D-46 SC: P4 canary scan"]
     D47["3D-47 SC: 3D view port + host"]
     D48["3D-48 SC: apps/3dqm host"]
     D51["3D-51 geoviewer scene3d adapter"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
+    D73["3D-73 backlog:sync: SC row ids"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
     D11["3D-11 CityJSON export"]
@@ -209,6 +210,8 @@ flowchart TB
   D47 --> D48
   D47 --> D51
   D50 --> D51
+  D05 --> D73
+  D46 --> D73
 ```
 
 ## Work-package status
@@ -262,6 +265,7 @@ flowchart TB
 | 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | ready (D-139) |
 | 3D-71 | `FIT_PLANE` command: apply the plane fit as a `PLANE` measurement or as a face's new `supportPlane` through PREVIEW/COMMIT (spec §10.12 r4, D-134) | here | geo-model3d/ops | 14, 22 | G4 | M | proposed |
 | 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | ready (D-138) |
+| 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | proposed (bug of 3D-05, found by 3D-46; D-146) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -270,7 +274,7 @@ flowchart TB
 | 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared | contracts | 06, 27 | G3 | S | proposed (D-37) |
 | 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | ready (D-61; started in a fresh cloud session; UI per brandbook, D-40) |
 | 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
-| 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared | tools, CI | 27 | G0 | S | ready (D-37, D-108; starts in a fresh session on `GeoIPlus/shared_compnents`) |
+| 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared | tools, CI | 27 | G0 | S | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
 | 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server (mounts `createKernelHandler`, 3D-ADR-0002), file storage port for tests, P4 canary scan of the client build | geoviewer | host | 23, 43 | G5 | M | proposed (UI per brandbook, D-40) |
 | 3D-51 | geoviewer `scene3d` adapter implementing the 3D view port (entity-id pick, model3d drawing in GV) | geoviewer | scene3d | 47, 50 | G5 | M | ready (D-61; waits for 3D-47, 3D-50; D-54; UI per brandbook, D-40) |
 
@@ -570,3 +574,16 @@ flowchart TB
 - Accept: `npm run bench` reports COMMIT and import p95 and PREVIEW p95 at a stated concurrency with the rig
   fingerprint; results vs v0.3 §11 recorded in a verification note; a miss is an owner escalation (D-06).
 - Decisions: D-111  Open: Q-42
+
+### 3D-73 `backlog:sync` links mirror rows to shared_compnents
+- Source: 3D-46 (2026-11-23); owner, dialog, D-146. Bug of 3D-05: `tools/backlog-sync/sync.mjs` `remoteStatuses`
+  accepts only ids `<letters>-<n>`, while SC's status table uses bare numbers (`| 76 |`), so no mirror row can be linked
+  to SC; `tools/backlog-sync/pins/` does not exist yet (`backlog:sync`: "14 mirror rows, 0 linked").
+- Goal: `backlog:sync` reads SC's row ids as SC writes them, from a vendored pin, and 3D-46 is linked.
+- Scope in: an id rule per source in `tools/backlog-sync/sources.json` (SC: bare numbers) with tests; the first pin of
+  SC's BACKLOG by `npm run backlog:sync -- --fetch shared <sha>` (D-57); 3D-46 repo cell `shared (76)`; the statusMap
+  entries SC needs. Scope out: rows with no SC row yet (3D-45, 3D-47 .. 3D-50 until SC adds them); geoviewer and
+  crowdsource pins.
+- Accept: a fixture SC BACKLOG with a row `76` in status `review` yields `review` for `shared (76)`; drift between here
+  and the pin fails `backlog:sync` (test); the real run reports 3D-46 linked with 0 problems; `npm run check` passes.
+- Decisions: D-25, D-57, D-146  Open: -
