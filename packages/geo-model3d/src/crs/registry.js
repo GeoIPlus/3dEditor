@@ -8,7 +8,8 @@ export const INVALID_CRS = 'INVALID_CRS';
 export class CrsError extends Error {
   /**
    * @param {string} message
-   * @param {{ referenceSystem?: unknown, reason: 'MALFORMED' | 'UNKNOWN_OR_UNSUPPORTED' }} details
+   * @param {{ referenceSystem?: unknown, reason: 'MALFORMED' | 'UNKNOWN_OR_UNSUPPORTED' | 'DATUM_MISMATCH' | 'NO_PROJECTION',
+   *   datums?: [string, string] }} details  DATUM_MISMATCH / NO_PROJECTION: reprojection of points (3D-69)
    */
   constructor(message, details) {
     super(message);

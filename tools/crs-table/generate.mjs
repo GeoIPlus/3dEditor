@@ -1,10 +1,12 @@
 // Generates packages/geo-model3d/src/crs/epsg-table.json from a PROJ `proj.db` (3D-32, 3D-ADR-0007).
-// Usage: node tools/crs-table/generate.mjs <path/to/proj.db> [out.json]
+// Usage: node tools/crs-table/generate.mjs <path/to/proj.db> <proj-defs.json> [out.json]
+// proj-defs.json comes from proj-defs.py (same pinned PROJ); it adds the projection of each projected CRS (3D-69).
 // The database is an input, not committed; README.md here says how to obtain the pinned one.
 // Only CRSs the kernel supports are written; every other code resolves to INVALID_CRS (D-92).
 import { DatabaseSync } from 'node:sqlite';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { buildProjections } from './projections.mjs';
 
 const DEGREE = new Set(['EPSG:9122', 'EPSG:9102']); // degree (supplier to define representation), degree
 const METRE = 'EPSG:9001';
@@ -27,8 +29,11 @@ export function axisOrder(axes, units) {
   return null;
 }
 
-/** @param {string} dbPath */
-export function buildTable(dbPath) {
+/**
+ * @param {string} dbPath
+ * @param {{ proj: string, pyproj: string, defs: Record<string, any> }} projDefs proj-defs.py output
+ */
+export function buildTable(dbPath, projDefs) {
   const db = new DatabaseSync(dbPath, { readOnly: true });
   const meta = Object.fromEntries(
     /** @type {Array<{key: string, value: string}>} */ (db.prepare('SELECT key, value FROM metadata').all()).map((r) => [r.key, r.value]),
@@ -48,11 +53,11 @@ export function buildTable(dbPath) {
 
   /** @type {Record<string, {a: number, rf?: number, b?: number}>} */
   const ellipsoids = {};
-  /** @type {Record<string, [string, string]>} */
+  /** @type {Record<string, [string, string, string]>} order, ellipsoid, datum (3D-69: same-datum rule, D-197) */
   const geographic = {};
   const geoRows = /** @type {any[]} */ (db.prepare(
     `SELECT g.auth_name ga, g.code gc, g.coordinate_system_auth_name ca, g.coordinate_system_code cc,
-            e.auth_name ea, e.code ec, e.semi_major_axis sa, e.inv_flattening rf, e.semi_minor_axis sb, e.uom_auth_name eua, e.uom_code euc
+            d.auth_name da, d.code dc, e.auth_name ea, e.code ec, e.semi_major_axis sa, e.inv_flattening rf, e.semi_minor_axis sb, e.uom_auth_name eua, e.uom_code euc
      FROM geodetic_crs g
      JOIN geodetic_datum d ON d.auth_name = g.datum_auth_name AND d.code = g.datum_code
      JOIN ellipsoid e ON e.auth_name = d.ellipsoid_auth_name AND e.code = d.ellipsoid_code
@@ -63,18 +68,36 @@ export function buildTable(dbPath) {
     if (!order || key(r.eua, r.euc) !== METRE) continue; // unsupported: grads, odd axes, non-metre ellipsoid
     const ek = key(r.ea, r.ec);
     ellipsoids[ek] = r.rf ? { a: r.sa, rf: r.rf } : { a: r.sa, b: r.sb ?? r.sa };
-    geographic[key(r.ga, r.gc)] = [order, ek];
+    geographic[key(r.ga, r.gc)] = [order, ek, key(r.da, r.dc)];
   }
 
   /** @type {Record<string, string>} */
   const projected = {};
+  /** @type {Record<string, string>} projected CRS -> datum of its geodetic CRS */
+  const projectedDatum = {};
+  /** @type {Record<string, {a: number, rf?: number, b?: number}>} */
+  const projectedEllipsoid = {};
   const projRows = /** @type {any[]} */ (db.prepare(
-    `SELECT auth_name pa, code pc, coordinate_system_auth_name ca, coordinate_system_code cc FROM projected_crs p WHERE ${inAuth('p')}`,
+    `SELECT p.auth_name pa, p.code pc, p.coordinate_system_auth_name ca, p.coordinate_system_code cc,
+            d.auth_name da, d.code dc, e.semi_major_axis sa, e.inv_flattening rf, e.semi_minor_axis sb, e.uom_auth_name eua, e.uom_code euc
+     FROM projected_crs p
+     JOIN geodetic_crs g ON g.auth_name = p.geodetic_crs_auth_name AND g.code = p.geodetic_crs_code
+     JOIN geodetic_datum d ON d.auth_name = g.datum_auth_name AND d.code = g.datum_code
+     JOIN ellipsoid e ON e.auth_name = d.ellipsoid_auth_name AND e.code = d.ellipsoid_code
+     WHERE ${inAuth('p')}`,
   ).all());
   for (const r of projRows) {
     const order = axisOrder(cs.get(key(r.ca, r.cc)) ?? [], new Set([METRE]));
-    if (order) projected[key(r.pa, r.pc)] = order;
+    if (!order) continue;
+    const k = key(r.pa, r.pc);
+    projected[k] = order;
+    projectedDatum[k] = key(r.da, r.dc);
+    if (key(r.eua, r.euc) === METRE) projectedEllipsoid[k] = r.rf ? { a: r.sa, rf: r.rf } : { a: r.sa, b: r.sb ?? r.sa };
   }
+  const { projections: proj, skipped } = buildProjections(projected, projDefs.defs, projectedEllipsoid);
+  /** @type {Record<string, [string, string]>} projected CRS -> [datum, proj4 definition] (3D-69, D-198) */
+  const projections = {};
+  for (const k of Object.keys(proj)) projections[k] = [projectedDatum[k], proj[k]];
 
   /** @type {Record<string, string>} */
   const compound = {};
@@ -94,21 +117,24 @@ export function buildTable(dbPath) {
       proj: meta['PROJ.VERSION'],
       epsg: `${meta['EPSG.VERSION']} (${meta['EPSG.DATE']})`,
       projDbSha256: createHash('sha256').update(readFileSync(dbPath)).digest('hex'),
+      projDefs: `tools/crs-table/proj-defs.py, pyproj ${projDefs.pyproj}, PROJ ${projDefs.proj}`,
     },
+    skippedProjections: sortObj(skipped),
     ellipsoids: sortObj(ellipsoids),
     geographic: sortObj(geographic),
     projected: sortObj(projected),
     compound: sortObj(compound),
+    projections: sortObj(projections),
   };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const [dbPath, out = 'packages/geo-model3d/src/crs/epsg-table.json'] = process.argv.slice(2);
-  if (!dbPath) {
-    console.error('usage: node tools/crs-table/generate.mjs <proj.db> [out.json]');
+  const [dbPath, defsPath, out = 'packages/geo-model3d/src/crs/epsg-table.json'] = process.argv.slice(2);
+  if (!dbPath || !defsPath) {
+    console.error('usage: node tools/crs-table/generate.mjs <proj.db> <proj-defs.json> [out.json]');
     process.exit(2);
   }
-  const t = buildTable(dbPath);
+  const t = buildTable(dbPath, JSON.parse(readFileSync(defsPath, 'utf8')));
   writeFileSync(out, `${JSON.stringify(t)}\n`);
-  console.log(`${out}: geographic ${Object.keys(t.geographic).length}, projected ${Object.keys(t.projected).length}, compound ${Object.keys(t.compound).length}, ellipsoids ${Object.keys(t.ellipsoids).length}; PROJ ${t.source.proj}, EPSG ${t.source.epsg}`);
+  console.log(`${out}: geographic ${Object.keys(t.geographic).length}, projected ${Object.keys(t.projected).length}, compound ${Object.keys(t.compound).length}, ellipsoids ${Object.keys(t.ellipsoids).length}, projections ${Object.keys(t.projections).length} (left out: ${JSON.stringify(t.skippedProjections)}); PROJ ${t.source.proj}, EPSG ${t.source.epsg}`);
 }

@@ -1,13 +1,18 @@
-// Service glue for the cloud functions (3D-22): a LOCAL-frame `PointSelection` (D-132) -> world box of the dataset
-// -> points port -> LOCAL points for `fitPlane` / `deviationStats`. The kernel then applies the exact shape.
-// Frame: the building's `CoordinateFrame` with a projected CRS (translation + `buildingAxisDeg` rotation, spec §4);
-// a cloud in another CRS is 3D-69 (D-126).
-import { localToWorld, worldToLocal } from '@geoiplus/geo-model3d';
+// Service glue for the cloud functions (3D-22, 3D-69): a LOCAL-frame `PointSelection` (D-132) -> box of the cloud's
+// world -> points port -> LOCAL points for `fitPlane` / `deviationStats`. The kernel then applies the exact shape.
+// The cloud's horizontal CRS comes from the dataset descriptor, never from the file (D-165, D-196); the kernel
+// reprojects when it differs from the building's CRS (same datum only, D-197).
+import { cloudToLocal, localBoxToCloud } from '@geoiplus/geo-model3d';
 
 /** @typedef {import('./ports/points.js').PointsPort} PointsPort */
 /** @typedef {import('./ports/points.js').WorldBox} WorldBox */
 /** @typedef {[number, number, number]} V3 */
 /** @typedef {{ kind: 'BOX', min: V3, max: V3 } | { kind: 'POLYGON', ringXY: [number, number][], zMin: number, zMax: number }} PointSelection */
+/**
+ * One opened point dataset (D-196): the port and the dataset's horizontal CRS, set by the host from the CP 3DQM
+ * extension `dataset` member (SC 3D-43) or from the CRS the user set when opening the dataset.
+ * @typedef {{ port: PointsPort, horizontalCrs: string }} PointsDataset
+ */
 
 /**
  * Local axis-aligned bounds of a selection.
@@ -22,33 +27,25 @@ export function localBounds(sel) {
 }
 
 /**
- * World box covering the selection: the eight local corners mapped to world, then their bounds (the local frame is
- * rotated about Z, so the world box can be larger than the selection; the kernel filters exactly).
+ * Box of the dataset's world covering the selection (the local frame is rotated about Z and, for another CRS or a
+ * geographic building, bent; the box can be larger than the selection; the kernel filters exactly).
  * @param {import('@geoiplus/geo-model3d').CoordinateFrame} frame
+ * @param {string} cloudCrs horizontal CRS of the dataset
  * @param {PointSelection} sel
  * @returns {WorldBox}
  */
-export function worldBoxOf(frame, sel) {
-  const { min, max } = localBounds(sel);
-  /** @type {V3[]} */
-  const corners = [];
-  for (const x of [min[0], max[0]]) for (const y of [min[1], max[1]]) for (const z of [min[2], max[2]]) corners.push([x, y, z]);
-  const w = localToWorld(frame, corners);
-  const lo = /** @type {V3} */ ([0, 1, 2].map((k) => Math.min(...w.map((p) => p[k]))));
-  const hi = /** @type {V3} */ ([0, 1, 2].map((k) => Math.max(...w.map((p) => p[k]))));
-  return { min: lo, max: hi };
-}
+export const worldBoxOf = (frame, cloudCrs, sel) => localBoxToCloud(frame, cloudCrs, localBounds(sel));
 
 /**
- * Points of the selection's world box, in the building's LOCAL frame.
- * @param {PointsPort} port @param {import('@geoiplus/geo-model3d').CoordinateFrame} frame @param {PointSelection} sel
+ * Points of the selection's box, in the building's LOCAL frame.
+ * @param {PointsDataset} dataset @param {import('@geoiplus/geo-model3d').CoordinateFrame} frame @param {PointSelection} sel
  * @param {{ signal?: AbortSignal }} [options]
  * @returns {Promise<Float64Array>}
  */
-export async function readLocalPoints(port, frame, sel, options) {
-  const world = await port.queryBox(worldBoxOf(frame, sel), options);
+export async function readLocalPoints(dataset, frame, sel, options) {
+  const world = await dataset.port.queryBox(worldBoxOf(frame, dataset.horizontalCrs, sel), options);
   /** @type {V3[]} */
   const list = [];
   for (let i = 0; i < world.length; i += 3) list.push([world[i], world[i + 1], world[i + 2]]);
-  return Float64Array.from(worldToLocal(frame, list).flat());
+  return Float64Array.from(cloudToLocal(frame, dataset.horizontalCrs, list).flat());
 }

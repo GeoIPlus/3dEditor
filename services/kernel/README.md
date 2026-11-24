@@ -25,12 +25,15 @@ No `index.js` yet (the handler `createKernelHandler(ports)` is 3D-23). Modules:
   (`decodeChunk`, `laz-perf`), then filters exactly (`inBox`). Positional reads, one file handle per query.
 - `src/adapters/copc-format.js` - `readCopcHeader`, `readPage`, `nodeCube`, `boxesMeet`, `selectNodes(readRange, h, box)`
   (child pages read only when their key meets the box); refusals are `LasFormatError`.
-- `src/cloud-points.js` - `worldBoxOf(frame, selection)`, `readLocalPoints(port, frame, selection)`: LOCAL
-  `PointSelection` (D-132) -> world box -> port -> LOCAL points for `fitPlane` / `deviationStats`.
+- `src/cloud-points.js` - `worldBoxOf(frame, cloudCrs, selection)`, `readLocalPoints(dataset, frame, selection)`
+  with `PointsDataset { port, horizontalCrs }` (3D-69, D-196): LOCAL `PointSelection` (D-132) -> box of the
+  dataset's world -> port -> LOCAL points for `fitPlane` / `deviationStats` (kernel `localBoxToCloud`, `cloudToLocal`).
 
 ## Rules and invariants
-- The dataset is in the building's horizontal CRS and shares its vertical CRS (D-93); the adapter does not read the
-  CRS records of the file. Projected CRS frames only (as `worldToLocal`); another CRS is 3D-69 (D-126).
+- The dataset's horizontal CRS comes from its descriptor, set by the host from the CP 3DQM extension `dataset` member
+  (SC 3D-43) or from the CRS the user set when opening it (D-165, D-196); adapters never read the file's CRS records.
+  Another horizontal CRS than the building's is reprojected by the kernel (D-164), on the same datum only (D-197);
+  the dataset shares the building's vertical CRS (D-93).
 - Mapping `LasFormatError` and read failures to the error registry is 3D-23's (wire binding) - `TBD`.
 - LAS whole: the whole file is held in memory (interim). COPC: only header, pages and meeting chunks are read.
 - Node cubes: root = info VLR centre +/- halfsize (spec text); below it EPT key naming [A] (copclib 2.6.3 derives
@@ -47,4 +50,7 @@ file), port contract, single read and retry, abort, rotated-frame world box, pla
 `test/copc.test.js`: committed COPC files `test/data/gt-20.copc.laz`, `gt-21.copc.laz` (D-140; built by
 `tools/copc-fixture/make_copc.py`): equality with the LAS copy over six boxes, decoded-node counts, GT-20 / GT-21
 through the adapter, no `laz-perf` in the kernel.
+`test/cloud-crs.test.js` (3D-69): GT-I1 in EPSG:4937 vs EPSG:25832 with one generated UTM cloud (seeded, 10 %
+outliers): `FIT_PLANE` planes agree within 1.1e-6 m, heatmap values within 2.8e-4 m (`planarTolM` 0.02); same-CRS path
+bit for bit; WGS 84 cloud over ETRS89 building -> `INVALID_CRS` `DATUM_MISMATCH`.
 Golden GT-20 / GT-21 run on the kernel functions (`packages/geo-model3d/test/golden/`).

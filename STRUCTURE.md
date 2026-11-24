@@ -34,7 +34,7 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
   src/ops/                                               modules (3D-ADR-0002 C1; later rows)
   test/brep/ test/cloud/ test/validate/ test/import/ test/solve/ test/export/ test/golden/   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22; GT-I1..GT-I3: 3D-10; GT-I4: 3D-11)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
-  src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007)
+  src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007); cloud CRS mapping, box (3D-69)
 services/kernel/       (3D-22, 3D-23) host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
   src/ports/ adapters/ operaflow/                        storage, points, validator, auth; interim adapters (D-35)
   src/ports/points.js adapters/las-*.js cloud-points.js  points port, LAS-whole adapter, selection -> local points (3D-22; card README.md)
@@ -49,7 +49,7 @@ tools/check-arch/                    `npm run check:arch`: rules in config.mjs, 
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
 tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006); `solve-cost.mjs` (3D-13)
 tools/hooks/                         Claude Code hook scripts (3D-30)
-tools/crs-table/                     generator of `geo-model3d/src/crs/epsg-table.json` from PROJ proj.db (3D-32)
+tools/crs-table/                     generator of `geo-model3d/src/crs/epsg-table.json` from PROJ proj.db (3D-32) and PROJ proj-strings (3D-69)
 tools/copc-fixture/                  generator of `services/kernel/test/data/*.copc.laz` (Python `copclib`, dev-time only, not run by `npm run check`) (3D-70)
 tools/agent-evals/                   agent eval runner: headless sessions in throwaway clones, rubric grading (3D-28; costs money, not in `npm run check`)
 ```

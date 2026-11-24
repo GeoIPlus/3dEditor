@@ -72,7 +72,7 @@ describe('selection -> world box -> local points', () => {
   const frame = { horizontalCrs: 'EPSG:25832', verticalCrs: null, axisOrder: 'EAST_NORTH_UP', unit: 'm', originWorld: OFFSET, buildingAxisDeg: 30 };
 
   it('world box of a rotated frame covers every local corner', () => {
-    const box = worldBoxOf(/** @type {any} */ (frame), { kind: 'BOX', min: [0, 0, 0], max: [10, 4, 9] });
+    const box = worldBoxOf(/** @type {any} */ (frame), 'EPSG:25832', { kind: 'BOX', min: [0, 0, 0], max: [10, 4, 9] });
     expect(box.max[0] - box.min[0]).toBeCloseTo(10 * Math.cos(Math.PI / 6) + 4 * Math.sin(Math.PI / 6), 6);
     expect(box.min[2]).toBe(0);
   });
@@ -85,7 +85,7 @@ describe('selection -> world box -> local points', () => {
     const port = fromBytes(writeLas({ points: localToWorld(/** @type {any} */ (frame), /** @type {any} */ (local)), offset: OFFSET }));
     // 1 cm margin: points on the box faces move by up to 0.5 mm when the LAS stores millimetres.
     const sel = /** @type {const} */ ({ kind: 'BOX', min: [-0.01, -0.01, 0], max: [10.01, 4.01, 10] });
-    const pts = await readLocalPoints(port, /** @type {any} */ (frame), /** @type {any} */ (sel));
+    const pts = await readLocalPoints({ port, horizontalCrs: 'EPSG:25832' }, /** @type {any} */ (frame), /** @type {any} */ (sel));
     const r = /** @type {any} */ (fitPlane(pts, /** @type {any} */ (sel), { planarTolM: 0.02, planeFitMinPoints: 30, planeFitMinInlierRatio: 0.6 }));
     expect(r.result.pointCount).toBe(55);
     const len = Math.hypot(0.75, 1);

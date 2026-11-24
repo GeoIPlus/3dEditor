@@ -2,13 +2,14 @@
 
 - Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11); other modules follow their rows (3D-14..3D-21)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
-- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
+- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
   `robust-predicates` not adopted (D-118, D-150)
 - Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
 - Third-party runtime code: `proj4` 2.23.0 (MIT; deps `mgrs` 1.0.0 MIT, `wkt-parser` 1.9.0 MIT), used by
   `src/crs/` only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0007-crs-transform.md), accepted D-125); `src/crs/epsg-table.json`
-  generated from PROJ 9.8.1 `proj.db` (EPSG v12.029; EPSG terms of use: Q-43)
+  generated from PROJ 9.8.1 `proj.db` (EPSG v12.029; EPSG terms of use: Q-43) and, since 3D-69, PROJ's proj-strings of the
+  projected CRSs (pyproj 3.8.0, same PROJ), kept only where proj4js reproduces PROJ within 1 mm (tools/crs-table)
 
 ## Purpose
 Geometry kernel for editing LoD2 building models (planes primary, vertices derived, D-08). Runs in Node unchanged,
@@ -19,6 +20,14 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
 - `P4_CANARY` - the canary literal (format `geoiplus-p4-canary:geo-model3d:<32 hex>`, [3D-ADR-0001](../../docs/decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md)).
 - `worldToLocal(frame, points)`, `localToWorld(frame, points)` - contract `CoordinateFrame` + `V3[]`; projected CRS
   (translation by `originWorld`, rotation by `buildingAxisDeg`). Geographic CRSs: import (3D-10) composes `crs` (3D-32).
+  [V] Not correct for a geographic or a north-first projected building (no ENU, no axis swap); point clouds use the two
+  entries below (follow-up for intake, 3D-69 checkpoint).
+- `cloudToLocal(frame, cloudCrs, points)`, `localBoxToCloud(frame, cloudCrs, box)` (3D-69) - cloud world (its own
+  horizontal CRS from the dataset descriptor, D-196; `V3[]` in its axis order) <-> LOCAL; the building side is the
+  import mapping (`createMetricFrame` + rotation). Same CRS: no reprojection; same CRS and a projected building: the
+  3D-22 path bit for bit. Another CRS: via geodetic on the shared datum; another datum -> `CrsError` `INVALID_CRS`
+  reason `DATUM_MISMATCH` (D-197); a projected CRS without a verified projection -> reason `NO_PROJECTION`
+  (D-198). `localBoxToCloud` grows a non-rigid box by d^2 / (2 x 6.3e6 m) (earth curvature bound, `crs/box.js`).
 - `canonicalJson(value)` - canonical JSON (sorted keys, no `-0`); `save -> load -> save` is byte-identical (K-11).
 - `fitPlane(points, selection, profile)` (3D-22) - points `Float64Array` x y z interleaved, LOCAL frame; contract
   `PointSelection`; `{ result: plane-fit-result }` or `{ error }` (`INVALID_MEASUREMENT` with `pointCount` /
@@ -128,6 +137,12 @@ run spread ~0.1 ms).
 - `src/crs/` (3D-32): `resolveCrs`, `createMetricFrame` (projected: translation; geographic: local ENU),
   `writeBackVertices` (untouched vertices keep file integers, D-70), `decodeVertex`; throws `CrsError` with code
   `INVALID_CRS`. Not in `index.js`; `import` / `export` (3D-10, 3D-11) call it. Spec §4a.
+  3D-69: `createCrsMapping(fromRef, toRef)` (`reproject.js`; identity for the same horizontal CRS, else geodetic on the
+  shared datum through proj4 with the table's verified projection, no shift, heights unchanged) and
+  `mappedBoxBounds(toCloud, rigid, box)` (`box.js`). Table: `geographic[code] = [order, ellipsoid, datum]`,
+  `projections[code] = [datum, proj4 definition]` for 4207 of the 4262 projected CRSs (`skippedProjections` counts the
+  rest: 38 non-Greenwich meridian, 13 proj4js off by more than 1 mm - laea 9, aeqd 3, labrd 1 - incl. EPSG:3035, 4 without
+  PROJ definition or ellipsoid).
 
 - `src/cloud/` (3D-22, spec §9): `fit-plane.js` (RANSAC on triples, then least squares on the consensus set:
   centroid + smallest eigenvector of the scatter matrix, `eigen.js` Jacobi), `deviation.js` + `polygon.js` (nearest face
@@ -212,3 +227,6 @@ run spread ~0.1 ms).
   GT-I2 per D-156; GT-I3 merged roof faces with their `sourceRef`s).
 - `test/crs/`: registry, ENU accuracy against closed-form ECEF and GeographicLib oracles, round trip of
   `test/crs/fixtures/gt-i1-epsg4937.cityjson.json` (made by `test/crs/make-fixture.mjs` from GT-I1). Golden tests: none yet (3D-07).
+  3D-69: `reproject.test.js` (8 CRS pairs against PROJ 9.8.1 numbers within 1 mm: UTM, north-first TM, Swiss, Krovak,
+  pseudo-Mercator, oblique stereographic, LCC, UTM -> UTM; identity; DATUM_MISMATCH; NO_PROJECTION); `box.test.js`
+  (1 km box, 363 sampled points inside the padded box; negative control: bare corners miss points).

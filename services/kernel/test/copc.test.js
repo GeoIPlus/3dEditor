@@ -123,7 +123,7 @@ describe('GT-20 / GT-21 unchanged when the points come from the COPC adapter', (
   it('GT-20 FIT_PLANE: the expected.json bounds hold and the result equals the run on the JSON points in the same order', async () => {
     const expected = readFixture('GT-20', 'expected.json');
     const sel = readFixture('GT-20', 'steps.json')[0].command.payload.selection;
-    const pts = await readLocalPoints(copcOf('GT-20').port, /** @type {any} */ (frameOf('GT-20')), sel);
+    const pts = await readLocalPoints({ port: copcOf('GT-20').port, horizontalCrs: frameOf('GT-20').horizontalCrs }, /** @type {any} */ (frameOf('GT-20')), sel);
     const json = jsonInOrderOf('GT-20', pts);
     pts.forEach((v, i) => expect(Math.abs(v - json[i])).toBeLessThan(1e-9));
     const viaCopc = /** @type {any} */ (fitPlane(pts, sel, PROFILE)).result;
@@ -143,7 +143,7 @@ describe('GT-20 / GT-21 unchanged when the points come from the COPC adapter', (
     const expected = readFixture('GT-21', 'expected.json');
     const params = readFixture('GT-21', 'steps.json')[0].params;
     const request = { buildingId: model.buildingId, modelVersion: model.version, selection: params.selection, faceIds: params.faceIds, thresholdM: 0.05 };
-    const pts = await readLocalPoints(copcOf('GT-21').port, /** @type {any} */ (frameOf('GT-21')), params.selection);
+    const pts = await readLocalPoints({ port: copcOf('GT-21').port, horizontalCrs: frameOf('GT-21').horizontalCrs }, /** @type {any} */ (frameOf('GT-21')), params.selection);
     const viaCopc = /** @type {any} */ (deviationStats(model, pts, request, PROFILE)).result.faces[0];
     const viaJson = /** @type {any} */ (deviationStats(model, Float64Array.from(readFixture('GT-21', 'input.points.json').points.flat()), request, PROFILE)).result.faces[0];
     expect(Math.abs(viaCopc.meanM - expected.assert.meanSlopeDeviationM)).toBeLessThanOrEqual(expected.assert.toleranceM);

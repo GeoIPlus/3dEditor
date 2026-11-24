@@ -5,6 +5,7 @@
 import './canary.js';
 import { canonicalJson as canon, localFrame } from './brep/index.js';
 import { importCityObject } from './import/index.js';
+import { createCrsMapping, createMetricFrame, mappedBoxBounds } from './crs/index.js';
 import { exportModel } from './export/index.js';
 import { runChecks, toIssues } from './validate/index.js';
 
@@ -38,6 +39,51 @@ export function worldToLocal(frame, points) {
 export function localToWorld(frame, points) {
   const lf = localFrame(frame);
   return points.map((p) => lf.toWorld(p));
+}
+
+/**
+ * Cloud world <-> building LOCAL (3D-69, D-196..D-198): `crs` maps the cloud's CRS to the building's and builds the
+ * building's metric frame exactly as import does (3D-10); `brep` adds the `buildingAxisDeg` rotation (D-116). Composed
+ * here because only the package entry may import both. `rigid`: same CRS and a projected building (the 3D-22 path).
+ * @param {CoordinateFrame} frame @param {string} cloudCrs
+ */
+function cloudFrame(frame, cloudCrs) {
+  const map = createCrsMapping(cloudCrs, frame.horizontalCrs);
+  const metric = createMetricFrame(frame.horizontalCrs, frame.originWorld);
+  const lf = localFrame(frame, metric);
+  const rigid = map.identity && metric.crs.kind === 'PROJECTED';
+  if (map.identity) return { rigid, toLocal: lf.toLocal, toCloud: lf.toWorld };
+  return { rigid, toLocal: (/** @type {V3} */ p) => lf.toLocal(map.forward(p)), toCloud: (/** @type {V3} */ l) => map.inverse(lf.toWorld(l)) };
+}
+
+/**
+ * Cloud world -> building LOCAL (3D-69): points in the cloud's own horizontal CRS (from the dataset descriptor,
+ * D-196) are reprojected through geodetic coordinates on the shared datum into the building's local frame, built
+ * as import builds it (projected: translation; geographic: local ENU). Same CRS: no reprojection. Heights unchanged
+ * (D-93). Throws the `crs` error (`code` INVALID_CRS) for an unknown CRS, a datum mismatch (D-197) or a projected
+ * CRS without a verified projection (D-198).
+ * @param {CoordinateFrame} frame contract `CoordinateFrame`
+ * @param {string} cloudCrs `EPSG:nnnn` or the CityJSON OGC URL
+ * @param {V3[]} points cloud world, axis order of `cloudCrs`
+ * @returns {V3[]} local
+ */
+export function cloudToLocal(frame, cloudCrs, points) {
+  const cf = cloudFrame(frame, cloudCrs);
+  return points.map((p) => cf.toLocal(p));
+}
+
+/**
+ * Box of the cloud world (its CRS and axis order) that contains every point of a LOCAL box, for the points port's box
+ * query (3D-69). Same CRS and a projected building: the bounds of the mapped corners, as before (3D-22); otherwise
+ * grown by the earth-curvature bound of `crs/box.js`. The kernel then filters the exact selection (D-132).
+ * @param {CoordinateFrame} frame
+ * @param {string} cloudCrs
+ * @param {{ min: V3, max: V3 }} box local
+ * @returns {{ min: V3, max: V3 }}
+ */
+export function localBoxToCloud(frame, cloudCrs, box) {
+  const cf = cloudFrame(frame, cloudCrs);
+  return mappedBoxBounds(cf.toCloud, cf.rigid, box);
 }
 
 /**

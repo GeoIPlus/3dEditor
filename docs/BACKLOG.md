@@ -13,24 +13,25 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10); 3D-73 ready D-159; 3D-11 ready D-160; 3D-ADR-0008 accepted D-161, Q-45 closed D-162; 3D-71 waits for 3D-14 D-163; 3D-69 ready D-164, D-165; 3D-75 ready D-166; 3D-13 accepted D-174, merged; 3D-77 intake; 3D-76 intake D-167; 3D-75 started D-168; 3D-72 accepted D-176, merged; 3D-76 ready D-177; single writer D-178..D-180, 3D-78 ready; 3D-67 accepted D-182, merged; 3D-79 intake; 3D-75 accepted D-185, merged; 3D-70 accepted D-188, merged; 3D-80 intake; 3D-11 accepted D-194, merged; 3D-80 ready D-195).
+Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10); 3D-73 ready D-159; 3D-11 ready D-160; 3D-ADR-0008 accepted D-161, Q-45 closed D-162; 3D-71 waits for 3D-14 D-163; 3D-69 ready D-164, D-165; 3D-75 ready D-166; 3D-13 accepted D-174, merged; 3D-77 intake; 3D-76 intake D-167; 3D-75 started D-168; 3D-72 accepted D-176, merged; 3D-76 ready D-177; single writer D-178..D-180, 3D-78 ready; 3D-67 accepted D-182, merged; 3D-79 intake; 3D-75 accepted D-185, merged; 3D-70 accepted D-188, merged; 3D-80 intake; 3D-11 accepted D-194, merged; 3D-80 ready D-195; 3D-69 accepted D-199, merged; 3D-81..3D-83 intake).
 
 | Progress | Rows |
 |---|---:|
-| Done | 29 / 66 |
+| Done | 30 / 69 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 9 |
-| Proposed (waiting for the owner to set `ready`) | 27 |
+| Ready | 8 |
+| Proposed (waiting for the owner to set `ready`) | 30 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 29/66 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 30/69 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** SC 3D view port + host 3D-47 (D-61); cloud CRS reprojection 3D-69 (D-164); fitPlane order independence 3D-80 (D-195).
+**Running:** SC 3D view port + host 3D-47 (D-61); fitPlane order independence 3D-80 (D-195).
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D69["3D-69 Point cloud CRS vs. building CRS"]
     D11["3D-11 CityJSON export"]
     D70["3D-70 COPC-by-box points adapter"]
     D75["3D-75 Import state from validateModel"]
@@ -67,7 +68,6 @@ flowchart TB
     D80["3D-80 fitPlane order-independent"]
     D78["3D-78 Single writer + provisional ids"]
     D76["3D-76 check:docs: DECISIONS table integrity"]
-    D69["3D-69 Point cloud CRS vs. building CRS"]
     D73["3D-73 backlog:sync: SC row ids"]
     D74["3D-74 val3dity image + binding"]
     D47["3D-47 SC: 3D view port + host"]
@@ -77,8 +77,11 @@ flowchart TB
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
+    D81["3D-81 Bug: worldToLocal for all CRSs (provisional)"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
+    D82["3D-82 Spec: 3D-69 cloud CRS (provisional)"]
+    D83["3D-83 ADR-0007 note: projections (provisional)"]
     D77["3D-77 Spec §5 solver text"]
     D14["3D-14 Replace roof, rebuild envelope"]
     D15["3D-15 Core edits"]
@@ -156,6 +159,12 @@ flowchart TB
   D23 --> D74
   D22 --> D69
   D32 --> D69
+  D09 --> D81
+  D32 --> D81
+  D69 --> D81
+  D69 --> D82
+  D72 --> D82
+  D69 --> D83
   D22 --> D70
   D67 --> D70
   D14 --> D71
@@ -282,7 +291,7 @@ flowchart TB
 | 3D-66 | Apply accepted 3D-08 ADRs to spec and AGENTS.md: spec §1.3, §5 r8, §10.4 r5, §11 r14; AGENTS.md §2 rule 8 cites 3D-ADR-0004 | here | docs | 08 | G0 | S | done (D-143; merged into base, no PR) |
 | 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | done (D-182; merged into base, no PR) |
 | 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23 | G5 | M | proposed (D-112) |
-| 3D-69 | Point cloud CRS vs. a geographic-CRS building: reproject points into the building metric frame on the server, or refuse a mismatch (D-126) | here | geo-model3d/cloud, services/kernel | 22, 32 | G4 | M | ready (D-164) |
+| 3D-69 | Point cloud CRS vs. a geographic-CRS building: reproject points into the building metric frame on the server, or refuse a mismatch (D-126) | here | geo-model3d/cloud, services/kernel | 22, 32 | G4 | M | done (D-199; merged into base, no PR) |
 | 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | done (D-188; merged into base, no PR; [3D-ADR-0009](decisions/adr/3D-ADR-0009-copc-laz-decoder.md)) |
 | 3D-80 | `fitPlane` result independent of the input point order (same cloud through the LAS or COPC adapter gives the same `FIT_PLANE` result) | here | geo-model3d/cloud | 22 | G4 | S | ready (D-195) |
 | 3D-71 | `FIT_PLANE` command: apply the plane fit as a `PLANE` measurement or as a face's new `supportPlane` through PREVIEW/COMMIT (spec §10.12 r4, D-134) | here | geo-model3d/ops | 14, 22 | G4 | M | proposed |
@@ -294,6 +303,9 @@ flowchart TB
 | 3D-77 | Spec §5 text for the solver decisions: per-kind constraint table (D-169) and D-170..D-172 | here | docs/specs | 13, 66 | G3 | S | proposed (D-173) |
 | 3D-78 | Single writer and provisional ids: push guard hook, `check:docs` provisional-id rule for rows and ADRs, generated BACKLOG overview, skills `merge-wp` / `wp-session` / `task-intake` and AGENTS.md §3/§6 updated (D-178..D-180) | here | tools, .claude, AGENTS.md | 30, 05 | G0 | M | ready (D-178) |
 | 3D-79 | Service image licence check: no GPL, LGPL or AGPL in the kernel service container image (3D-ADR-0004 decision 3, D-181) | here | service image, tools/check-arch | 23, 67 | G5 | M | proposed |
+| 3D-81 | Bug: public `worldToLocal` / `localToWorld` use a plain translation; wrong for geographic and north-first projected buildings (found by 3D-69) | here | geo-model3d (index) | 09, 32, 69 | G1 | S | proposed |
+| 3D-82 | Spec update for 3D-69: §4a cloud reprojection (`createCrsMapping`, `DATUM_MISMATCH` / `NO_PROJECTION`), §9 cloud CRS from the dataset descriptor (D-164, D-165, D-196..D-198) | here | docs/specs | 69, 72 | G4 | S | proposed |
+| 3D-83 | 3D-ADR-0007 note: the CRS table also holds PROJ proj-strings of projected CRSs, verified against PROJ (D-198); needs owner approval (D-18) | here | docs/decisions/adr | 69 | G4 | S | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -549,6 +561,54 @@ flowchart TB
   heatmap values as the all-UTM case within `planarTolM` (option A), or a defined refusal code (option B); a cloud in
   the same CRS takes the path unchanged.
 - Decisions: D-92, D-93, D-126, D-164 (option A: reproject), D-165 (cloud CRS from the context)  Open: none
+
+### 3D-81 Public world <-> local mapping for every supported CRS (bug, found by 3D-69)
+- Source: 3D-69 session 2026-11-24 (owner dialog: intake all four follow-ups). Introduced by 3D-09 (`index.js`
+  `worldToLocal` / `localToWorld` with the default translation mapping, D-116), not adapted when 3D-32 / 3D-10 added
+  geographic CRSs and the north-first axis swap. Provisional id (coordinator rule 2026-11-24); no mermaid node until the
+  merge assigns the final id.
+- Goal: `worldToLocal(frame, points)` / `localToWorld` give the same local coordinates as import for every CRS the
+  kernel supports.
+- Scope in: compose the `crs` metric frame as import does (`createMetricFrame(frame.horizontalCrs, frame.originWorld)`
+  + `brep` rotation; equal to 3D-69's `cloudToLocal(frame, frame.horizontalCrs, ...)`); module card text.
+  Scope out: cloud CRSs (3D-69, done); contract changes (none needed).
+- Accept: for GT-I1 imported from EPSG:25832, from its EPSG:4937 copy and from an EPSG:31467 (north-first) copy,
+  `worldToLocal` of the file's world vertices equals the model's local vertices within 0.001 m and `localToWorld`
+  round-trips within 0.001 m; GT-25 unchanged (east-first projected path bit for bit); `npm run check` passes.
+- Decisions: D-92, D-116, D-122, D-125  Open: -
+
+### 3D-82 Spec update for 3D-69 (cloud CRS)
+- Source: 3D-69 session 2026-11-24; spec edits only through intake (AGENTS.md §6). Depends on 3D-72 because both edit §9.
+- Goal: the spec states D-164, D-165 and D-196..D-198.
+- Scope in: §4a API and rules (`createCrsMapping`; same datum only; projections verified against PROJ, others
+  `INVALID_CRS` `NO_PROJECTION`; `DATUM_MISMATCH`); §3 public API (`cloudToLocal`, `localBoxToCloud`); §9 API (cloud CRS
+  from the dataset descriptor `{ port, horizontalCrs }`, never from the file; box grown by the curvature bound); §11
+  ports line (dataset descriptor). Scope out: contract schemas (none changed, D-196).
+- Accept: no spec line says a cloud must be in the building's CRS or that reprojection is open; §4a and §9 name the two
+  refusal reasons and the descriptor; `npm run check` passes.
+- Decisions: D-92, D-93, D-164, D-165, D-196..D-198  Open: -
+
+### 3D-83 3D-ADR-0007 note on projections in the CRS table
+- Source: 3D-69 session 2026-11-24. The accepted ADR says the table is generated from `proj.db`; since 3D-69 it also
+  holds PROJ's own proj-strings (pyproj 3.8.0 = PROJ 9.8.1, the same pinned wheel), kept only where proj4js agrees
+  with PROJ within 0.001 m at 9 points of the area of use (tools/crs-table/README.md).
+- Goal: the ADR records the second input and the verification rule.
+- Scope in: an amendment note in 3D-ADR-0007 (source, verification threshold and its reason, counts 4207 / 4262, table
+  size 605 kB, the left-out classes); approval by the owner (D-18). Scope out: changing the decision of the ADR.
+- Accept: the note is in the ADR and the owner approved it in a dialog (recorded as a decision); `npm run check` passes.
+- Decisions: D-121, D-125, D-198  Open: Q-43 (EPSG terms; unchanged)
+
+### 3D-43 note from 3D-69 (change-wp, 2026-11-24)
+- The 3DQM extension's `dataset` member carries the point cloud's horizontal CRS (`EPSG:nnnn` or the OGC URL); the
+  host fills the service's dataset descriptor `{ port, horizontalCrs }` from it (D-165, D-196). Text for the SC row
+  (authoritative there): "Accept: the extension schema's point-cloud `dataset` entry has a required `horizontalCrs`;
+  an example document validates."
+
+### 3D-23 note from 3D-69 (change-wp, 2026-11-24)
+- The handler builds one `PointsDataset { port, horizontalCrs }` per opened point dataset (D-196): `horizontalCrs`
+  from the CP extension `dataset` member (3D-43) or from the CRS the user set when opening the dataset; it passes the
+  descriptor to `readLocalPoints` (services/kernel/src/cloud-points.js). Accept line added: a heatmap request against
+  a dataset whose `horizontalCrs` is on another datum returns `INVALID_CRS` (HTTP status per the error registry).
 
 ### 3D-70 COPC-by-box points adapter (D-133)
 - Source: 3D-22 session 2026-11-23, owner dialog (D-133): COPC needs a LAZ decoder, a new runtime dependency.
