@@ -58,10 +58,10 @@ Surface `src/validate/index.js` for kernel modules (`ops` uses `runChecks` and `
 | `intersect.js`, `polygon.js` | ring self-intersection (x-sweep), face pairs piercing / overlapping in one shell; tolerance predicates only (D-150) |
 | `overlap.js` | `SOLID_OVERLAP` between bodies of one building (crossing faces, vertex deeper than `planarTolM`, centroid; winding number); never between buildings (D-89) |
 | `lineage.js` | "new" issues: an old issue's ids mapped through `topology-lineage` meet the new issue's ids -> not new [A]; `newErrors` = commit gate of spec §8 rule 7 |
-| `external.js` | external validator port type; val3dity code -> contract code, fallback `EXPORT_SCHEMA_ERROR` [A]; binding = 3D-74 (D-148/2, [3D-ADR-0008](../../docs/decisions/adr/3D-ADR-0008-val3dity-binding.md)) |
+| `external.js` | external validator port type; val3dity code -> contract code, fallback `EXPORT_SCHEMA_ERROR` [A]; binding = 3D-74 (D-148/2, [3D-ADR-0008](../../docs/decisions/adr/3D-ADR-0008-val3dity-binding.md), accepted D-161) |
 | `report.js` | dedupe, deterministic order, message = localisation key `model3d.validation.<camelCode>` [A] (D-91), `validatorVersion` `geo-model3d-validate/1` (+ port version in FINAL) [A] |
 
-Readings [A] (maps of `codes.js`, `structure.js`, `external.js`) are reviewed by the owner at acceptance (Q-45).
+The maps of `codes.js`, `structure.js`, `external.js` are accepted as written (D-162).
 Findings of other modules (solve, crs, export, cloud, import) enter as `findings` and get scope and severity from the
 same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 rule 1).
 

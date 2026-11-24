@@ -8,7 +8,7 @@ import { shellFaces } from './context.js';
 /** @typedef {import('./context.js').RawIssue} RawIssue */
 
 /**
- * brep internal kind -> contract code. [A] (Q-45): the spec names the codes, not this map. TWIN_MISSING is left out:
+ * brep internal kind -> contract code. (D-162): the spec names the codes, not this map. TWIN_MISSING is left out:
  * `openBoundaries` reports every null twin in every state. LINK (broken ring) reads as an open boundary of the face;
  * TWIN_ASYMMETRIC (a twin pointing to a third half-edge) as a non-manifold edge; TWIN_NOT_OPPOSITE (shared edge
  * traversed in the same direction, v0.2 §16.2) as shell orientation; a face outside its shell as an open shell; a vertex

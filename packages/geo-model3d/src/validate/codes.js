@@ -8,7 +8,7 @@
 /**
  * Code -> [severity in DRAFT_SOLID, severity in VALID_SOLID, scope]. Severities: spec §8 rule 4 [D] (D-77 for
  * SOLID_OVERLAP .. PRECISION_LOSS). Scopes: [A] the spec lists the six scopes (rule 9) but not the code -> scope map;
- * this map follows the nature of each check (Q-45).
+ * this map follows the nature of each check (D-162).
  * @type {Readonly<Record<string, readonly [Severity, Severity, Scope]>>}
  */
 export const CODE_TABLE = Object.freeze({

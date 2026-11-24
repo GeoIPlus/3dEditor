@@ -172,6 +172,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-158 | 3D-10 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids of 3D-10 became D-156, D-157; its intake row (written as 3D-70) became 3D-75 and also covers applying D-156 in `validate` (merged 3D-12 reports `OPEN_BOUNDARY` on every twin-less half-edge) | Owner, dialog, 2026-11-24 |
 | D-159 | 3D-73 (`backlog:sync` links mirror rows to `shared_compnents`: bare-number SC row ids, first SC pin, 3D-46 linked as `shared (76)`) set `ready`, to start in a fresh session that the owner opens (the 3D-46 session hit the session-chain limit and could not create one); dependencies 3D-05 and 3D-46 are done | Owner, chat, 2026-11-24 |
 | D-160 | 3D-11 (CityJSON export) set `ready` (3D-10 and 3D-12 done) and started in a fresh session | Owner, chat, 2026-11-24 |
+| D-161 | [3D-ADR-0008](adr/3D-ADR-0008-val3dity-binding.md) (val3dity binding: own pinned container, kernel-side port in `validate`, service adapter in 3D-74) accepted as written (D-18) | Owner, dialog, 2026-11-24 |
+| D-162 | Q-45 closed: the three maps of `validate` are accepted as written - code -> scope (`codes.js`), brep structural problem -> code (`structure.js`), val3dity code -> code with fallback `EXPORT_SCHEMA_ERROR` (`external.js`); a change needs a new decision | Owner, dialog, 2026-11-24 |
 
 ## Open questions
 
@@ -268,4 +270,5 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-18 | 2026-11-23, owner (3D-22) | narrowed, open | `FIT_PLANE` selection closed by D-132; the other operations of Q-18 stay open |
 
 | Q-44 | 2026-11-24, owner | closed by D-140 | Small committed COPC test file allowed for 3D-70 |
+| Q-45 | 2026-11-24, owner | closed by D-162 | Maps of `validate` (scope, structural problems, val3dity codes) accepted as written |
 | Q-41 | 2026-11-23, owner (3D-10) | closed by D-156 | Two ridge edges; short one-face edges are `DEGENERATE_EDGE` |

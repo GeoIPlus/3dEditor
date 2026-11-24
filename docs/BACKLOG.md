@@ -13,7 +13,7 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10); 3D-73 ready D-159; 3D-11 ready D-160).
+Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10); 3D-73 ready D-159; 3D-11 ready D-160; 3D-ADR-0008 accepted D-161, Q-45 closed D-162).
 
 | Progress | Rows |
 |---|---:|
@@ -237,7 +237,7 @@ flowchart TB
 | 3D-09 | Kernel core: half-edge B-Rep, primary planes, derived vertices, local frame, transactions, versions | here | geo-model3d/brep | 08 | G1 | L | done (D-120; merged into base, no PR) |
 | 3D-10 | Import I-01: CityJSON -> canonical model + RTG + baseline | here | geo-model3d/import | 09, 32 | G1 | L | done (D-158; merged into base, no PR) |
 | 3D-11 | Export: canonical model -> CityJSON, opaque data round-trip | here | geo-model3d/export | 10, 12 | G1 | M | ready (D-160) |
-| 3D-12 | Validation: FAST_PREVIEW, COMMIT_VALIDATION, FINAL_VALIDATION (val3dity), severity by state | here | geo-model3d/validate | 09 | G1 | L | done (D-154; merged into base, no PR; [3D-ADR-0008](decisions/adr/3D-ADR-0008-val3dity-binding.md) proposed) |
+| 3D-12 | Validation: FAST_PREVIEW, COMMIT_VALIDATION, FINAL_VALIDATION (val3dity), severity by state | here | geo-model3d/validate | 09 | G1 | L | done (D-154; merged into base, no PR; [3D-ADR-0008](decisions/adr/3D-ADR-0008-val3dity-binding.md) accepted D-161) |
 | 3D-13 | Constraint solver and conflict diagnostics | here | geo-model3d/solve | 09 | G3 | L | ready (D-129) |
 | 3D-14 | `REPLACE_ROOF` R-01..R-04, `REBUILD_ENVELOPE` | here | geo-model3d/ops | 12, 13 | G2 | L | proposed |
 | 3D-15 | Core edits: `MOVE_VERTEX`, `MOVE_EDGE`, `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | here | geo-model3d/ops | 13 | G3 | L | proposed |
@@ -551,7 +551,9 @@ flowchart TB
   `assignedState` from the validation report (spec §6 rule 10); `src/validate/structure.js` applies D-156 (a one-face edge shorter than
   `minEdgeLengthM` is `DEGENERATE_EDGE`, not `OPEN_BOUNDARY`; merged 3D-12 still reports `OPEN_BOUNDARY` on every
   half-edge without a twin). Scope out: new validation codes (3D-12).
-- Accept: GT-I1..GT-I3 green unchanged; `src/import/state.js` gone; `test/import/` green; `check:arch` passes.
+- Accept: GT-I1..GT-I3 green unchanged; `src/import/state.js` gone; `test/import/` green; `check:arch` passes;
+  `validate` on the GT-06 / GT-I2 shape reports `OPEN_BOUNDARY` on the two ridge edges only and `DEGENERATE_EDGE` on the
+  0.03 m gable edges (D-156; update `test/validate/golden-clean.test.js`).
 - Decisions: D-156, D-157  Open: -
 ### 3D-65 Schema text: D-76 in the `FIT_TO_SHARED_EDGE` payload
 - Source: 3D-64 session 2026-11-23, owner dialog (D-97). Found while applying D-76 to the spec.
@@ -614,10 +616,10 @@ flowchart TB
   GPL-3.0 text and source offer); wire contract service <-> image under `contracts/` (schema first, D-18); adapter in
   `services/kernel` implementing the `validate` port (`{ model, tolerances } -> { validatorVersion, findings }`):
   export via `exportBuilding` (3D-11), call the image, map val3dity ids back to entity ids through `sourceRef`.
-  Scope out: the val3dity code map and severities (3D-12, Q-45); inter-building checks (D-89, 3D-33).
+  Scope out: the val3dity code map and severities (3D-12, D-162); inter-building checks (D-89, 3D-33).
 - Accept: GT-I4 "val3dity without errors" passes against the pinned image; a defective export (e.g. GT-I2 shape)
   yields findings with `externalValidatorCode` mapped by `validate`; the image's val3dity version equals the pin and
   appears in `validatorVersion`; image unavailable -> `UNAVAILABLE`, model unchanged; the service image passes the
   licence allow-list check (3D-67) with val3dity outside it.
-- Decisions: D-91, D-109, D-148, D-149  Open: Q-45
+- Decisions: D-91, D-109, D-148, D-149, D-161, D-162  Open: -
 
