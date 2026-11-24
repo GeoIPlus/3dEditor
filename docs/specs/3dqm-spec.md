@@ -326,19 +326,49 @@ missing degrees of freedom when underconstrained. Plane-plane-plane intersection
 1. Constraint kinds (v0.2 B.2 + v0.3 §4.2): hard (MVP) `FIXED_POINT`, `COINCIDENT`, `ON_PLANE`, `PLANAR_FACE`,
    `SHARED_EDGE`, `HORIZONTAL`, `VERTICAL`, `PARALLEL`, `PERPENDICULAR`, `EQUAL_Z`, `FIXED_LINE`, `FIXED_EAVE`,
    `FIXED_RIDGE`, `ROOF_SLOPE`, `BOUNDARY_ON_FOOTPRINT`; soft `CLOSE_TO_MEASUREMENT`, `MINIMIZE_DISPLACEMENT`,
-   `PREFERRED_AXIS`, `SYMMETRY` (v0.2 §15.2).
+   `PREFERRED_AXIS`, `SYMMETRY` (v0.2 §15.2). The sources give names only; their reading in plane terms is the
+   table "Constraint kinds in plane terms" below (D-169).
 2. Hard constraints hold within the configured numeric tolerance, not "on average". On conflict: `CONSTRAINT_CONFLICT`
-   with a minimal useful list of conflicting ids (v0.2 §15.2).
+   with a minimal useful list of conflicting ids (v0.2 §15.2). Check tolerances of the hard check (D-170): point, line
+   and plane distances `planarTolM`; `EQUAL_Z` `zAlignTolM`; `COINCIDENT` `topologySnapTolM`; angular kinds exact up to
+   `numericEpsilon` on sin / cos, so an inconsistent angle demand is always a conflict.
 3. Soft constraints are optimised by explicit weights and measurement uncertainty (measurements: weight `1/σ²`, v0.3 §7);
    residuals and solver status are returned (v0.2 §15.2).
 4. An LSQ/SVD plane fit does not guarantee hard constraints: after a best fit every hard constraint is checked; a miss is
    a failure, never a projection of fixed points (v0.2 §15.2, C.7 last paragraph).
 5. Too few independent conditions -> `UNDERCONSTRAINED_GEOMETRY` with the missing degrees of freedom (v0.2 D.4, C.2).
+   Threshold (D-172, under 3D-ADR-0005): a degree is free when the eigenvalue gap of O1 (stage 1) or the smallest
+   singular value of the reduced stage-2 system is <= `numericEpsilon` of the profile (default 1e-9). Format (D-171, no
+   schema change): `details.missingDegreesOfFreedom` is `string[]` with one entry per free degree, `"<faceId>:OFFSET"`
+   or `"<faceId>:ROTATION"`; `entityIds` lists the faces.
 6. `FIXED_POINT` never changes except by an explicit unlock (`REMOVE_CONSTRAINT`) (v0.2 C.11).
 7. No hidden jumps of many vertices: a solve may change only the planes the operation declares movable (v0.2 C.9, §13.5).
 8. Solver approach and the objective that fixes the remaining degrees of freedom of a movable plane:
    [3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) (D-110; Q-17 closed): own two-stage solver (A1) with
    objective O1, keep the face's other vertices (least squares to their old positions, hard conditions exact).
+
+**Constraint kinds in plane terms** (D-169; hard tolerance D-170; [S] stated by the sources, [P] proposal accepted by
+the owner; same table as the [solve module card](../../packages/geo-model3d/README.md#solve-3d-13)):
+
+| Kind | entityIds | target | Condition on the movable planes | Hard tolerance |
+|---|---|---|---|---|
+| FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point | `planarTolM` |
+| ON_PLANE [S] | [vertex, face] | V3 optional | the target point, else the derived vertex, lies on the face plane | `planarTolM` |
+| FIXED_LINE / FIXED_EAVE / FIXED_RIDGE [S] | [half-edge] | - | both incident planes contain the edge's current line; EAVE / RIDGE need that `edgeRole` | `planarTolM` |
+| EQUAL_Z [S] | [vertex, vertex, ...] or [vertex...] + number | number optional | derived z equal to the first vertex's (or to the number) | `zAlignTolM` |
+| COINCIDENT [P] | [vertex, vertex] | - | derived positions equal | `topologySnapTolM` |
+| PLANAR_FACE, SHARED_EDGE [P] | [face] / [half-edge] | - | vertices on the plane(s); by construction for derived vertices (D-08) | `planarTolM` |
+| HORIZONTAL / VERTICAL [P] | [face] or [half-edge] | - | face normal parallel / perpendicular to z; edge direction perpendicular / parallel to z | `numericEpsilon` |
+| PARALLEL / PERPENDICULAR [P] | [face, face] or [half-edge, half-edge] | - | normals / directions parallel / perpendicular | `numericEpsilon` |
+| ROOF_SLOPE [P] | [face] | degrees | angle(normal, z) = target | `numericEpsilon` |
+| MINIMIZE_DISPLACEMENT [S] | [face...] | - | weight of the O1 terms of those faces (O1 is always on) | soft |
+| PREFERRED_AXIS, SYMMETRY [P] | [half-edge] / [face, face] | - | soft: edge along a local building axis; equal slope of both faces | soft |
+| BOUNDARY_ON_FOOTPRINT, CLOSE_TO_MEASUREMENT | - | - | rejected `TBD` (footprint segment; measurement layout Q-28, 3D-22) | - |
+
+Any kind may be soft (`hard: false` + `weight`). A constraint the compiler cannot read is rejected with
+`rejected[].reason`: `TBD`, `SOFT_KIND_MARKED_HARD` (rule 1), `SOFT_WITHOUT_WEIGHT` (no default weight is invented),
+`ENTITIES_DO_NOT_MATCH_KIND`, `UNKNOWN_KIND`; the refusal code is the calling row's (3D-21 validates constraints when
+they are set).
 
 **Accept:**
 - Accept: two contradictory hard constraints return `feasible = false` and both ids; no planes are changed.
