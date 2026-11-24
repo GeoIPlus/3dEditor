@@ -1,6 +1,6 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14); other operations follow their rows (3D-15..3D-21, 3D-71)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21); other operations follow their rows (3D-15..3D-21, 3D-71)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
@@ -121,6 +121,15 @@ new roof faces join the replaced roof's component. R-04 "undetermined ridge leng
 the accepted payload (four slopes required); only the axis tie gives UNDERCONSTRAINED_GEOMETRY.
 Lineage (D-212): kept ids are not in `mapped`; old roof faces map to all new roof faces; new half-edges and
 vertices without a predecessor are only in the patch `added` (the owner's reading of spec §10.1 Accept 3).
+
+**3D-21** (spec §10.12): `set-semantics.js` (`SET_SEMANTICS`: only `surfaceKind` changes; a face leaving RoofSurface
+leaves its roof component, an emptied component is deleted, a new roof face joins none, D-3D21-2) and
+`constraint-commands.js` (`SET_CONSTRAINT`: the constraint is read by `compileConstraints` before it is stored, a
+rejection of any reason, `TBD` kinds included, is `INVALID_PAYLOAD` with the reason in `message`, D-3D21-1; a hard
+constraint the current model violates is refused `CONSTRAINT_CONFLICT` by the constraint step, nothing movable, spec
+§10.12 r3; id from `ctx.ids('constraint')`, default `constraint-<n>`. `REMOVE_CONSTRAINT`: the explicit unlock of a
+FIXED_POINT, spec §5 r6). Unknown ids -> `INVALID_PAYLOAD` (D-3D21-3); a command that changes nothing (same
+`surfaceKind`, a constraint equal to a stored one) -> `INVALID_PAYLOAD` (D-3D21-4).
 
 ## Internal modules
 ### solve (3D-13)
@@ -249,6 +258,9 @@ run spread ~0.1 ms).
   Accept: 4 walls, ground 80, closed, 400 m3; GT-03 base -1 -> 600 m3), constraints, body rule, roof components.
   Every result, model and journal entry is checked against its contract (Ajv); area and volume are computed by the
   tests (Newell, divergence theorem).
+- `test/ops/semantics-constraints.test.js` (3D-21): SET_SEMANTICS geometry patch empty, roof components, PREVIEW =
+  COMMIT; SET_CONSTRAINT accepted kinds, conflicts with the model and with a stored constraint, every compiler
+  rejection reason; REMOVE_CONSTRAINT patch and inverse, FIXED_POINT blocks REPLACE_ROOF until unlocked.
 - Golden GT-01..GT-05 (`gt-0[1-5].golden.test.js`, PREVIEW then COMMIT with the `previewId`): GT-01 roof 80 m2 /
   400 m3; GT-02 85.440 / 520, 1 face; GT-03 100 / 520, 2 faces; GT-04 ridge Z 8, length 2, 4 faces, 100 / 488; GT-05
   `UNSUPPORTED_FOOTPRINT`, model unchanged.

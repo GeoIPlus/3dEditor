@@ -234,6 +234,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-218 | A footprint whose body cannot be resolved uniquely (its Building / BuildingPart semantic node has no solid or several) -> `INVALID_TOPOLOGY` with the footprint and semantic node ids | Owner, dialog, 2026-11-24 (3D-14) |
 | D-219 | 3D-14 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-212..D-218; the `executeCommand` pipeline is in the base, operation rows 3D-15..3D-21 and 3D-71 can build on it | Owner, WP session 3D-14, 2026-11-24 |
 | D-220 | Operations 3D-15, 3D-16, 3D-17, 3D-20, 3D-21 set `ready` and started in parallel fresh sessions on the 3D-14 pipeline; each adds only its own entries to `ops/registry.js` and its own `ops/*` files; merged one at a time | Owner, chat, 2026-11-24 |
+| D-3D21-1 | `SET_CONSTRAINT` of a constraint the solve compiler rejects (UNKNOWN_KIND, ENTITIES_DO_NOT_MATCH_KIND, SOFT_KIND_MARKED_HARD, SOFT_WITHOUT_WEIGHT, and `TBD` for BOUNDARY_ON_FOOTPRINT / CLOSE_TO_MEASUREMENT, D-169) -> `INVALID_PAYLOAD`, the reason in `message`, nothing stored | Owner, dialog, 2026-11-24 (3D-21) |
+| D-3D21-2 | `SET_SEMANTICS` and roof components: a face that leaves RoofSurface leaves its roof component, an emptied component is deleted; a face that becomes RoofSurface joins no component (grouping `TBD` for a later row) | Owner, dialog, 2026-11-24 (3D-21) |
+| D-3D21-3 | An id in a 3D-21 payload that is not in the model (`SET_SEMANTICS` face, `REMOVE_CONSTRAINT` constraint, `SET_CONSTRAINT` entity) -> `INVALID_PAYLOAD` with the ids (3D-14 precedent) | Owner, dialog, 2026-11-24 (3D-21) |
+| D-3D21-4 | A 3D-21 command that changes nothing (every face already has the `surfaceKind`; a constraint equal to a stored one in kind, entities, hard, target, weight, measurement) -> `INVALID_PAYLOAD`, no new version | Owner, dialog, 2026-11-24 (3D-21) |
 
 ## Open questions
 
