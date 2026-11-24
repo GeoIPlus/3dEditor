@@ -5,6 +5,7 @@
 import './canary.js';
 import { canonicalJson as canon, localFrame } from './brep/index.js';
 import { importCityObject } from './import/index.js';
+import { exportModel } from './export/index.js';
 
 export { P4_CANARY } from './canary.js';
 export { validateModel } from './validate/index.js';
@@ -56,3 +57,14 @@ export const canonicalJson = (value) => canon(value);
  *   report: import('./import/index.js').ImportReport }} contract `building-model` x 2, `import-report`
  */
 export const importBuilding = (input) => importCityObject(input);
+
+/**
+ * Export one building to CityJSON (spec §7, F-66; 3D-11; name D-119). `cityjson` is the parsed document the model was
+ * imported from (kept by the service, never written); the output holds this building only (D-3D11-4). Untouched
+ * vertices keep their file integers (D-70); changed ones are rounded (D-123) onto the file grid. `findings` carry
+ * PRECISION_LOSS for `validateModel` (D-151). Refusals throw `ExportError` (`code` INVALID_PAYLOAD / NOT_FOUND) or the
+ * `crs` error (INVALID_CRS).
+ * @param {import('./export/index.js').ExportInput} input
+ * @returns {{ cityjson: any, findings: { code: string, entityIds: string[] }[] }}
+ */
+export const exportBuilding = (input) => exportModel(input);
