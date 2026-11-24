@@ -35,7 +35,7 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 | 14 | `plane-fit-result` | plane, counts, ratio, RMSE |
 | 15 | `heatmap-result` | per-face values + summary |
 | 16 | `export-report` | exported / skipped with reason |
-| (3D-22) | `heatmap-request` | building, model version, `PointSelection`, optional `faceIds`, required `thresholdM` (D-136; spec §2 row pending intake) |
+| (3D-22) | `heatmap-request` | building, model version, `PointSelection`, optional `faceIds`, required `thresholdM` (D-136; spec §2 row 17) |
 
 `examples/<name>.json` holds `{ "valid": [...], "invalid": [{ "why", "instance" }] }` (for `common`: per `$defs` entry).
 

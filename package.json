@@ -5,7 +5,8 @@
   "description": "3DQM: server-only LoD2 geometry kernel, its service and plan (GeoIPlus)",
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "services/*"
   ],
   "engines": {
     "node": ">=22"

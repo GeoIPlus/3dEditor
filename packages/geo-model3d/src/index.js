@@ -6,6 +6,8 @@ import './canary.js';
 import { canonicalJson as canon, localFrame } from './brep/index.js';
 import { importCityObject } from './import/index.js';
 import { createCrsMapping, createMetricFrame, mappedBoxBounds } from './crs/index.js';
+import { exportModel } from './export/index.js';
+import { runChecks, toIssues } from './validate/index.js';
 
 export { P4_CANARY } from './canary.js';
 export { validateModel } from './validate/index.js';
@@ -93,12 +95,39 @@ export function localBoxToCloud(frame, cloudCrs, box) {
 export const canonicalJson = (value) => canon(value);
 
 /**
+ * State and issues of an imported model from `validate` (spec §6 rule 10, §8 rule 8; D-157, 3D-75): the
+ * COMMIT_VALIDATION checks of the whole model, synchronously - `runChecks` + `toIssues` are what `validateModel` runs
+ * in that mode without the external port (D-183). No ERROR for VALID_SOLID -> VALID_SOLID; otherwise DRAFT_SOLID,
+ * issues with the severities of the assigned state. Open shells = shells with SHELL_NOT_CLOSED.
+ * @type {import('./import/index.js').AssessImport}
+ */
+function assessImport(model, tolerances) {
+  const raw = runChecks(model, { mode: 'COMMIT_VALIDATION', tolerances: /** @type {any} */ (tolerances), fullSolid: true });
+  const asValid = toIssues(raw, 'VALID_SOLID');
+  const state = asValid.some((i) => i.severity === 'ERROR') ? 'DRAFT_SOLID' : 'VALID_SOLID';
+  const issues = state === 'VALID_SOLID' ? asValid : toIssues(raw, state);
+  const openShellIds = new Set(issues.filter((i) => i.code === 'SHELL_NOT_CLOSED').flatMap((i) => i.entityIds));
+  return { state, issues, openShellIds };
+}
+
+/**
  * Import one CityJSON Building (with its BuildingPart / BuildingInstallation children) into the canonical model
  * (spec §6, I-01; 3D-10). Returns the model at version 0, the immutable baseline (an isolated copy, 3D-ADR-0003 S1)
- * and the contract `import-report`. Refusals throw: `ImportError` (`code` INVALID_PAYLOAD / NOT_FOUND /
- * INVALID_GEOMETRY) or the `crs` error with `code` INVALID_CRS.
+ * and the contract `import-report`, whose `assignedState` and `issues` come from `validate` (3D-75). Refusals throw:
+ * `ImportError` (`code` INVALID_PAYLOAD / NOT_FOUND / INVALID_GEOMETRY) or the `crs` error with `code` INVALID_CRS.
  * @param {import('./import/index.js').ImportInput} input
  * @returns {{ model: import('./brep/types.js').BuildingModel, baseline: import('./brep/types.js').BuildingModel,
  *   report: import('./import/index.js').ImportReport }} contract `building-model` x 2, `import-report`
  */
-export const importBuilding = (input) => importCityObject(input);
+export const importBuilding = (input) => importCityObject(input, assessImport);
+
+/**
+ * Export one building to CityJSON (spec §7, F-66; 3D-11; name D-119). `cityjson` is the parsed document the model was
+ * imported from (kept by the service, never written); the output holds this building only (D-192). Untouched
+ * vertices keep their file integers (D-70); changed ones are rounded (D-123) onto the file grid. `findings` carry
+ * PRECISION_LOSS for `validateModel` (D-151). Refusals throw `ExportError` (`code` INVALID_PAYLOAD / NOT_FOUND) or the
+ * `crs` error (INVALID_CRS).
+ * @param {import('./export/index.js').ExportInput} input
+ * @returns {{ cityjson: any, findings: { code: string, entityIds: string[] }[] }}
+ */
+export const exportBuilding = (input) => exportModel(input);

@@ -13,24 +13,30 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10); 3D-73 ready D-159; 3D-11 ready D-160; 3D-ADR-0008 accepted D-161, Q-45 closed D-162; 3D-71 waits for 3D-14 D-163; 3D-69 ready D-164, D-165).
+Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10); 3D-73 ready D-159; 3D-11 ready D-160; 3D-ADR-0008 accepted D-161, Q-45 closed D-162; 3D-71 waits for 3D-14 D-163; 3D-69 ready D-164, D-165; 3D-75 ready D-166; 3D-13 accepted D-174, merged; 3D-77 intake; 3D-76 intake D-167; 3D-75 started D-168; 3D-72 accepted D-176, merged; 3D-76 ready D-177; single writer D-178..D-180, 3D-78 ready; 3D-67 accepted D-182, merged; 3D-79 intake; 3D-75 accepted D-185, merged; 3D-70 accepted D-188, merged; 3D-80 intake; 3D-11 accepted D-194, merged).
 
 | Progress | Rows |
 |---|---:|
-| Done | 23 / 61 |
+| Done | 29 / 66 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 11 |
-| Proposed (waiting for the owner to set `ready`) | 26 |
+| Ready | 8 |
+| Proposed (waiting for the owner to set `ready`) | 28 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 23/61 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 29/66 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** SC 3D view port + host 3D-47 (D-61); solver 3D-13, licence check 3D-67 (D-129); spec text for 3D-22 decisions 3D-72 (D-138); COPC adapter 3D-70 (D-139); CityJSON export 3D-11 (D-160); cloud CRS reprojection 3D-69 (D-164).
+**Running:** SC 3D view port + host 3D-47 (D-61); cloud CRS reprojection 3D-69 (D-164).
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D11["3D-11 CityJSON export"]
+    D70["3D-70 COPC-by-box points adapter"]
+    D75["3D-75 Import state from validateModel"]
+    D67["3D-67 Licence allow-list check"]
+    D72["3D-72 Spec: 3D-22 decisions"]
+    D13["3D-13 Constraint solver"]
     D10["3D-10 CityJSON import"]
     D46["3D-46 SC: P4 canary scan"]
     D66["3D-66 Apply 3D-08 ADRs to spec, AGENTS"]
@@ -58,14 +64,11 @@ flowchart TB
   subgraph review["REVIEW"]
   end
   subgraph ready["READY"]
+    D78["3D-78 Single writer + provisional ids"]
+    D76["3D-76 check:docs: DECISIONS table integrity"]
     D69["3D-69 Point cloud CRS vs. building CRS"]
-    D11["3D-11 CityJSON export"]
     D73["3D-73 backlog:sync: SC row ids"]
     D74["3D-74 val3dity image + binding"]
-    D70["3D-70 COPC-by-box points adapter"]
-    D72["3D-72 Spec: 3D-22 decisions"]
-    D67["3D-67 Licence allow-list check"]
-    D13["3D-13 Constraint solver"]
     D47["3D-47 SC: 3D view port + host"]
     D48["3D-48 SC: apps/3dqm host"]
     D51["3D-51 geoviewer scene3d adapter"]
@@ -73,9 +76,12 @@ flowchart TB
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
-    D75["3D-75 Import state from validateModel"]
+    D69_1["3D-69.1 Bug: worldToLocal for all CRSs (provisional)"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
+    D69_2["3D-69.2 Spec: 3D-69 cloud CRS (provisional)"]
+    D69_4["3D-69.4 ADR-0007 note: projections (provisional)"]
+    D77["3D-77 Spec §5 solver text"]
     D14["3D-14 Replace roof, rebuild envelope"]
     D15["3D-15 Core edits"]
     D16["3D-16 Ridge, eave, elevations"]
@@ -86,8 +92,10 @@ flowchart TB
     D21["3D-21 Semantics, constraints cmds"]
     D33["3D-33 Inter-building validation (P1)"]
     D71["3D-71 FIT_PLANE command"]
+    D80["3D-80 fitPlane order-independent"]
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
+    D79["3D-79 Service image licence check"]
     D23["3D-23 Kernel service"]
     D68["3D-68 Latency bench: COMMIT, import, concurrency"]
     D24["3D-24 QC and export rules"]
@@ -151,6 +159,12 @@ flowchart TB
   D23 --> D74
   D22 --> D69
   D32 --> D69
+  D09 --> D69_1
+  D32 --> D69_1
+  D69 --> D69_1
+  D69 --> D69_2
+  D72 --> D69_2
+  D69 --> D69_4
   D22 --> D70
   D67 --> D70
   D14 --> D71
@@ -158,11 +172,18 @@ flowchart TB
   D22 --> D72
   D10 --> D75
   D12 --> D75
+  D23 --> D79
+  D67 --> D79
+  D22 --> D80
   D05 --> D08
   D06 --> D08
   D07 --> D08
   D08 --> D09
   D09 --> D10
+  D30 --> D78
+  D05 --> D78
+  D13 --> D77
+  D66 --> D77
   D32 --> D10
   D02 --> D32
   D06 --> D32
@@ -219,6 +240,8 @@ flowchart TB
   D50 --> D51
   D05 --> D73
   D46 --> D73
+  D30 --> D76
+  D05 --> D76
 ```
 
 ## Work-package status
@@ -236,9 +259,9 @@ flowchart TB
 | 3D-08 | Latency spike: prototype `MOVE_EDGE` on GT-03, p95; ADRs kernel language/Boolean (ADR-001), solver (ADR-S), bench rig (ADR-012) | here | geo-model3d (spike), docs | 05, 06, 07 | G0 | M | done (D-113; merged into base, no PR; [note](verification/3D-08.md): p95 5.4 ms / 150 ms; 3D-ADR-0004..0006 accepted D-109..D-111) |
 | 3D-09 | Kernel core: half-edge B-Rep, primary planes, derived vertices, local frame, transactions, versions | here | geo-model3d/brep | 08 | G1 | L | done (D-120; merged into base, no PR) |
 | 3D-10 | Import I-01: CityJSON -> canonical model + RTG + baseline | here | geo-model3d/import | 09, 32 | G1 | L | done (D-158; merged into base, no PR) |
-| 3D-11 | Export: canonical model -> CityJSON, opaque data round-trip | here | geo-model3d/export | 10, 12 | G1 | M | ready (D-160) |
+| 3D-11 | Export: canonical model -> CityJSON, opaque data round-trip | here | geo-model3d/export | 10, 12 | G1 | M | done (D-194; merged into base, no PR; D-189..D-193) |
 | 3D-12 | Validation: FAST_PREVIEW, COMMIT_VALIDATION, FINAL_VALIDATION (val3dity), severity by state | here | geo-model3d/validate | 09 | G1 | L | done (D-154; merged into base, no PR; [3D-ADR-0008](decisions/adr/3D-ADR-0008-val3dity-binding.md) accepted D-161) |
-| 3D-13 | Constraint solver and conflict diagnostics | here | geo-model3d/solve | 09 | G3 | L | ready (D-129) |
+| 3D-13 | Constraint solver and conflict diagnostics | here | geo-model3d/solve | 09 | G3 | L | done (D-174; merged into base, no PR) |
 | 3D-14 | `REPLACE_ROOF` R-01..R-04, `REBUILD_ENVELOPE` | here | geo-model3d/ops | 12, 13 | G2 | L | proposed |
 | 3D-15 | Core edits: `MOVE_VERTEX`, `MOVE_EDGE`, `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | here | geo-model3d/ops | 13 | G3 | L | proposed |
 | 3D-16 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | here | geo-model3d/ops | 13 | G3 | M | proposed |
@@ -266,15 +289,20 @@ flowchart TB
 | 3D-33 | Inter-building validation (shared walls, overlaps between buildings), P1 (D-89) | here | geo-model3d/validate | 12 | P1 | M | proposed |
 | 3D-65 | Schema text: `FIT_TO_SHARED_EDGE` `maxDisplacementM` description cites D-76 instead of open Q-20 / "3D-06 proposes" | here | contracts | 06 | G0 | S | done (D-107; merged into base, no PR) |
 | 3D-66 | Apply accepted 3D-08 ADRs to spec and AGENTS.md: spec §1.3, §5 r8, §10.4 r5, §11 r14; AGENTS.md §2 rule 8 cites 3D-ADR-0004 | here | docs | 08 | G0 | S | done (D-143; merged into base, no PR) |
-| 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | ready (D-129) |
+| 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | done (D-182; merged into base, no PR) |
 | 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23 | G5 | M | proposed (D-112) |
 | 3D-69 | Point cloud CRS vs. a geographic-CRS building: reproject points into the building metric frame on the server, or refuse a mismatch (D-126) | here | geo-model3d/cloud, services/kernel | 22, 32 | G4 | M | ready (D-164) |
-| 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | ready (D-139) |
+| 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | done (D-188; merged into base, no PR; [3D-ADR-0009](decisions/adr/3D-ADR-0009-copc-laz-decoder.md)) |
+| 3D-80 | `fitPlane` result independent of the input point order (same cloud through the LAS or COPC adapter gives the same `FIT_PLANE` result) | here | geo-model3d/cloud | 22 | G4 | S | proposed |
 | 3D-71 | `FIT_PLANE` command: apply the plane fit as a `PLANE` measurement or as a face's new `supportPlane` through PREVIEW/COMMIT (spec §10.12 r4, D-134) | here | geo-model3d/ops | 14, 22 | G4 | M | proposed |
-| 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | ready (D-138) |
+| 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | done (D-176; merged into base, no PR) |
 | 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | ready (D-159; bug of 3D-05, found by 3D-46, D-146) |
 | 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 23 | G5 | M | ready (D-155) |
-| 3D-75 | Import state from `validateModel`: replace the interim `import/state.js` (D-157) | here | geo-model3d (index, import, validate) | 10, 12 | G1 | S | proposed |
+| 3D-75 | Import state from `validateModel`: replace the interim `import/state.js` (D-157) | here | geo-model3d (index, import, validate) | 10, 12 | G1 | S | done (D-185; merged into base, no PR) |
+| 3D-76 | `check:docs`: DECISIONS.md table integrity - a `D-NN` / `Q-NN` row in "Open-question status updates" must have the status-row shape and name an existing id; a decision row outside "## Decisions" is a problem (D-167) | here | tools | 30, 05 | G0 | S | ready (D-177) |
+| 3D-77 | Spec §5 text for the solver decisions: per-kind constraint table (D-169) and D-170..D-172 | here | docs/specs | 13, 66 | G3 | S | proposed (D-173) |
+| 3D-78 | Single writer and provisional ids: push guard hook, `check:docs` provisional-id rule for rows and ADRs, generated BACKLOG overview, skills `merge-wp` / `wp-session` / `task-intake` and AGENTS.md §3/§6 updated (D-178..D-180) | here | tools, .claude, AGENTS.md | 30, 05 | G0 | M | ready (D-178) |
+| 3D-79 | Service image licence check: no GPL, LGPL or AGPL in the kernel service container image (3D-ADR-0004 decision 3, D-181) | here | service image, tools/check-arch | 23, 67 | G5 | M | proposed |
 | 3D-69.1 | Bug: public `worldToLocal` / `localToWorld` use a plain translation; wrong for geographic and north-first projected buildings (found by 3D-69) | here | geo-model3d (index) | 09, 32, 69 | G1 | S | proposed |
 | 3D-69.2 | Spec update for 3D-69: §4a cloud reprojection (`createCrsMapping`, `DATUM_MISMATCH` / `NO_PROJECTION`), §9 cloud CRS from the dataset descriptor (D-164, D-165, D-3D69-1..3) | here | docs/specs | 69, 72 | G4 | S | proposed |
 | 3D-69.4 | 3D-ADR-0007 note: the CRS table also holds PROJ proj-strings of projected CRSs, verified against PROJ (D-3D69-3); needs owner approval (D-18) | here | docs/decisions/adr | 69 | G4 | S | proposed |
@@ -434,6 +462,25 @@ flowchart TB
 - Accept: TBD when P1 is planned (spec section and golden tests to be written first).
 - Decisions: D-89  Open: -
 
+### 3D-77 Spec §5 solver text (D-173)
+- Source: 3D-13 session 2026-11-24 (D-173). Goal: the spec states what the solver implements.
+- Scope in: spec §5 gets the per-kind constraint table (from the `solve` module card, D-169), the check tolerances
+  (D-170), the `missingDegreesOfFreedom` format (D-171) and the underconstrained threshold (D-172). Scope out: code.
+- Accept: spec §5 cites D-169..D-172 and matches the module card; `node tools/check-docs.mjs` passes.
+- Decisions: D-169..D-173  Open: -
+
+### 3D-78 Single writer and provisional ids (D-178..D-180)
+- Source: owner dialog 2026-11-24, after repeated id clashes of parallel sessions (D-141, D-167, D-168, 3D-66, 3D-ADR-0004).
+- Scope in: (1) hook (PreToolUse on Bash `git push`) refusing a push to the base branch unless the session is the
+  coordinator (marker named in the checkpoint of 3D-00); (2) `check:docs`: on a WP branch, new `D-NN`, `Q-NN`, `3D-NN`
+  rows and `3D-ADR-NNNN` files not in the base are problems; provisional forms `3D-<wp>.n` and `3D-ADR-<wp>-n` accepted;
+  (3) `check-docs --fix` regenerates overview counts and the `Running:` line, `Updated:` becomes a date; (4) `merge-wp`
+  maps provisional rows and ADRs too; `wp-session` and `task-intake` say "hand over, never write the base"; AGENTS.md
+  §3/§6 one-line changes (owner approves the exact diff, AGENTS.md §10).
+- Accept: a planted push to the base from a WP session is refused; a planted final id on a WP branch fails `check:docs`;
+  `--fix` makes a hand-broken count pass; `node --test tools/check-docs.test.mjs` and `npm run check` pass.
+- Decisions: D-38, D-178..D-180, D-174  Open: -
+
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under
   its rules; this backlog mirrors them (D-25). 3D-63 is the 3DQM side of the move.
@@ -575,6 +622,17 @@ flowchart TB
   results unchanged when the points come from the COPC adapter.
 - Decisions: D-35, D-109, D-133, D-139, D-140 (Q-44: committed COPC test file allowed)  Open: none
 
+### 3D-80 `fitPlane` result independent of the input point order
+- Source: 3D-70 session 2026-11-24, owner dialog (D-187): GT-20 points give 444 inliers in the JSON order and 439 in
+  the COPC node order (both inside the GT-20 bounds); the JSON points permuted into the COPC order give 439 as well.
+- Goal: the same set of points gives the same `fitPlane` result whatever order a points adapter returns them in.
+- Scope in: `geo-model3d/cloud/fit-plane.js` (e.g. a canonical order before RANSAC sampling; the method is the row's
+  choice, D-130 stays: fixed seed, no `Math.random`); test with permuted inputs. Scope out: adapters (3D-22, 3D-70),
+  RANSAC parameters (D-130).
+- Accept: GT-20 points in JSON order, reversed order and COPC node order (`services/kernel/test/data/gt-20.copc.laz`)
+  give identical `fitPlane` results (inlier count, normal, RMSE); GT-20 / GT-21 golden tests pass.
+- Decisions: D-130, D-187  Open: none
+
 ### 3D-71 `FIT_PLANE` command (D-134)
 - Source: 3D-22 session 2026-11-23, owner dialog (D-134): the command needs the `executeCommand` pipeline.
 - Goal: `FIT_PLANE` runs `fitPlane` on the points of the payload `selection` and applies the result through
@@ -606,6 +664,24 @@ flowchart TB
   `validate` on the GT-06 / GT-I2 shape reports `OPEN_BOUNDARY` on the two ridge edges only and `DEGENERATE_EDGE` on the
   0.03 m gable edges (D-156; update `test/validate/golden-clean.test.js`).
 - Decisions: D-156, D-157  Open: -
+
+### 3D-79 Service image licence check (D-181)
+- Source: 3D-67 session 2026-11-24 (the npm check of 3D-67 cannot see OS packages of the image); owner dialog
+  (D-181).
+- Goal: the kernel service container image (D-33) contains no GPL, LGPL or AGPL code, as 3D-ADR-0004 decision 3 says
+  literally, and CI proves it on every image build.
+- Scope in: a base image and Node runtime build chosen so that no copyleft package or file is in the image [A: Debian,
+  distroless and Alpine bases carry glibc (LGPL-2.1), GCC runtime libraries (GPL-3.0 with runtime exception) or
+  busybox (GPL-2.0), so a stock base will not pass; candidates such as `scratch` + a static Node built against musl and
+  LLVM libc++ are to be verified, not assumed]; an offline SBOM of the built image (every OS package and every file
+  with a licence, the Node binary's bundled third-party components from its `LICENSE` file included) checked against
+  the allow list; a planted copyleft package fails the check (negative control). Scope out: npm tree (3D-67);
+  deployment target (ADR-OPS, D-33); EPSG data terms (Q-43).
+- Accept: the image build in CI produces an SBOM and the check reports zero GPL / LGPL / AGPL entries; a planted GPL
+  package in a test image fails it; a licence without an SPDX id fails (fail closed); the image passes the GT-13
+  service smoke test. If no copyleft-free image can run Node, the row stops with an owner escalation and the evidence,
+  not a relaxed rule (D-181).
+- Decisions: D-33, D-109, D-181  Open: Q-46 (blocks `ready`)
 ### 3D-65 Schema text: D-76 in the `FIT_TO_SHARED_EDGE` payload
 - Source: 3D-64 session 2026-11-23, owner dialog (D-97). Found while applying D-76 to the spec.
 - Goal: the `maxDisplacementM` description of `contracts/model3d/command-payload-fit-to-shared-edge.schema.json` states
@@ -674,3 +750,16 @@ flowchart TB
   licence allow-list check (3D-67) with val3dity outside it.
 - Decisions: D-91, D-109, D-148, D-149, D-161, D-162  Open: -
 
+### 3D-76 `check:docs`: DECISIONS.md table integrity
+- Source: 3D-66 merge 2026-11-24, owner dialog (D-167). The merge placed D-141..D-143 after the last `| D-NN |` line of
+  the file, inside "Open-question status updates"; D-141 then clashed with 3D-71's D-141 and the strict gate passed,
+  because `checkDecisions` scans only "## Decisions" and "## Open questions" (fixed by hand: b913f98, 30c4360).
+- Goal: a decision or question row in the wrong table, or an id used for two decisions, fails `check:docs`.
+- Scope in: `tools/check-docs.mjs` rule over "## Open-question status updates": every `D-NN` / `Q-NN` row has the
+  status-row shape (second cell `YYYY-MM-DD, <source>`) and names an id that exists in "## Decisions" / "## Open
+  questions"; tests in `tools/check-docs.test.mjs`. Scope out: other tables; the `merge-wp` skill text (it already says
+  "highest `| D-NN |` in ## Decisions").
+- Accept: a negative-control test with a decision row (`| D-NN | <text> | Owner, ... |`) under "Open-question status
+  updates" fails; a status row naming an unknown id fails; the current DECISIONS.md passes;
+  `node --test tools/check-docs.test.mjs` and `npm run check` pass.
+- Decisions: D-38, D-167  Open: -

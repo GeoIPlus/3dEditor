@@ -18,7 +18,7 @@ describe('FINAL_VALIDATION with a stub port', () => {
     const r = await validate(model, { mode: 'FINAL_VALIDATION', targetState: 'VALID_SOLID', externalValidator: s.port });
     expect(s.calls).toHaveLength(1);
     expect(s.calls[0].model).toBe(model);
-    expect(r.validatorVersion).toBe('geo-model3d-validate/1+val3dity 2.7.0 (stub)');
+    expect(r.validatorVersion).toBe('geo-model3d-validate/2+val3dity 2.7.0 (stub)');
     expect(r.createdAt).toBe(NOW);
     expect(r.issues.map((/** @type {any} */ i) => [i.code, i.externalValidatorCode, i.severity])).toEqual([
       ['NON_PLANAR_FACE', '203', 'ERROR'],
@@ -29,7 +29,7 @@ describe('FINAL_VALIDATION with a stub port', () => {
 
   it('a clean model and a clean external run confirm the target state', async () => {
     const r = await validate(golden('GT-03'), { mode: 'FINAL_VALIDATION', targetState: 'VALID_SOLID', externalValidator: stub([]).port });
-    expect(r).toEqual({ modelVersion: 1, targetState: 'VALID_SOLID', isValidForTargetState: true, issues: [], validatorVersion: 'geo-model3d-validate/1+val3dity 2.7.0 (stub)', createdAt: NOW });
+    expect(r).toEqual({ modelVersion: 1, targetState: 'VALID_SOLID', isValidForTargetState: true, issues: [], validatorVersion: 'geo-model3d-validate/2+val3dity 2.7.0 (stub)', createdAt: NOW });
   });
 
   it('every mapped val3dity code yields a contract-valid issue in both states', async () => {

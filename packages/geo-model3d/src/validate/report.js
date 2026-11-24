@@ -26,8 +26,9 @@ import { unsign0 } from '../brep/index.js';
  * @property {string} createdAt
  */
 
+// /2: D-156 (3D-75) - a one-face edge shorter than minEdgeLengthM is DEGENERATE_EDGE only, no longer also OPEN_BOUNDARY.
 /** Version of this validator in reports [A] (format not specified; bumped when a check changes its results). */
-export const VALIDATOR_VERSION = 'geo-model3d-validate/1';
+export const VALIDATOR_VERSION = 'geo-model3d-validate/2';
 
 /**
  * Localisation key of a code (D-91: error texts are keys). [A] Prefix `model3d.validation.` after the error keys of the
