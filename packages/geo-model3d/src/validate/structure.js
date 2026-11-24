@@ -1,7 +1,7 @@
 // validate (3D-12): topological checks (spec §8 rule 2; v0.2 §16.2): c(e) = 2 is necessary, not sufficient - open
 // boundaries, non-manifold edges and vertices, shell closure and connectivity, and the mapping of the structural problems
 // `brep.checkTopology` reports (internal kinds) to contract codes.
-import { checkTopology, endVertexId } from '../brep/index.js';
+import { checkTopology, endVertexId, distance } from '../brep/index.js';
 import { shellFaces } from './context.js';
 
 /** @typedef {import('./context.js').Ctx} Ctx */
@@ -39,13 +39,20 @@ export function structuralProblems(ctx) {
 /** Ring half-edges of a face. @param {Ctx} ctx @param {string} f @returns {string[]} */
 const faceHalfEdges = (ctx, f) => [...(ctx.index.outer.get(f) ?? []), ...(ctx.index.inner.get(f) ?? []).flat()];
 
-/** @param {Ctx} ctx @returns {RawIssue[]} OPEN_BOUNDARY per half-edge without a twin (every state, v0.3 §8.3) */
+/**
+ * OPEN_BOUNDARY per half-edge without a twin (every state, v0.3 §8.3). A one-face edge shorter than `minEdgeLengthM`
+ * is left to `degenerateEdges` (DEGENERATE_EDGE, not OPEN_BOUNDARY: D-156, Q-41).
+ * @param {Ctx} ctx @returns {RawIssue[]}
+ */
 export function openBoundaries(ctx) {
+  const { model } = ctx;
+  /** @param {string} h @returns {boolean} */
+  const short = (h) => distance(model.vertices[model.halfEdges[h].startVertexId].p, model.vertices[endVertexId(model, h)].p) < ctx.tol.minEdgeLengthM;
   /** @type {RawIssue[]} */
   const out = [];
   for (const f of ctx.faces) {
     for (const h of faceHalfEdges(ctx, f)) {
-      if (ctx.model.halfEdges[h].twinId === null) out.push({ code: 'OPEN_BOUNDARY', entityIds: [h, f], location: ctx.model.vertices[ctx.model.halfEdges[h].startVertexId].p, detail: 'no twin' });
+      if (ctx.model.halfEdges[h].twinId === null && !short(h)) out.push({ code: 'OPEN_BOUNDARY', entityIds: [h, f], location: ctx.model.vertices[ctx.model.halfEdges[h].startVertexId].p, detail: 'no twin' });
     }
   }
   return out;

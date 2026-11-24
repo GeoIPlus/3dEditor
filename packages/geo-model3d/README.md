@@ -1,8 +1,8 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10); other modules follow their rows (3D-11, 3D-13..3D-21)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75); other modules follow their rows (3D-11, 3D-13..3D-21)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
-- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §8, §9
+- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
   `robust-predicates` not adopted (D-118, D-150)
 - Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
@@ -29,7 +29,10 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   externalValidator? }) -> Promise<ValidationReport>` (3D-12, spec §8): contract `validation-report` out; see `validate` below.
 - `importBuilding({ cityjson, cityObjectId, toleranceProfile, projectId, buildingId?, toleranceProfileId?, ids?,
   originalSourceRef? })` -> `{ model, baseline, report }` (3D-10, spec §6): contract `building-model` at version 0,
-  baseline = isolated copy (3D-ADR-0003 S1), contract `import-report`. Refusals throw `ImportError` (`code`
+  baseline = isolated copy (3D-ADR-0003 S1), contract `import-report`. Sync. State and `issues` come from `validate`
+  (3D-75, D-157): `runChecks` COMMIT_VALIDATION with `fullSolid` + `toIssues`, i.e. what `validateModel` runs in that
+  mode without the external port (D-3D75-1); no ERROR for VALID_SOLID -> `VALID_SOLID`, else `DRAFT_SOLID` with that
+  column's severities; a shell is `isClosed` unless it has `SHELL_NOT_CLOSED`. Refusals throw `ImportError` (`code`
   `INVALID_PAYLOAD` / `NOT_FOUND` / `INVALID_GEOMETRY`) or `CrsError` (`INVALID_CRS`). The input is named `cityjson`, not
   `document`: `check:arch` rejects the DOM global name in kernel files.
 - Names fixed for later rows (D-119): `executeCommand` (3D-14..3D-21), `exportBuilding` (3D-11).
@@ -53,13 +56,13 @@ Surface `src/validate/index.js` for kernel modules (`ops` uses `runChecks` and `
 |---|---|
 | `codes.js` | one table code -> severity in DRAFT_SOLID / VALID_SOLID (spec §8 rule 4, D-77) + scope [A]; `DRAFT_SURFACE` -> draft column, `APPROVED` -> valid column (D-153) |
 | `modes.js` | `runChecks`: FAST_PREVIEW = local checks of the affected faces + one ring of neighbours [A]; COMMIT_VALIDATION = whole-model invariants, shell closure / orientation, self-intersection of the affected volume, everything with `fullSolid`; FINAL = full COMMIT + external port |
-| `structure.js` | open boundary, non-manifold edge / vertex (fans), shell closure and connectivity; brep structural kinds -> codes [A] |
+| `structure.js` | open boundary (a one-face edge shorter than `minEdgeLengthM` is left to `DEGENERATE_EDGE`, D-156), non-manifold edge / vertex (fans), shell closure and connectivity; brep structural kinds -> codes [A] |
 | `geometry.js` | degenerate edge / face (`minEdgeLengthM`, `minFaceAreaM2`), non-planar face (`planarTolM`), ring orientation vs support-plane normal, shell orientation by signed volume, junctions |
 | `intersect.js`, `polygon.js` | ring self-intersection (x-sweep), face pairs piercing / overlapping in one shell; tolerance predicates only (D-150) |
 | `overlap.js` | `SOLID_OVERLAP` between bodies of one building (crossing faces, vertex deeper than `planarTolM`, centroid; winding number); never between buildings (D-89) |
 | `lineage.js` | "new" issues: an old issue's ids mapped through `topology-lineage` meet the new issue's ids -> not new [A]; `newErrors` = commit gate of spec §8 rule 7 |
 | `external.js` | external validator port type; val3dity code -> contract code, fallback `EXPORT_SCHEMA_ERROR` [A]; binding = 3D-74 (D-148/2, [3D-ADR-0008](../../docs/decisions/adr/3D-ADR-0008-val3dity-binding.md), accepted D-161) |
-| `report.js` | dedupe, deterministic order, message = localisation key `model3d.validation.<camelCode>` [A] (D-91), `validatorVersion` `geo-model3d-validate/1` (+ port version in FINAL) [A] |
+| `report.js` | dedupe, deterministic order, message = localisation key `model3d.validation.<camelCode>` [A] (D-91), `validatorVersion` `geo-model3d-validate/2` (/2: D-156, 3D-75) (+ port version in FINAL) [A] |
 
 The maps of `codes.js`, `structure.js`, `external.js` are accepted as written (D-162).
 Findings of other modules (solve, crs, export, cloud, import) enter as `findings` and get scope and severity from the
@@ -91,8 +94,8 @@ same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 ru
   `BOUNDARY`; roof components per Building / BuildingPart (an installation's roof faces go to its owner); one
   footprint per ground face, outer ring counter-clockwise from above, `baseElevationM` = lowest local height;
   a surface that keeps < 3 vertices or spans no plane is dropped with warning `model3d.import.droppedSurface:<ref>`;
-  > 500 faces warns `model3d.import.faceLimitExceeded:<n>>500` (D-94); refusal codes as listed above; issue
-  messages are localisation keys `model3d.issue.*` (D-91). Opaque `GeometryInstance`, `appearance` and extensions
+  > 500 faces warns `model3d.import.faceLimitExceeded:<n>>500` (D-94); refusal codes as listed above; issues
+  and state come from `validate` (see Public API; the interim `import/state.js` of D-157 is removed by 3D-75). Opaque `GeometryInstance`, `appearance` and extensions
   are not copied: export (3D-11) writes them from the original document, which import never writes (frozen-input test).
 
 ## Rules and invariants

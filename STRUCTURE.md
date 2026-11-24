@@ -28,7 +28,7 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
   src/brep/                                             half-edge, planes, derived vertices, frame, transactions (3D-09)
   src/cloud/                                             plane fit (RANSAC + SVD), deviation heatmap (3D-22)
   src/validate/                                         progressive validation, severity by state, val3dity port (3D-12)
-  src/import/                                            CityJSON -> canonical model, RTG roles, baseline, report (3D-10)
+  src/import/                                            CityJSON -> canonical model, RTG roles, baseline, report (3D-10); state + issues from validate via index.js (3D-75)
   src/solve/ export/ ops/                               modules (3D-ADR-0002 C1; later rows)
   test/brep/ test/cloud/ test/validate/ test/import/ test/golden/   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22; GT-I1..GT-I3: 3D-10)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)

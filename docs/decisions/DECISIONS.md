@@ -182,6 +182,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-166 | 3D-75 (import state from `validateModel`, D-156 applied in `validate`) set `ready` (3D-10 and 3D-12 done); no session started yet | Owner, chat, 2026-11-24 |
 | D-167 | Intake 3D-76 (`proposed`): `check:docs` checks that `D-NN` / `Q-NN` rows of "Open-question status updates" have the status-row shape and name existing ids, after the 3D-66 merge put D-141..D-143 into that table unnoticed (fixed in 30c4360) | Owner, dialog, 2026-11-24 |
 | D-168 | 3D-75 started in a fresh session, in parallel with 3D-11 (both touch `geo-model3d/src/index.js`; the later merge resolves it) | Owner, chat, 2026-11-24 |
+| D-3D75-1 | `importBuilding` stays synchronous: `index.js` takes import state and issues from the `validate` module's sync core (`runChecks` COMMIT_VALIDATION with `fullSolid` + `toIssues`, what `validateModel` runs in that mode without the external port), not by awaiting `validateModel`; no public signature change | Owner, dialog, 2026-11-24 (3D-75) |
+| D-3D75-2 | Imported GT-I2 reports 5 issues: 2 `OPEN_BOUNDARY` (ridge), 2 `DEGENERATE_EDGE` (0.03 m gable edges, D-156) and 1 `SHELL_NOT_CLOSED` (open shell); only the 3D-10 test-code count changes 4 -> 5, the GT-I2 fixture numbers are untouched; import does not filter validation findings | Owner, dialog, 2026-11-24 (3D-75) |
 
 ## Open questions
 
