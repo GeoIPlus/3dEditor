@@ -1,10 +1,11 @@
 {
   "valid": [
-    { "selection": {}, "apply": "MEASUREMENT" },
-    { "selection": {}, "apply": "FACE_PLANE", "faceId": "f-roof-1" }
+    { "selection": { "kind": "BOX", "min": [0, 0, 4], "max": [10, 4, 9] }, "apply": "MEASUREMENT" },
+    { "selection": { "kind": "BOX", "min": [0, 0, 4], "max": [10, 4, 9] }, "apply": "FACE_PLANE", "faceId": "f-roof-1" }
   ],
   "invalid": [
-    { "why": "FACE_PLANE without the face", "instance": { "selection": {}, "apply": "FACE_PLANE" } },
-    { "why": "no selection", "instance": { "apply": "MEASUREMENT" } }
+    { "why": "FACE_PLANE without the face", "instance": { "selection": { "kind": "BOX", "min": [0, 0, 4], "max": [10, 4, 9] }, "apply": "FACE_PLANE" } },
+    { "why": "no selection", "instance": { "apply": "MEASUREMENT" } },
+    { "why": "selection of no known kind", "instance": { "selection": {}, "apply": "MEASUREMENT" } }
   ]
 }

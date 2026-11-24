@@ -31,22 +31,26 @@ const context = (assigned) => ({
 /** @returns {Def[]} */
 export function serviceCases() {
   const { points, outlierIndices } = gt20Points();
-  const sel = { fixturePoints: 'all of input.points.json', TBD: 'Q-18: selection shape (rectangle / lasso) set by 3D-22' };
+  // FIT_PLANE / heatmap selection (D-132): a LOCAL box around every point, bounds rounded outward to whole metres.
+  const lo = [0, 1, 2].map((k) => Math.floor(Math.min(...points.map((p) => p[k]))));
+  const hi = [0, 1, 2].map((k) => Math.ceil(Math.max(...points.map((p) => p[k]))));
+  const sel = { kind: 'BOX', min: lo, max: hi };
+  const SEL_MARK = { what: `Selection = LOCAL BOX [${lo}]..[${hi}] around all points (whole metres, outward)`, mark: /** @type {const} */ ('[P]'), why: 'D-132 (Q-18); v0.3 §12 fits all 500 points' };
   return [
     {
       gt: 'GT-20',
       inputs: { 'input.model.json': gt03Model('bld-gt-20'), 'input.points.json': { frame: 'LOCAL', points }, 'truth.points.json': { note: TRUTH, outlierIndices } },
       steps: [command({ gt: 'GT-20', n: 1, buildingId: 'bld-gt-20', operation: 'FIT_PLANE', payload: { selection: sel, apply: 'MEASUREMENT' }, expectedVersion: 1 })],
       assert: { plane: 'z = 0.75 y + 5', normalDeviationDegMax: 0.2, rmseMMax: 0.015, inlierRatioMin: 0.85, points: 500, sigmaM: 0.01, outlierPercent: 10 },
-      marks: [...BASE_MARKS, POINTS_MARK, { what: 'FIT_PLANE on the GT-03 model, `apply` MEASUREMENT', mark: '[A]', why: 'A command needs a building; the fit is compared, not applied to a face' }],
+      marks: [...BASE_MARKS, POINTS_MARK, SEL_MARK, { what: 'FIT_PLANE on the GT-03 model, `apply` MEASUREMENT', mark: '[A]', why: 'A command needs a building; the fit is compared, not applied to a face' }],
       check: 'The test fits a least-squares plane to the inliers with its own code: normal deviation <= 0.2 deg, RMSE <= 0.015 m, inlier ratio 450 / 500 = 0.9 >= 0.85.',
     },
     {
       gt: 'GT-21',
       inputs: { 'input.model.json': gt03Model('bld-gt-21'), 'input.points.json': { frame: 'LOCAL', points: shiftZ(points) }, 'truth.points.json': { note: TRUTH, outlierIndices } },
-      steps: [REQ('HEATMAP', 'usr-operator', { faceIds: ['f-roof-s'], points: 'input.points.json' }, '3D-22')],
+      steps: [{ ...REQ('HEATMAP', 'usr-operator', { faceIds: ['f-roof-s'], points: 'input.points.json', selection: { kind: 'BOX', min: lo, max: [hi[0], hi[1], hi[2] + 1] } }, '3D-22'), shape: 'contracts/model3d heatmap-request (D-136); thresholdM is required but not asserted by GT-21: the runner sets it' }],
       assert: { meanSlopeDeviationM: 0.08, toleranceM: 0.005, distance: 'normal', shiftZM: 0.1 },
-      marks: [...BASE_MARKS, POINTS_MARK, { what: 'GT-20 points + 0.10 m in Z; heatmap of the south slope; outliers left in (excluded by `heatmapBufferM` 1.0)', mark: '[P]', why: 'D-102' }],
+      marks: [...BASE_MARKS, POINTS_MARK, { ...SEL_MARK, what: 'Selection = GT-20 box, top raised 1 m for the +0.10 m shift' }, { what: 'GT-20 points + 0.10 m in Z; heatmap of the south slope; outliers left in (excluded by `heatmapBufferM` 1.0)', mark: '[P]', why: 'D-102' }],
       check: 'The test computes the mean normal distance of the in-buffer points to the south plane: 0.10 * cos(atan 0.75) = 0.080 +/- 0.005 m (v0.3 §12).',
     },
     {

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-heatmap-request:v1",
+  "title": "HeatmapRequest",
+  "description": "Model-to-cloud deviation request (F-48, v0.3 §7; spec §9 rule 6). Not a command: it changes nothing. The service reads the points of `selection` through the points port, keeps those within heatmapBufferM of the nearest face polygon, and the kernel returns a heatmap-result (D-135). The threshold has no server default (D-131).",
+  "$comment": "D-136. [P] Member names. Wire binding (route, auth) is 3D-23's.",
+  "type": "object",
+  "properties": {
+    "buildingId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "selection": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PointSelection",
+      "description": "Region of the cloud to compare, LOCAL frame."
+    },
+    "faceIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "description": "Optional: report only these faces; points are still assigned to their nearest face of the whole model (D-135)."
+    },
+    "thresholdM": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength",
+      "description": "Distance beyond which a point counts in summary.shareBeyondThreshold; required, no default (D-131, Q-24)."
+    }
+  },
+  "required": ["buildingId", "modelVersion", "selection", "thresholdM"],
+  "additionalProperties": false
+}

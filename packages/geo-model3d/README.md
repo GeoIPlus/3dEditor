@@ -1,8 +1,8 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09); other modules follow their rows (3D-10..3D-22)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22); other modules follow their rows (3D-10..3D-21)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
-- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4
+- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
   `robust-predicates` not adopted (D-118)
 - Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
@@ -20,8 +20,13 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
 - `worldToLocal(frame, points)`, `localToWorld(frame, points)` - contract `CoordinateFrame` + `V3[]`; projected CRS
   (translation by `originWorld`, rotation by `buildingAxisDeg`). Geographic CRSs: import (3D-10) composes `crs` (3D-32).
 - `canonicalJson(value)` - canonical JSON (sorted keys, no `-0`); `save -> load -> save` is byte-identical (K-11).
+- `fitPlane(points, selection, profile)` (3D-22) - points `Float64Array` x y z interleaved, LOCAL frame; contract
+  `PointSelection`; `{ result: plane-fit-result }` or `{ error }` (`INVALID_MEASUREMENT` with `pointCount` /
+  `inlierRatio`; `INVALID_PAYLOAD` for malformed points or selection).
+- `deviationStats(model, points, request, profile)` (3D-22) - contract `heatmap-request` -> `{ result: heatmap-result }`
+  or `{ error }` (`INVALID_PAYLOAD`: unknown `faceIds`, missing threshold, bad selection).
 - Names fixed for later rows (D-119): `executeCommand` (3D-14..3D-21), `importBuilding` (3D-10),
-  `exportBuilding` (3D-11), `validateModel` (3D-12), `fitPlane`, `deviationStats` (3D-22).
+  `exportBuilding` (3D-11), `validateModel` (3D-12).
 
 ## Modules (`src/`, DAG of 3D-ADR-0002 C1 rule 2, enforced by `check:arch`)
 `brep` (3D-09) is the leaf every other module imports. Its surface (`src/brep/index.js`), for kernel modules only:
@@ -40,6 +45,13 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   `writeBackVertices` (untouched vertices keep file integers, D-70), `decodeVertex`; throws `CrsError` with code
   `INVALID_CRS`. Not in `index.js`; `import` / `export` (3D-10, 3D-11) call it. Spec §4a.
 
+- `src/cloud/` (3D-22, spec §9): `fit-plane.js` (RANSAC on triples, then least squares on the consensus set:
+  centroid + smallest eigenvector of the scatter matrix, `eigen.js` Jacobi), `deviation.js` + `polygon.js` (nearest face
+  polygon within `heatmapBufferM`, signed normal distance, D-135), `points.js` (selection filter), `rng.js`
+  (mulberry32). RANSAC (D-130): inlier distance `planarTolM`, adaptive iterations for 99.9 %, at most 1000, fixed
+  seed. Readings marked [A]: fitted normal oriented z > 0 (then y, x); a point on a ring boundary follows the crossing
+  rule; empty heatmap summary reports zeros.
+
 ## Rules and invariants
 - Every target of `package.json` `exports` imports `./src/canary.js`; `canary.js` is listed in `sideEffects`.
 - `check:arch`: no DOM / `three`; no file over 300 lines; kernel source imports no I/O modules and references no
@@ -55,6 +67,12 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
 - `test/brep/` (geometry, model, transaction; 3D-09): every golden input sound, on its planes, byte-identical
   `save -> load -> save`; broken copies reported; patches and lineage valid against the contracts (Ajv).
 - Golden: `test/golden/gt-25.golden.test.js` (GT-25, world -> local -> world <= 0.001 m; measured 0 m).
+- Golden GT-20 (`gt-20.golden.test.js`): normal deviation 0.0051 deg (<= 0.2), RMSE 0.00778 m (<= 0.015), inliers
+  444 / 500 = 0.888 (>= 0.85). GT-21 (`gt-21.golden.test.js`): south slope mean 0.07935 m over 447 points
+  (0.080 +/- 0.005). Both run the kernel functions; the `FIT_PLANE` command step is 3D-71.
+- `test/cloud/` (3D-22): fit (clean, outliers, determinism, selection, refusals at 29 points and ratio < 0.6, Ajv
+  against `plane-fit-result` / `error`), heatmap (assignment, buffer, `faceIds`, polygon edge distance, refusals, Ajv
+  against `heatmap-request` / `heatmap-result`), eigen solver, generator, ring test.
 - Cost on the bench scenes (3D-09, warm, 300 requests): sawtooth-199 index 0.59 ms, topology 0.53 ms, transaction with
   re-derivation 3.9 ms p50 / 6.8 ms p95; sawtooth-499 transaction 14.2 / 22.5 ms. Clone and diff dominate (~2 ms each
   at 199 faces); a dirty-tracking draft is the next step if a gate needs it.

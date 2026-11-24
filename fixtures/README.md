@@ -86,14 +86,14 @@ Deviations from v0.2 F.3 [P]: `expected.metrics.json`, `expected.validation.json
 | GT-17 | chimney on the south slope at (5, 2, 6.5) |
 | GT-18 | dormer outline x 4..6, y 1..2.5 in plan; `heightM` 1 (its meaning is Q-38) |
 | GT-19 | pyramid 8 x 8, eave 5, rise 3 / run 4; east slope lifted 0.05 m at the apex (vertical); primary = south; "Fixed" = hard `ON_PLANE` on the three others |
-| GT-20, GT-21 | 500 points (450 + 50 outliers 1.5..3 m off the plane), plan x 0..10, y 0..4, noise along Z, 0.1 mm, seed 20 (D-102) |
+| GT-20, GT-21 | 500 points (450 + 50 outliers 1.5..3 m off the plane), plan x 0..10, y 0..4, noise along Z, 0.1 mm, seed 20 (D-102); selection = LOCAL box around all points, whole metres outward (3D-22, D-132) |
 | GT-22..24 | roles `3dqm.production` / `3dqm.qa`; one assignment per actor; GT-24 buildings: GT-03 gable, GT-I2 gap gable (draft), GT-04 hip |
 
 ## Open questions touched
 
-Q-41 (GT-I2 open-edge count, 3D-10), Q-10 (val3dity, GT-I4), Q-18 (`FIT_PLANE` selection, GT-20), Q-26 (id format),
+Q-41 (GT-I2 open-edge count, 3D-10), Q-10 (val3dity, GT-I4), Q-18 (`FIT_PLANE` selection, GT-20: set by D-132), Q-26 (id format),
 Q-32 (CityObject -> `buildingId`), Q-38 (dormer / chimney dimensions, GT-17, GT-18), Q-39 (lease fields, GT-22..24),
-service request shapes of 3D-22 / 3D-23 / 3D-24. None is guessed: each appears as `TBD` where it matters.
+service request shapes of 3D-23 / 3D-24 (the heatmap request is `heatmap-request`, D-136). None is guessed: each appears as `TBD` where it matters.
 
 ## Tests
 

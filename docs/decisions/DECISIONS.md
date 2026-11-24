@@ -143,6 +143,14 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-127 | 3D-32 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids became D-121..D-126 and Q-43 (EPSG terms, still open); id clashes with the parallel 3D-08 resolved at merge: CRS ADR 3D-ADR-0004 -> 3D-ADR-0007, row 3D-66 (cloud CRS) -> 3D-69 | Owner, chat, 2026-11-23 |
 | D-128 | Per D-114: 3D-10 (import) and 3D-12 (validation) set `ready` (3D-09 and 3D-32 done) and started in parallel fresh sessions | Owner, chat, 2026-11-23 (D-114) |
 | D-129 | 3D-13 (solver), 3D-22 (point cloud), 3D-66 (3D-08 ADRs into spec and AGENTS.md) and 3D-67 (licence allow-list check) set `ready` and started in parallel fresh sessions, beside 3D-10 and 3D-12 | Owner, dialog, 2026-11-24 |
+| D-130 | Q-24, RANSAC of the plane fit: inlier distance = `planarTolM` (normal distance; precedent v0.1 C.7 `threshold=tol.planar`); iterations adaptive for 99.9 % confidence, capped at 1000; seeded PRNG with a fixed seed inside the kernel (deterministic, no `Math.random`); no new profile field | Owner, dialog, 2026-11-23 (3D-22) |
+| D-131 | Q-24, heatmap threshold: `thresholdM` is a required request parameter, no server default (v0.3 §7 "threshold is configurable"); `measurementTolM` stays `TBD` (not used by 3D-22) | Owner, dialog, 2026-11-23 (3D-22) |
+| D-132 | Q-18, `FIT_PLANE` selection: `{ kind: BOX, min, max }` or `{ kind: POLYGON, ringXY, zMin, zMax }` in the LOCAL frame; the service queries the points port by the bounding box and filters; contract change (D-18) of `command-payload-fit-plane` `selection` via a `PointSelection` definition, approved | Owner, dialog, 2026-11-23 (3D-22) |
+| D-133 | Points port: 3D-22 builds the port (box query) and an own LAS-whole reader (uncompressed LAS; test files generated in code, no committed binaries); COPC by box (LAZ decoder `laz-perf`, Apache-2.0, a new runtime dependency: ADR + approval, D-109) becomes a new row via intake | Owner, dialog, 2026-11-23 (3D-22) |
+| D-134 | 3D-22 ships `fitPlane` / `deviationStats` (D-119), the selection and heatmap-request contracts, the points port and LAS adapter; GT-20 runs `fitPlane` on the step's selection. The `FIT_PLANE` command wiring (spec §10.12 r4 and Accept) becomes a new intake row after the `executeCommand` pipeline (3D-12, 3D-13, 3D-14) | Owner, dialog, 2026-11-23 (3D-22) |
+| D-135 | Heatmap point assignment: a point counts if its 3D distance to the nearest face polygon is <= `heatmapBufferM`; it is assigned to that face; its value is the signed distance along that face's normal; request `faceIds` optionally limits the reported faces | Owner, dialog, 2026-11-23 (3D-22) |
+| D-136 | Contract change (D-18), approved: new `heatmap-request` schema v1 (model version, optional `faceIds`, point selection, required `thresholdM`); 3D-23 binds it to the wire | Owner, dialog, 2026-11-23 (3D-22) |
+| D-137 | 3D-22 accepted (done); merged into the base without PR via the `merge-wp` skill; provisional ids of 3D-22 became D-130..D-136 and Q-44; intake rows 3D-70..3D-72 keep their ids | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
@@ -191,6 +199,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | Q-41 | GT-I2: which edges carry `OPEN_BOUNDARY` - the two ridge edges only (the 0.03 m wall edges reported as degenerate, < `minEdgeLengthM`) or all four edges of the gap loop | v0.3 §12 GT-I2, D-101 | 3D-10 |
 | Q-42 | On which machine class is the latency verdict re-measured once the kernel service image exists (production instance class of the Tools Plane, unknown today: HANDOVER §8 q3) | [3D-ADR-0006](adr/3D-ADR-0006-bench-rig-and-scenes.md) step 5; 3D-08 measured on the cloud agent container | 3D-23, owner |
 | Q-43 | Do the EPSG dataset terms of use allow shipping a table derived from it (via PROJ `proj.db`) inside the kernel image? PROJ code and data are MIT (`LICENSE_proj` in pyproj 3.8.0); the EPSG terms could not be read (epsg.org blocked by the network policy) | 3D-ADR-0004 licence section | owner / legal, before 3D-32 is accepted |
+| Q-44 | May a small COPC test file (a few KB, LAZ-compressed) be committed for 3D-70? The `laz-perf` JS build decodes only, so the test cannot write one in code (AGENTS.md §2.13, Q-07) | Alternative: generate it once with PDAL outside the repository and keep it in the sample-data location of Q-07 | owner, before 3D-70 is `ready` |
 
 ## Open-question status updates
 
@@ -230,3 +239,5 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-11 | 2026-11-23, owner (coordinating session) | closed by D-88..D-94 | Д-01/Д-02 overtaken (D-88); Д-04 changed to geographic CRS support (D-92, row 3D-32); rest confirmed |
 | Q-01 | 2026-11-23, owner (3D-08) | closed by D-109 | [3D-ADR-0004](adr/3D-ADR-0004-kernel-language-boolean-licences.md): JavaScript on Node; MOVE_EDGE PREVIEW p95 5.411 ms on 199 faces vs 150 ms ([3D-08 note](../verification/3D-08.md)) |
 | Q-17 | 2026-11-23, owner (3D-08) | closed by D-110 | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices (least squares to their old positions, hard conditions exact) |
+| Q-24 | 2026-11-23, owner (3D-22) | narrowed, open | RANSAC parameters closed by D-130; heatmap threshold closed by D-131 (no default, required); `measurementTolM`, PREVIEW rate / expiry, payload size stay open (3D-23) |
+| Q-18 | 2026-11-23, owner (3D-22) | narrowed, open | `FIT_PLANE` selection closed by D-132; the other operations of Q-18 stay open |

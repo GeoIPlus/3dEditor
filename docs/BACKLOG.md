@@ -13,24 +13,25 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129).
+Updated: 2026-11-23 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged).
 
 | Progress | Rows |
 |---|---:|
-| Done | 18 / 55 |
+| Done | 19 / 58 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 10 |
-| Proposed (waiting for the owner to set `ready`) | 26 |
+| Ready | 9 |
+| Proposed (waiting for the owner to set `ready`) | 29 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 18/55 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 19/58 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113).
-**Running:** SC 3D view port + host 3D-47 (D-61), CityJSON import 3D-10 and validation 3D-12 (D-128); solver 3D-13, point cloud 3D-22, spec/AGENTS ADR refs 3D-66, licence check 3D-67 (D-129).
+**Running:** SC 3D view port + host 3D-47 (D-61), CityJSON import 3D-10 and validation 3D-12 (D-128); solver 3D-13, spec/AGENTS ADR refs 3D-66, licence check 3D-67 (D-129).
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D22["3D-22 Point cloud functions"]
     D32["3D-32 CRS support (geographic)"]
     D09["3D-09 B-Rep core"]
     D08["3D-08 Latency spike + kernel ADRs"]
@@ -55,7 +56,6 @@ flowchart TB
   subgraph ready["READY"]
     D67["3D-67 Licence allow-list check"]
     D66["3D-66 Apply 3D-08 ADRs to spec, AGENTS"]
-    D22["3D-22 Point cloud functions"]
     D13["3D-13 Constraint solver"]
     D12["3D-12 Validation"]
     D10["3D-10 CityJSON import"]
@@ -80,6 +80,9 @@ flowchart TB
     D21["3D-21 Semantics, constraints cmds"]
     D33["3D-33 Inter-building validation (P1)"]
     D69["3D-69 Point cloud CRS vs. building CRS"]
+    D70["3D-70 COPC-by-box points adapter"]
+    D71["3D-71 FIT_PLANE command"]
+    D72["3D-72 Spec: 3D-22 decisions"]
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D23["3D-23 Kernel service"]
@@ -142,6 +145,11 @@ flowchart TB
   D23 --> D68
   D22 --> D69
   D32 --> D69
+  D22 --> D70
+  D67 --> D70
+  D14 --> D71
+  D22 --> D71
+  D22 --> D72
   D05 --> D08
   D06 --> D08
   D07 --> D08
@@ -229,7 +237,7 @@ flowchart TB
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | proposed |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | proposed |
 | 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | proposed |
-| 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | ready (D-129) |
+| 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, idempotent `commandId` + `expectedVersion` (GT-13, D-68), rate limit, error registry, command status, storage port with interim file/S3 adapter (D-35) | here | service | 03, 06, 18 | G5 | L | proposed |
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23 | G5 | M | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | proposed |
@@ -251,6 +259,9 @@ flowchart TB
 | 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | ready (D-129) |
 | 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23 | G5 | M | proposed (D-112) |
 | 3D-69 | Point cloud CRS vs. a geographic-CRS building: reproject points into the building metric frame on the server, or refuse a mismatch (D-126) | here | geo-model3d/cloud, services/kernel | 22, 32 | G4 | M | proposed |
+| 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | proposed |
+| 3D-71 | `FIT_PLANE` command: apply the plane fit as a `PLANE` measurement or as a face's new `supportPlane` through PREVIEW/COMMIT (spec §10.12 r4, D-134) | here | geo-model3d/ops | 14, 22 | G4 | M | proposed |
+| 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -487,6 +498,37 @@ flowchart TB
   heatmap values as the all-UTM case within `planarTolM` (option A), or a defined refusal code (option B); a cloud in
   the same CRS takes the path unchanged.
 - Decisions: D-92, D-93, D-126  Open: choice A/B (owner, at `ready`)
+
+### 3D-70 COPC-by-box points adapter (D-133)
+- Source: 3D-22 session 2026-11-23, owner dialog (D-133): COPC needs a LAZ decoder, a new runtime dependency.
+- Goal: the points port answers box queries from a COPC file by reading only the octree nodes that meet the box.
+- Scope in: ADR for `laz-perf` (npm 0.0.7, Apache-2.0, WASM, 1.2 MB unpacked; verified with `npm view` 2026-11-23) in
+  `services/kernel` only (never the kernel package); COPC info VLR and hierarchy pages; node selection by box; decode;
+  exact box filter; the licence allow-list of 3D-67. Scope out: HTTP range reads of a remote COPC (crowdsource, 3D-61),
+  CRS checks (3D-69).
+- Accept: ADR accepted by the owner (D-18, D-109); a COPC test file gives exactly the points of the same box as its LAS
+  copy through `createLasPointsAdapter`; only nodes meeting the box are decoded (counted in the test); GT-20 / GT-21
+  results unchanged when the points come from the COPC adapter.
+- Decisions: D-35, D-109, D-133  Open: Q-44 (committed COPC test file)
+
+### 3D-71 `FIT_PLANE` command (D-134)
+- Source: 3D-22 session 2026-11-23, owner dialog (D-134): the command needs the `executeCommand` pipeline.
+- Goal: `FIT_PLANE` runs `fitPlane` on the points of the payload `selection` and applies the result through
+  PREVIEW/COMMIT as a `PLANE` measurement or as the new `supportPlane` of `faceId` (spec §10.12 r4, §9 r4-r5).
+- Scope in: `ops/fit-plane`, how the service passes the points with the command (points port, `readLocalPoints` of
+  3D-22), measurement weight `1/σ²` soft by default. Scope out: snapping (client), heatmap (3D-22).
+- Accept: spec §10.12 Accept 2 (`FACE_PLANE` with the GT-20 fit on a GT-03 slope re-derives ridge and eave vertices);
+  GT-20 run as the command step of `fixtures/GT-20/steps.json`; refusal `INVALID_MEASUREMENT` leaves the model unchanged.
+- Decisions: D-132, D-134  Open: Q-28 (PLANE measurement layout), Q-24 (`measurementTolM`)
+
+### 3D-72 Spec update for the 3D-22 decisions
+- Source: 3D-22 session 2026-11-23; spec edits only through intake (AGENTS.md §6), and 3D-66 edits the spec in parallel.
+- Goal: the spec states D-130..D-136 instead of `TBD`.
+- Scope in: §2 list row `heatmap-request` and `PointSelection`; §2.3 note; §9 rules 3 and 6 (RANSAC parameters,
+  threshold required, nearest-face-polygon assignment); §10.12 rule 4 (selection); §14 Q-18 / Q-24 rows narrowed.
+- Accept: `npm run check` (the contract test parses the §2 table: row count follows the new row); no `TBD (Q-24)` left
+  for RANSAC parameters or the heatmap threshold.
+- Decisions: D-130..D-136  Open: none
 
 ### 3D-65 Schema text: D-76 in the `FIT_TO_SHARED_EDGE` payload
 - Source: 3D-64 session 2026-11-23, owner dialog (D-97). Found while applying D-76 to the spec.
