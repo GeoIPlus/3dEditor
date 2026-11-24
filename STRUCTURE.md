@@ -46,6 +46,7 @@ tools/golden-fixtures/               fixture generator (`npm run fixtures`) and 
 tools/check-docs.mjs                 document consistency check, Node built-ins (3D-30)
 tools/check-docs-run.mjs             `npm run check:docs`: strict on every branch except `wp/*` (D-38) (3D-05); new final ids vs. base, `--fix` (3D-78)
 tools/check-docs-{md,ids,overview}.mjs  check-docs parts: markdown helpers, id rules (D-179), generated overview (D-180) (3D-78)
+tools/check-docs-decisions.mjs       check-docs DECISIONS.md tables: id tables, status-row shape and ids, rows outside the tables (D-167) (3D-76)
 tools/base-branch.mjs                base branch name and coordinator marker (D-178) (3D-78)
 tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09)
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
