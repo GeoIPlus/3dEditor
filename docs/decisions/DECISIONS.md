@@ -227,6 +227,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-211 | 3D-84 (BACKLOG graph icons) set `ready` and started in a fresh session (3D-73 and 3D-76 done) | Owner, chat, 2026-11-24 |
 | D-3D84-1 | BACKLOG work type of a row comes from a new `Type` column (before `Status`), values `spec`, `kernel`, `service`, `tests`, `tooling`, `mirror`; filled once from Repo + first Modules cell with 3D-08 -> spec, 3D-28, 3D-68, 3D-79 -> tooling set by hand; `task-intake` fills it for new rows; `check-docs` rejects other values | Owner, dialog, 2026-11-24 (3D-84) |
 | D-3D84-2 | BACKLOG graph icon set is emoji: status done ✅, in-progress 🚧, review 🔍, ready ▶️, proposed 💡, blocked ⛔, superseded ↪️, dropped 🗑️; type spec 📐, kernel ⚙️, service 🖥️, tests 🧪, tooling 🔧, mirror 🔗. The emoji's own glyph colours are accepted (not a palette of ours, D-40) | Owner, dialog, 2026-11-24 (3D-84) |
+| D-3D84-3 | 3D-84 instruction change approved as written: `task-intake` row template gets the `Gate` and `Type` cells, step 5 names `Type` and the icons/legend written by `check-docs --fix`. GitHub rendering of the icon graph confirmed by the owner on branch wp/3d-84-graph-icons | Owner, dialog, 2026-11-24 (3D-84, AGENTS.md §10) |
 
 ## Open questions
 
