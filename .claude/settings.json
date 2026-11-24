@@ -28,6 +28,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/tools/hooks/guard-base-push.mjs\"",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "Stop": [

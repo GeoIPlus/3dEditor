@@ -13,7 +13,7 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10); 3D-73 ready D-159; 3D-11 ready D-160; 3D-ADR-0008 accepted D-161, Q-45 closed D-162; 3D-71 waits for 3D-14 D-163; 3D-69 ready D-164, D-165; 3D-75 ready D-166; 3D-13 accepted D-174, merged; 3D-77 intake; 3D-76 intake D-167; 3D-75 started D-168; 3D-72 accepted D-176, merged; 3D-76 ready D-177; single writer D-178..D-180, 3D-78 ready).
+Updated: 2026-11-24
 
 | Progress | Rows |
 |---|---:|
@@ -26,7 +26,7 @@ Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 
 
 **Implementation progress: 0 %** of code; 25/64 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** SC 3D view port + host 3D-47 (D-61); licence check 3D-67 (D-129); COPC adapter 3D-70 (D-139); CityJSON export 3D-11 (D-160); cloud CRS reprojection 3D-69 (D-164); import state from validateModel 3D-75 (D-168).
+**Running:** 3D-78 Single writer + provisional ids.
 
 ```mermaid
 flowchart TB

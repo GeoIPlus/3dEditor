@@ -8,7 +8,7 @@ boundary is fixed by [3D-ADR-0002](docs/decisions/adr/3D-ADR-0002-kernel-package
 ```
 AGENTS.md, CLAUDE.md, STRUCTURE.md   agent manual, entry point, this file
 .claude/skills/<name>/SKILL.md       procedures loaded on demand (task-intake, wp-session, merge-wp, ...)
-.claude/settings.json                hooks (Stop: check-docs; PreToolUse: docs/source guard) + read-only allow list (3D-30)
+.claude/settings.json                hooks (Stop: check-docs; PreToolUse: docs/source guard, base-push guard 3D-78) + read-only allow list (3D-30)
 .agent/checkpoints/3D-<id>.md        one per WP: plan, state, results, handoff
 docs/
   BACKLOG.md                         the 3DQM progress board (incl. mirror rows of other repos)
@@ -42,7 +42,9 @@ contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers
 fixtures/GT-<id>/                    golden fixtures of v0.3 §12, generated; format in fixtures/README.md (3D-07)
 tools/golden-fixtures/               fixture generator (`npm run fixtures`) and its tests (3D-07)
 tools/check-docs.mjs                 document consistency check, Node built-ins (3D-30)
-tools/check-docs-run.mjs             `npm run check:docs`: strict on every branch except `wp/*` (D-38) (3D-05)
+tools/check-docs-run.mjs             `npm run check:docs`: strict on every branch except `wp/*` (D-38) (3D-05); new final ids vs. base, `--fix` (3D-78)
+tools/check-docs-{md,ids,overview}.mjs  check-docs parts: markdown helpers, id rules (D-179), generated overview (D-180) (3D-78)
+tools/base-branch.mjs                base branch name and coordinator marker (D-178) (3D-78)
 tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09)
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
 tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006); `solve-cost.mjs` (3D-13)
