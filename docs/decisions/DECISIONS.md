@@ -154,7 +154,6 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-138 | 3D-72 (spec text for the 3D-22 decisions D-130..D-136) set `ready` and started in a fresh session, in parallel with 3D-66 (different spec sections) | Owner, chat, 2026-11-24 |
 | D-139 | 3D-70 (COPC-by-box points adapter, `laz-perf` ADR) set `ready` and started in a fresh session while its dependency 3D-67 (licence allow-list check) is still running: the ADR and adapter proceed now; the allow-list part of the 3D-70 acceptance is checked once 3D-67 is merged | Owner, chat, 2026-11-24 |
 | D-140 | Q-44: yes - a small LAZ-compressed COPC test file (a few KB) may be committed for 3D-70 | Owner, chat, 2026-11-24 |
-| D-141 | 3D-71 (`FIT_PLANE` command) stays `proposed` until 3D-14 (`executeCommand` pipeline) is done; then it is set `ready` (keeps D-134) | Owner, dialog, 2026-11-24 |
 | D-144 | 3D-46: `GeoIPlus/shared_compnents` had no mirror row; the owner approved adding it there as **SC row 76** (branch `wp/76-p4-canary-scan`) and implementing it in this session. SC records the approval in its own DECISIONS.md | Owner, dialog, 2026-11-23 (3D-46) |
 | D-145 | 3D-46 delivery: the SC branch is pushed **without a pull request** (overrides SC AGENTS.md §4.8 for this WP); the owner opens it or asks for one later. 3dEditor bookkeeping stays on its branch without a PR | Owner, dialog, 2026-11-23 (3D-46) |
 | D-146 | Intake from 3D-46: `backlog:sync` cannot link mirror rows to SC (SC row ids are bare numbers; no SC pin vendored); filed as row 3D-73 `proposed` (bug of 3D-05). 3D-46's repo cell stays `shared` until 3D-73 is done | Owner, dialog, 2026-11-23 (3D-46) |
@@ -174,6 +173,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-160 | 3D-11 (CityJSON export) set `ready` (3D-10 and 3D-12 done) and started in a fresh session | Owner, chat, 2026-11-24 |
 | D-161 | [3D-ADR-0008](adr/3D-ADR-0008-val3dity-binding.md) (val3dity binding: own pinned container, kernel-side port in `validate`, service adapter in 3D-74) accepted as written (D-18) | Owner, dialog, 2026-11-24 |
 | D-162 | Q-45 closed: the three maps of `validate` are accepted as written - code -> scope (`codes.js`), brep structural problem -> code (`structure.js`), val3dity code -> code with fallback `EXPORT_SCHEMA_ERROR` (`external.js`); a change needs a new decision | Owner, dialog, 2026-11-24 |
+| D-163 | 3D-71 (`FIT_PLANE` command) stays `proposed` until 3D-14 (`executeCommand` pipeline) is done; then it is set `ready` (keeps D-134) | Owner, dialog, 2026-11-24 (written first as D-141, a duplicate of the 3D-66 id; renumbered) |
+| D-164 | 3D-69, D-126 option A: a point cloud in another horizontal CRS than the building is reprojected on the server into the building's local metric frame (`proj4` and the `crs` module of 3D-32, 3D-ADR-0007); a mismatch is not refused. 3D-69 set `ready` and started in a fresh session | Owner, dialog, 2026-11-24 |
+| D-165 | The cloud's horizontal CRS always comes from the context, not from the file's CRS records: the CRS of the already opened dataset, a CRS the user defined, or one passed by the CP. Where it enters the contracts (CP 3DQM extension or the request) is proposed by 3D-69; a contract change needs approval (D-18) | Owner, dialog, 2026-11-24 |
 
 ## Open questions
 
