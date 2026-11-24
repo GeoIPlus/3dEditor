@@ -220,6 +220,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-204 | 3D-14 (`REPLACE_ROOF` / `REBUILD_ENVELOPE`, `executeCommand` pipeline), 3D-77 (spec §5 solver text) and 3D-81 (bug: public `worldToLocal` / `localToWorld`) set `ready` and started in parallel fresh sessions; operations 3D-15..3D-21 wait for 3D-14 | Owner, chat, 2026-11-24 |
 | D-205 | 3D-81 accepted (done); merged into the base by the coordinating session (D-178); no new ids | Owner, WP session 3D-81, 2026-11-24 |
 | D-206 | 3D-77 accepted (done); merged into the base by the coordinating session (D-178); no new ids; spec §5 states D-169..D-172 | Owner, WP session 3D-77, 2026-11-24 |
+| D-207 | 3D-73 (`backlog:sync` for SC rows) and 3D-76 (`check:docs` DECISIONS table integrity) started in parallel fresh sessions | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
