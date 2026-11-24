@@ -182,6 +182,13 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-166 | 3D-75 (import state from `validateModel`, D-156 applied in `validate`) set `ready` (3D-10 and 3D-12 done); no session started yet | Owner, chat, 2026-11-24 |
 | D-167 | Intake 3D-76 (`proposed`): `check:docs` checks that `D-NN` / `Q-NN` rows of "Open-question status updates" have the status-row shape and name existing ids, after the 3D-66 merge put D-141..D-143 into that table unnoticed (fixed in 30c4360) | Owner, dialog, 2026-11-24 |
 | D-168 | 3D-75 started in a fresh session, in parallel with 3D-11 (both touch `geo-model3d/src/index.js`; the later merge resolves it) | Owner, chat, 2026-11-24 |
+| D-169 | Per-kind reading of constraints (sources give names only): the plane-terms table of the [solve module card](../../packages/geo-model3d/README.md#solve-3d-13) - spec-stated FIXED_POINT, ON_PLANE, FIXED_LINE/EAVE/RIDGE, EQUAL_Z, MINIMIZE_DISPLACEMENT (= O1) plus COINCIDENT, PLANAR_FACE, SHARED_EDGE (by construction), HORIZONTAL, VERTICAL, PARALLEL, PERPENDICULAR, ROOF_SLOPE, PREFERRED_AXIS, SYMMETRY as proposed; BOUNDARY_ON_FOOTPRINT and CLOSE_TO_MEASUREMENT refused as `TBD` (footprint segment, Q-28); spec §5 gets the table through an intake row | Owner, dialog, 2026-11-23 (3D-13) |
+| D-170 | Hard-constraint check tolerances: point / line / plane distances `planarTolM`; EQUAL_Z `zAlignTolM`; COINCIDENT `topologySnapTolM`; angular kinds exact up to `numericEpsilon` on sin / cos (an inconsistent angle demand is always a conflict) | Owner, dialog, 2026-11-23 (3D-13) |
+| D-171 | Q-29: `details.missingDegreesOfFreedom` stays `string[]` (no schema change); one entry per free degree `"<faceId>:OFFSET"` or `"<faceId>:ROTATION"`; `entityIds` lists the faces | Owner, dialog, 2026-11-23 (3D-13) |
+| D-172 | Underconstrained threshold (3D-ADR-0005): eigenvalue gap of O1 / smallest singular value of the reduced stage-2 system <= `numericEpsilon` of the profile (default 1e-9, the spike value) | Owner, dialog, 2026-11-23 (3D-13) |
+| D-173 | Spec §5 receives the per-kind table (D-169) and D-170..D-172 through a `proposed` intake row that the coordinating session adds after 3D-66 is merged (both edit §5); until then the [solve module card](../../packages/geo-model3d/README.md#solve-3d-13) and this table are the authority | Owner, dialog, 2026-11-23 (3D-13) |
+| D-174 | 3D-13 accepted (done); merged into the base without PR via the `merge-wp` skill by the coordinating session (owner: every merge and all id numbering go through the coordinator); provisional ids of 3D-13 became D-169..D-173; its D-173 follow-up is row 3D-77 | Owner, dialog, 2026-11-24 (3D-13) |
+| D-175 | Every merge into the base and every final decision / question / row id is assigned by the coordinating session only; WP sessions keep provisional ids and hand the merge over (send_message), they do not merge themselves | Owner, dialog, 2026-11-24 (3D-13 session) |
 
 ## Open questions
 
@@ -273,7 +280,7 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-17 | 2026-11-23, owner (3D-08) | closed by D-110 | [3D-ADR-0005](adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices (least squares to their old positions, hard conditions exact) |
 | Q-24 | 2026-11-23, owner (3D-22) | narrowed, open | RANSAC parameters closed by D-130; heatmap threshold closed by D-131 (no default, required); `measurementTolM`, PREVIEW rate / expiry, payload size stay open (3D-23) |
 | Q-18 | 2026-11-23, owner (3D-22) | narrowed, open | `FIT_PLANE` selection closed by D-132; the other operations of Q-18 stay open |
-
 | Q-44 | 2026-11-24, owner | closed by D-140 | Small committed COPC test file allowed for 3D-70 |
 | Q-45 | 2026-11-24, owner | closed by D-162 | Maps of `validate` (scope, structural problems, val3dity codes) accepted as written |
 | Q-41 | 2026-11-23, owner (3D-10) | closed by D-156 | Two ridge edges; short one-face edges are `DEGENERATE_EDGE` |
+| Q-29 | 2026-11-23, owner (3D-13) | closed by D-171 | `"<faceId>:OFFSET" | "<faceId>:ROTATION"` strings, contract unchanged |

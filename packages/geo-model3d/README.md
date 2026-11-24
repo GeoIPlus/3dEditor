@@ -1,8 +1,8 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10); other modules follow their rows (3D-11, 3D-13..3D-21)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10), `solve` (3D-13); other modules follow their rows (3D-11, 3D-14..3D-21)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
-- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §8, §9
+- WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-13 (solve)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
   `robust-predicates` not adopted (D-118, D-150)
 - Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
@@ -66,6 +66,58 @@ Findings of other modules (solve, crs, export, cloud, import) enter as `findings
 same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 rule 1).
 
 ## Internal modules
+### solve (3D-13)
+
+Spec §5; approach and objective [3D-ADR-0005](../../docs/decisions/adr/3D-ADR-0005-solver-approach.md) (D-110). Not in
+`index.js`; `ops` (3D-14..3D-21) call it. Surface (`src/solve/index.js`):
+- `builders(model)` - plane-terms conditions for an operation's own targets (`pointOnPlane`, `vertexOnPlane`, `vertexZ`,
+  `coincident`, `faceAxis`, `edgeAxis`, `relation`, `slope`, soft `preferredAxis`, `symmetry`); each tagged with an id.
+- `compileConstraints(model, constraints, tol)` -> `{ conditions, keepWeights, rejected }` (table below).
+- `solveConstraints({ model, movableFaceIds, conditions, targetVertexIds?, keepWeights? }, tol)` -> `{ status: OK |
+  CONSTRAINT_CONFLICT | UNDERCONSTRAINED_GEOMETRY, feasible, planes (movable only, empty unless OK), conflictIds,
+  entityIds, missingDegreesOfFreedom, residuals, solver: { stage, iterations, converged, cost } }`.
+- `toSolveError(result)` -> contract `error` object (422).
+
+How it works: stage 1 when every hard condition is a fixed point on one plane and nothing is soft - closed form per plane
+(null space + generalized eigenproblem, O1 keep points = old positions of the face's vertices not in `targetVertexIds`);
+otherwise stage 2 from the stage-1 start - Gauss-Newton / LM on sphere-parametrised planes (normal on the unit sphere,
+offset at a centre point), hard conditions in their null space (minimum-norm step), exact L1 merit with a second-order
+correction, Jacobians by central differences. Every hard condition is re-checked at the result (spec §5 r4); a miss is
+reduced to a minimal set by the deletion filter (one stage-2 feasibility solve per hard id). Free degrees: eigenvalue gap
+of O1 (stage 1) or singular values of the objective in the hard null space (stage 2) <= `numericEpsilon` (D-172);
+counted per face by rank (rotations = rank of the normal part, offsets = the rest), reported `"<faceId>:ROTATION"` /
+`"<faceId>:OFFSET"` (D-171). A movable plane no condition reads stays bit-identical (spec §5 r7).
+
+Constraint kinds (D-169; tolerance of the hard check D-170; [S] stated by the spec, [P] accepted proposal):
+
+| Kind | entityIds | target | Condition on the movable planes | Hard tolerance |
+|---|---|---|---|---|
+| FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point | `planarTolM` |
+| ON_PLANE [S] | [vertex, face] | V3 optional | the target point, else the derived vertex, lies on the face plane | `planarTolM` |
+| FIXED_LINE / FIXED_EAVE / FIXED_RIDGE [S] | [half-edge] | - | both incident planes contain the edge's current line; EAVE / RIDGE need that `edgeRole` | `planarTolM` |
+| EQUAL_Z [S] | [vertex, vertex, ...] or [vertex...] + number | number optional | derived z equal to the first vertex's (or to the number) | `zAlignTolM` |
+| COINCIDENT [P] | [vertex, vertex] | - | derived positions equal | `topologySnapTolM` |
+| PLANAR_FACE, SHARED_EDGE [P] | [face] / [half-edge] | - | vertices on the plane(s); by construction for derived vertices (D-08) | `planarTolM` |
+| HORIZONTAL / VERTICAL [P] | [face] or [half-edge] | - | face normal parallel / perpendicular to z; edge direction perpendicular / parallel to z | `numericEpsilon` |
+| PARALLEL / PERPENDICULAR [P] | [face, face] or [half-edge, half-edge] | - | normals / directions parallel / perpendicular | `numericEpsilon` |
+| ROOF_SLOPE [P] | [face] | degrees | angle(normal, z) = target | `numericEpsilon` |
+| MINIMIZE_DISPLACEMENT [S] | [face...] | - | weight of the O1 terms of those faces (O1 is always on) | soft |
+| PREFERRED_AXIS, SYMMETRY [P] | [half-edge] / [face, face] | - | soft: edge along a local building axis; equal slope of both faces | soft |
+| BOUNDARY_ON_FOOTPRINT, CLOSE_TO_MEASUREMENT | - | - | rejected `TBD` (footprint segment; measurement layout Q-28, 3D-22) | - |
+
+Rejections (`rejected[].reason`): `TBD`, `SOFT_KIND_MARKED_HARD` (spec §5 r1), `SOFT_WITHOUT_WEIGHT` (no default weight
+is invented), `ENTITIES_DO_NOT_MATCH_KIND`, `UNKNOWN_KIND`. The refusal code for a rejected constraint is the calling
+row's (3D-21 validates constraints when they are set). Any kind may be soft (`hard: false` + `weight`).
+
+Readings marked [A] in code: rank thresholds (1e-12 relative on HᵀH; 1e-12 on the Gram eigenvalues of unit free
+directions), central-difference step 1e-6, L1 merit weight 1e6, the `messageKey` `model3d.error.underconstrainedGeometry`
+(pattern of the contract examples). Stage 2 is local: a feasible nonlinear set it cannot reach is reported as a conflict
+(never projected, spec §5 r4).
+
+Cost (`node tools/bench/solve-cost.mjs`, 2000 solves after 300 warm-up, MOVE_EDGE targets of the bench scenes):
+sawtooth-199 stage 1 p95 0.29 ms, stage 2 (soft SYMMETRY added) p95 0.51 ms; sawtooth-499 0.73 / 1.56 ms (run to
+run spread ~0.1 ms).
+
 - `src/crs/` (3D-32): `resolveCrs`, `createMetricFrame` (projected: translation; geographic: local ENU),
   `writeBackVertices` (untouched vertices keep file integers, D-70), `decodeVertex`; throws `CrsError` with code
   `INVALID_CRS`. Not in `index.js`; `import` / `export` (3D-10, 3D-11) call it. Spec §4a.
@@ -123,6 +175,9 @@ same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 ru
 - Cost on the bench scenes (3D-09, warm, 300 requests): sawtooth-199 index 0.59 ms, topology 0.53 ms, transaction with
   re-derivation 3.9 ms p50 / 6.8 ms p95; sawtooth-499 transaction 14.2 / 22.5 ms. Clone and diff dominate (~2 ms each
   at 199 faces); a dirty-tracking draft is the next step if a gate needs it.
+- `test/solve/` (3D-13): stage-1 parity with the 3D-08 spike, conflicts and minimal sets, underconstrained shapes valid
+  against the `error` contract, soft weights against a closed form, compiler table, and the property test of spec §5
+  Accept 3 (60 seeded scenarios on GT-03: no plane outside the movable set in the result, input untouched, deterministic).
 - `test/canary.test.js`: marker format, entry exports it.
 - `test/import/` (3D-10): contract validity (Ajv) of model, baseline, report; `checkTopology` clean; vertices EXPLICIT
   with `sourceRef` (D-70); frozen input; determinism; semantics inference thresholds; CRS refusals and ENU import;
