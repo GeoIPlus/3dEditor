@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // `npm run check:arch` (3D-05): 300-line limit, kernel purity (no DOM, no three), no client import of the P4 kernel,
-// canary wiring and leak, client output scan, and the negative-control browser build (3D-ADR-0001).
+// canary wiring and leak, client output scan, and the negative-control browser build (3D-ADR-0001); licence allow-list of
+// the kernel and service runtime dependencies with its own planted control (3D-67).
 // Usage: node tools/check-arch/cli.mjs [--root <dir>] [--no-build]
 // Exit 0 with a short summary when clean; exit 1 with one line per problem otherwise.
 import { resolve, dirname } from 'node:path';

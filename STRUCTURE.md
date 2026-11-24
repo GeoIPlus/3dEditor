@@ -43,7 +43,7 @@ fixtures/GT-<id>/                    golden fixtures of v0.3 §12, generated; fo
 tools/golden-fixtures/               fixture generator (`npm run fixtures`) and its tests (3D-07)
 tools/check-docs.mjs                 document consistency check, Node built-ins (3D-30)
 tools/check-docs-run.mjs             `npm run check:docs`: strict on every branch except `wp/*` (D-38) (3D-05)
-tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09)
+tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09); licence allow-list in licence-rules.mjs (3D-67)
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
 tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006); `solve-cost.mjs` (3D-13)
 tools/hooks/                         Claude Code hook scripts (3D-30)
@@ -63,3 +63,7 @@ tools/agent-evals/                   agent eval runner: headless sessions in thr
     `solve`, `validate`; `index.js` <- all; `crs` (3D-32) is a leaf of `brep`, `import`, `export`. No I/O, clock or
     randomness in kernel source. Enforced since 3D-09 (`kernelModuleDag`, `kernelNoIo`).
 4. A new dependency between packages needs an ADR.
+5. Every runtime dependency (transitive, devDependencies excluded) of `geo-model3d` and of each `services/<name>` has a
+   licence from [3D-ADR-0004](docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md) decision 3 (D-109):
+   MIT, ISC, BSD-2-Clause, BSD-3-Clause, Apache-2.0, Unlicense, BSL-1.0. Read offline from `package-lock.json`;
+   a missing licence fails. Enforced since 3D-67 (`licenceAllowList`, with a built-in planted GPL control).
