@@ -31,8 +31,9 @@ Field and command names in this spec are the names used in the sources; names th
 - Point cloud in the editor: snapping to points, model-to-cloud deviation heatmap, plane fit from selected points [D]
   (D-11).
 - The geometry kernel runs **only on a server** (P4); the browser holds a visual ghost without solver logic; no WASM
-  build for browsers [D] (D-06). Kernel language: JavaScript on Node is the working rule, decided by measurement in 3D-08
-  (Q-01). Nothing in this spec depends on the language.
+  build for browsers [D] (D-06). Kernel language: JavaScript ESM + JSDoc on Node [D] (D-109,
+  [3D-ADR-0004](../decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md); Q-01 closed). Nothing in this spec
+  depends on the language.
 
 ### 1.2 Conventions
 
@@ -64,7 +65,7 @@ Field and command names in this spec are the names used in the sources; names th
 | Admin column of v0.3 §8.5: viewing all packages, creating packages, assigning buildings, managing tolerance profiles, releasing another user's lock | D-10: assignments and roles come from the CP contract, not from an admin screen in the editor (supersedes v0.3 Р-09). Only what a workplace must enforce locally stays (§11) |
 | "Package" as a 3DQM object (v0.3 §8.5: named list of `buildingId`, one active package per building) | D-10: the building set of an operator is the signed CP assignment (Operaflow work units, 3D-01 §9). GT-23 and GT-24 are restated in those terms (§13) |
 | Own building lock, renewal by activity, `lockTtlMin` (v0.3 §8.5, §10) | D-69: the CP assignment lease is the only lock |
-| Compiled kernel, ADR-001 language choice (v0.3 §3) | Q-01, decided by measurement in 3D-08 (HANDOVER §5) |
+| Compiled kernel, ADR-001 language choice (v0.3 §3) | D-109: JavaScript ESM + JSDoc on Node, measured in 3D-08 ([3D-ADR-0004](../decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md); Q-01 closed) |
 | TypeScript DTOs as the contract (v0.3 §4, §9) | Contract first: JSON Schema 2020-12 in `contracts/model3d/` (AGENTS.md §2.7, D-37); §2 lists the schemas |
 | Client module `features/editor/` in geoviewer; architecture diagram of v0.3 §3 | Client parts are SC library components (D-17, D-52..D-55); geoviewer is one host (§12) |
 | "CityJSON already loaded in the system" (v0.3 §5) as a source of topology | The kernel reads the original CityJSON on the server; the geoviewer drawing path is not a topology source (HANDOVER §5) |
@@ -77,7 +78,7 @@ Field and command names in this spec are the names used in the sources; names th
 | 2 | Contracts | `contracts/model3d/` | 3D-06 | - |
 | 3 | Kernel public API | `packages/geo-model3d/src/index.js` | 3D-09, each op row | all modules |
 | 4 | `brep` | `packages/geo-model3d/src/brep/` | 3D-09 | `crs` |
-| 4a | `crs` | `.../src/crs/` | 3D-32 | - (third party: `proj4`, [3D-ADR-0004](../decisions/adr/3D-ADR-0007-crs-transform.md)) |
+| 4a | `crs` | `.../src/crs/` | 3D-32 | - (third party: `proj4`, [3D-ADR-0007](../decisions/adr/3D-ADR-0007-crs-transform.md)) |
 | 5 | `solve` | `.../src/solve/` | 3D-13 | `brep` |
 | 6 | `import` | `.../src/import/` | 3D-10 | `brep`, `crs` |
 | 7 | `export` | `.../src/export/` | 3D-11 | `brep`, `crs` |
@@ -116,9 +117,15 @@ copy [D] (D-37, 3D-ADR-0001). Internal kernel structures never leave the package
 | 14 | `plane-fit-result` | Plane, inlier count, inlier ratio, RMSE (§9) | v0.3 §7 |
 | 15 | `heatmap-result` | Per-face colouring + summary: RMSE, maximum, share of points beyond the threshold (§9) | v0.3 §7 |
 | 16 | `export-report` | Batch export: exported buildings, skipped buildings with reason (§11) | v0.3 §8.4 |
+| 17 | `heatmap-request` | Heatmap request, not a command (changes nothing): `buildingId`, `modelVersion`, `selection` (`PointSelection`), optional `faceIds`, required `thresholdM` (§9 r6) | v0.3 §7; D-136 |
 
 The 3DQM extension of the CP document (building list, roles, tolerance profile, endpoints) is an SC schema (3D-43; Q-03),
 not part of this list.
+
+`PointSelection` is a shared definition of `common` (`$defs` only, no row): the cloud points chosen by the operator
+(rectangle or lasso in the view) as `{ kind: BOX, min, max }` or `{ kind: POLYGON, ringXY, zMin, zMax }` in the LOCAL
+frame of the building. The `FIT_PLANE` payload `selection` and the `heatmap-request` `selection` use it [D] (D-132,
+D-136).
 
 The schemas are accepted (D-75). Contract details they leave `TBD` are the open questions Q-26..Q-39 of
 [contracts/model3d](../../contracts/model3d/README.md#open-questions-provisional-ids-d-38), listed in §14.
@@ -164,7 +171,8 @@ Fields (v0.2 D.2): `schemaVersion`, `commandId`, `projectId`, `buildingId`, `act
 | `exportRoundDecimals` | 3 | rounding on export (mm) |
 
 The profile is set per project and delivered with the workplace (3DQM extension, Q-03 / 3D-43) [A]. `measurementTolM`
-(v0.2 B.4) has no v0.3 value: `TBD` (Q-24). `lockTtlMin = 15` of v0.3 §10 is dropped: 3DQM keeps no own lock, the
+(v0.2 B.4) has no v0.3 value: `TBD` (Q-24). The RANSAC parameters of the plane fit are kernel settings, not profile
+fields (§9 r3, D-130); the heatmap threshold is a field of each `heatmap-request`, not of the profile (§9 r6, D-131). `lockTtlMin = 15` of v0.3 §10 is dropped: 3DQM keeps no own lock, the
 CP assignment lease applies [D] (D-69; amends D-13 for this field). The profile has 14 fields.
 
 ### 2.4 Error registry (v0.3 §9.2)
@@ -280,7 +288,7 @@ isolated copy, patch + inverse patch + lineage between two versions; RTG project
 ## 4a. `crs` - CRS resolution, local metric frame, write-back (3D-32)
 
 **Purpose.** Map one building between its file CRS and a local metric frame, and write changed vertices back [D]
-(D-92, D-93, [3D-ADR-0004](../decisions/adr/3D-ADR-0007-crs-transform.md), D-125).
+(D-92, D-93, [3D-ADR-0007](../decisions/adr/3D-ADR-0007-crs-transform.md), D-125).
 
 **API.** `resolveCrs(referenceSystem)`; `createMetricFrame(referenceSystem, originWorld)` with `toMetric` / `toWorld`;
 `writeBackVertices({ frame, transform, fileVertices, changed, exportRoundDecimals })`; `decodeVertex`. Internal to the
@@ -328,8 +336,9 @@ missing degrees of freedom when underconstrained. Plane-plane-plane intersection
 5. Too few independent conditions -> `UNDERCONSTRAINED_GEOMETRY` with the missing degrees of freedom (v0.2 D.4, C.2).
 6. `FIXED_POINT` never changes except by an explicit unlock (`REMOVE_CONSTRAINT`) (v0.2 C.11).
 7. No hidden jumps of many vertices: a solve may change only the planes the operation declares movable (v0.2 C.9, §13.5).
-8. Solver approach and the objective that fixes the remaining degrees of freedom of a movable plane: `TBD` (ADR-S in 3D-08,
-   owner-approved; Q-17).
+8. Solver approach and the objective that fixes the remaining degrees of freedom of a movable plane:
+   [3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) (D-110; Q-17 closed): own two-stage solver (A1) with
+   objective O1, keep the face's other vertices (least squares to their old positions, hard conditions exact).
 
 **Accept:**
 - Accept: two contradictory hard constraints return `feasible = false` and both ids; no planes are changed.
@@ -479,20 +488,25 @@ service).
 (v0.3 §7). Snapping to points is a client function (§12).
 
 **API.** Input: points as typed arrays in the local frame, supplied by the service through the points port (box query;
-interim COPC by box / LAS whole, D-35) (3D-ADR-0002 C1/C2). Plane fit -> `plane-fit-result`; heatmap -> `heatmap-result`.
+interim own adapters, D-35: uncompressed LAS read whole by 3D-22, COPC by box by 3D-70, D-133) (3D-ADR-0002 C1/C2). Plane fit -> `plane-fit-result`; heatmap -> `heatmap-result`.
 
 **Rules.**
 1. Plane fit: robust fit (RANSAC + SVD refinement on inliers); returns plane, inlier count, inlier ratio, RMSE (v0.3 §7).
 2. Refusal: fewer than `planeFitMinPoints` points, or inlier ratio below `planeFitMinInlierRatio` -> `INVALID_MEASUREMENT`
    with the numbers (v0.3 §7).
-3. RANSAC parameters (iterations, inlier distance) are not given by the sources; fixed thresholds of v0.1 are heuristics,
-   not guarantees (v0.2 C.16): `TBD` (Q-24).
+3. RANSAC parameters [D] (D-130): inlier distance = `planarTolM`, measured along the candidate plane's normal (precedent
+   v0.1 C.7 `threshold=tol.planar`); iterations adaptive for 99.9 % confidence, capped at 1000; samples drawn from a
+   seeded pseudo-random generator with a fixed seed inside the kernel (no `Math.random`), so equal inputs give equal
+   results. No profile field is added (§2.3).
 4. The result is applied either as a `PLANE` measurement or directly as the new `supportPlane` of a selected face through
    PREVIEW/COMMIT (`FIT_PLANE`, §10.12) (v0.3 §7).
 5. Measurements are soft with weight `1/σ²` by default; hard only after an explicit Fix by the operator (v0.3 §7).
-6. Heatmap: point-to-surface distance (along the normal, GT-21) for points within `heatmapBufferM` of the building;
-   computed on the server; the client receives the face colouring and a summary: RMSE, maximum, share of points beyond
-   the threshold. The threshold is configurable; its default: `TBD` (Q-24) (v0.3 §7).
+6. Heatmap, requested with a `heatmap-request` (§2 row 17, D-136), computed on the server; the client receives the face
+   colouring and a summary: RMSE, maximum, share of points beyond the threshold (v0.3 §7). Point assignment [D] (D-135):
+   a point of the `selection` counts if its 3D distance to the nearest face polygon is <= `heatmapBufferM`; it is assigned
+   to that face; its value is the signed distance along that face's normal (GT-21). `faceIds`, when given, limits the
+   reported faces; points are still assigned to their nearest face of the whole model. The threshold `thresholdM` is
+   configurable (v0.3 §7): a required request field with no server default [D] (D-131).
 7. Point coordinates come from the source double-precision data (v0.3 §7).
 
 **Accept:**
@@ -602,8 +616,9 @@ movable; coordinate frame. Output: candidate planes for `solve`.
    same solve. A `FIXED_POINT` vertex that would change position -> `CONSTRAINT_CONFLICT` naming it (v0.2 C.11; GT-10).
 4. If no plane is movable, the command succeeds only when the target already satisfies rule 2; otherwise
    `CONSTRAINT_CONFLICT` naming the fixed planes [A].
-5. Degrees of freedom of a movable plane not fixed by rules 2-3 are resolved by the ADR-S objective (`TBD`, Q-17); a
-   solve with free degrees and no objective returns `UNDERCONSTRAINED_GEOMETRY` (§5 rule 5).
+5. Degrees of freedom of a movable plane not fixed by rules 2-3 are resolved by objective O1 of
+   [3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) (D-110); a solve with free degrees that O1 does not fix
+   (e.g. all kept vertices on the target line) returns `UNDERCONSTRAINED_GEOMETRY` (§5 rule 5).
 6. A vertex with fewer than three independent planes (§4 rule 3) is moved by writing its explicit `p` only if `p*` lies on
    all its planes within `planarTolM` after the solve; its planes follow rule 2.
 7. No two faces may hold independent coordinates of one canonical vertex (v0.2 C.11); this holds by construction because
@@ -643,7 +658,7 @@ Default values: none; the payload requires `maxDisplacementM`, there is no defau
 4. If B is fixed by the strategy: weld succeeds only when each derived vertex is within the maximum displacement of both
    copies it replaces. If B is movable: B's plane is solved with the hard constraint "contains the leading edge of A"
    (`ON_PLANE` for the edge's endpoints on A, which lie on plane A by construction); its remaining degree of freedom is
-   the ADR-S objective (`TBD`, Q-17).
+   objective O1 of [3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) (D-110).
 5. Displacement over the maximum -> `CONSTRAINT_CONFLICT` with the offending vertex ids; no unique pairing ->
    `INVALID_TOPOLOGY` with the edge ids (D-76).
 6. Dependent faces whose vertices change are re-derived; rule 8 checks of §10.4 apply. Result: the two `OPEN_BOUNDARY`
@@ -795,8 +810,8 @@ dimensions or a plane-fit measurement; installation id (`REMOVE_INSTALLATION`).
 2. `ADD_DORMER`: type `FLAT` or `GABLE`; outline on a roof face + dimensions manual or from plane fit. `ADD_CHIMNEY`:
    box only; dimensions manual or from the cloud (v0.3 §6).
 3. The installation is a separate closed `BuildingInstallation` body; its base lies in the roof plane (GT-17).
-4. Boolean in P0 only: plane-plane, face-half-space, union of a prism with a shell (K-12, v0.3 §14). Library: 3D-08 ADR
-   (Q-01).
+4. Boolean in P0 only: plane-plane, face-half-space, union of a prism with a shell (K-12, v0.3 §14). Own implementation,
+   no third-party Boolean library (D-109, [3D-ADR-0004](../decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md) B1).
 5. `REMOVE_INSTALLATION`: removes the installation and restores the underlying roof face (v0.2 §13.5).
 
 **Accept:**
@@ -814,8 +829,10 @@ face ids + `SurfaceKind`; a constraint (§5 rule 1) or its id; point selection +
    `REMOVE_CONSTRAINT` of a `FIXED_POINT` is the explicit unlock of v0.2 C.11.
 3. Setting a hard constraint that the current model violates -> `CONSTRAINT_CONFLICT`, model unchanged [A].
 4. `FIT_PLANE`: runs the plane fit of §9 on the selected points and applies the result as a `PLANE` measurement or as the
-   new `supportPlane` of the selected face through PREVIEW/COMMIT (v0.3 §7). How the selection (rectangle or lasso in the
-   view) reaches the server: Q-18.
+   new `supportPlane` of the selected face through PREVIEW/COMMIT (v0.3 §7). The selection (rectangle or lasso in the
+   view) reaches the server as the payload `selection`, a `PointSelection` in the LOCAL frame (§2); the service queries
+   the points port by its bounding box and filters by its shape [D] (D-132). 3D-22 ships `fitPlane` (D-119); the command
+   wiring is row 3D-71, after the `executeCommand` pipeline (D-134).
 
 **Accept:**
 - Accept: `SET_SEMANTICS` on one roof face changes only its `surfaceKind`; geometry patch empty.
@@ -876,10 +893,11 @@ and export rules (3D-ADR-0002 C2, D-51). Built as its own container image (D-33)
 12. Every request and reply validates against `contracts/model3d/`; an invalid message is refused on both sides
     (3D-ADR-0002 Checks).
 13. Operaflow rule groups A-D, F apply as assigned in 3D-ADR-0002 "Q-15" (not repeated here).
-14. Latency targets (v0.3 §11): server PREVIEW p95 <= 150 ms for a building up to 200 faces, network excluded (3D-08; a
+14. Latency targets (v0.3 §11): server PREVIEW p95 <= 150 ms for a building up to 200 faces, network excluded (3D-08
+    measured 5.411 ms, D-109; a
     miss is an owner escalation, never a client fallback, D-06); COMMIT of a simple operation p95 <= 1 s;
-    `FINAL_VALIDATION` p95 <= 10 s (assumption); import of a building up to 500 faces <= 2 s (assumption). Bench rig:
-    ADR-012 in 3D-08.
+    `FINAL_VALIDATION` p95 <= 10 s (assumption); import of a building up to 500 faces <= 2 s (assumption). Bench rig,
+    scenes and protocol: [3D-ADR-0006](../decisions/adr/3D-ADR-0006-bench-rig-and-scenes.md) (D-111; `npm run bench`).
 
 **Accept:**
 - Accept: GT-13 (3D-23, D-68), GT-22, GT-24 (3D-24), GT-23 (3D-25) (§13).
@@ -986,18 +1004,19 @@ Count: 29 tests (GT-I1..GT-I4, GT-01..GT-25); per module: `import` 3, `export` 1
 
 Final ids assigned at merge (D-38, D-71). Each is recorded in DECISIONS.md. Owner answers of
 2026-11-21 (dialog): D-68 (GT-13 -> 3D-23), D-69 (CP lease only, no own lock), D-70 (imported vertices
-explicit until edited). Owner answers of 2026-11-23 (dialog, 3D-06): D-76 (refusal codes), D-77 (severities).
+explicit until edited). Owner answers of 2026-11-23 (dialog, 3D-06): D-76 (refusal codes), D-77 (severities). Owner answers of 2026-11-23 (dialog, 3D-22): D-130, D-131 (Q-24 narrowed),
+D-132 (Q-18 narrowed), D-135, D-136.
 
 | Id | Question | Used in |
 |---|---|---|
-| Q-17 | Objective that fixes the remaining degrees of freedom of a movable plane (e.g. minimal displacement of its other derived vertices); the sources name only soft `MINIMIZE_DISPLACEMENT` | §5 r8, §10.4 r5, §10.5 r4, §10.7 r3, §10.8 r3 |
-| Q-18 | Operations given only as intent: movable planes of `MATCH_ELEVATIONS` and `SET_HEIGHT EAVE`; solid closure of `SET_OVERHANG` (soffit or not); collinearity tolerance of `STRAIGHTEN_FACE`; how the `FIT_PLANE` selection reaches the server | §10.1 r7, §10.6 r6, §10.7 r3, §10.10 r1, r5, §10.12 r4 |
+| Q-17 | **Closed by D-110** ([3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices). Objective that fixes the remaining degrees of freedom of a movable plane (e.g. minimal displacement of its other derived vertices); the sources name only soft `MINIMIZE_DISPLACEMENT` | §5 r8, §10.4 r5, §10.5 r4, §10.7 r3, §10.8 r3 |
+| Q-18 | Operations given only as intent: movable planes of `MATCH_ELEVATIONS` and `SET_HEIGHT EAVE`; solid closure of `SET_OVERHANG` (soffit or not); collinearity tolerance of `STRAIGHTEN_FACE`. **Narrowed by D-132**: how the `FIT_PLANE` selection reaches the server (§10.12 r4) | §10.1 r7, §10.6 r6, §10.7 r3, §10.10 r1, r5 |
 | Q-19 | **Closed by D-70** (keep explicit until edit). Import: are vertex positions replaced by plane intersections (moves up to `planarTolM`, changes an unedited round trip of real data) or kept explicit until the first edit; how a `NON_PLANAR_FACE` keeps its vertices under the vertex-plane invariant | §6 r16 |
 | Q-20 | **Closed by D-76** (codes in §10.3 r6, §10.5 r5, §10.6 r2, §10.8 r2; no default maximum displacement). Refusal codes the sources leave open: `FIT_TO_SHARED_EDGE` over the displacement limit / no unique pairing; `HEAL_HOLE` mode impossible (GT-11); `SPLIT_FACE` errors; R-01 errors; and the default maximum displacement of `FIT_TO_SHARED_EDGE` | §2.4, §10.1 r6, §10.3 r6, §10.5, §10.6 r2 |
 | Q-21 | **Closed by D-77** (table of §8 r4). Severity by state of `SOLID_OVERLAP`, `UNDERCONSTRAINED_GEOMETRY`, `INVALID_MEASUREMENT`, `EXPORT_SCHEMA_ERROR`, `PRECISION_LOSS` | §8 r4 |
 | Q-22 | **Closed by D-69** (CP lease only). Lock: own building lock with `lockTtlMin` (v0.3 §8.5) or the CP assignment lease (`leaseRef`, `leaseEpoch`); defines "own operations" for Undo | §2.3, §10.9 r5, §11 r11 |
 | Q-23 | **Closed by D-68** (GT-13 -> 3D-23). GT-13 (idempotency, `expectedVersion`) needs the service's store, but BACKLOG puts it on 3D-18 (module `geo-model3d`, no dependency on 3D-23) | §11, §13 |
-| Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, heatmap default threshold, RANSAC parameters, `measurementTolM` | §2.3, §2.4, §9 r3, r6, §11 r5, r6 |
+| Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, `measurementTolM`. **Narrowed by D-130** (RANSAC parameters, §9 r3) and **D-131** (heatmap threshold required, no default, §9 r6) | §2.3, §2.4, §11 r5, r6 |
 | Q-25 | CityJSON mapping of `OVERHANG` faces on export | §7 r6 |
 
 Contract open questions of 3D-06 (D-75; source and wording:
@@ -1020,6 +1039,6 @@ Contract open questions of 3D-06 (D-75; source and wording:
 | Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
 | Q-39 | Whether the command carries `leaseRef` / `leaseEpoch` (§11 rule 11) or the service takes them from the session | 3D-23 |
 
-Existing questions this spec depends on: Q-01 (kernel language, 3D-08), Q-03 (CP extension content, 3D-43), Q-10
-(val3dity binding, 3D-12). Q-11 (v0.3 assumptions Д-01..Д-12) is closed by D-88..D-94; Q-43 (EPSG terms of use,
-3D-ADR-0007) is open.
+Existing questions this spec depends on: Q-03 (CP extension content, 3D-43), Q-10 (val3dity binding, 3D-12). Q-01
+(kernel language) is closed by D-109; Q-11 (v0.3 assumptions Д-01..Д-12) is closed by D-88..D-94; Q-43 (EPSG terms of
+use, 3D-ADR-0007) is open.

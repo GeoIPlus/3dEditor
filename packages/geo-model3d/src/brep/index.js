@@ -5,7 +5,7 @@ export { dot, add, sub, scale, cross, norm, distance, unsign0 } from './vec.js';
 export { signedDistance, isUnitPlane, planeFromPoints, normalGram, derivePoint } from './plane.js';
 export { localFrame, translationMapping, cosSinDeg, localDirToMetric } from './frame.js';
 export { buildIndex, checkTopology, faceRings, edgeFaceIds, endVertexId, FINALISED_STATES } from './halfedge.js';
-export { vertexPlaneViolations, inconsistentJunctions, rederive } from './derive.js';
+export { vertexPlaneViolations, inconsistentJunctions, junctionSpread, rederive } from './derive.js';
 export { roofGraph, isRoofFace } from './rtg.js';
 export { canonicalJson, saveModel, loadModel, isolatedCopy } from './serialize.js';
 export { diffModels, applyPatch, modelLevelChanges, sameValue, COLLECTIONS } from './patch.js';

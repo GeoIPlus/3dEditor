@@ -50,8 +50,8 @@ audit PDF are background only. Read source specs with an offset by section, neve
    bundle, no WASM build for browsers. If a latency target fails, escalate to the owner; never move code to the client.
 7. **Contract first.** A data shape that crosses a process or repository boundary (commands, patches, model, validation
    report, tolerance profile) is a JSON Schema 2020-12 before it is code. Types are derived from it.
-8. **JavaScript ESM with JSDoc types**, checked by `tsc --checkJs`; no TypeScript sources. This is the working rule from
-   HANDOVER §5, not yet an owner decision: the kernel language is open question Q-01, closed by the ADR of 3D-08.
+8. **JavaScript ESM with JSDoc types**, checked by `tsc --checkJs`; no TypeScript sources. Owner decision D-109
+   ([3D-ADR-0004](docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md), Q-01 closed).
 9. **Source files at most 300 lines** (code only; documents are exempt, D-41), one responsibility per file. The kernel is dozens of small modules.
 10. **No DOM, no three.js** in `geo-model3d`. It runs in Node unchanged.
 10a. **All UI follows `GeoIPlus/brandbook`** (D-40): its `AGENTS.md` rules are hard rules for any UI, mockup or styling

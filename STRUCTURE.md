@@ -27,8 +27,11 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
   src/index.js canary.js                                 public API (commands, import, export, validate); P4 marker
   src/brep/                                             half-edge, planes, derived vertices, frame, transactions (3D-09)
   src/cloud/                                             plane fit (RANSAC + SVD), deviation heatmap (3D-22)
-  src/solve/ import/ export/ validate/ ops/             modules (3D-ADR-0002 C1; later rows)
-  test/brep/ test/cloud/ test/golden/                   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22)
+  src/validate/                                         progressive validation, severity by state, val3dity port (3D-12)
+  src/import/                                            CityJSON -> canonical model, RTG roles, baseline, report (3D-10)
+  src/solve/                                            constraint solver, conflict sets, free degrees (3D-13, 3D-ADR-0005)
+  src/export/ ops/                                     modules (3D-ADR-0002 C1; later rows)
+  test/brep/ test/cloud/ test/validate/ test/import/ test/solve/ test/golden/   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22; GT-I1..GT-I3: 3D-10)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
   src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007)
 services/kernel/       (3D-22, 3D-23) host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
@@ -41,9 +44,9 @@ fixtures/GT-<id>/                    golden fixtures of v0.3 §12, generated; fo
 tools/golden-fixtures/               fixture generator (`npm run fixtures`) and its tests (3D-07)
 tools/check-docs.mjs                 document consistency check, Node built-ins (3D-30)
 tools/check-docs-run.mjs             `npm run check:docs`: strict on every branch except `wp/*` (D-38) (3D-05)
-tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09)
+tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09); licence allow-list in licence-rules.mjs (3D-67)
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json, pins/<repo>/ snapshots + provenance (3D-05)
-tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006)
+tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006); `solve-cost.mjs` (3D-13)
 tools/hooks/                         Claude Code hook scripts (3D-30)
 tools/crs-table/                     generator of `geo-model3d/src/crs/epsg-table.json` from PROJ proj.db (3D-32)
 tools/copc-fixture/                  generator of `services/kernel/test/data/*.copc.laz` (Python `copclib`, dev-time only, not run by `npm run check`) (3D-70)
@@ -62,3 +65,7 @@ tools/agent-evals/                   agent eval runner: headless sessions in thr
     `solve`, `validate`; `index.js` <- all; `crs` (3D-32) is a leaf of `brep`, `import`, `export`. No I/O, clock or
     randomness in kernel source. Enforced since 3D-09 (`kernelModuleDag`, `kernelNoIo`).
 4. A new dependency between packages needs an ADR.
+5. Every runtime dependency (transitive, devDependencies excluded) of `geo-model3d` and of each `services/<name>` has a
+   licence from [3D-ADR-0004](docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md) decision 3 (D-109):
+   MIT, ISC, BSD-2-Clause, BSD-3-Clause, Apache-2.0, Unlicense, BSL-1.0. Read offline from `package-lock.json`;
+   a missing licence fails. Enforced since 3D-67 (`licenceAllowList`, with a built-in planted GPL control).
