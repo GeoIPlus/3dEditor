@@ -528,7 +528,7 @@ flowchart TB
   3D-22), measurement weight `1/σ²` soft by default. Scope out: snapping (client), heatmap (3D-22).
 - Accept: spec §10.12 Accept 2 (`FACE_PLANE` with the GT-20 fit on a GT-03 slope re-derives ridge and eave vertices);
   GT-20 run as the command step of `fixtures/GT-20/steps.json`; refusal `INVALID_MEASUREMENT` leaves the model unchanged.
-- Decisions: D-132, D-134  Open: Q-28 (PLANE measurement layout), Q-24 (`measurementTolM`)
+- Decisions: D-132, D-134, D-141 (wait for 3D-14)  Open: Q-28 (PLANE measurement layout), Q-24 (`measurementTolM`)
 
 ### 3D-72 Spec update for the 3D-22 decisions
 - Source: 3D-22 session 2026-11-23; spec edits only through intake (AGENTS.md §6), and 3D-66 edits the spec in parallel.
