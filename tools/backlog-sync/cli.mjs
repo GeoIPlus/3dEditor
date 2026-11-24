@@ -4,7 +4,8 @@
 //   node tools/backlog-sync/cli.mjs [--check]        report drift; exit 1 on drift or a broken pin (CI runs this)
 //   node tools/backlog-sync/cli.mjs --write          copy remote statuses into docs/BACKLOG.md
 //   node tools/backlog-sync/cli.mjs --fetch <key> <full-sha>
-//        download that BACKLOG at the commit (network; GITHUB_TOKEN if the repository is private) and pin it
+//        download that BACKLOG at the commit (network; GITHUB_TOKEN if the repository is private) and pin it;
+//        behind an HTTPS proxy run it with NODE_USE_ENV_PROXY=1 (Node >= 22.21: built-in fetch ignores HTTPS_PROXY)
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,9 +24,11 @@ export async function fetchPin(root, sources, key, revision, get) {
   const src = sources[key];
   if (!src) throw new Error(`unknown source "${key}"; known: ${Object.keys(sources).join(', ')}`);
   if (!/^[0-9a-f]{40}$/.test(revision)) throw new Error('revision must be a full 40-character commit SHA');
+  // Contents API with the raw media type: raw.githubusercontent.com answers 404 for a private repository with an
+  // installation token (3D-73, SC pin), the API serves the same bytes for public and private repositories.
   /** @type {Record<string, string>} */
-  const headers = process.env.GITHUB_TOKEN ? { authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {};
-  const text = await get(`https://raw.githubusercontent.com/${src.repository}/${revision}/${src.path}`, headers);
+  const headers = { accept: 'application/vnd.github.raw', ...(process.env.GITHUB_TOKEN ? { authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}) };
+  const text = await get(`https://api.github.com/repos/${src.repository}/contents/${src.path}?ref=${revision}`, headers);
   mkdirSync(join(root, src.dir), { recursive: true });
   writeFileSync(join(root, src.dir, SNAPSHOT), text);
   const prov = { repository: src.repository, revision, files: [{ file: SNAPSHOT, donorPath: src.path, sha256: sha256(text) }] };

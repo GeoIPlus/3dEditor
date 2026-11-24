@@ -7,10 +7,15 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseRows, section } from '../check-docs.mjs';
 
+/** Row id rule when a source sets no `idPattern`: `<letters>-<n>`, e.g. `WP-70` (3D-05). */
+export const DEFAULT_ID = '^[A-Za-z][A-Za-z0-9._-]*-\\d+$';
+/** Status table heading when a source sets no `section`. */
+export const DEFAULT_SECTION = '## Work-package status';
+
 export const STATUSES = ['proposed', 'ready', 'blocked', 'in-progress', 'review', 'done', 'superseded', 'dropped'];
 
 /**
- * @typedef {{repository: string, dir: string, statusMap?: Record<string, string>}} Source
+ * @typedef {{repository: string, dir: string, statusMap?: Record<string, string>, idPattern?: string, section?: string}} Source
  * @typedef {{id: string, line: number, repo: string, external: string, status: string}} MirrorRow
  * @typedef {{repository: string, revision: string, files: {file: string, donorPath: string, sha256: string}[]}} Provenance
  */
@@ -34,20 +39,24 @@ export function mirrorRows(lines, sources) {
 }
 
 /**
- * Status of each row of the other BACKLOG: `| <id> | ... | <status> ... |` in its "## Work-package status" section
- * (whole file when that heading is absent). Status = first word of the last cell, lower case; '' when empty.
+ * Status of each row of the other BACKLOG: `| <id> | ... | <status> ... |` in its status section (`section`, default
+ * "## Work-package status"; whole file when that heading is absent), where `<id>` matches the source's row id rule
+ * (`idPattern`, default `<letters>-<n>`; SC writes bare numbers, `^\d+$`, 3D-73).
+ * Status = first word of the last cell, lower case; '' when empty.
  * @param {string} text
+ * @param {{idPattern?: string, section?: string}} [rule]
  * @returns {Map<string, string>}
  */
-export function remoteStatuses(text) {
+export function remoteStatuses(text, rule = {}) {
   const lines = text.split('\n');
-  const sec = section(lines, '## Work-package status');
+  const sec = section(lines, rule.section ?? DEFAULT_SECTION);
+  const id = new RegExp(rule.idPattern ?? DEFAULT_ID);
   /** @type {Map<string, string>} */
   const out = new Map();
   for (const l of sec.start >= 0 ? sec.lines : lines) {
     if (!/^\|/.test(l)) continue;
     const c = cells(l);
-    if (c.length < 2 || !/^[A-Za-z][A-Za-z0-9._-]*-\d+$/.test(c[0])) continue;
+    if (c.length < 2 || !id.test(c[0])) continue;
     out.set(c[0], ((c[c.length - 1].match(/^[A-Za-z-]+/) || [''])[0]).toLowerCase());
   }
   return out;
@@ -76,7 +85,7 @@ export function loadSnapshot(root, key, src) {
   if (!existsSync(snapFile)) return { error: `${src.dir}/${entry.file}: missing` };
   const text = readFileSync(snapFile, 'utf8');
   if (sha256(text) !== entry.sha256) return { error: `${src.dir}/${entry.file}: sha256 differs from provenance.json (snapshot edited?)` };
-  return { statuses: remoteStatuses(text), revision: prov.revision };
+  return { statuses: remoteStatuses(text, src), revision: prov.revision };
 }
 
 /**
@@ -97,9 +106,13 @@ export function compare(root, lines, sources) {
   const snaps = new Map();
   for (const r of linked) {
     const src = sources[r.repo];
+    const at = `docs/BACKLOG.md:${r.line}: ${r.id} (${r.repo} ${r.external})`;
+    if (!new RegExp(src.idPattern ?? DEFAULT_ID).test(r.external)) {
+      problems.push(`${at}: "${r.external}" is not a ${src.repository} row id (rule ${src.idPattern ?? DEFAULT_ID} in tools/backlog-sync/sources.json)`);
+      continue;
+    }
     if (!snaps.has(r.repo)) snaps.set(r.repo, loadSnapshot(root, r.repo, src));
     const snap = /** @type {ReturnType<typeof loadSnapshot>} */ (snaps.get(r.repo));
-    const at = `docs/BACKLOG.md:${r.line}: ${r.id} (${r.repo} ${r.external})`;
     if ('error' in snap) {
       problems.push(`${at}: ${snap.error}`);
       continue;
