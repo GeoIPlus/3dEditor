@@ -29,8 +29,9 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
   src/cloud/                                             plane fit (RANSAC + SVD), deviation heatmap (3D-22)
   src/validate/                                         progressive validation, severity by state, val3dity port (3D-12)
   src/import/                                            CityJSON -> canonical model, RTG roles, baseline, report (3D-10)
-  src/solve/ export/ ops/                               modules (3D-ADR-0002 C1; later rows)
-  test/brep/ test/cloud/ test/validate/ test/import/ test/golden/   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22; GT-I1..GT-I3: 3D-10)
+  src/export/                                            canonical model -> CityJSON, opaque data from the input (3D-11)
+  src/solve/ ops/                                        modules (3D-ADR-0002 C1; later rows)
+  test/brep/ test/cloud/ test/validate/ test/import/ test/export/ test/golden/   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22; GT-I1..GT-I3: 3D-10; GT-I4: 3D-11)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
   src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007)
 services/kernel/       (3D-22, 3D-23) host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003

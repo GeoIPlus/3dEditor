@@ -26,6 +26,13 @@ describe('unedited round trip', () => {
       expect(out.findings).toEqual([]);
     });
   }
+  it('noisy GT-I1 (+-15 mm, spec §6 Accept 5, D-70): the export is the input document', () => {
+    const { cityjson, step } = goldenImport('GT-I1');
+    const noise = [0, 0, 0, 0, 15, -15, 15, -15, 15, -15];
+    const noisy = structuredClone(cityjson);
+    noisy.vertices = noisy.vertices.map((/** @type {number[]} */ v, /** @type {number} */ i) => [v[0], v[1], v[2] + noise[i]]);
+    expect(JSON.stringify(roundTrip(noisy, step.cityObjectId).cityjson)).toBe(JSON.stringify(noisy));
+  });
   it('GT-I3: the merged roof faces are one surface each, the other surfaces are the file ones (D-3D11-2)', () => {
     const { cityjson, step } = goldenImport('GT-I3');
     const out = roundTrip(cityjson, step.cityObjectId);

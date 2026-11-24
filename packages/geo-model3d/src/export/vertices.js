@@ -1,6 +1,7 @@
 // export (3D-11): vertex state and the output `vertices` list (spec §7 rule 2; D-70, D-92, D-123, D-3D11-3/4).
-// Untouched vertex = EXPLICIT with file indices as `sourceRef` (import 3D-10) and still at the position of its first
-// file index; it keeps its file integers. Every other vertex is "changed": its local position goes through
+// Untouched vertex = file indices as `sourceRef` (import 3D-10) and still at the position of its first file index,
+// whatever its `positionMode` (D-3D11-5: a DERIVED vertex an edit did not move keeps its integers and lets its faces be
+// reused). It keeps its file integers. Every other vertex is "changed": its local position goes through
 // `crs.writeBackVertices` (rounding by `exportRoundDecimals`, file `transform` kept, PRECISION_LOSS).
 import { decodeVertex, writeBackVertices } from '../crs/index.js';
 import { distance } from '../brep/index.js';
@@ -11,7 +12,7 @@ import { ExportError } from './errors.js';
 /** @typedef {import('../brep/types.js').BuildingModel} BuildingModel */
 /** @typedef {import('./rings.js').VertexInfo} VertexInfo */
 
-/** [A] Distance below which an EXPLICIT vertex still sits at its file position (float noise of world <-> local). */
+/** [A] Distance below which a vertex still sits at its file position (float noise of world <-> local; D-3D11-5). */
 export const AT_FILE_POSITION_M = 1e-6;
 
 /**
@@ -28,8 +29,7 @@ export function vertexInfo(model, cityjson, lf) {
     const parts = typeof v.sourceRef === 'string' && v.sourceRef !== '' ? v.sourceRef.split(',') : [];
     const members = parts.every((s) => /^\d+$/.test(s)) ? parts.map(Number).filter((i) => i < n) : [];
     const ok = members.length === parts.length && members.length > 0;
-    const untouched = ok && v.positionMode === 'EXPLICIT'
-      && distance(lf.toLocal(decodeVertex(cityjson.vertices[members[0]], t)), v.p) <= AT_FILE_POSITION_M;
+    const untouched = ok && distance(lf.toLocal(decodeVertex(cityjson.vertices[members[0]], t)), v.p) <= AT_FILE_POSITION_M;
     out.set(v.id, { members: ok ? members : [], untouched });
   }
   return out;
@@ -77,5 +77,7 @@ export function writeVertices({ objects, changed, cityjson, frame, exportRoundDe
   for (const g of geoms) {
     if (g && 'boundaries' in g) g.boundaries = mapIndices(g.boundaries, (i) => (i >= 0 ? /** @type {number} */ (newOf.get(i)) : tokenNew[-i - 1]));
   }
-  return { vertices: wb.vertices, precisionLoss: changed.length > 0 ? wb.precisionLoss : null, maxErrorM: wb.maxErrorM };
+  // `Math.round` of a value just below zero gives -0; a file integer is never -0 (canonical JSON, K-11)
+  const vertices = wb.vertices.map((v) => /** @type {P3} */ ([v[0] + 0, v[1] + 0, v[2] + 0]));
+  return { vertices, precisionLoss: changed.length > 0 ? wb.precisionLoss : null, maxErrorM: wb.maxErrorM };
 }

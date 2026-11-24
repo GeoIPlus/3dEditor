@@ -1,6 +1,6 @@
 // export (3D-11): face rings of the model and their match with the original CityJSON surface (D-3D11-2).
-// A face is written with its original surface when every vertex is untouched since import (EXPLICIT at its file
-// position, D-70), its rings match the original rings ring by ring up to the start vertex (welded file indices
+// A face is written with its original surface when every vertex is still at its file position (D-3D11-5, amending
+// the EXPLICIT reading of D-3D11-2), its rings match the original rings ring by ring up to the start vertex (welded file indices
 // count as the same vertex) and its surface kind is the one import read. Otherwise its rings are regenerated.
 
 /** @typedef {import('../brep/types.js').BuildingModel} BuildingModel */
