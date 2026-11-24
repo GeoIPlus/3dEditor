@@ -8,6 +8,7 @@ import { importCityObject } from './import/index.js';
 import { createCrsMapping, createMetricFrame, mappedBoxBounds } from './crs/index.js';
 import { exportModel } from './export/index.js';
 import { runChecks, toIssues } from './validate/index.js';
+import { runPipeline } from './ops/index.js';
 
 export { P4_CANARY } from './canary.js';
 export { validateModel } from './validate/index.js';
@@ -140,3 +141,30 @@ export const importBuilding = (input) => importCityObject(input, assessImport);
  * @returns {{ cityjson: any, findings: { code: string, entityIds: string[] }[] }}
  */
 export const exportBuilding = (input) => exportModel(input);
+
+/**
+ * Execute one command (spec §3, §10; 3D-14; name D-119): PREVIEW or COMMIT of any implemented `OperationKind` on the
+ * given version. Pure and synchronous: the service checks authorisation and idempotency, stores versions, journal
+ * and PREVIEW results (3D-23). Output: contract `command-result`; on COMMIT also the new model and the journal-entry
+ * data. A refusal returns the input model object unchanged (spec §3 r2). Heights of a WORLD command and WORLD point
+ * measurements are mapped through the building frame as import builds it (D-215, D-217).
+ * @param {import('./brep/types.js').BuildingModel} model contract `building-model`, the current version
+ * @param {any} command contract `command`
+ * @param {Omit<import('./ops/pipeline.js').PipelineOptions, 'heightToLocal' | 'pointToLocal'>} options
+ *   `toleranceProfile`, `clock`, optional `ids`, `previewId`, `previousIssues`
+ * @returns {{ result: any, model: import('./brep/types.js').BuildingModel, journal?: any, modelLevel?: string[] }}
+ */
+export function executeCommand(model, command, options) {
+  /** @type {((p: V3) => V3) | null} */
+  let toLocal = null;
+  const local = (/** @type {V3} */ p) => {
+    toLocal ??= localFrame(model.frame, createMetricFrame(model.frame.horizontalCrs, model.frame.originWorld)).toLocal;
+    return toLocal(p);
+  };
+  const o = model.frame.originWorld;
+  return runPipeline(model, command, {
+    ...options,
+    heightToLocal: (z) => local([o[0], o[1], z])[2],
+    pointToLocal: (p, frame) => (frame === 'WORLD' ? local(p) : [p[0], p[1], p[2]]),
+  });
+}

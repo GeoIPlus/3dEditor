@@ -1,6 +1,6 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11); other modules follow their rows (3D-14..3D-21)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14); other operations follow their rows (3D-15..3D-21, 3D-71)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
@@ -51,7 +51,15 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   `cityjson` is the parsed document the model was imported from (kept by the service, never written); the output is a
   CityJSON document with this building only (D-192); `findings` (`PRECISION_LOSS`) go to `validateModel` (D-151).
   Refusals throw `ExportError` (`INVALID_PAYLOAD` / `NOT_FOUND`) or the `crs` error (`INVALID_CRS`).
-- Names fixed for later rows (D-119): `executeCommand` (3D-14..3D-21).
+- `executeCommand(model, command, { toleranceProfile, clock, ids?, previewId?, previousIssues? })` -> `{ result,
+  model, journal?, modelLevel? }` (3D-14, spec §3, D-119). Sync, pure. `result` is a contract `command-result`:
+  PREVIEW (`previewId`, default `<commandId>-preview` [A]; the input model object returned, nothing persisted),
+  COMMITTED (`model` = new version, `journal` = contract `journal-entry` without `operationId` / `actorId`, which the
+  service adds; `modelLevel` names model-level members changed beside the patch, e.g. `state`, Q-31), REJECTED /
+  CONFLICT (`error` = contract `error`; the input model object returned unchanged). Kernel-side refusals before the
+  operation: unknown kind `INVALID_PAYLOAD`, a kind without a module yet `INTERNAL`, other `buildingId` `NOT_FOUND`,
+  stale `expectedVersion` `VERSION_CONFLICT` (status CONFLICT, as the contract example) [A]. Implemented kinds:
+  `REPLACE_ROOF`, `REBUILD_ENVELOPE`; see `ops` below.
 
 ## Modules (`src/`, DAG of 3D-ADR-0002 C1 rule 2, enforced by `check:arch`)
 `brep` (3D-09) is the leaf every other module imports. Its surface (`src/brep/index.js`), for kernel modules only:
@@ -83,6 +91,36 @@ Surface `src/validate/index.js` for kernel modules (`ops` uses `runChecks` and `
 The maps of `codes.js`, `structure.js`, `external.js` are accepted as written (D-162).
 Findings of other modules (solve, crs, export, cloud, import) enter as `findings` and get scope and severity from the
 same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 rule 1).
+
+## `ops` (3D-14; spec §3, §10; imports `brep`, `solve`, `validate`)
+Surface `src/ops/index.js`: `runPipeline` (wrapped by `executeCommand`), `OPERATIONS` / `OPERATION_KINDS` (registry; rows
+3D-15..3D-21, 3D-71 add `{ run(draft, payload, ctx) }` entries), `contractError`, `freshIds`.
+
+Pipeline (`pipeline.js`, spec §3 r1-r6): kernel envelope checks -> `brep.transact` (isolated copy): operation module
+builds the candidate in plane terms -> constraint step (`constraints.js`: hard constraint on a removed entity ->
+`CONSTRAINT_CONFLICT`, soft one dropped, D-213; model constraints compiled and solved for the operation's
+`movableFaceIds` / conditions, re-checked at the result) -> `runChecks` COMMIT_VALIDATION with full solid, shell
+`isClosed` and `state` set (VALID_SOLID only for that target without ERROR, else DRAFT_SOLID [A]) - the same in
+PREVIEW and COMMIT, so both give one patch -> commit gate: ERROR issues new against the input version through the
+lineage refuse a VALID_SOLID target `INVALID_GEOMETRY` (v0.2 C.0 GEOMETRY_INVALID; spec §8 r7); the input version is
+checked only when the candidate has an ERROR. A PREVIEW report never confirms (spec §8 r1).
+
+| File | Contents |
+|---|---|
+| `replace-roof.js`, `rebuild-envelope.js` | the two operations; WORLD heights mapped, WORLD `roofPlane` refused (D-217) |
+| `templates.js` | R-01..R-04 cells (plane + plan rings): planes through eave lines with slopes, ridge / hip points where planes meet; refusals D-76, D-214..D-216 |
+| `footprint.js` | footprint body (D-218), rings normalised (outer CCW, courtyards CW), R-01 errors, rectangle test, axis pairing (exact tie -> `UNDERCONSTRAINED_GEOMETRY`) |
+| `envelope.js`, `topology.js` | ground + one vertical wall per footprint edge (top through every roof vertex on the edge: no T-junction) + roof faces; twins by opposite traversal; RTG roles (import's rule restated); ids per D-212; vertices re-derived from their planes |
+| `geom2.js`, `errors.js`, `ids.js`, `registry.js` | plan helpers; error objects (HTTP table of spec §2.4); default id source skipping every id of the input (deterministic) |
+
+Readings [A] for the owner's review: unknown `footprintId` / measurement id -> `INVALID_PAYLOAD`; a non-POINT
+measurement for SHED -> `INVALID_MEASUREMENT`; plan point identity on a 1e-7 m grid; degenerate hip when the ridge is
+within `topologySnapTolM` (apex = midpoint of both ridge ends); a footprint zero area = below `minFaceAreaM2`;
+`REBUILD_ENVELOPE` uses the building's own footprint (no `buildingPartId`) and writes `baseZ` into `baseElevationM`;
+new roof faces join the replaced roof's component. R-04 "undetermined ridge length" (spec §10.3 r5) cannot occur with
+the accepted payload (four slopes required); only the axis tie gives UNDERCONSTRAINED_GEOMETRY.
+Lineage (D-212): kept ids are not in `mapped`; old roof faces map to all new roof faces; new half-edges and
+vertices without a predecessor are only in the patch `added` (the owner's reading of spec §10.1 Accept 3).
 
 ## Internal modules
 ### solve (3D-13)
@@ -204,6 +242,18 @@ run spread ~0.1 ms).
   (Accept 2), FINAL with a stub port (Accept 3), modes, every golden input (VALID_SOLID inputs clean); all reports valid
   against `validation-report` (Ajv). Cost (3D-12, warm, this container): sawtooth-199 FAST 6.4 ms p50 / 9.1 ms p95,
   COMMIT (one face affected) 12.1 / 16.6, full solid 23.3 / 32.4; sawtooth-499 FAST 29.1 / 41.5, full 111.8 / 150.3.
+- `test/ops/` (3D-14): pipeline (PREVIEW = COMMIT patch and lineage for every template and REBUILD_ENVELOPE; refusals of
+  every kind leave a frozen model byte-identical; lineage D-212; commit gate; inverse patch), templates (R-01 L and
+  courtyard, tilted / vertical planes, WORLD heights; R-02 both axes, POINT measurements incl. WORLD; R-03 axes, offset,
+  rotated rectangle, refusals; R-04 asymmetric, clockwise ring order, pyramid, crossing hips), REBUILD_ENVELOPE (spec
+  Accept: 4 walls, ground 80, closed, 400 m3; GT-03 base -1 -> 600 m3), constraints, body rule, roof components.
+  Every result, model and journal entry is checked against its contract (Ajv); area and volume are computed by the
+  tests (Newell, divergence theorem).
+- Golden GT-01..GT-05 (`gt-0[1-5].golden.test.js`, PREVIEW then COMMIT with the `previewId`): GT-01 roof 80 m2 /
+  400 m3; GT-02 85.440 / 520, 1 face; GT-03 100 / 520, 2 faces; GT-04 ridge Z 8, length 2, 4 faces, 100 / 488; GT-05
+  `UNSUPPORTED_FOOTPRINT`, model unchanged.
+- Bench (`npm run bench`, non-gate scenes `*-roof`, REPLACE_ROOF PREVIEW through `executeCommand`, 3 x 1000): GT-03
+  p95 1.7 ms; sawtooth-199 p95 30.3 ms (kernel mean 9.3 ms; the rest is the bench's Ajv check of the 199-face reply).
 - Golden: `test/golden/gt-25.golden.test.js` (GT-25, world -> local -> world <= 0.001 m; measured 0 m).
 - Golden GT-20 (`gt-20.golden.test.js`): normal deviation 0.0051 deg (<= 0.2), RMSE 0.00778 m (<= 0.015), inliers
   444 / 500 = 0.888 (>= 0.85). GT-21 (`gt-21.golden.test.js`): south slope mean 0.07935 m over 447 points
