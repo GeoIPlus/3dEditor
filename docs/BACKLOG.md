@@ -275,6 +275,9 @@ flowchart TB
 | 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | ready (D-159; bug of 3D-05, found by 3D-46, D-146) |
 | 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 23 | G5 | M | ready (D-155) |
 | 3D-75 | Import state from `validateModel`: replace the interim `import/state.js` (D-157) | here | geo-model3d (index, import, validate) | 10, 12 | G1 | S | proposed |
+| 3D-69.1 | Bug: public `worldToLocal` / `localToWorld` use a plain translation; wrong for geographic and north-first projected buildings (found by 3D-69) | here | geo-model3d (index) | 09, 32, 69 | G1 | S | proposed |
+| 3D-69.2 | Spec update for 3D-69: §4a cloud reprojection (`createCrsMapping`, `DATUM_MISMATCH` / `NO_PROJECTION`), §9 cloud CRS from the dataset descriptor (D-164, D-165, D-3D69-1..3) | here | docs/specs | 69, 72 | G4 | S | proposed |
+| 3D-69.4 | 3D-ADR-0007 note: the CRS table also holds PROJ proj-strings of projected CRSs, verified against PROJ (D-3D69-3); needs owner approval (D-18) | here | docs/decisions/adr | 69 | G4 | S | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -511,6 +514,54 @@ flowchart TB
   heatmap values as the all-UTM case within `planarTolM` (option A), or a defined refusal code (option B); a cloud in
   the same CRS takes the path unchanged.
 - Decisions: D-92, D-93, D-126, D-164 (option A: reproject), D-165 (cloud CRS from the context)  Open: none
+
+### 3D-69.1 Public world <-> local mapping for every supported CRS (bug, found by 3D-69)
+- Source: 3D-69 session 2026-11-24 (owner dialog: intake all four follow-ups). Introduced by 3D-09 (`index.js`
+  `worldToLocal` / `localToWorld` with the default translation mapping, D-116), not adapted when 3D-32 / 3D-10 added
+  geographic CRSs and the north-first axis swap. Provisional id (coordinator rule 2026-11-24); no mermaid node until the
+  merge assigns the final id.
+- Goal: `worldToLocal(frame, points)` / `localToWorld` give the same local coordinates as import for every CRS the
+  kernel supports.
+- Scope in: compose the `crs` metric frame as import does (`createMetricFrame(frame.horizontalCrs, frame.originWorld)`
+  + `brep` rotation; equal to 3D-69's `cloudToLocal(frame, frame.horizontalCrs, ...)`); module card text.
+  Scope out: cloud CRSs (3D-69, done); contract changes (none needed).
+- Accept: for GT-I1 imported from EPSG:25832, from its EPSG:4937 copy and from an EPSG:31467 (north-first) copy,
+  `worldToLocal` of the file's world vertices equals the model's local vertices within 0.001 m and `localToWorld`
+  round-trips within 0.001 m; GT-25 unchanged (east-first projected path bit for bit); `npm run check` passes.
+- Decisions: D-92, D-116, D-122, D-125  Open: -
+
+### 3D-69.2 Spec update for 3D-69 (cloud CRS)
+- Source: 3D-69 session 2026-11-24; spec edits only through intake (AGENTS.md §6). Depends on 3D-72 because both edit §9.
+- Goal: the spec states D-164, D-165 and D-3D69-1..3.
+- Scope in: §4a API and rules (`createCrsMapping`; same datum only; projections verified against PROJ, others
+  `INVALID_CRS` `NO_PROJECTION`; `DATUM_MISMATCH`); §3 public API (`cloudToLocal`, `localBoxToCloud`); §9 API (cloud CRS
+  from the dataset descriptor `{ port, horizontalCrs }`, never from the file; box grown by the curvature bound); §11
+  ports line (dataset descriptor). Scope out: contract schemas (none changed, D-3D69-1).
+- Accept: no spec line says a cloud must be in the building's CRS or that reprojection is open; §4a and §9 name the two
+  refusal reasons and the descriptor; `npm run check` passes.
+- Decisions: D-92, D-93, D-164, D-165, D-3D69-1..3  Open: -
+
+### 3D-69.4 3D-ADR-0007 note on projections in the CRS table
+- Source: 3D-69 session 2026-11-24. The accepted ADR says the table is generated from `proj.db`; since 3D-69 it also
+  holds PROJ's own proj-strings (pyproj 3.8.0 = PROJ 9.8.1, the same pinned wheel), kept only where proj4js agrees
+  with PROJ within 0.001 m at 9 points of the area of use (tools/crs-table/README.md).
+- Goal: the ADR records the second input and the verification rule.
+- Scope in: an amendment note in 3D-ADR-0007 (source, verification threshold and its reason, counts 4207 / 4262, table
+  size 605 kB, the left-out classes); approval by the owner (D-18). Scope out: changing the decision of the ADR.
+- Accept: the note is in the ADR and the owner approved it in a dialog (recorded as a decision); `npm run check` passes.
+- Decisions: D-121, D-125, D-3D69-3  Open: Q-43 (EPSG terms; unchanged)
+
+### 3D-43 note from 3D-69 (change-wp, 2026-11-24)
+- The 3DQM extension's `dataset` member carries the point cloud's horizontal CRS (`EPSG:nnnn` or the OGC URL); the
+  host fills the service's dataset descriptor `{ port, horizontalCrs }` from it (D-165, D-3D69-1). Text for the SC row
+  (authoritative there): "Accept: the extension schema's point-cloud `dataset` entry has a required `horizontalCrs`;
+  an example document validates."
+
+### 3D-23 note from 3D-69 (change-wp, 2026-11-24)
+- The handler builds one `PointsDataset { port, horizontalCrs }` per opened point dataset (D-3D69-1): `horizontalCrs`
+  from the CP extension `dataset` member (3D-43) or from the CRS the user set when opening the dataset; it passes the
+  descriptor to `readLocalPoints` (services/kernel/src/cloud-points.js). Accept line added: a heatmap request against
+  a dataset whose `horizontalCrs` is on another datum returns `INVALID_CRS` (HTTP status per the error registry).
 
 ### 3D-70 COPC-by-box points adapter (D-133)
 - Source: 3D-22 session 2026-11-23, owner dialog (D-133): COPC needs a LAZ decoder, a new runtime dependency.
