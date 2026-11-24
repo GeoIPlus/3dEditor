@@ -108,10 +108,60 @@ describe('backlog:sync', () => {
     /** @type {string[]} */
     const urls = [];
     const msg = await fetchPin(root, SOURCES, 'shared', SHA, async (url) => (urls.push(url), REMOTE));
-    expect(urls).toEqual([`https://raw.githubusercontent.com/GeoIPlus/shared_compnents/${SHA}/docs/BACKLOG.md`]);
+    expect(urls).toEqual([`https://api.github.com/repos/GeoIPlus/shared_compnents/contents/docs/BACKLOG.md?ref=${SHA}`]);
     expect(msg).toBe(`pins/shared/BACKLOG.snapshot pinned to GeoIPlus/shared_compnents@${SHA}`);
     expect(JSON.parse(readFileSync(join(root, 'pins/shared/provenance.json'), 'utf8')).files[0].sha256).toBe(sha256(REMOTE));
     expect(compare(root, HERE.split('\n'), SOURCES).problems).toHaveLength(2);
     await expect(fetchPin(root, SOURCES, 'shared', 'abc', async () => '')).rejects.toThrow(/full 40-character/);
+  });
+
+  describe('SC row ids: bare numbers (3D-73)', () => {
+    const SC = { shared: { ...SOURCES.shared, idPattern: '^\\d+$', section: '## Work-package status and PRs' } };
+    const SC_REMOTE = `# SC BACKLOG
+
+## Progress overview
+
+| 99 | not a status row | done |
+
+## Work-package status and PRs
+
+| WP | Title | Modules | Depends on | Size | Status |
+|---|---|---|---|---|---|
+| 75 | Other | x | - | S | done (D-1) |
+| 76 | P4 canary scan | tools | - | S | review ([pull request #67](https://example.invalid/67)) |
+| WP-77 | Not an SC id | x | - | S | done |
+
+## Details
+`;
+    /** @param {string} cell @param {string} status */
+    const here = (cell, status) => HERE.replace('| shared [WP-71] | tools | 27 | G0 | S | ready |', `| ${cell} | tools | 27 | G0 | S | ${status} |`).split('\n');
+
+    it('reads bare-number ids only from the configured section', () => {
+      expect([...remoteStatuses(SC_REMOTE, SC.shared)]).toEqual([['75', 'done'], ['76', 'review']]);
+      expect([...remoteStatuses(SC_REMOTE)]).toEqual([['WP-77', 'done']]);
+    });
+
+    it('a row 76 in review yields review for shared (76); no drift', () => {
+      const root = pinned(SC_REMOTE);
+      const lines = here('shared (76)', 'review').map((l) => l.replace(' (WP-70)', ''));
+      expect(compare(root, lines, SC)).toMatchObject({ problems: [], summary: '3 mirror rows, 1 linked to an external id, 0 problem(s)' });
+    });
+
+    it('drift between here and the pin fails, and --write fixes it', () => {
+      const root = pinned(SC_REMOTE);
+      const lines = here('shared (76)', 'in-progress (D-1)').map((l) => l.replace(' (WP-70)', ''));
+      const r = compare(root, lines, SC);
+      expect(r.problems).toEqual(['docs/BACKLOG.md:9: 3D-46 (shared 76): drift - here "in-progress", GeoIPlus/shared_compnents@cc54eb3 says "review"']);
+      const fixed = applyUpdates(lines, r.updates);
+      expect(fixed[8]).toBe('| 3D-46 | Canary scan | shared (76) | tools | 27 | G0 | S | review (D-1) |');
+      expect(compare(root, fixed, SC).problems).toEqual([]);
+    });
+
+    it('an id that breaks the source rule fails, before the pin is read', () => {
+      const lines = here('shared (WP-76)', 'review').map((l) => l.replace(' (WP-70)', ''));
+      expect(compare(pinned(null), lines, SC).problems).toEqual([
+        'docs/BACKLOG.md:9: 3D-46 (shared WP-76): "WP-76" is not a GeoIPlus/shared_compnents row id (rule ^\\d+$ in tools/backlog-sync/sources.json)',
+      ]);
+    });
   });
 });

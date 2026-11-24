@@ -1,0 +1,351 @@
+# BACKLOG - work packages
+
+> **WP-28 is in progress on `wp/28-workplace-compose` and is paused. Do not start it from `main`;** it resumes on its
+> own branch and merges `main` forward (steps in [WP-54 checkpoint](../.agent/checkpoints/WP-54.md)). Since WP-59 it redraws the
+> baselines its change alters in its own sandbox with `npm run ui:visual:update` ([ADR-0049](decisions/ADR-0049-linux-renderer.md)), not on Windows.
+
+Pick the lowest-numbered `ready` WP whose dependencies are `done` (AGENTS.md §3). Statuses: `ready`, `blocked` (reason),
+`in-progress` (branch), `review` (PR), `done`, `superseded` (replacement WP). One WP = one branch = one PR. Size: S (< 1 day of agent work), M, L.
+"Spec" points to the acceptance criteria; a WP is done only when they pass.
+
+## Progress overview
+
+Updated: 2026-11-02. Local main includes WP-00..WP-27 (WP-27 acceptance `6e00704`),
+WP-36 and review corrections R1-R15, as approved by the maintainer. Historical branch checks and PR links remain
+in the table; their GitHub PR state is not changed by this local merge.
+See [main integration checkpoint](../.agent/checkpoints/MERGE-MAIN-WP24.md),
+[review ledger](reviews/REVIEW-WP24.md) and the input-ref snapshot for exact coverage.
+
+| Progress | WP count |
+|---|---:|
+| Completed and accepted for local main (`done`) | 29 / 37 |
+| Drafts awaiting evaluation (`review`) | 1 |
+| In progress | 0 |
+| Blocked by external integration | 1 |
+| Planned / ready | 5 |
+| Superseded (retained historical row) | 1 |
+
+**Completed implementation: 78% of historical rows** (29/37), or 81% of36 active
+WPs after WP-29 consolidation into WP-28. WP-28 is next ready (12/20/21/22/25/26/27 done).
+WP-27 acceptance:2895 tests/138 files,411 Storybook checks,169 Windows visual
+comparisons and160 native screenshots. See [WP-27 checkpoint](../.agent/checkpoints/WP-27.md).
+
+The recovered 12 WP-33 skills remain drafts pending WP-34 evals. The current
+AGENTS.md and the completed UI Storybook procedure are preserved. WP-35 remains
+blocked by external CP/DP integration; WP-28 is ready under ADR-0024.
+The arrows below match active dependencies; historical WP-29 is superseded.
+
+```mermaid
+flowchart TB
+  subgraph completed["Accepted into local main - DONE (29 WP)"]
+    WP00["WP-00 Repository bootstrap"]
+    WP01["WP-01 Contract schemas"]
+    WP02["WP-02 Plans and fixtures"]
+    WP03["WP-03 Contract validation"]
+    WP04["WP-04 Geometry and grids"]
+    WP05["WP-05 CRS and heights"]
+    WP06["WP-06 Camera model"]
+    WP07["WP-07 Synthetic test scene"]
+    WP08["WP-08 Transport"]
+    WP09["WP-09 COG decoding"]
+    WP10["WP-10 Dataset manifest"]
+    WP11["WP-11 Cache"]
+    WP12["WP-12 Scheduler and Worker pool"]
+    WP13["WP-13 Seam engine"]
+    WP14["WP-14 Grid scan"]
+    WP15["WP-15 Defects and QA history"]
+    WP21["WP-21 Plan loading and preflight"]
+    WP22["WP-22 Session and CP/DP mock"]
+    WP23["WP-23 UI foundations"]
+    WP36["WP-36 UI Storybook, API docs and sync gates"]
+    WP24["WP-24 Tools and edit session"]
+    WP25["WP-25 Review and QA interface"]
+    WP26["WP-26 Seam tools and controls"]
+    WP27["WP-27 DTM tools and final review"]
+
+    WP16["WP-16 Coverage, evidence, completion - 2263 tests"]
+    WP17["WP-17 CPU rectification and oracle - 2312 tests"]
+    WP18["WP-18 Contour-TIN DTM editing - 2379 tests"]
+    WP19["WP-19 Render host and raster - 2410 tests"]
+    WP20["WP-20 Overlay and picking - 2448 tests"]
+  end
+  subgraph workplace["UI and workplaces - PLANNED"]
+
+    WP28["NEXT: WP-28 Shared factory + production/QA + bootstrap/E2E - READY"]
+  end
+  subgraph delivery["Protection and engineering - PLANNED"]
+    WP30["WP-30 Protection profiles"]
+    WP31["WP-31 React wrappers"]
+    WP32["WP-32 Pilot measurements and budgets"]
+    WP34["WP-34 Agent evaluations"]
+  end
+  subgraph drafts["Drafts - REVIEW (1 WP)"]
+    WP33["WP-33 Agent skills - eval pending"]
+  end
+  subgraph blocked["External integration - BLOCKED (1 WP)"]
+    WP35["WP-35 Adaptive QA and critical cell reinspection - CP/DP"]
+  end
+  WP23 --> WP36
+  WP00 --> WP01
+  WP01 --> WP02
+  WP01 --> WP03
+  WP00 --> WP04
+  WP04 --> WP05
+  WP04 --> WP06
+  WP00 --> WP07
+  WP00 --> WP08
+  WP07 --> WP09
+  WP08 --> WP09
+  WP01 --> WP10
+  WP09 --> WP10
+  WP00 --> WP11
+  WP00 --> WP12
+  WP00 --> WP13
+  WP01 --> WP13
+  WP04 --> WP14
+  WP01 --> WP15
+  WP14 --> WP16
+  WP15 --> WP16
+  WP04 --> WP17
+  WP05 --> WP17
+  WP06 --> WP17
+  WP07 --> WP17
+  WP09 --> WP17
+  WP01 --> WP18
+  WP04 --> WP18
+  WP09 --> WP19
+  WP11 --> WP19
+  WP12 --> WP19
+  WP19 --> WP20
+  WP02 --> WP21
+  WP03 --> WP21
+  WP10 --> WP21
+  WP03 --> WP22
+  WP00 --> WP23
+  WP13 --> WP24
+  WP20 --> WP24
+  WP22 --> WP24
+  WP15 --> WP25
+  WP16 --> WP25
+  WP23 --> WP25
+  WP24 --> WP26
+  WP25 --> WP26
+  WP17 --> WP27
+  WP18 --> WP27
+  WP24 --> WP27
+  WP12 --> WP28
+  WP20 --> WP28
+  WP21 --> WP28
+  WP22 --> WP28
+  WP25 --> WP28
+  WP26 --> WP28
+  WP27 --> WP28
+  WP13 --> WP30
+  WP25 --> WP31
+  WP28 --> WP32
+  WP00 --> WP33
+  WP34 --> WP33
+  WP00 --> WP34
+  WP15 --> WP35
+  WP16 --> WP35
+```
+
+## Work-package status and PRs
+
+| WP | Title | Modules | Depends on | Size | Status |
+|---|---|---|---|---|---|
+| 00 | Repository bootstrap | all (skeleton), build, tools | - | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #1](https://github.com/GeoIPlus/shared_compnents/pull/1)) |
+| 01 | Contract schemas: common, seam edits, DTM ops, defect, scan evidence, DTM patch, result manifest | contracts | 00 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #2](https://github.com/GeoIPlus/shared_compnents/pull/2); stacked on WP-00 with maintainer approval) |
+| 02 | Plan schema, OrthoQM extension draft, the two plan files, golden fixtures | contracts, plans | 01 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #3](https://github.com/GeoIPlus/shared_compnents/pull/3); stacked on WP-01 with maintainer approval) |
+| 03 | `geo-core/contracts` | 1 | 01 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #4](https://github.com/GeoIPlus/shared_compnents/pull/4); stacked on WP-02; Q-20 resolved by D-25) |
+| 04 | `geo-core/geo` | 2 | 00 | S | done (accepted into local main 2026-11-01); historical evidence: review ([PR #5](https://github.com/GeoIPlus/shared_compnents/pull/5); stacked on WP-03; Q-03 resolved by D-26) |
+| 05 | `geo-core/crs-heights` | 3 | 04 | S | done (accepted into local main 2026-11-01); historical evidence: review ([PR #6](https://github.com/GeoIPlus/shared_compnents/pull/6); stacked on WP-04; Q-21 resolved by D-27) |
+| 06 | `geo-core/camera` | 4 | 04 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #7](https://github.com/GeoIPlus/shared_compnents/pull/7); stacked on WP-05; Q-22 resolved by D-28) |
+| 07 | Synthetic fixture block (COGs, DTM, frames, cameras, seams, scope, profiles, contracts) | fixtures | 00 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #8](https://github.com/GeoIPlus/shared_compnents/pull/8); stacked on WP-06; 1136 tests and byte-identical regeneration pass) |
+| 08 | `geo-data/transport` | 5 | 00 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #9](https://github.com/GeoIPlus/shared_compnents/pull/9); stacked on WP-07; Q-23 resolved by D-30; 1213 tests pass) |
+| 09 | `geo-data/cog` | 6 | 07, 08 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #10](https://github.com/GeoIPlus/shared_compnents/pull/10); stacked on WP-08; D-31/D-32 resolved; 1303 tests and exact GDAL full-image reads pass) |
+| 10 | `geo-data/manifest` | 7 | 01, 09 | S | done (accepted into local main 2026-11-01); historical evidence: review ([PR #11](https://github.com/GeoIPlus/shared_compnents/pull/11); stacked on WP-09; D-33 library adapter; 1358 tests pass) |
+| 11 | `geo-data/cache` | 8 | 00 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #12](https://github.com/GeoIPlus/shared_compnents/pull/12); stacked on WP-10; D-34; 1446 tests pass) |
+| 12 | `geo-data/schedule` (scheduler + worker pool) | 9 | 00 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #13](https://github.com/GeoIPlus/shared_compnents/pull/13); stacked on WP-11; D-35; 1505 tests pass) |
+| 13 | `geo-ortho/seam` port + worker protocol + benches | 17 | 00, 01 | L | done (accepted into local main 2026-11-01); historical evidence: review ([PR #14](https://github.com/GeoIPlus/shared_compnents/pull/14); stacked on WP-12; D-36/D-37; 1917 tests and complete plain benchmarks recorded) |
+| 14 | `geo-qa/gridscan` port | 14 | 04 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #15](https://github.com/GeoIPlus/shared_compnents/pull/15); stacked on WP-13; D-29/D-38/D-39; standard CI green, local timing limitation disclosed) |
+| 15 | `geo-qa/defects` | 15 | 01 | M | done (accepted into local main 2026-11-01); historical evidence: review ([PR #16](https://github.com/GeoIPlus/shared_compnents/pull/16); stacked on WP-14; D-40..D-43; local check2192 tests and standard CI pass) |
+| 16 | `geo-qa/coverage-evidence` | 16 | 14, 15 | M | done (accepted into local main 2026-11-01); historical evidence: done (local completion per maintainer; `wp/16-coverage-evidence`; final check2263 tests pass; PR not requested) |
+| 17 | `geo-ortho/rectify` CPU reference + oracle harness (risk first) | 19 | 04, 05, 06, 07, 09 | L | done (accepted into local main 2026-11-01); historical evidence: done (local completion; `wp/17-rectify`; check2312 tests; GDAL median0.003593px/p990.023514px; no PR requested) |
+| 18 | `geo-ortho/dtm` | 18 | 01, 04 | M | done (accepted into local main 2026-11-01); historical evidence: done (local completion; `wp/18-dtm`; check2379tests/90files; D-49/ADR-0020; no PR requested) |
+| 19 | `geo-render/host` + `raster2d` | 10, 11 | 09, 11, 12 | L | done (accepted into local main 2026-11-01); historical evidence: done (local completion; `wp/19-render-host-raster`; check2410tests/93files; WebGL frame parity +100GPUcycles; ADR-0021; no PR requested) |
+| 20 | `geo-render/overlay` + `pick` | 12, 13 | 19 | M | done (accepted into local main 2026-11-01); historical evidence: done (local completion; `wp/20-overlay-pick`; check2448tests/99files; GPU hillshade +100cycles; ADR-0022; no PR requested) |
+| 21 | `workspace/plan` (fetch, preflight, readiness report) | 20 | 02, 03, 10 | M | done (accepted into local main 2026-11-01); historical evidence: review: [local description](reviews/WP-21.md), `wp/21-workspace-plan`; PR pending published base |
+| 22 | `workspace/session` + `apps/cp-dp-mock` | 21 | 03 | L | done (accepted into local main 2026-11-01); historical evidence: review: [local description](reviews/WP-22.md), `wp/22-workspace-session`; final check 2553 tests / 110 files; local commits only |
+| 23 | UI foundations: tokens, fonts, icons, shell and controls + playground | 23 | 00 | L | done (accepted into local main 2026-11-01); historical evidence: review: [local description](reviews/WP-23.md), `wp/23-ui-foundations`; check 2681 tests / 114 files, 108 browser screenshots; local commits only |
+| 24 | `workspace/tools`: tool manager, gestures, keymap, edit session | 22 | 13, 20, 22 | L | done (accepted into local main 2026-11-01); historical evidence: review: [local description](reviews/WP-24.md), `wp/24-workspace-tools`; check2778tests/124files,221browser checks PASS; local commits only |
+| 25 | Domain UI: scan, defects, completion, sample, QA summary | 23 | 15, 16, 23 | M | done (local main merge `7583dcf`, 2026-11-01); [review](reviews/WP-25.md), `wp/25-domain-ui`; check2822/131, Storybook315, visual145+4, native136; no PR/push |
+| 26 | Seam UI and tools (line, lasso, vertex, owner legend) | 22, 23 | 24, 25 | M | done (local main integration `daee9ed`, 2026-11-02); [review](reviews/WP-26.md), `wp/26-seam-ui`; check2844/134, Storybook347, visual153, native144; no PR/push |
+| 27 | DTM UI and tools (DTM toolbar, profile, rectify status, window scheduling, invalidation) | 18, 19, 22, 23 | 17, 18, 24 | L | done (local main acceptance `6e00704`, 2026-11-02); [review](reviews/WP-27.md), `wp/27-dtm-ui`; check2895/138, Storybook411, visual169, native160; no PR/push |
+| 28 | [Shared factory + both OrthoQM plans + bootstrap + mock E2E](work-packages/WP-28.md) | 20 (composition), plans, apps | 12, 20, 21, 22, 25, 26, 27 | L (consolidated stages) | ready (all dependencies done; fresh session required); architecture ADR-0024 |
+| 29 | QA compose + reviewer E2E (historical scope retained in WP-28) | plans, apps | 21, 25 (historical) | M (historical) | superseded / merged into WP-28; no separate implementation |
+| 30 | Protection profiles P1 / P2 (fingerprint, hardened chunk, integrity, activation, SRI) + bench gate | build | 13 | M | |
+| 31 | React wrappers in `@geoiplus/ui/react`, generated from API metadata, with a decided model for controlled inputs (rescoped 2026-11-07 by the UI system plan) | ui | 40 | M | review ([pull request #26](https://github.com/GeoIPlus/shared_compnents/pull/26), `wp/31-react-wrappers`; [ADR-0043](decisions/ADR-0043-react-wrappers.md) proposed) |
+| 32 | Measurements on the pilot hardware; set budgets and gates | all | 28 | M | |
+| 33 | Agent skills (12 drafts, .claude/skills) - validate; validate with WP-34 evals | .claude/skills | 00, 34 | M | review: drafted 2026-10-26, eval pending |
+| 34 | Agent evals: ~10 golden agent tasks + one per hard rule, rubric, `npm run agent-evals` | docs/agent-evals | 00 | M | |
+| 35 | Adaptive QA policy and authoritative critical cell reinspection lifecycle | 15, 16, contracts; CP/DP integration | 15, 16 | L | blocked (CP/DP integration; business clarifications resolved by D-46) |
+| 36 | UI Storybook: all components, live API/args/properties docs, states, interaction/a11y checks, automatic sync and agent instructions | 23, apps/tooling | 23 | L | done (accepted into local main 2026-11-01); historical evidence: review ([local review](reviews/WP-36.md), `wp/36-ui-storybook`; 2688 tests, 209 browser checks PASS; no PR requested) |
+| 40 | Move generic and map parts into new packages `@geoiplus/ui` and `@geoiplus/ui-geo`, with an ADR, compatibility exports from `@geoiplus/workspace/ui` and updated checks (`ui` dependency group, CSS rules, `tools/storybook` paths) | ui, ui-geo, workspace/ui, tools | 54 | M || review ([pull request #21](https://github.com/GeoIPlus/shared_compnents/pull/21), `claude/brief-4-wp-40-d3sren`; [ADR-0035](decisions/ADR-0035-ui-packages.md)) |
+| 41 | Languages: English required, addable packs, a test language in CI, Russian removed (Polish stays as an optional pack) | ui | 40 | S | review ([pull request #24](https://github.com/GeoIPlus/shared_compnents/pull/24), `wp/41-languages`; [ADR-0037](decisions/ADR-0037-language-packs.md)) |
+| 42 | UX audit of all 40 existing components, Storybook and real screens (keep / fix / redesign per component). Findings only, no product code | docs | 55 | M | review ([pull request #22](https://github.com/GeoIPlus/shared_compnents/pull/22), `wp/42-ux-audit`) |
+| 43 | Adopt brand 0.5 and density (compact, comfortable, touch) in every generic control | ui | 40, brand 0.5 | M | review ([pull request #23](https://github.com/GeoIPlus/shared_compnents/pull/23), `wp/43-brand-density`; [ADR-0036](decisions/ADR-0036-brand-density.md)) |
+| 44 | Fix generic components and Storybook from the audit. The message centre becomes a status-bar rail, with an ADR; messages may offer a short-lived undo action | ui, apps/storybook | 42, 43 | L | review ([pull request #27](https://github.com/GeoIPlus/shared_compnents/pull/27), `wp/44-component-fixes`; [ADR-0038](decisions/ADR-0038-disabled-with-reason.md), [ADR-0040](decisions/ADR-0040-escape-one-step.md), [ADR-0041](decisions/ADR-0041-message-rail.md), [ADR-0042](decisions/ADR-0042-settings-placement.md)) |
+| 45 | Fix the UI of the 14 OrthoQM components, with no change in behaviour. `MeasurePanel` and the final rectify bookmarks wait until WP-28 merges `main` forward | workspace/ui | 44 | M | review ([pull request #30](https://github.com/GeoIPlus/shared_compnents/pull/30), `wp/45-orthoqm-fixes`; [ADR-0044](decisions/ADR-0044-orthoqm-panel-rules.md), [ADR-0045](decisions/ADR-0045-sample-panel-and-mini-map.md) accepted; D-62 to D-64) |
+| 46 | Engine trial: write the table's requirements first, then try TanStack (table) and Zag.js (autocomplete) against hand-built versions, with an ADR | ui | 40 | S | review ([pull request #25](https://github.com/GeoIPlus/shared_compnents/pull/25), `wp/46-engine-trial`; [ADR-0039](decisions/ADR-0039-table-autocomplete-engines.md) proposed) |
+| 47 | New components: Regions set (text field incl. multi-line, checkbox, radio, form field with help and error, data table, inline alert, confirm dialog) | ui | 44, 31, 46 | M | review ([pull request #29](https://github.com/GeoIPlus/shared_compnents/pull/29), `wp/47-regions-set`; [ADR-0046](decisions/ADR-0046-regions-set.md) proposed; Q-47-1 to Q-47-3) |
+| 48 | New components: Blocks and shell set (selection model, status tag, row actions, key-value list, breadcrumb, page header, side navigation, collapsible side panel), with the Regions review fixes (L33, D-56, D-66, D-67) | ui | 47 | M | review ([pull request #32](https://github.com/GeoIPlus/shared_compnents/pull/32), `wp/48-blocks-shell`; [ADR-0050](decisions/ADR-0050-blocks-shell-set.md) accepted; D-72 to D-74) |
+| 49 | New components: Projects set (date field, file upload, form section, tabs, progress panel for long jobs) | ui | 48 | M | review ([pull request #36](https://github.com/GeoIPlus/shared_compnents/pull/36), `wp/49-projects-set`; [ADR-0055](decisions/ADR-0055-projects-set.md) accepted; D-84, D-85) |
+| 50 | Map parts for the map workspace and geoviewer pilots (layer rows and section headers, map toolbar, legend, coordinates and CRS, scale bar), with an ADR deciding windows and view layouts | ui-geo | 44 | L | review ([pull request #44](https://github.com/GeoIPlus/shared_compnents/pull/44), `wp/50-map-parts`; [ADR-0063](decisions/ADR-0063-map-parts.md) and [ADR-0064](decisions/ADR-0064-windows-and-layouts.md) accepted; D-100, D-101) |
+| 51 | Agent kit: catalogue `catalog.json` (API, status, when to use, states, story link), generated from `apps/storybook/api/*.json` plus reviewed notes; CI checks it is current | ui, tools | 40-50, 55 | TBD (step 5 is L) | review ([pull request #40](https://github.com/GeoIPlus/shared_compnents/pull/40), `wp/51-agent-catalogue`; [ADR-0059](decisions/ADR-0059-agent-catalogue.md) accepted; D-92, D-93) |
+| 52 | Agent kit: routing block for each app's `AGENTS.md`, skills `build-screen`, `migrate-screen`, `review-ui`, `propose-component`, `propose-token`, and a one-command app scaffold | docs, .claude/skills | 51 | TBD (step 5 is L) | review ([pull request #41](https://github.com/GeoIPlus/shared_compnents/pull/41), `wp/52-agent-skills`; [ADR-0060](decisions/ADR-0060-agent-kit.md) accepted; D-93 applied, D-94, D-95) |
+| 53 | Agent kit: `@geoiplus/ui-lint` fails CI on non-token CSS, raw controls outside an allowlist, native `alert`/`confirm`, deep imports, hard-coded text, unapproved local components and open proposal placeholders | ui-lint | 51 | TBD (step 5 is L) | review ([pull request #42](https://github.com/GeoIPlus/shared_compnents/pull/42), `wp/53-ui-lint`; [ADR-0061](decisions/ADR-0061-ui-lint.md) accepted; D-96, D-97) |
+| 54 | Land the library on `main` from `c37c2cf` (last commit before WP-28) plus the Linux `storybook:check` fix; BACKLOG rows 40-55; close Q-UI-1/Q-UI-2; stale agent references; Storybook build as a CI artifact | all (landing), tools/storybook, docs, CI | - | S | review (`wp/54-library-base`, pull request into `main`) |
+| 55 | UX principles and decision tables in `docs/ux/` (principles, geo interaction model, decision tables, content rules, known gaps) | docs/ux | - | TBD (step 4 is L) | ready (start brief 3, branch `wp/55-ux-principles` from `wp/54-library-base`) |
+| 56 | Storybook review evidence also hashes the re-export entries between `@geoiplus/workspace/ui` and each declaration (`packages/ui/index.js`, `ui/kit` and `ui-geo/map` `index.js`), so re-pointing a name there marks the evidence stale (WP-40 independent review; ADR-0035 section 6). Changes every digest: normal review | tools/storybook | 40 | S | |
+| 57 | WP-44 follow-up: ToolsDock section headers show their disclosure marker again, the AppShell story pushes a real event, Settings puts every label above, the undo default (D-61), the `reviewed` status (D-60), and TypeScript declarations for `@geoiplus/ui` and `@geoiplus/ui/react` with a strict TypeScript sample (D-54) | ui, apps/storybook, apps/react-samples, tools | 44, 31 | M | review ([pull request #28](https://github.com/GeoIPlus/shared_compnents/pull/28), `wp/57-component-follow-up`; [ADR-0048](decisions/ADR-0048-typescript-declarations.md) accepted; D-68) |
+| 58 | Rectify progress and Retry (AQ9, D-64, known gap L30): an ADR on the progress model; the progress shapes in `contracts/rectify-workflow.schema.json`; `rectifyWindow` reports progress at its pause points through a worker endpoint and client (worker-message skill); the workflow's `execute` port receives `onProgress` and the workflow exposes progress of each running job and Retry of a failed window under a new id; RectifyStatus shows each running window's progress and offers Retry, with stories and checks | contracts, geo-ortho/rectify, workspace/tools, workspace/ui, apps/storybook | 27, 45 | M | review ([pull request #33](https://github.com/GeoIPlus/shared_compnents/pull/33), `wp/58-rectify-progress`; [ADR-0052](decisions/ADR-0052-rectify-progress.md) accepted; D-75, D-76; refreshed after WP-48: `main` merged, D-72 statuses, D-76 ProgressBar per cent form) |
+| 59 | Screenshots on the cloud's Linux renderer: the cloud sandbox (its Linux, Playwright's pinned Chromium, the self-hosted Sora and IBM Plex Mono) becomes the approved renderer of the visual baselines, with an ADR; every baseline is redrawn there; `npm run ui:visual` becomes a session check; `update-baselines.yml` is retired and the CI `visual` job moves to `ubuntu-latest` (D-70) | tools/visual, fixtures/ui/visual-baselines, CI, docs | - | S | review ([pull request #31](https://github.com/GeoIPlus/shared_compnents/pull/31), `wp/59-linux-baselines`; [ADR-0049](decisions/ADR-0049-linux-renderer.md) accepted; D-70, D-71) |
+| 60 | Field widths from the design (D-71) and statuses on the Blocks grid (known gap L42, D-72): text, number and select fields take a width in characters of the brand font that the host sets, or fill their column up to a readable maximum, instead of the browser's intrinsic width from font metrics, so they are equally wide on every OS; every status on the Blocks page grid is identifiable without colour (StatusTag lets a host give a status its own icon) and the legend decodes the grid; one work package for rows 60 and 61 (start brief 18); the images they alter are redrawn | ui/kit, ui/react (generated), workspace/ui, apps/storybook, fixtures/ui/visual-baselines | 59, 48 | S | review ([pull request #34](https://github.com/GeoIPlus/shared_compnents/pull/34), `wp/60-field-widths-grid`; [ADR-0053](decisions/ADR-0053-field-widths.md) accepted; D-77 to D-80) |
+| 61 | WP-48 follow-up: every status on the Blocks page grid is identifiable without colour, by its own icon or short words (StatusTag may let a host give a status its own icon), and the legend decodes the grid; before crowdsource rebuilds the page (known gap L42, D-72) | ui, apps/storybook | 48 | S | superseded (by WP-60, start brief 18) |
+| 62 | Brand 0.7 in the library (start brief 19): vendor `@geoiplus/brand` 0.7.0 by the ADR-0026 recipe, reproduced byte for byte; the data colours `--gi-data-1`...`-4` per theme (Lichen and Iris) in OwnerLegend, DtmProfile and the overlay renderer, which redraws an overlay with the new theme's colours on a theme switch; round radios with `--gi-radius-round` (D-66); one icon per status on the Blocks page, its table taking the grid's icons (D-80, known gap L43); RadioGroup listed as ready for `reviewed`; the images they alter are redrawn | vendor, ui/kit, workspace/ui, geo-render/host, apps/storybook, tools, fixtures/ui/visual-baselines | 60 | S | review ([pull request #35](https://github.com/GeoIPlus/shared_compnents/pull/35), `wp/62-brand-0.7`; [ADR-0054](decisions/ADR-0054-brand-0.7.md) accepted; D-81 to D-83) |
+| 63 | The console template (start brief 22, plan step 4): crowdsource's project set-up and tracking journey as one Storybook screen with every state, composed only from library parts (projects list, new project form, project page with overview, files, blocks and team tabs) in the ADR-0050 console layout, with its spec in `docs/ux/templates/console.md`; first the four fixes of the WP-49 review (D-85) and the `reviewed` statuses of the Projects set; the images they alter are redrawn | ui/kit, ui/react (generated), apps/storybook, tools/visual, tools/storybook, docs/ux, fixtures/ui/visual-baselines | 49 | M | review ([pull request #37](https://github.com/GeoIPlus/shared_compnents/pull/37), `wp/63-console-template`; [ADR-0056](decisions/ADR-0056-console-template.md) accepted; D-86, D-87) |
+| 64 | Console follow-ups (D-87): a status row with the MessageRail in the console layout (Q-63-1, L48); a link column in DataTable (Q-63-2, L49); one outer width for stacked fields (Q-63-3); a page section part (Q-63-4); RadioGroup help right under its label; ProgressBar's busy state still under reduced motion; the console template's repeated sentences; the reference images captured at rest (Q-65-1, D-89); the DataTable header's clipped focus outline (L50); and the findings of the step 4 walkthrough with one real user (none beyond this list) | ui/kit, ui/react (generated), apps/storybook, docs/ux, fixtures/ui/visual-baselines | 63 | M | review ([pull request #39](https://github.com/GeoIPlus/shared_compnents/pull/39), `wp/64-console-follow-ups`; [ADR-0058](decisions/ADR-0058-console-follow-ups.md) accepted; D-90, D-91; L48, L49, L50 closed) |
+| 65 | The console fills the window (start brief 23, from the owner's on-screen check): the side navigation and the assistant stay full height and in place and only the page region scrolls, at every window height; a route change starts the page region at its top; `docs/ux/templates/console.md` says how the console scrolls; a check of long views in a short window that fails on the old rules; a Journey a person can follow by eye, which a click or key press stops with a plain note; the test language named in plain words; stories at rest, their plays run in the checks and on demand through a toolbar setting off by default; the console images redrawn | apps/storybook, .storybook, tools/storybook, tools/visual, docs/ux, fixtures/ui/visual-baselines | 63 | S | review ([pull request #38](https://github.com/GeoIPlus/shared_compnents/pull/38), `wp/65-console-fills-window`; D-88, D-89; known gap L50 moves to row 64) |
+| 66 | Small UI fixes and the console's Settings page (D-91, D-95, D-97): a code shown in a DataTable link column keeps the data typeface (Q-64-1, L33), so the Blocks page's block codes are links in IBM Plex Mono; the Section story's example table shows file sizes right-aligned in the data typeface; a console app's Settings page, the last SideNav item, with SettingsWindow's theme, density and language sections in the page, in the console template (a story with its states) and the app scaffold (Q-52-1, closes L52); the scaffold's app gains a `src/strings.ts` holding its own text, so `hard-coded-text` checks a new app from its first screen (Q-53-1); the images they change are redrawn | ui/kit, ui/react, ui/agents (scaffold, build-screen), apps/storybook, apps/react-samples, tools/storybook, tools/visual, docs/ux, fixtures/ui/visual-baselines | 64 | M | review ([pull request #43](https://github.com/GeoIPlus/shared_compnents/pull/43), `wp/66-fixes-and-settings`; [ADR-0062](decisions/ADR-0062-settings-page.md) accepted; D-98, D-99) |
+| 67 | The map workspace template (start brief 30, plan step 4): the second screen template, a map workspace as one Storybook screen with every state and its Journey, composed only from library parts (a top bar with the app and project names, the map toolbar, a layers panel on one edge, the view with ViewFrame, ZoomButtons and the scale bar, a details panel for the selection and the legend on the other edge, a status row with the coordinates readout and the MessageRail), its synthetic map's features on the screen's SelectionModel (L37), a second view by a Splitter, with ADR-0065 on the layout and its spec in `docs/ux/templates/map-workspace.md`; the images it adds are drawn in the sandbox | apps/storybook, tools/storybook, tools/visual, tools/catalog, docs/ux, fixtures/ui/visual-baselines | 50, 63 | M | review ([pull request #45](https://github.com/GeoIPlus/shared_compnents/pull/45), `wp/67-map-workspace`; [ADR-0065](decisions/ADR-0065-map-workspace-template.md) accepted; D-102, D-103; L60, L61) |
+| 68 | Map workspace follow-ups (D-103, start brief 31, and two findings of the owner's on-screen check on 2026-11-15): the map view never paints over the status row (ViewFrame's body shrinks and clips its content; below a floor height the workspace scrolls as a whole; the layout check adds a window near 1366 x 500 and a planted overlap); coordinates are copied from a map menu (right-click, Shift+F10 or the Menu key, a long press), the readout loses its Copy button, the status row confirms the copy, Help and the readout's tooltip say how; LayerList marks the layer that holds the selection with its own mark and words, not `aria-pressed` (Q-67-1, L60); TopBar shows a lease and each action only when the host gives them (Q-67-2, L61); a LayerList section label keeps whole words and its count wraps under it (Q-67-7); LayerList, MapToolbar, Legend, CoordinateReadout and ScaleBar `reviewed` (Q-67-5: their status in `apps/storybook/guidance.js`, the status test, the catalogue, which drops them from the map workspace's `notForNewScreens`, and the template's lint exceptions removed); a service error in the status row stays readable at 1440 px, never cut mid-sentence; a legend swatch matches how the map draws its layer (outline or fill); a layer alone in its section shows no move buttons; the map toolbar's row leaves no empty band beside it; the images they change are redrawn | ui/kit, ui-geo/map, ui/react and ui-geo/react (generated), apps/storybook, tools/catalog, docs/ux, fixtures/ui/visual-baselines | 67 | M | review ([pull request #46](https://github.com/GeoIPlus/shared_compnents/pull/46), `wp/68-map-follow-ups`; [ADR-0066](decisions/ADR-0066-map-workspace-follow-ups.md) accepted; D-104, D-105; L60 and L61 fixed, L62 and L63) |
+| 69 | Publish the UI packages (start brief 32, plan step 1b): `@geoiplus/ui`, `@geoiplus/ui-geo` and `@geoiplus/ui-lint` ready to publish as 0.1.0 (`private: false`, `UNLICENSED`, `repository`, the CodeArtifact `publishConfig` of D-13, a `files` list with no tests, a CHANGELOG each; ui on `@geoiplus/brand` `^0.7.0` from the registry, while local checks keep the vendored tarball without a token); a pack check in `npm run check` that installs the three tarballs into a clean project offline and uses them there; the tag-started publishing build in `infra/` (AWS CDK, CodeBuild, a role that may publish only the three packages, refusals and a read-back), not deployed: deploying it and pushing the tags wait for the owner's go-ahead; workspace and geo-* stay private | ui, ui-geo, ui-lint (manifests), tools, infra, docs | 40, 53 | M | review ([pull request #47](https://github.com/GeoIPlus/shared_compnents/pull/47), `wp/69-publish-ui`; [ADR-0067](decisions/ADR-0067-publish-ui-packages.md) accepted; D-106, D-107; L64 open, L65 closed; [pull request #48](https://github.com/GeoIPlus/shared_compnents/pull/48), the webhook's account filter; released on 2026-11-17: ui, ui-lint and ui-geo 0.1.0 in CodeArtifact) |
+| 72 | The developer guide, the kit's entry point (start brief 34, the owner's decisions of 2026-11-21: no separate pilots; crowdsource and geoviewer switch to the kit page by page): one guide, shipped in `@geoiplus/ui` and linked from the rules block, for moving an existing React app (crowdsource), a plain-JavaScript app (geoviewer) or a new app onto the kit, working with the agent, reporting a problem and upgrading, with a section an agent follows to set a repository up; catalogue entries say whether their package is published and the block limits a registry app to those (Q-69-4 (a)); `npx geoiplus-ui agents` reports a `CLAUDE.md` that does not bring in `AGENTS.md`; the UI packages' lines removed from the pending changesets (Q-69-1 (a)) and a changeset for this change; ADR-0070 with three questions (registry read access, seeing the parts without a checkout, reading the guide before installing); two dry runs of the guide | ui (agent kit, guide), tools, docs, .changeset | 52, 69 | M | review ([pull request #54](https://github.com/GeoIPlus/shared_compnents/pull/54), `wp/70-developer-guide`; [ADR-0070](decisions/ADR-0070-developer-guide.md) accepted; D-112, D-113, D-114; Q-72-1 to Q-72-4 resolved; L66-L68 open; six dry-run rounds, no run without a guess, accepted: ADR-0070 section 6; renumbered from start brief 34's WP-70, whose numbers pull requests #52 and #53 took first; [pull request #55](https://github.com/GeoIPlus/shared_compnents/pull/55), the release; released on 2026-11-21: ui and ui-lint 0.1.1 in CodeArtifact) |
+| 73 | ui 0.1.2, the guide's first fixes (start brief 35): the guide accepts Node 22.12 or later, 24 included (crowdsource builds on 24); registry access per repository, each repository's own identities holding the four reads (D-114); Brief 33's findings (crowdsource's Regions page, the guide's first real run) in the guide, or asked in the report where a part would change; the UI lint's gaps L66 (the `tokens` rule: platform keywords and counts, `color-mix()` over `--gi-*` tokens, an app's own custom property), L67 (`--help`) and L68 (an excluded path names its pattern); one patch changeset, ui and ui-lint 0.1.2. Grown by the coordinating session's message of 2026-11-21 (D-116): Brief 33's items 1 to 11 and 14 to 18 (the guide, the catalogue, the lint, ConfirmDialog as an `alertdialog`, Button's `accessibleName`, the data table's `aria-readonly`, live region and refusal under the cell, parts that set what they rely on) and the owner's E1 to E3 (one focus ring, the editing row's height, the refusal above the rows); items 12 and 13 stay open (L70, L71); the owner's keyboard pass recorded, a screen-reader pass still open (L31) | ui (guide, kit parts), ui-lint, tools, fixtures, docs, .changeset | 72 | S, grown to M by D-116 | done ([pull request #57](https://github.com/GeoIPlus/shared_compnents/pull/57), `wp/73-guide-fixes`; D-115, D-116, D-117; L66-L68 fixed; Brief 33's 18 items and the message box's findings in, L69-L72 open; [pull request #58](https://github.com/GeoIPlus/shared_compnents/pull/58), the release; released on 2026-11-21: ui and ui-lint 0.1.2 in CodeArtifact) |
+| 74 | ui 0.1.3, the scrim and the first adoption findings (start brief 36): every modal backdrop of the kit on brand 0.8.0's `--gi-scrim`, with brand 0.8.0 vendored by ADR-0054's recipe and an app on brand 0.7.0 still working (L70); a form field's error with the danger icon and its words in the text colour, in every field part that shows one (L72); crowdsource's findings from moving its message box and its upgrade to 0.1.2 in the guide, the lint and the command (upgrade notes by what an app queries, a `gi-lint-allow` that suppresses nothing reported, `npx geoiplus-ui agents` reporting every file, L71 named as open, Tooltip one per shell); one patch changeset, ui and ui-lint 0.1.3 | ui (dialog, form field, fields, agent kit, guide), ui-lint, tools, fixtures, vendor, apps/react-samples, docs, .changeset | 73 | M | done ([pull request #61](https://github.com/GeoIPlus/shared_compnents/pull/61), `wp/74-scrim-and-findings`; [ADR-0071](decisions/ADR-0071-brand-0.8.md) accepted; D-118, D-119 (the owner's Narrator pass on 0.1.2), D-120; Q-74-2 resolved (a); L70 and L72 fixed, L31 open for NVDA and VoiceOver; [pull request #62](https://github.com/GeoIPlus/shared_compnents/pull/62), the release; released on 2026-11-21: ui and ui-lint 0.1.3 in CodeArtifact) |
+| 75 | ui 0.1.4, version 1's last items (start brief 38, the owner's decisions of 2026-11-22, D-122): brand 0.8.2 vendored by ADR-0054's recipe (light `--gi-success` Terrain Deep `#2B763E`) and every changed baseline listed; the upgrade page gives the command that moves the brand with the kit in one install (crowdsource's D-907, item 1); the lint script set-up step 8 writes and the new-app scaffold's script pass `--rule unused-exceptions=error` while the lint's default stays a warning (D-907, item 2; D-120); `apps/react-samples` off Next.js 16.4.3 to a patched release; L31 and L71 closed and L69 deferred in every copy; one patch changeset, ui and ui-lint 0.1.4 | ui (guide, agent kit), ui-lint, vendor, fixtures, apps/react-samples, docs, .changeset | 74 | S | done ([pull request #64](https://github.com/GeoIPlus/shared_compnents/pull/64), `wp/75-v1-last-items`; D-121, D-122, D-123; L31 and L71 closed, L69 deferred; Q-75-1 resolved (b), Q-75-2 resolved (a); 36 light baselines redrawn; Next.js 16.4.6; [pull request #65](https://github.com/GeoIPlus/shared_compnents/pull/65), the release; released on 2026-11-22: ui and ui-lint 0.1.4 in CodeArtifact) |
+| 76 | P4 canary scan and the rule "no `geo-model3d` dependency" (mirror of GeoIPlus/3dEditor 3D-46, its [3D-ADR-0001](https://github.com/GeoIPlus/3dEditor/blob/main/docs/decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md) Q-09; the owner's dialog of 2026-11-23, D-124): `npm run check:p4` in `npm run check` scans the source trees `packages/`, `plans/`, `apps/` (every build output inside them, `.map` files included) and `.cache/storybook` for `geoiplus-p4-canary:<package>:<32 hex>` and fails on `geo-model3d` in any `package.json` or `package-lock.json`; `pack:check` scans the unpacked tarballs; CI scans the built Storybook and the React samples' Vite, Next and scaffolded builds; a planted synthetic marker per output kind and a planted dependency each fail | tools (p4-canary, pack), CI | - | S | done ([pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67), `wp/76-p4-canary-scan`; D-124, D-125) |
+
+## Details
+
+### WP-35 Adaptive QA and critical reinspection (scope split from WP-16)
+- General profile structures and host integration for producer-specific QA intensity;
+  CP owns the sample and trusted producer history. Client consumes assigned units,
+  never chooses them. Maintainer values: novice up to100%, standard10%, three clean
+  cells ->5%, three more -> sparse inspection, error in sparse phase ->10%.
+  D-46: sparse mode checks every third cell (skips two);10%/5% refers to each
+  inspected cell's area. Preserve producer-specific policy/history in CP/DP.
+- Critical severity blocks and requires an explicit search for similar errors
+  across the assigned reinspection territory. Non-critical needs a local fix.
+  Preserve the obligation after the original defect is fixed until its evidence
+  is satisfied; do not equate fix-approved with territory reinspection completed.
+  D-46 limits the similar-error search to the current cell. Persist assignment and
+  release evidence in CP/DP; consume WP-16's explicit pending-reinspection boundary.
+  Migrate WP-15's class-only blocking API schema-first, preserving old tests/v1 taxonomy.
+- Accept: deterministic state-transition/streak/reset tests, no client sample
+  selection, severity-driven blocker tests, and critical reinspection persisting
+  beyond local fix. CP/DP policy execution is an external integration dependency.
+
+### WP-00 Repository bootstrap
+- npm workspaces root; the six packages and `plans/` as empty workspaces with `index.js` and `README.md` (module cards in
+  `planned` state); `.npmrc` with the `@geoiplus` scope on CodeArtifact (`brandbook:README.md`), token from the environment.
+- Tooling: ESLint (errors only), Vitest, `tsc --checkJs --noEmit` over JSDoc, `check:arch` = dependency-cruiser rules from
+  STRUCTURE.md §3 + the 300-line maintenance advisory (D-20) + protection rules (P2 chunk isolation, no P4) + CSS token rule (UI spec §9),
+  `size-limit`, API report generation, changesets, `npm run index` (port `geoviewer:scripts/project-index.mjs`).
+- CI workflow running `npm run check`; PR template from AGENTS.md §10.
+- Accept: `npm ci && npm run check` passes on the empty skeleton; a planted forbidden import, a cycle and a
+  literal colour in a component CSS each make `check:arch` fail (tests for the checker). A 301-line source file produces
+  a maintenance advisory, not a failure (maintainer clarification D-20).
+
+### WP-01 Contract schemas
+- Port `seameditor:contracts/schemas/{common,seam.reroute,seam.assign,seam.vertex_move,seam.vertex_insert,edit-instruction}`
+  unchanged (record the revision). New drafts: `dtm.interpolate_boundary`, `dtm.plane_fit`, `dtm.remove_spikes`
+  (parameters with `TBD` ranges and proposed defaults), `dtm-patch`, `defect`, `scan-evidence`, `result-manifest`.
+- Accept: every schema compiles with Ajv 2020; valid and invalid examples per schema.
+
+### WP-02 Plans and fixtures
+- `contracts/plan.schema.json` from workspace-plans-spec.md §2; `contracts/extension-orthoqm.schema.json` draft from the
+  field table of the library spec §3; `plans/orthoqm/{production,qa-sampling}.plan.json`; golden fixtures of
+  workspace-plans-spec.md §8 (contracts only; expected outputs filled by WP-21).
+- Accept: both plans validate; every fixture contract validates against the Operaflow schema at the pinned revision or is an
+  intended-invalid case.
+
+### WP-03 ... WP-22
+Acceptance criteria are the "Accept:" lines of the module's section in [orthoqm-library-spec.md §6](specs/orthoqm-library-spec.md#6-modules).
+Specific notes:
+- **WP-07** writes a generator script (`fixtures/generate/`) using GDAL from a pinned container image or the local GDAL, and
+  commits the outputs (total <= 5 MB). Cameras, DTM and frames are consistent: rectifying the frames with the DTM gives the
+  per-image orthos (the oracle for WP-17).
+- **WP-13** keeps the donor API unchanged; split files over 300 lines only where the property tests stay green; record
+  bench results of the plain build in the module card (WP-30 adds the protected comparison).
+- **WP-14** may use pinned local `platform-grid-scan` and `gridScanStorage.js` under D-29; record full SHA, paths and hashes without modifying/publishing the donor.
+- **WP-21** consumes D-25 schema errors as blocked readiness: show the offending field/path and report the issue to CP. Core WP-03 returns explicit diagnostics; it does not send notifications itself.
+- **WP-17** starts as early as its dependencies allow: it is the main technical risk. Without passing its gate the DTM editor
+  stays disabled in every plan.
+- **WP-22** mock serves: session exchange, contract, plan + signed chunk URLs, manifest and assets, edits (accept / conflict /
+  reject), progress, issues, results, and fault injection (stale lease, revoke, offline, duplicate).
+  D-47/D-48: cover the authoritative final-output/review lifecycle and refuse completion/release when required final
+  areas are unchecked or the reviewed final version is stale. Agree the origin asset adapter (Q-38) before exchange code.
+
+### WP-23 ... WP-31
+Acceptance criteria are in [ui-components-spec.md](specs/ui-components-spec.md) (catalogue rows and §9) and in the module
+sections of the library spec. [WP-28](work-packages/WP-28.md) now owns both former WP-28/29 journeys (library spec §2.1/§2.2),
+bootstrap, schema/graph validation, lifecycle/host tests and mock E2E in both themes; WP-29 is superseded, not completed.
+- **WP-25, D-42:** bookmark-style jump from a defect to its location; quick accept/reject;
+  rejection requires a nonblank text reason (free comment or standard description).
+  Show the append-only verification history and rejection rationale for operator rework.
+  D-43: QA also sees authorized prior-version corrections, findings and returns,
+  even when the reviewer changes; past records are read-only and keep their versions.
+- **WP-27, D-47/D-48:** fast preliminary rectification preview, then queued background final output; cancel/discard stale
+  work, distinguish preview/final versions. Generate mandatory final-output bookmarks for changed areas with navigation,
+  explicit checking and remaining count. New final versions invalidate affected confirmations. Design schemas/persistence
+  first; this is a recorded follow-up to completed WP-17, not an added CPU-kernel implementation in that WP.
+- **WP-28, D-48:** end-to-end completion/release is blocked until final jobs succeed and every required changed area is
+  checked on the actual current final imagery. Preview approval, mere bookmark visitation and computation completion
+  cannot satisfy the gate. Test rejection/re-edit/recompute, stale result arrival and session recovery. Operator may
+  continue other editing while background jobs run (D-47); origin release/mosaic processing follows final review (Q-38).
+
+### WP-33 Agent skills
+- Drafted: the 12 recovered skills in .claude/skills, written from the specs and templates (no new rules).
+- Remaining: each skill passes its WP-34 eval task twice; adjust the description or steps where an agent did not load or
+  follow it; prune a skill no task uses.
+
+### WP-34 Agent evals
+- `docs/agent-evals/<task>/` with the task prompt, the starting state (a branch or fixture), the rubric graded on the final
+  result; tasks per AGENTS.md §12; a runner that records the outcome and timestamps of each run.
+- Accept: every task runs twice on the current instructions and the baseline scores are recorded in DECISIONS.md.
+
+### WP-32 Measurements
+- Measure the gates of the library spec §8 on the pilot hardware profile; write the numbers into the plan budgets and the
+  CI gates; record them in DECISIONS.md.
+
+### WP-36 UI Storybook and synchronised component documentation
+- Maintainer request (2026-10-30): after WP-23, create actual Storybook for the UI library,
+  showing every component, accepted parameters, properties/methods and useful states.
+- Use current official Storybook practices and pinned compatible dependencies. Keep
+  the core framework-free; no React wrapper/domain UI implementation is included.
+- Story controls, API/arg tables, usage/lifecycle docs, themes/locales and interactive
+  examples must reflect actual public exports/JSDoc, with synthetic fixtures only.
+- Automate metadata/docs generation or validation and add CI coverage/staleness gates;
+  a public UI change cannot silently leave Storybook stale or omit a component.
+- Add concise agent instructions plus the recurring procedure in a linked skill:
+  every UI API/behaviour change updates its stories/docs/tests in the same change.
+  This instruction addition is explicitly requested by the maintainer; do not delay
+  it for the not-yet-implemented WP-34 eval suite or silently weaken existing rules.
+- Accept: all current component factories and icons documented, meaningful controls
+  and API properties visible, lifecycle cleanup verified, a11y/interaction checks,
+  both themes, static Storybook build and automatic sync gate pass, plus full check.
+- Start in a fresh session/managed checkout from the commit carrying
+  [.agent/handoff-WP-36.md](../.agent/handoff-WP-36.md). Local commits only.
+
+### WP-40 ... WP-55 UI system plan (owner-approved 2026-11-07)
+Source: [Geoinnovation+ UI system: plan for the first steps](https://claude.ai/artifact/Ujk5d2JiWszeo8fLtcnyHm) (step 3
+work packages, step 5 agent kit, start briefs). WP-38 and WP-39 stay reserved for the WP-37 review follow-ups.
+- **WP-54** is step 1a: `main` is cut from `c37c2cf`, the last commit before WP-28, plus the Linux `storybook:check` fix.
+  WP-28 stays on its branch and merges `main` forward when it resumes. It still owes `MeasurePanel`'s 4 baselines.
+- **WP-55** is the first part of step 4 (written guidance only); the templates follow once step 3 has components.
+- Rules from the plan: one WP per branch and PR; an ADR for any public API or dependency change; behaviour stays
+  (callbacks, data contracts, keyboard paths); every component starts `experimental` and becomes `reviewed` after fixes
+  and owner approval. Sizes marked TBD were not given per WP in the plan.
+- Step 1b (publish `@geoiplus/ui`, depends on WP-40) has no WP number yet.

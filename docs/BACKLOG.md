@@ -17,20 +17,24 @@ Updated: 2026-11-24
 
 | Progress | Rows |
 |---|---:|
-| Done | 32 / 69 |
+| Done | 36 / 70 |
 | Review | 1 |
-| In progress | 3 |
-| Ready | 5 |
+| In progress | 2 |
+| Ready | 3 |
 | Proposed (waiting for the owner to set `ready`) | 27 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 32/69 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 36/70 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-77 Spec §5 solver text; 3D-81 Bug: worldToLocal for all CRSs; 3D-47 SC: 3D view port + host.
+**Running:** 3D-84 BACKLOG graph icons; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D73["3D-73 backlog:sync: SC row ids"]
+    D76["3D-76 check:docs: DECISIONS table integrity"]
+    D77["3D-77 Spec §5 solver text"]
+    D81["3D-81 Bug: worldToLocal for all CRSs"]
     D80["3D-80 fitPlane order-independent"]
     D78["3D-78 Single writer + provisional ids"]
     D69["3D-69 Point cloud CRS vs. building CRS"]
@@ -68,22 +72,19 @@ flowchart TB
     D14["3D-14 Replace roof, rebuild envelope"]
   end
   subgraph ready["READY"]
-    D76["3D-76 check:docs: DECISIONS table integrity"]
-    D73["3D-73 backlog:sync: SC row ids"]
     D74["3D-74 val3dity image + binding"]
     D47["3D-47 SC: 3D view port + host"]
     D48["3D-48 SC: apps/3dqm host"]
     D51["3D-51 geoviewer scene3d adapter"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
+    D84["3D-84 BACKLOG graph icons"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
-    D81["3D-81 Bug: worldToLocal for all CRSs"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D82["3D-82 Spec: 3D-69 cloud CRS (provisional)"]
     D83["3D-83 ADR-0007 note: projections (provisional)"]
-    D77["3D-77 Spec §5 solver text"]
     D15["3D-15 Core edits"]
     D16["3D-16 Ridge, eave, elevations"]
     D17["3D-17 Repair ops"]
@@ -180,6 +181,8 @@ flowchart TB
   D07 --> D08
   D08 --> D09
   D09 --> D10
+  D73 --> D84
+  D76 --> D84
   D30 --> D78
   D05 --> D78
   D13 --> D77
@@ -296,16 +299,17 @@ flowchart TB
 | 3D-80 | `fitPlane` result independent of the input point order (same cloud through the LAS or COPC adapter gives the same `FIT_PLANE` result) | here | geo-model3d/cloud | 22 | G4 | S | done (D-203; merged into base, no PR) |
 | 3D-71 | `FIT_PLANE` command: apply the plane fit as a `PLANE` measurement or as a face's new `supportPlane` through PREVIEW/COMMIT (spec §10.12 r4, D-134) | here | geo-model3d/ops | 14, 22 | G4 | M | proposed |
 | 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | done (D-176; merged into base, no PR) |
-| 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | ready (D-159; bug of 3D-05, found by 3D-46, D-146) |
+| 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | done (D-210; merged into base, no PR) |
 | 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 23 | G5 | M | ready (D-155) |
 | 3D-75 | Import state from `validateModel`: replace the interim `import/state.js` (D-157) | here | geo-model3d (index, import, validate) | 10, 12 | G1 | S | done (D-185; merged into base, no PR) |
-| 3D-76 | `check:docs`: DECISIONS.md table integrity - a `D-NN` / `Q-NN` row in "Open-question status updates" must have the status-row shape and name an existing id; a decision row outside "## Decisions" is a problem (D-167) | here | tools | 30, 05 | G0 | S | ready (D-177) |
-| 3D-77 | Spec §5 text for the solver decisions: per-kind constraint table (D-169) and D-170..D-172 | here | docs/specs | 13, 66 | G3 | S | in-progress (D-204; wp/3d-77-spec-solver) |
+| 3D-76 | `check:docs`: DECISIONS.md table integrity - a `D-NN` / `Q-NN` row in "Open-question status updates" must have the status-row shape and name an existing id; a decision row outside "## Decisions" is a problem (D-167) | here | tools | 30, 05 | G0 | S | done (D-209; merged into base, no PR) |
+| 3D-77 | Spec §5 text for the solver decisions: per-kind constraint table (D-169) and D-170..D-172 | here | docs/specs | 13, 66 | G3 | S | done (D-206; merged into base, no PR) |
 | 3D-78 | Single writer and provisional ids: push guard hook, `check:docs` provisional-id rule for rows and ADRs, generated BACKLOG overview, skills `merge-wp` / `wp-session` / `task-intake` and AGENTS.md §3/§6 updated (D-178..D-180) | here | tools, .claude, AGENTS.md | 30, 05 | G0 | M | done (D-202; merged into base, no PR) |
 | 3D-79 | Service image licence check: no GPL, LGPL or AGPL in the kernel service container image (3D-ADR-0004 decision 3, D-181) | here | service image, tools/check-arch | 23, 67 | G5 | M | proposed |
-| 3D-81 | Bug: public `worldToLocal` / `localToWorld` use a plain translation; wrong for geographic and north-first projected buildings (found by 3D-69) | here | geo-model3d (index) | 09, 32, 69 | G1 | S | in-progress (D-204; wp/3d-81-world-local) |
+| 3D-81 | Bug: public `worldToLocal` / `localToWorld` use a plain translation; wrong for geographic and north-first projected buildings (found by 3D-69) | here | geo-model3d (index) | 09, 32, 69 | G1 | S | done (D-205; merged into base, no PR) |
 | 3D-82 | Spec update for 3D-69: §4a cloud reprojection (`createCrsMapping`, `DATUM_MISMATCH` / `NO_PROJECTION`), §9 cloud CRS from the dataset descriptor (D-164, D-165, D-196..D-198) | here | docs/specs | 69, 72 | G4 | S | proposed |
 | 3D-83 | 3D-ADR-0007 note: the CRS table also holds PROJ proj-strings of projected CRSs, verified against PROJ (D-198); needs owner approval (D-18) | here | docs/decisions/adr | 69 | G4 | S | proposed |
+| 3D-84 | BACKLOG graph icons: status and work-type icon per WP node, generated by `check-docs --fix` (D-208) | here | tools, docs | 73, 76 | G0 | M | in-progress (D-211; wp/3d-84-graph-icons; D-208) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -314,7 +318,7 @@ flowchart TB
 | 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared | contracts | 06, 27 | G3 | S | proposed (D-37) |
 | 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | in-progress (D-61; SC wp/70-3d-view-host, wp/71-3d-camera-controls; started in a fresh cloud session; UI per brandbook, D-40) |
 | 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
-| 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared | tools, CI | 27 | G0 | S | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
+| 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared (76) | tools, CI | 27 | G0 | S | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
 | 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server (mounts `createKernelHandler`, 3D-ADR-0002), file storage port for tests, P4 canary scan of the client build | geoviewer | host | 23, 43 | G5 | M | proposed (UI per brandbook, D-40) |
 | 3D-51 | geoviewer `scene3d` adapter implementing the 3D view port (entity-id pick, model3d drawing in GV) | geoviewer | scene3d | 47, 50 | G5 | M | ready (D-61; waits for 3D-47, 3D-50; D-54; UI per brandbook, D-40) |
 
@@ -480,6 +484,19 @@ flowchart TB
 - Accept: a planted push to the base from a WP session is refused; a planted final id on a WP branch fails `check:docs`;
   `--fix` makes a hand-broken count pass; `node --test tools/check-docs.test.mjs` and `npm run check` pass.
 - Decisions: D-38, D-178..D-180, D-174  Open: -
+
+### 3D-84 BACKLOG graph icons (D-208)
+- Source: owner, 2026-11-24 ("icons for each WP were agreed; I do not see them"; no record found, decided anew).
+- Goal: the mermaid graph shows each WP's status and work type at a glance.
+- Scope in: a work-type source per row (a new `Type` column, or a rule from the existing cells - the WP proposes one in
+  its plan, owner approves); `check-docs --fix` writes `<status icon> <type icon> 3D-NN <label>` into every node label
+  and keeps the subgraphs; `check-docs` fails on a hand-edited or stale icon; parsers that read the table or the labels
+  (`check-docs`, `backlog:sync`, the `Running:` line) handle the new column / icons; the icon legend under the graph;
+  rendering checked on GitHub (emoji in quoted mermaid labels). Scope out: colours (would need brandbook tokens, D-40).
+- Accept: `--fix` on the current BACKLOG adds both icons to every node; a row status change moves the status icon on
+  the next `--fix`; a planted wrong icon fails `check:docs`; `npm run check` and `backlog:sync` pass; a screenshot or
+  rendered check of the graph on GitHub is recorded in the checkpoint.
+- Decisions: D-180, D-208  Open: -
 
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under

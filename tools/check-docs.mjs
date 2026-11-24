@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { section, cells } from './check-docs-md.mjs';
 import { PROVISIONAL, PROVISIONAL_ADR, definedFinalIds, newFinalIds } from './check-docs-ids.mjs';
 import { overview } from './check-docs-overview.mjs';
+import { checkDecisionTables } from './check-docs-decisions.mjs';
 
 export { section };
 
@@ -111,20 +112,7 @@ function checkDetails(lines, rows, out) {
 function checkDecisionIds(root, out) {
   const file = join(root, DECISIONS);
   if (!existsSync(file)) return void out.push(`${DECISIONS}: missing`);
-  const lines = readFileSync(file, 'utf8').split('\n');
-  for (const [heading, prefix] of [['## Decisions', 'D'], ['## Open questions', 'Q']]) {
-    const sec = section(lines, heading);
-    if (sec.start < 0) { out.push(`${DECISIONS}: section "${heading}" missing`); continue; }
-    const seen = new Map();
-    sec.lines.forEach((l, i) => {
-      const m = /^\|\s*([A-Z]-(?:3D\d+-)?\d+)\s*\|/.exec(l);
-      if (!m) return;
-      const at = `${DECISIONS}:${sec.start + i + 2}`;
-      if (!m[1].startsWith(`${prefix}-`)) out.push(`${at}: ${m[1]} listed under "${heading}"`);
-      if (seen.has(m[1])) out.push(`${at}: duplicate id ${m[1]} (first at line ${seen.get(m[1])})`);
-      else seen.set(m[1], sec.start + i + 2);
-    });
-  }
+  out.push(...checkDecisionTables(readFileSync(file, 'utf8')));
 }
 
 /**
