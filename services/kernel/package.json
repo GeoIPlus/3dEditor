@@ -6,5 +6,8 @@
   "type": "module",
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "laz-perf": "0.0.7"
   }
 }

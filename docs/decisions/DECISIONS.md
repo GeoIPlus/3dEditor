@@ -199,6 +199,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-183 | `importBuilding` stays synchronous: `index.js` takes import state and issues from the `validate` module's sync core (`runChecks` COMMIT_VALIDATION with `fullSolid` + `toIssues`, what `validateModel` runs in that mode without the external port), not by awaiting `validateModel`; no public signature change | Owner, dialog, 2026-11-24 (3D-75) |
 | D-184 | Imported GT-I2 reports 5 issues: 2 `OPEN_BOUNDARY` (ridge), 2 `DEGENERATE_EDGE` (0.03 m gable edges, D-156) and 1 `SHELL_NOT_CLOSED` (open shell); only the 3D-10 test-code count changes 4 -> 5, the GT-I2 fixture numbers are untouched; import does not filter validation findings | Owner, dialog, 2026-11-24 (3D-75) |
 | D-185 | 3D-75 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-183, D-184 | Owner, WP session 3D-75, 2026-11-24 |
+| D-186 | [3D-ADR-0009](adr/3D-ADR-0009-copc-laz-decoder.md) accepted (D-18, D-109): `laz-perf` 0.0.7 (Apache-2.0, WASM) is a runtime dependency of `services/kernel` only, behind an own COPC reader (header, `info` VLR, hierarchy, node selection); `services/*` becomes an npm workspace. Offered and not chosen: npm `copc` 0.0.9 (MIT; still needs `laz-perf`, adds `cross-fetch` -> `node-fetch` 2.7 -> `whatwg-url`, `tr46`, `webidl-conversions`) | Owner, dialog, 2026-11-24 (3D-70) |
+| D-187 | `fitPlane` (RANSAC, D-130) depends on the input point order (GT-20: 444 inliers in JSON order, 439 in COPC node order); this becomes intake row 3D-80, 3D-70 unchanged | Owner, dialog, 2026-11-24 (3D-70) |
+| D-188 | 3D-70 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-186, D-187, intake row 3D-70.1 became 3D-80; ADR number 3D-ADR-0009 kept (free) | Owner, WP session 3D-70, 2026-11-24 |
 
 ## Open questions
 
