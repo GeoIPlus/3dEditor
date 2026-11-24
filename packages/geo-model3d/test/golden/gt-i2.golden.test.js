@@ -39,7 +39,10 @@ describe('GT-I2 import with a duplicated ridge', () => {
       expect(model.halfEdges[i.entityIds[0]].twinId).toBeNull();
       expect(length(i.entityIds[0])).toBeLessThan(PROFILE.minEdgeLengthM);
     }
-    expect(report.issues.length).toBe(4);
+    // + one SHELL_NOT_CLOSED on the open shell: import takes its issues from validate (3D-75, D-184)
+    const shell = report.issues.filter((i) => i.code === 'SHELL_NOT_CLOSED');
+    expect(shell.map((i) => i.entityIds)).toEqual(Object.keys(model.shells).map((id) => [id]));
+    expect(report.issues.length).toBe(5);
   });
   it('the model is loaded completely: every input surface is a face, nothing dropped', () => {
     const surfaces = cityjson.CityObjects[step.cityObjectId].geometry[0].boundaries[0].length;
