@@ -6,6 +6,9 @@ owner: 3DQM maintainers (owner: Andy)
 
 # wp-session
 
+**Hand over, never write the base (D-178).** Push only your WP branch; merges, `ready`, starts and final ids are the
+coordinator's.
+
 ## Start (first turn)
 
 1. Read AGENTS.md, the WP row and its Details entry in `docs/BACKLOG.md`, the decisions it cites.
@@ -38,11 +41,12 @@ Checks outstanding: <list>
 ## Finish
 
 1. All acceptance lines proven; `npm run check` output read (once 3D-05 exists).
-2. Decisions and questions of this WP keep provisional ids `D-3D<wp>-<n>` / `Q-3D<wp>-<n>`; the merging session assigns
-   final ids (D-38). Update: module card, STRUCTURE.md, DECISIONS.md, BACKLOG row -> `review` (PR link, or "local, PR not requested"),
-   overview counts and mermaid group; mirror rows if the WP touches another repository.
+2. Ids this WP creates stay provisional: `D-3D<wp>-<n>`, `Q-3D<wp>-<n>`, rows `3D-<wp>.<n>`, ADRs `3D-ADR-<wp>-<n>`; the
+   merging session assigns final ids (D-38, D-179). Update: module card, STRUCTURE.md, DECISIONS.md, BACKLOG row -> `review` (PR link, or "local, PR not requested"),
+   overview via `node tools/check-docs.mjs --fix`, mermaid group; mirror rows if the WP touches another repository.
 3. Checkpoint: `status: done`, results with numbers, what the next WP needs to know.
-4. Report to the owner in chat: what was done, check results, open questions (asked via dialog, not as text).
+4. Report to the owner in chat: what was done, check results, open questions (asked via dialog, not as text). When the
+   owner accepts, send_message to the coordinator: "WP 3D-<id> done, owner accepted, <branch>@<sha>".
 5. **Keep the repository clean (D-42).** After the coordinating session has merged the WP into the base and confirmed
    the branch head is an ancestor of the base, the WP branch is deleted and the session archived. A cloud session may push
    only its own branch: the WP session tries to delete its own branch after the merge is confirmed; if refused, the
