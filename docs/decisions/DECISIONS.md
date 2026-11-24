@@ -189,6 +189,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-173 | Spec §5 receives the per-kind table (D-169) and D-170..D-172 through a `proposed` intake row that the coordinating session adds after 3D-66 is merged (both edit §5); until then the [solve module card](../../packages/geo-model3d/README.md#solve-3d-13) and this table are the authority | Owner, dialog, 2026-11-23 (3D-13) |
 | D-174 | 3D-13 accepted (done); merged into the base without PR via the `merge-wp` skill by the coordinating session (owner: every merge and all id numbering go through the coordinator); provisional ids of 3D-13 became D-169..D-173; its D-173 follow-up is row 3D-77 | Owner, dialog, 2026-11-24 (3D-13) |
 | D-175 | Every merge into the base and every final decision / question / row id is assigned by the coordinating session only; WP sessions keep provisional ids and hand the merge over (send_message), they do not merge themselves | Owner, dialog, 2026-11-24 (3D-13 session) |
+| D-176 | 3D-72 accepted (done); merged into the base without PR via the `merge-wp` skill; no provisional ids | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
