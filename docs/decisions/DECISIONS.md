@@ -233,6 +233,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-217 | `coordinateFrame: WORLD` for `REPLACE_ROOF`: heights (`roofZ`, `eaveZ`, `ridgeZ`, `zLow`, `zHigh`) are mapped to local z through the building frame (crs metric frame, as import); a `roofPlane` with WORLD is refused `INVALID_PAYLOAD` | Owner, dialog, 2026-11-24 (3D-14) |
 | D-218 | A footprint whose body cannot be resolved uniquely (its Building / BuildingPart semantic node has no solid or several) -> `INVALID_TOPOLOGY` with the footprint and semantic node ids | Owner, dialog, 2026-11-24 (3D-14) |
 | D-219 | 3D-14 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-212..D-218; the `executeCommand` pipeline is in the base, operation rows 3D-15..3D-21 and 3D-71 can build on it | Owner, WP session 3D-14, 2026-11-24 |
+| D-220 | Operations 3D-15, 3D-16, 3D-17, 3D-20, 3D-21 set `ready` and started in parallel fresh sessions on the 3D-14 pipeline; each adds only its own entries to `ops/registry.js` and its own `ops/*` files; merged one at a time | Owner, chat, 2026-11-24 |
 
 ## Open questions
 
