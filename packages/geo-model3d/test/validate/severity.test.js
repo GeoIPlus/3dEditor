@@ -1,6 +1,6 @@
 // 3D-12 Accept 1 (spec §8): for each code of the severity table, a fixture in DRAFT_SOLID and one in VALID_SOLID
 // produce the table's severity. Detected codes come from defective copies of golden inputs; codes of other modules come
-// in as findings (D-144). The expected table is typed here from spec §8 rule 4 / D-77, not imported from src.
+// in as findings (D-151). The expected table is typed here from spec §8 rule 4 / D-77, not imported from src.
 import { describe, it, expect } from 'vitest';
 import { validate, golden, addPolyhedron, addBoxSolid, addTetra, reverseFace } from './helpers.js';
 

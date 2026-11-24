@@ -91,7 +91,7 @@ describe('INCONSISTENT_JUNCTION (spec §4 rule 5, Accept 3)', () => {
     m.vertices['v-b0'].definingFaceIds = ids;
     return m;
   };
-  // Measure D-145 (3D-12): spread of the 3-plane points; for this symmetric node it is sqrt(2) x the shift.
+  // Measure D-152 (3D-12): spread of the 3-plane points; for this symmetric node it is sqrt(2) x the shift.
   it('spread > topologySnapTolM is reported, <= is not', () => {
     const within = inconsistentJunctions(hip(0.007), TOL, ['v-b0']); // spread 0.0099
     const beyond = inconsistentJunctions(hip(0.008), TOL, ['v-b0']); // spread 0.0113
@@ -107,7 +107,7 @@ describe('INCONSISTENT_JUNCTION (spec §4 rule 5, Accept 3)', () => {
     const gt19 = readFixture('GT-19', 'input.model.json');
     const four = Object.values(gt19.vertices).filter((/** @type {any} */ v) => v.definingFaceIds.length >= 4);
     expect(four.length).toBeGreaterThan(0);
-    // D-145: the 0.05 m divergence of GT-19 is an inconsistent junction (spread 0.066 m)
+    // D-152: the 0.05 m divergence of GT-19 is an inconsistent junction (spread 0.066 m)
     const j = inconsistentJunctions(gt19, TOL);
     expect(j.map((x) => x.entityIds[0])).toEqual(['v-a']);
     expect(j[0].residual).toBeCloseTo(0.0661, 3);

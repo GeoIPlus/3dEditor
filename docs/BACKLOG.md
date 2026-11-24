@@ -13,20 +13,20 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-12 accepted D-147, merged; 3D-73 added by 3D-12, ready D-148).
+Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155).
 
 | Progress | Rows |
 |---|---:|
 | Done | 20 / 59 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 9 |
-| Proposed (waiting for the owner to set `ready`) | 29 |
+| Ready | 11 |
+| Proposed (waiting for the owner to set `ready`) | 27 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 20/59 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113).
-**Running:** SC 3D view port + host 3D-47 (D-61), CityJSON import 3D-10 (D-128); solver 3D-13, spec/AGENTS ADR refs 3D-66, licence check 3D-67 (D-129).
+**Running:** SC 3D view port + host 3D-47 (D-61), CityJSON import 3D-10 (D-128); solver 3D-13, spec/AGENTS ADR refs 3D-66, licence check 3D-67 (D-129); spec text for 3D-22 decisions 3D-72 (D-138); COPC adapter 3D-70 (D-139).
 
 ```mermaid
 flowchart TB
@@ -55,7 +55,9 @@ flowchart TB
   subgraph review["REVIEW"]
   end
   subgraph ready["READY"]
-    D73["3D-73 val3dity image + binding"]
+    D74["3D-74 val3dity image + binding"]
+    D70["3D-70 COPC-by-box points adapter"]
+    D72["3D-72 Spec: 3D-22 decisions"]
     D67["3D-67 Licence allow-list check"]
     D66["3D-66 Apply 3D-08 ADRs to spec, AGENTS"]
     D13["3D-13 Constraint solver"]
@@ -81,9 +83,7 @@ flowchart TB
     D21["3D-21 Semantics, constraints cmds"]
     D33["3D-33 Inter-building validation (P1)"]
     D69["3D-69 Point cloud CRS vs. building CRS"]
-    D70["3D-70 COPC-by-box points adapter"]
     D71["3D-71 FIT_PLANE command"]
-    D72["3D-72 Spec: 3D-22 decisions"]
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D23["3D-23 Kernel service"]
@@ -144,9 +144,9 @@ flowchart TB
   D10 --> D68
   D15 --> D68
   D23 --> D68
-  D11 --> D73
-  D12 --> D73
-  D23 --> D73
+  D11 --> D74
+  D12 --> D74
+  D23 --> D74
   D22 --> D69
   D32 --> D69
   D22 --> D70
@@ -231,7 +231,7 @@ flowchart TB
 | 3D-09 | Kernel core: half-edge B-Rep, primary planes, derived vertices, local frame, transactions, versions | here | geo-model3d/brep | 08 | G1 | L | done (D-120; merged into base, no PR) |
 | 3D-10 | Import I-01: CityJSON -> canonical model + RTG + baseline | here | geo-model3d/import | 09, 32 | G1 | L | ready (D-128) |
 | 3D-11 | Export: canonical model -> CityJSON, opaque data round-trip | here | geo-model3d/export | 10, 12 | G1 | M | proposed |
-| 3D-12 | Validation: FAST_PREVIEW, COMMIT_VALIDATION, FINAL_VALIDATION (val3dity), severity by state | here | geo-model3d/validate | 09 | G1 | L | done (D-147; merged into base, no PR; [3D-ADR-0008](decisions/adr/3D-ADR-0008-val3dity-binding.md) proposed) |
+| 3D-12 | Validation: FAST_PREVIEW, COMMIT_VALIDATION, FINAL_VALIDATION (val3dity), severity by state | here | geo-model3d/validate | 09 | G1 | L | done (D-154; merged into base, no PR; [3D-ADR-0008](decisions/adr/3D-ADR-0008-val3dity-binding.md) proposed) |
 | 3D-13 | Constraint solver and conflict diagnostics | here | geo-model3d/solve | 09 | G3 | L | ready (D-129) |
 | 3D-14 | `REPLACE_ROOF` R-01..R-04, `REBUILD_ENVELOPE` | here | geo-model3d/ops | 12, 13 | G2 | L | proposed |
 | 3D-15 | Core edits: `MOVE_VERTEX`, `MOVE_EDGE`, `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | here | geo-model3d/ops | 13 | G3 | L | proposed |
@@ -263,10 +263,10 @@ flowchart TB
 | 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | ready (D-129) |
 | 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23 | G5 | M | proposed (D-112) |
 | 3D-69 | Point cloud CRS vs. a geographic-CRS building: reproject points into the building metric frame on the server, or refuse a mismatch (D-126) | here | geo-model3d/cloud, services/kernel | 22, 32 | G4 | M | proposed |
-| 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | proposed |
+| 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | ready (D-139) |
 | 3D-71 | `FIT_PLANE` command: apply the plane fit as a `PLANE` measurement or as a face's new `supportPlane` through PREVIEW/COMMIT (spec §10.12 r4, D-134) | here | geo-model3d/ops | 14, 22 | G4 | M | proposed |
-| 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | proposed |
-| 3D-73 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-141, D-142) | here | services/kernel, val3dity image, contracts | 11, 12, 23 | G5 | M | ready (D-148) |
+| 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | ready (D-138) |
+| 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 23 | G5 | M | ready (D-155) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | proposed (UI per brandbook, D-40) |
@@ -514,7 +514,7 @@ flowchart TB
 - Accept: ADR accepted by the owner (D-18, D-109); a COPC test file gives exactly the points of the same box as its LAS
   copy through `createLasPointsAdapter`; only nodes meeting the box are decoded (counted in the test); GT-20 / GT-21
   results unchanged when the points come from the COPC adapter.
-- Decisions: D-35, D-109, D-133  Open: Q-44 (committed COPC test file)
+- Decisions: D-35, D-109, D-133, D-139, D-140 (Q-44: committed COPC test file allowed)  Open: none
 
 ### 3D-71 `FIT_PLANE` command (D-134)
 - Source: 3D-22 session 2026-11-23, owner dialog (D-134): the command needs the `executeCommand` pipeline.
@@ -575,8 +575,8 @@ flowchart TB
   fingerprint; results vs v0.3 §11 recorded in a verification note; a miss is an owner escalation (D-06).
 - Decisions: D-111  Open: Q-42
 
-### 3D-73 val3dity binding (D-141, D-142)
-- Source: 3D-12 (owner dialog 2026-11-23, Q-10 closed by D-141; split by D-142);
+### 3D-74 val3dity binding (D-148, D-149)
+- Source: 3D-12 (owner dialog 2026-11-23, Q-10 closed by D-148; split by D-149);
   [3D-ADR-0008](decisions/adr/3D-ADR-0008-val3dity-binding.md). Id provisional, may be renumbered at merge.
 - Goal: FINAL_VALIDATION runs the real val3dity, pinned, without GPL code in the kernel or the service image (D-109).
 - Scope in: container image building val3dity from source (pinned commit/tag 2.7.0, CGAL/GEOS versions recorded,
@@ -588,5 +588,5 @@ flowchart TB
   yields findings with `externalValidatorCode` mapped by `validate`; the image's val3dity version equals the pin and
   appears in `validatorVersion`; image unavailable -> `UNAVAILABLE`, model unchanged; the service image passes the
   licence allow-list check (3D-67) with val3dity outside it.
-- Decisions: D-91, D-109, D-141, D-142  Open: Q-45
+- Decisions: D-91, D-109, D-148, D-149  Open: Q-45
 

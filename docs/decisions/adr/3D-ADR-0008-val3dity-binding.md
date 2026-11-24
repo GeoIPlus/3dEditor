@@ -1,8 +1,8 @@
 # 3D-ADR-0008: val3dity binding for FINAL_VALIDATION
 
-- Status: proposed. The owner chose the option in a dialog on 2026-11-23 (D-141); the ADR text itself waits for the
+- Status: proposed. The owner chose the option in a dialog on 2026-11-23 (D-148); the ADR text itself waits for the
   owner's acceptance (D-18). It may be renumbered at merge (D-38).
-- WP: 3D-12   Questions closed: Q-10 (by D-141)   Opened: -
+- WP: 3D-12   Questions closed: Q-10 (by D-148)   Opened: -
 
 ## Context
 
@@ -20,14 +20,14 @@
   3D-ADR-0004 context).
 - [V] The README offers a command-line tool and a web application (`geovalidation.bk.tudelft.nl/val3dity`); input
   formats include CityJSON. There is no Dockerfile on `main` (`Dockerfile` 404).
-- [D] D-142: 3D-12 builds the kernel side only (`src/validate`, port, stub); the image and the binding are a new row
+- [D] D-149: 3D-12 builds the kernel side only (`src/validate`, port, stub); the image and the binding are a new row
   after 3D-23 (the service does not exist yet).
 
 ## Options
 
 | Option | Consequences | Risk |
 |---|---|---|
-| **A. Own container** (chosen, D-141): a separate image builds val3dity 2.7.0 from source (pinned commit), with a thin wrapper that takes a CityJSON document and returns val3dity's JSON report; `services/kernel` calls it over the network through the validator port | Kernel and service images stay permissive (D-109); GPL code is a separate program with its own image (aggregation, not linking); version pinned by image tag + commit | A second image to build and run; one network hop, only on FINAL_VALIDATION; CGAL build time |
+| **A. Own container** (chosen, D-148): a separate image builds val3dity 2.7.0 from source (pinned commit), with a thin wrapper that takes a CityJSON document and returns val3dity's JSON report; `services/kernel` calls it over the network through the validator port | Kernel and service images stay permissive (D-109); GPL code is a separate program with its own image (aggregation, not linking); version pinned by image tag + commit | A second image to build and run; one network hop, only on FINAL_VALIDATION; CGAL build time |
 | B. Sidecar binary in the service image, run as a child process | Simplest wiring | Breaks D-109 (GPL code in the service image); needs a D-109 amendment and a licence review |
 | C. TU Delft web application | Nothing to build | Building data leaves our infrastructure; no version pin, no availability guarantee; not for production |
 
@@ -39,7 +39,7 @@ Option A. The binding is split in two:
    awaits `externalValidator.validate({ model, tolerances })`, which returns `{ validatorVersion, findings: [{
    externalValidatorCode, entityIds?, location?, suggestedFix? }] }`. `validate` maps val3dity codes to contract codes
    (`src/validate/external.js`, `VAL3DITY_CODES`, [A] pending review Q-45) and assigns severity from the one table
-   (D-144). `validatorVersion` of the report = `geo-model3d-validate/1+<port version>`. A port failure rejects the
+   (D-151). `validatorVersion` of the report = `geo-model3d-validate/1+<port version>`. A port failure rejects the
    promise; the service answers `UNAVAILABLE` and the model is unchanged (spec §2.4).
 2. **Service side (new row after 3D-23).** The adapter exports the model (3D-11, `exportBuilding`), sends the CityJSON
    document to the val3dity container, maps val3dity feature / primitive ids back to kernel entity ids through the

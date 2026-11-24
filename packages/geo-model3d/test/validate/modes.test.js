@@ -68,7 +68,7 @@ describe('every mode', () => {
     }
   });
 
-  it('DRAFT_SURFACE reads the draft column, APPROVED the valid column (D-146)', async () => {
+  it('DRAFT_SURFACE reads the draft column, APPROVED the valid column (D-153)', async () => {
     const s = await validateModel(lifted(), { mode: 'COMMIT_VALIDATION', targetState: 'DRAFT_SURFACE', tolerances: TOLS, clock });
     expect(s.issues.map((/** @type {any} */ i) => i.severity)).toEqual(['WARNING', 'WARNING']);
     const a = await validateModel(lifted(), { mode: 'COMMIT_VALIDATION', targetState: 'APPROVED', tolerances: TOLS, clock });

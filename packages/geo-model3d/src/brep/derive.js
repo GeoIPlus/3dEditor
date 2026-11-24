@@ -53,7 +53,7 @@ export function vertexPlaneViolations(model, tol) {
  */
 
 /**
- * Spread of a node: the largest distance between the points where triples of its independent planes meet (D-145;
+ * Spread of a node: the largest distance between the points where triples of its independent planes meet (D-152;
  * replaces the 3D-09 reading "largest distance of the least-squares point", which passed GT-19's 0.05 m divergence at
  * 0.00997 m). 0 when fewer than two triples are independent.
  * @param {Plane[]} planes
@@ -78,7 +78,7 @@ export function junctionSpread(planes, rankEps) {
 
 /**
  * Nodes of four or more planes that do not meet in one point within `topologySnapTolM` (spec §4 rule 5), measured by
- * `junctionSpread` (D-145).
+ * `junctionSpread` (D-152).
  * @param {BuildingModel} model
  * @param {CoreTolerances} tol
  * @param {Iterable<string>} [vertexIds] default: every vertex

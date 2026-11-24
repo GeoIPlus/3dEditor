@@ -1,5 +1,5 @@
 // validate (3D-12): planar polygon helpers in the local metric frame - Newell normals, areas, projection to 2D,
-// tolerance-based segment and point predicates (D-143: no exact-predicate library; every test compares with a
+// tolerance-based segment and point predicates (D-150: no exact-predicate library; every test compares with a
 // tolerance from the profile).
 import { add, cross, dot, sub, norm, scale } from '../brep/index.js';
 

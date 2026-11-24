@@ -1,6 +1,6 @@
 // validate (3D-12): SELF_INTERSECTION (spec §8 rules 1-2; v0.2 §16.2) - rings of one face (self-crossing, crossing
 // rings, hole outside the outer ring; val3dity 104 / 201 / 206 [A]) and faces of one shell that pierce or overlap each
-// other (val3dity 306 [A]). Tolerance-based predicates only (D-143). The face-pair test is reused by overlap.js.
+// other (val3dity 306 [A]). Tolerance-based predicates only (D-150). The face-pair test is reused by overlap.js.
 import { signedDistance, sub, scale, add } from '../brep/index.js';
 import { planeBasis, to2d, segmentsMeet, strictlyInside, inRing, bbox, boxesOverlap } from './polygon.js';
 import { shellFaces } from './context.js';

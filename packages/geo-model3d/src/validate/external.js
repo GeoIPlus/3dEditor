@@ -1,6 +1,6 @@
 // validate (3D-12): the external validator port of FINAL_VALIDATION (spec §8 API; 3D-ADR-0002 C1: the validator is a
 // port supplied by the service, not code here). The real binding - val3dity in its own container, version pinned - is
-// D-141 / 3D-ADR-0008, built by the row that follows 3D-23 (D-142). This file holds the port type and the map of
+// D-148 / 3D-ADR-0008, built by the row that follows 3D-23 (D-149). This file holds the port type and the map of
 // val3dity error codes (val3dity docs `errors.rst`, 2.7.0) to contract codes.
 
 /** @typedef {import('./context.js').RawIssue} RawIssue */

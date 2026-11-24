@@ -1,5 +1,5 @@
 // 3D-12 Accept 3 (spec §8): FINAL_VALIDATION with a stub validator port reports `externalValidatorCode` and
-// `validatorVersion`. The real val3dity binding is the row after 3D-23 (D-141, D-142).
+// `validatorVersion`. The real val3dity binding is the row after 3D-23 (D-148, D-149).
 import { describe, it, expect } from 'vitest';
 import { validate, golden, deepFreeze, NOW } from './helpers.js';
 import { VAL3DITY_CODES } from '../../src/validate/index.js';

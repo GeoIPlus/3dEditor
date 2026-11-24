@@ -1,6 +1,6 @@
 // validate (3D-12): the issue taxonomy - severity by target state (spec §8 rule 4; v0.3 §8.3; D-77) and scope per code
 // (spec §8 rule 9). One table for every source of an issue: own detectors, findings of other modules and the external
-// validator (D-144). The contract `validation-report` enforces the same severities for DRAFT_SOLID / VALID_SOLID.
+// validator (D-151). The contract `validation-report` enforces the same severities for DRAFT_SOLID / VALID_SOLID.
 
 /** @typedef {'INFO' | 'WARNING' | 'ERROR'} Severity */
 /** @typedef {'GEOMETRY' | 'TOPOLOGY' | 'CONSTRAINT' | 'MEASUREMENT' | 'SEMANTICS' | 'EXPORT'} Scope */
@@ -38,7 +38,7 @@ export const CODES = Object.freeze(Object.keys(CODE_TABLE));
 
 /**
  * Column of the severity table for a target state. The spec has two columns; `DRAFT_SURFACE` reads the draft column
- * and `APPROVED` (= VALID_SOLID + review, v0.3 §8.1) the valid column (D-146).
+ * and `APPROVED` (= VALID_SOLID + review, v0.3 §8.1) the valid column (D-153).
  * @param {string} state contract `ModelState`
  * @returns {0 | 1}
  */

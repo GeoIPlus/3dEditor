@@ -18,7 +18,7 @@ export { TOPOLOGY_KIND_CODE } from './structure.js';
 /** @typedef {import('./external.js').ExternalValidatorPort} ExternalValidatorPort */
 
 /**
- * A finding of another kernel module (solve, crs, export, cloud, import) handed to validation (D-144).
+ * A finding of another kernel module (solve, crs, export, cloud, import) handed to validation (D-151).
  * @typedef {object} Finding
  * @property {string} code contract `ValidationCode`
  * @property {string[]} entityIds

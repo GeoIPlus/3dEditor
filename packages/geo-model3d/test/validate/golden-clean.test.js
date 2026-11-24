@@ -14,7 +14,7 @@ const DRAFTS = {
   // GT-I2 shape: ridge duplicated with a 0.03 m gap -> open ridge and gable tops, 0.03 m gable edges (< minEdgeLengthM)
   'GT-06/input.model.json': ['OPEN_BOUNDARY', 'SHELL_NOT_CLOSED', 'DEGENERATE_EDGE'],
   'GT-24/input.model.bld-gt-24-b.json': ['OPEN_BOUNDARY', 'SHELL_NOT_CLOSED', 'DEGENERATE_EDGE'],
-  // 4-plane apex, east slope 0.05 m off: spread 0.066 m > topologySnapTolM (D-145); normal distance 0.0398 m > planarTolM
+  // 4-plane apex, east slope 0.05 m off: spread 0.066 m > topologySnapTolM (D-152); normal distance 0.0398 m > planarTolM
   'GT-19/input.model.json': ['INCONSISTENT_JUNCTION', 'NON_PLANAR_FACE'],
   'GT-19/input.model.fixed.json': ['INCONSISTENT_JUNCTION', 'NON_PLANAR_FACE'],
 };
