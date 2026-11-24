@@ -97,8 +97,10 @@ export function runPipeline(model, command, opts) {
   if (!tx.ok) return reject(/** @type {ContractError} */ (tx.refusal), [], warnings);
 
   const issues = toIssues(raw, target);
-  const previous = /** @type {ValidationIssue[]} */ (opts.previousIssues) ?? toIssues(runChecks(model, { mode: 'COMMIT_VALIDATION', tolerances: tol, fullSolid: true }), target);
-  const fresh = newErrors(previous, issues, tx.topologyLineage);
+  // the input version's issues matter only when the candidate has errors (a new error must be an error first)
+  const hasErrors = issues.some((i) => i.severity === 'ERROR');
+  const previous = !hasErrors ? [] : /** @type {ValidationIssue[]} */ (opts.previousIssues) ?? toIssues(runChecks(model, { mode: 'COMMIT_VALIDATION', tolerances: tol, fullSolid: true }), target);
+  const fresh = hasErrors ? newErrors(previous, issues, tx.topologyLineage) : [];
   if (target === 'VALID_SOLID' && fresh.length > 0) {
     // v0.2 C.0 "GEOMETRY_INVALID" = INVALID_GEOMETRY (spec §2.4); the new errors are in the report
     return reject(contractError('INVALID_GEOMETRY', fresh.flatMap((i) => i.entityIds), 'commit adds new errors (spec §3 r4)'), issues, warnings);

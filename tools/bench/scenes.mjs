@@ -80,5 +80,28 @@ export function sawtooth(k, gate) {
   };
 }
 
-/** The scenes of 3D-ADR-0006: GT-03, the gate scene (199 faces, <= 200 of v0.3 §11) and 499 faces (D-94). */
-export const scenes = () => [gt03(), sawtooth(97, true), sawtooth(247, false)];
+/**
+ * REPLACE_ROOF PREVIEW through `executeCommand` (3D-14), not a gate: a gable on the scene's footprint, ridge Z varied
+ * per request (8.10 .. 8.29 m). Measures the whole pipeline: template, envelope, constraint step, COMMIT_VALIDATION
+ * of the candidate and of the input version (no `previousIssues` cache), patch and lineage.
+ * @param {Scene} base @returns {Scene}
+ */
+export function replaceRoof(base) {
+  const m = base.model;
+  return {
+    id: `${base.id}-roof`, faces: base.faces, gate: false, model: m,
+    command: (i) => ({
+      ...moveEdge(m.buildingId, m.version, { footprintId: 'fp-1', template: 'GABLE', ridgeAxis: 'LOCAL_X', eaveZ: 5, ridgeZ: 8 + offset(i), symmetric: true }, i),
+      operation: 'REPLACE_ROOF',
+    }),
+  };
+}
+
+/**
+ * The scenes of 3D-ADR-0006: GT-03, the gate scene (199 faces, <= 200 of v0.3 §11) and 499 faces (D-94); then the
+ * REPLACE_ROOF PREVIEW of 3D-14 on GT-03 and on the gate scene's footprint.
+ */
+export const scenes = () => {
+  const gate = sawtooth(97, true);
+  return [gt03(), gate, sawtooth(247, false), replaceRoof(gt03()), replaceRoof(gate)];
+};

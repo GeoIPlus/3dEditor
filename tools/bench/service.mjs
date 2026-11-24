@@ -4,10 +4,16 @@
 // The real service is 3D-23; this file is bench tooling, not service code.
 import { performance } from 'node:perf_hooks';
 import { previewMoveEdge } from '../../packages/geo-model3d/spike/move-edge/index.js';
+import { executeCommand } from '../../packages/geo-model3d/src/index.js';
 import { createAjv } from '../../contracts/model3d/test/load.mjs';
 
 /** Tolerance profile defaults (spec §2.3, D-13), the fields the spike uses. */
 export const TOL = { planarTolM: 0.02, topologySnapTolM: 0.01, minEdgeLengthM: 0.05, minFaceAreaM2: 0.1 };
+/** The whole tolerance profile (spec §2.3, D-13) for `executeCommand` (3D-14). */
+export const PROFILE = {
+  numericEpsilon: 1e-9, ...TOL, zAlignTolM: 0.01, coplanarTolDeg: 1, footprintAngleTolDeg: 5, flatRoofTolDeg: 1,
+  screenSnapPx: 10, heatmapBufferM: 1, planeFitMinPoints: 30, planeFitMinInlierRatio: 0.6, exportRoundDecimals: 3,
+};
 
 export const STAGES = /** @type {const} */ (['parse', 'validateCommand', 'loadModel', 'kernel', 'validateReply', 'serialize']);
 
@@ -44,7 +50,10 @@ export function createPreviewService({ models, cold = true }) {
     const model = cold ? JSON.parse(stored.json) : stored.model;
     lap('loadModel');
     const previewId = `prev-${++seq}`;
-    const result = previewMoveEdge(model, cmd, TOL, { now: NOW, previewId });
+    // MOVE_EDGE is still the 3D-08 spike until 3D-15; every other kind goes through executeCommand (3D-14)
+    const result = cmd.operation === 'MOVE_EDGE'
+      ? previewMoveEdge(model, cmd, TOL, { now: NOW, previewId })
+      : executeCommand(model, cmd, { toleranceProfile: PROFILE, clock: () => NOW, previewId }).result;
     lap('kernel');
     if (!validateResult(result)) throw new Error(`reply invalid: ${JSON.stringify(validateResult.errors?.slice(0, 3))}`);
     lap('validateReply');

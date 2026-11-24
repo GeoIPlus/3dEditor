@@ -18,15 +18,15 @@ Updated: 2026-11-24
 | Progress | Rows |
 |---|---:|
 | Done | 32 / 69 |
-| Review | 0 |
-| In progress | 4 |
+| Review | 1 |
+| In progress | 3 |
 | Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 27 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 32/69 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-14 Replace roof, rebuild envelope; 3D-77 Spec §5 solver text; 3D-81 Bug: worldToLocal for all CRSs; 3D-47 SC: 3D view port + host.
+**Running:** 3D-77 Spec §5 solver text; 3D-81 Bug: worldToLocal for all CRSs; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -65,6 +65,7 @@ flowchart TB
     D65["3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D14["3D-14 Replace roof, rebuild envelope"]
   end
   subgraph ready["READY"]
     D76["3D-76 check:docs: DECISIONS table integrity"]
@@ -83,7 +84,6 @@ flowchart TB
     D82["3D-82 Spec: 3D-69 cloud CRS (provisional)"]
     D83["3D-83 ADR-0007 note: projections (provisional)"]
     D77["3D-77 Spec §5 solver text"]
-    D14["3D-14 Replace roof, rebuild envelope"]
     D15["3D-15 Core edits"]
     D16["3D-16 Ridge, eave, elevations"]
     D17["3D-17 Repair ops"]
@@ -262,7 +262,7 @@ flowchart TB
 | 3D-11 | Export: canonical model -> CityJSON, opaque data round-trip | here | geo-model3d/export | 10, 12 | G1 | M | done (D-194; merged into base, no PR; D-189..D-193) |
 | 3D-12 | Validation: FAST_PREVIEW, COMMIT_VALIDATION, FINAL_VALIDATION (val3dity), severity by state | here | geo-model3d/validate | 09 | G1 | L | done (D-154; merged into base, no PR; [3D-ADR-0008](decisions/adr/3D-ADR-0008-val3dity-binding.md) accepted D-161) |
 | 3D-13 | Constraint solver and conflict diagnostics | here | geo-model3d/solve | 09 | G3 | L | done (D-174; merged into base, no PR) |
-| 3D-14 | `REPLACE_ROOF` R-01..R-04, `REBUILD_ENVELOPE` | here | geo-model3d/ops | 12, 13 | G2 | L | in-progress (D-204; wp/3d-14-replace-roof) |
+| 3D-14 | `REPLACE_ROOF` R-01..R-04, `REBUILD_ENVELOPE` | here | geo-model3d/ops | 12, 13 | G2 | L | review (local, PR not requested; wp/3d-14-replace-roof; D-3D14-1..7) |
 | 3D-15 | Core edits: `MOVE_VERTEX`, `MOVE_EDGE`, `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | here | geo-model3d/ops | 13 | G3 | L | proposed |
 | 3D-16 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | here | geo-model3d/ops | 13 | G3 | M | proposed |
 | 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | proposed |
