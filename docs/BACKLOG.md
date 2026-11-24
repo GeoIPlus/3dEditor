@@ -13,15 +13,15 @@ Gate: the v0.3 §13 gate the row serves (G0..G5); gates are traceability only, t
 
 ## Progress overview
 
-Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10); 3D-73 ready D-159; 3D-11 ready D-160; 3D-ADR-0008 accepted D-161, Q-45 closed D-162; 3D-71 waits for 3D-14 D-163; 3D-69 ready D-164, D-165; 3D-75 ready D-166; 3D-13 accepted D-174, merged; 3D-77 intake; 3D-76 intake D-167; 3D-75 started D-168; 3D-72 accepted D-176, merged).
+Updated: 2026-11-24 (3D-00 accepted D-48; 3D-02, 3D-05, 3D-31 ready D-49, D-50; 3D-02 accepted D-56, merged; 3D-47, 3D-48, 3D-51 added by 3D-02; 3D-05 accepted D-59, merged; 3D-28 ready D-60; 3D-47, 3D-48, 3D-51 ready D-61, 3D-47 started; 3D-28 accepted D-65, merged; 3D-04 ready D-66; 3D-06 ready D-67; 3D-04 accepted D-71, merged; 3D-31 accepted D-73, merged; 3D-03 ready D-74; 3D-06 accepted D-78, merged; 3D-07 ready D-79; 3D-64 added by intake; 3D-64 ready D-81; 3D-03 accepted D-87, merged; Q-11 closed D-88..D-94, intake 3D-32, 3D-33; 3D-32 ready D-95; 3D-64 accepted D-98, merged; 3D-65 added by 3D-64 (D-97); 3D-07 accepted D-103, merged; 3D-08 ready D-104; 3D-65 ready D-105; 3D-65 review D-106; 3D-65 accepted D-107, merged; 3D-46 ready D-108; 3D-08 accepted D-113, merged; 3D-66..3D-68 added by 3D-08 (D-112); 3D-09 ready D-115; 3D-09 accepted D-120, merged; 3D-32 accepted D-127, merged; 3D-10, 3D-12 ready D-128; 3D-13, 3D-22, 3D-66, 3D-67 ready D-129; 3D-70..3D-72 added by 3D-22; 3D-22 accepted D-137, merged; 3D-72 ready D-138; 3D-70 ready D-139, Q-44 closed D-140; 3D-66 accepted D-143, merged; 3D-46 accepted D-147, merged (SC pull request #67); 3D-73 added by 3D-46 intake D-146; 3D-12 accepted D-154, merged; 3D-74 added by 3D-12, ready D-155; 3D-10 accepted D-158, merged (D-156, D-157; row 3D-75 added by 3D-10); 3D-73 ready D-159; 3D-11 ready D-160; 3D-ADR-0008 accepted D-161, Q-45 closed D-162; 3D-71 waits for 3D-14 D-163; 3D-69 ready D-164, D-165; 3D-75 ready D-166; 3D-13 accepted D-174, merged; 3D-77 intake; 3D-76 intake D-167; 3D-75 started D-168; 3D-72 accepted D-176, merged; 3D-76 ready D-177).
 
 | Progress | Rows |
 |---|---:|
 | Done | 25 / 63 |
 | Review | 0 |
 | In progress | 0 |
-| Ready | 10 |
-| Proposed (waiting for the owner to set `ready`) | 27 |
+| Ready | 11 |
+| Proposed (waiting for the owner to set `ready`) | 26 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 25/63 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
@@ -60,6 +60,7 @@ flowchart TB
   subgraph review["REVIEW"]
   end
   subgraph ready["READY"]
+    D76["3D-76 check:docs: DECISIONS table integrity"]
     D75["3D-75 Import state from validateModel"]
     D69["3D-69 Point cloud CRS vs. building CRS"]
     D11["3D-11 CityJSON export"]
@@ -72,7 +73,6 @@ flowchart TB
     D51["3D-51 geoviewer scene3d adapter"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
-    D76["3D-76 check:docs: DECISIONS table integrity"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
   end
@@ -281,7 +281,7 @@ flowchart TB
 | 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | ready (D-159; bug of 3D-05, found by 3D-46, D-146) |
 | 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 23 | G5 | M | ready (D-155) |
 | 3D-75 | Import state from `validateModel`: replace the interim `import/state.js` (D-157) | here | geo-model3d (index, import, validate) | 10, 12 | G1 | S | ready (D-166) |
-| 3D-76 | `check:docs`: DECISIONS.md table integrity - a `D-NN` / `Q-NN` row in "Open-question status updates" must have the status-row shape and name an existing id; a decision row outside "## Decisions" is a problem (D-167) | here | tools | 30, 05 | G0 | S | proposed |
+| 3D-76 | `check:docs`: DECISIONS.md table integrity - a `D-NN` / `Q-NN` row in "Open-question status updates" must have the status-row shape and name an existing id; a decision row outside "## Decisions" is a problem (D-167) | here | tools | 30, 05 | G0 | S | ready (D-177) |
 | 3D-77 | Spec §5 text for the solver decisions: per-kind constraint table (D-169) and D-170..D-172 | here | docs/specs | 13, 66 | G3 | S | proposed (D-173) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | proposed (Q-13 closed by D-52, D-53) |
