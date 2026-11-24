@@ -222,6 +222,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D14-2 | A hard model constraint on an entity that `REPLACE_ROOF` / `REBUILD_ENVELOPE` removes refuses the operation with `CONSTRAINT_CONFLICT` listing the constraint ids (spec §3 r5; v0.2 §11.4); soft constraints on removed entities are dropped in the same commit | Owner, dialog, 2026-11-24 (3D-14) |
 | D-3D14-3 | Refusal code `INVALID_GEOMETRY` (as D-76 for R-01) for: R-04 slopes whose end hips cross (ridge length < 0); R-03 `ridgeZ <= eaveZ`; eave / `zLow` heights at or below the base; `REBUILD_ENVELOPE` when the roof does not sit on the footprint outline (gap or overhang); `entityIds` = footprint id (+ roof faces for `REBUILD_ENVELOPE`) | Owner, dialog, 2026-11-24 (3D-14) |
 | D-3D14-4 | R-01 `FLAT` with a `roofPlane` tilted above `flatRoofTolDeg` -> `INVALID_GEOMETRY` (use `SHED`; v0.2 C.1). R-02 from `measurementIds`: a `POINT` measurement is `coordinates[0] = [x, y, z]` in its own `frame` (LOCAL / WORLD); closes Q-28 for `POINT` only | Owner, dialog, 2026-11-24 (3D-14) |
+| D-3D14-5 | Extends D-3D14-3: every geometric impossibility of the template givens is `INVALID_GEOMETRY` with the footprint id, incl. a `GABLE` `ridgeOffsetM` that puts the ridge outside the footprint and `slopeDeg` with `symmetric: false` and a non-zero offset (equal slopes force the mid line) | Owner, dialog, 2026-11-24 (3D-14) |
+| D-3D14-6 | `coordinateFrame: WORLD` for `REPLACE_ROOF`: heights (`roofZ`, `eaveZ`, `ridgeZ`, `zLow`, `zHigh`) are mapped to local z through the building frame (crs metric frame, as import); a `roofPlane` with WORLD is refused `INVALID_PAYLOAD` | Owner, dialog, 2026-11-24 (3D-14) |
+| D-3D14-7 | A footprint whose body cannot be resolved uniquely (its Building / BuildingPart semantic node has no solid or several) -> `INVALID_TOPOLOGY` with the footprint and semantic node ids | Owner, dialog, 2026-11-24 (3D-14) |
 
 ## Open questions
 
