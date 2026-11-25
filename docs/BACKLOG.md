@@ -21,14 +21,14 @@ Updated: 2026-11-25
 
 | Progress | Rows |
 |---|---:|
-| Done | 43 / 74 |
+| Done | 43 / 76 |
 | Review | 0 |
 | In progress | 5 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 22 |
+| Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 43/74 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 43/76 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-20 Installations; 3D-86 Forecast script + backfill; 3D-47 SC: 3D view port + host.
 
@@ -100,6 +100,8 @@ flowchart TB
     D18["💡 ⚙️ 3D-18 History"]
     D19["💡 ⚙️ 3D-19 Envelope ops"]
     D20["🚧 ⚙️ 3D-20 Installations"]
+    D20_1["💡 ⚙️ 3D-20.1 Installation size from cloud"]
+    D20_2["💡 📐 3D-20.2 Spec: 3D-20 installations"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
     D71["💡 ⚙️ 3D-71 FIT_PLANE command"]
   end
@@ -221,6 +223,9 @@ flowchart TB
   D14 --> D19
   D12 --> D20
   D13 --> D20
+  D20 --> D20_1
+  D71 --> D20_1
+  D20 --> D20_2
   D13 --> D21
   D09 --> D22
   D18 --> D23
@@ -300,6 +305,8 @@ Caveat: the 4 measured WPs are verification/tooling work; the open rows are most
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | proposed |
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | kernel | proposed |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | in-progress (D-220; wp/3d-20-installations) |
+| 3D-20.1 | Installation size from the cloud: `measurementId` of `ADD_CHIMNEY` / `ADD_DORMER` (v0.3 §6 F-36, F-37) | here | geo-model3d/ops | 20, 71 | G4 | M | kernel | proposed |
+| 3D-20.2 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-3D20-1..5) | here | docs/specs | 20 | G4 | S | spec | proposed |
 | 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | kernel | done (D-230; merged into base, no PR; D-226..D-229) |
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, idempotent `commandId` + `expectedVersion` (GT-13, D-68), rate limit, error registry, command status, storage port with interim file/S3 adapter (D-35) | here | service | 03, 06, 18 | G5 | L | service | proposed |
@@ -689,6 +696,29 @@ Caveat: the 4 measured WPs are verification/tooling work; the open rows are most
 - Accept: no spec line says a cloud must be in the building's CRS or that reprojection is open; §4a and §9 name the two
   refusal reasons and the descriptor; `npm run check` passes.
 - Decisions: D-92, D-93, D-164, D-165, D-196..D-198  Open: -
+
+### 3D-20.1 Installation size from the cloud
+- Source: 3D-20 session 2026-11-25; D-3D20-4 refuses `measurementId` sizing with `INVALID_MEASUREMENT` until the
+  measurement layout is defined (Q-28; v0.2 C.16 "size manual or from the cloud").
+- Goal: `ADD_CHIMNEY` and `ADD_DORMER` take their size (chimney width, depth, height; dormer `heightM` / `ridgeRiseM`)
+  from a measurement instead of the manual fields; the report carries confidence, inliers and the reason of a refusal
+  (spec §10.11 r1).
+- Scope in: which measurement kinds give which dimension (owner dialog), their layout (with 3D-71 for `PLANE`),
+  refusals. Scope out: automatic detection of installations in the cloud (RANSAC / clustering proposal, v0.2 F-36 step 3).
+- Accept: a chimney and a FLAT dormer on GT-03 sized from measurements give the same body as the manual sizes of
+  GT-17 / GT-18; an unusable measurement -> `INVALID_MEASUREMENT`, model unchanged; `npm run check` passes.
+- Decisions: D-3D20-1..D-3D20-4  Open: Q-28 (measurement layout)
+- Estimate: prior (no data) - all-WP median $3.43 (n=4)
+
+### 3D-20.2 Spec update for 3D-20
+- Source: 3D-20 session 2026-11-25; spec edits only through a spec row (AGENTS.md §6).
+- Goal: the spec states D-3D20-1..D-3D20-5.
+- Scope in: §10.11 rules (chimney height at the downhill corner; FLAT `heightM` = back wall over the whole outline;
+  GABLE `ridgeRiseM`, ridge on the fall line, convex outline; base in the roof plane, roof not cut; refusal codes);
+  §14 Q-38 closed. Scope out: contract schemas (changed by 3D-20).
+- Accept: §10.11 names every D-3D20 rule and §14 lists Q-38 as closed; `npm run check` passes.
+- Decisions: D-3D20-1..D-3D20-5  Open: -
+- Estimate: prior (no data) - all-WP median $3.43 (n=4)
 
 ### 3D-83 3D-ADR-0007 note on projections in the CRS table
 - Source: 3D-69 session 2026-11-24. The accepted ADR says the table is generated from `proj.db`; since 3D-69 it also
