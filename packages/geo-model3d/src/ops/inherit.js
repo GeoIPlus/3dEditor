@@ -64,7 +64,7 @@ export function inheritOnSplit(draft, s, ids) {
       let to = null;
       if (e === s.faceId && PLANE_KINDS.has(c.kind) && !s.planeMoves) to = s.newFaceId;
       if (edgeMap.has(e) && EDGE_KINDS.has(c.kind)) to = /** @type {string} */ (edgeMap.get(e));
-      if (to) variants.push(c.entityIds.map((/** @type {string} */ x, /** @type {number} */ j) => (j === i ? to : x)));
+      if (to && !c.entityIds.includes(to)) variants.push(c.entityIds.map((/** @type {string} */ x, /** @type {number} */ j) => (j === i ? to : x)));
     });
     for (const entityIds of variants) {
       const id = ids('constraint');

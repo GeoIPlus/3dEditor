@@ -7,6 +7,7 @@
 // the survivor's plane is kept. MERGE_REFIT: the merged plane is movable when a merged face is in `movableFaceIds`; O1
 // (D-110) fits it to its vertices; every other plane is movable only if listed (v0.2 C.6, no implicit fit).
 import { cross, dot, norm } from '../brep/index.js';
+import { builders } from '../solve/index.js';
 import { refuse } from './errors.js';
 import { linkLoop, loopEdges } from './face-cut.js';
 import { inheritOnMerge } from './inherit.js';
@@ -106,7 +107,7 @@ export function mergeFaces(draft, payload, ctx) {
   for (const h of internal) delete draft.halfEdges[h];
   for (const v of inner) delete draft.vertices[v];
   for (const v of Object.values(draft.vertices)) {
-    if (v.definingFaceIds.some((f) => S.has(f))) v.definingFaceIds = [...new Set(v.definingFaceIds.map((f) => (S.has(f) ? survivor : f)))].sort();
+    if (v.definingFaceIds.some((f) => S.has(f))) v.definingFaceIds = [...new Set(v.definingFaceIds.map((f) => (S.has(f) ? survivor : f)))];
   }
   const dissolved = dissolve(draft, survivor, joints, mapped, rebind, tol.planarTolM);
 
@@ -116,7 +117,14 @@ export function mergeFaces(draft, payload, ctx) {
   if (payload.mode === 'MERGE_COPLANAR') return { ok: true, mapped, removed, constraintLineage: inh.lineage };
   const movable = payload.movableFaceIds;
   if (!Array.isArray(movable) || movable.some((f) => typeof f !== 'string' || !(draft.faces[f] || S.has(f)))) return refuse('INVALID_PAYLOAD', [], 'movableFaceIds');
-  return { ok: true, mapped, removed, constraintLineage: inh.lineage, movableFaceIds: [...new Set(movable.map((f) => (S.has(f) ? survivor : f)))].sort() };
+  const movableFaceIds = [...new Set(movable.map((f) => (S.has(f) ? survivor : f)))].sort();
+  // the merged plane is fitted to its vertices: one soft point-on-plane term of weight 1 per vertex at its position
+  // before the merge (the weighted refit of v0.2 C.6 with equal weights, as O1); without a term `solve` keeps the plane
+  const b = builders(draft);
+  const verts = [...new Set(Object.values(draft.halfEdges).filter((h) => h.faceId === survivor).map((h) => h.startVertexId))].sort();
+  const conditions = !movableFaceIds.includes(survivor) ? [] : verts.map((v) =>
+    b.pointOnPlane({ id: 'MERGE_REFIT:fit', kind: 'MERGE_REFIT', hard: false, weight: 1, entityIds: [survivor, v] }, survivor, draft.vertices[v].p, 0));
+  return { ok: true, mapped, removed, constraintLineage: inh.lineage, movableFaceIds, conditions };
 }
 
 /**

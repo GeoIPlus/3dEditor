@@ -143,7 +143,7 @@ export function cutFace(draft, faceId, line, tol, ids, keepSign) {
     const p = /** @type {P3} */ ([0, 1, 2].map((q) => pv[q] + r * (pw[q] - pv[q])));
     const c0 = ids('vertex');
     const g = h.twinId ? draft.halfEdges[h.twinId].faceId : null;
-    draft.vertices[c0] = { id: c0, p, positionMode: 'EXPLICIT', definingFaceIds: [...new Set([faceId, newFaceId, ...(g ? [g] : [])])].sort() };
+    draft.vertices[c0] = { id: c0, p, positionMode: 'EXPLICIT', definingFaceIds: [faceId, newFaceId, ...(g ? [g] : [])] };
     newVertexIds.push(c0);
     const h2 = ids('halfEdge');
     draft.halfEdges[h2] = { ...h, id: h2, startVertexId: c0 };
@@ -196,8 +196,10 @@ export function cutFace(draft, faceId, line, tol, ids, keepSign) {
   const onKept = new Set(Object.values(draft.halfEdges).filter((h) => h.faceId === faceId).map((h) => h.startVertexId));
   for (const v of onNew) {
     const x = draft.vertices[v];
-    const fs = x.definingFaceIds.filter((q) => q !== faceId || onKept.has(v));
-    x.definingFaceIds = [...new Set([...fs, newFaceId])].sort();
+    if (x.definingFaceIds.includes(newFaceId)) continue;
+    // order kept (derivation order, D-3D15-3): the new face replaces the old one, or follows it on a cut vertex
+    x.definingFaceIds = onKept.has(v) ? x.definingFaceIds.flatMap((q) => (q === faceId ? [q, newFaceId] : [q]))
+      : x.definingFaceIds.map((q) => (q === faceId ? newFaceId : q));
   }
   const chord = faceA === faceId ? [chordA, chordB] : [chordB, chordA];
   return { ok: true, keptId: faceId, newFaceId, keptSign: kept, cutVertexIds, newVertexIds, chord, splitEdges, mapped, side };
