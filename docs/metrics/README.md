@@ -65,15 +65,23 @@ Details the script fixes where the list below leaves them open (3D-86):
   row counts `max(estimate - spent, 0)`.
 - `k` counts `coord` and `evals` rows plus review costs (`$x` in the `review` column, moved out of the WP cost) dated in
   the window; `other` rows are not overhead.
-- `g` compares the status table now with the BACKLOG of the newest commit before the window (if the backlog is younger,
-  its first commit, and the window shrinks to its age): added = ids not there, finished = `done` now but not then.
-- Throughput and waiting share use the ledger rows dated in the window; `span_h` runs from session creation to its last
+- `g` (3D-89, D-250): the script reads every commit reachable from HEAD once (side branches included). Each row of
+  today's status table is dated by the UTC day of the earliest commit whose table holds its id (first appearance) and
+  of the earliest one holding it as `done` (finished); a row has one date each, so a merge commit cannot count it
+  twice, and a row not committed yet is dated today. The **baseline** is the earliest commit with BACKLOG.md; its
+  first 14 days are the plan period, not growth. Growth window = from the later of (today - 14 d) and (baseline + 14 d)
+  to today; added = rows first appearing in it, finished = rows first `done` in it. Before baseline + 14 d g is not
+  measured: the block says so and shows `known x k` instead of an ETC (D-3D89-1). The block names the baseline commit
+  and the window. A shallow clone is refused (exit 1, D-251).
+- Throughput uses rows first `done` in the 14-day window (clipped to the backlog's age); throughput in model minutes
+  and the waiting share use the ledger rows dated in the window; `span_h` runs from session creation to its last
   update, so a session kept open for days counts as waiting.
 
 1. **Remaining known work**: sum of p50 (and of p80) of the current estimate of every row that is not `done`,
    `superseded` or `dropped`. In-progress rows count with `max(estimate - spent, 0)`.
 2. **Overhead factor** `k = 1 + (coordinator + eval + review cost) / (WP session cost)` over the last 14 days.
-3. **Scope growth** `g = rows added / rows finished` over the last 14 days (from `git log` of BACKLOG.md). If `g < 1`,
+3. **Scope growth** `g = rows added / rows finished` over the last 14 days, per row from its first appearance and
+   first `done` in the git history of BACKLOG.md, the plan period (first 14 days of the backlog) excluded. If `g < 1`,
    expected total remaining = known remaining x `1 / (1 - g)` (each finished row brings `g` new ones, geometric series).
    If `g >= 1` the backlog is **not converging**: report that and the trend of `g`, not an ETC number.
 4. **ETC cost** = known remaining x `k` x growth multiplier, as p50 and p80.
@@ -85,10 +93,10 @@ Details the script fixes where the list below leaves them open (3D-86):
 Output, one block:
 
 ```
-Forecast YYYY-MM-DD (ledger n=<WPs>, classes with n>=5: <list>)
-Known remaining: $<p50> / $<p80> over <rows> rows   Overhead k=<k>   Growth g=<g> (14 d)
-ETC: $<p50> / $<p80>  |  not converging (g >= 1)
-Throughput: <rows>/week, <model min>/week; waiting share <x> %   Accuracy: median ratio <r> (last 10)
+Forecast YYYY-MM-DD (ledger n=<WPs>, classes with n>=5: <list>; baseline <sha> <date>)
+Known remaining: $<p50> / $<p80> over <rows> rows   Overhead k=<k>   Growth g=<g> (<added> added / <finished> finished, <from>..<to>)
+ETC: $<p50> / $<p80>  |  not converging (g >= 1)  |  TBD (g not measured before <date>); known x k = $<p50> / $<p80>
+Throughput: <rows>/week (<days> d), <model min>/week; waiting share <x> %   Accuracy: median ratio <r> (last 10)
 ```
 
 ## 5. Independent efficiency review (D-237, D-238)

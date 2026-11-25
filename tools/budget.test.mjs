@@ -3,10 +3,9 @@ import { describe, it, expect } from 'vitest';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { execFileSync } from 'node:child_process';
 import { parseLedger, parseStatusTable, parseEstimates } from './budget-parse.mjs';
 import { quantile, forecast, formatBlock } from './budget-calc.mjs';
-import { budgetBlock, replaceBlock, snapshotBefore } from './budget.mjs';
+import { budgetBlock, replaceBlock } from './budget.mjs';
 
 const H = '| date | WP | session | kind | cost_usd | out_k | cache_write_k | cache_read_k | api_min | span_h | models | state | review | source |';
 const L = (/** @type {string} */ d, /** @type {string} */ wp, /** @type {string} */ kind, /** @type {string} */ cost,
@@ -45,10 +44,15 @@ const BACKLOG = ['# BACKLOG', '', '## Budget and forecast', '', 'text', '', '```
   '### 3D-11 Eleven', '- Estimate: $2 (p80 $3)',
   '### 3D-12 .. 3D-13 Range', '- Estimate: $100 (p80 $200)', ''].join('\n');
 
-// Snapshot at the start of the window (2026-11-18): 3D-01 done, 3D-02..3D-07 open, 3D-08..3D-11 absent.
-const THEN = {
-  date: '2026-11-18',
-  rows: ['01', '02', '03', '04', '05', '06', '07'].map((n) => ({ id: `3D-${n}`, size: 'S', type: 'spec', status: n === '01' ? 'done' : 'ready' })),
+// Row history (3D-89): backlog started 2026-10-01 (plan period over on 2026-10-15, before the window); 3D-01..3D-07
+// first seen then, 3D-01 done 2026-10-05; 3D-08..3D-11 first seen and 3D-02..3D-06 done on 2026-11-20.
+/** @param {string[]} ns @param {string} day @returns {[string, string][]} */
+const dated = (ns, day) => ns.map((n) => [`3D-${n}`, day]);
+/** @type {import('./budget-history.mjs').RowHistory} */
+const HISTORY = {
+  baseline: { sha: 'abc1234', date: '2026-10-01' },
+  first: new Map([...dated(['01', '02', '03', '04', '05', '06', '07'], '2026-10-01'), ...dated(['08', '09', '10', '11'], '2026-11-20')]),
+  done: new Map([...dated(['01'], '2026-10-05'), ...dated(['02', '03', '04', '05', '06'], '2026-11-20')]),
 };
 
 /*
@@ -59,20 +63,21 @@ const THEN = {
  *   Known = 3+3+3.5+2 = 11.5 / 8+4.4+6+3 = 21.4 over 4 rows.
  * k: wp cost in window 30, review 0.5 -> 29.5; overhead coord 2 + evals 3 + review 0.5 = 5.5; k = 1+5.5/29.5 = 1.18644.
  * g: added 08,09,10,11 = 4; finished 02..06 = 5; g = 0.8 -> x5. ETC = 11.5*1.18644*5 = 68.22 / 21.4*1.18644*5 = 126.95.
- * Window 7 d (snapshot 2026-11-18). Throughput 5 rows x 7/7 = 5.0; model min 6+6+12+30+0+60+24+12 = 150 per week.
+ * g window 2026-11-11..2026-11-25 (plan end 2026-10-15 is earlier). Throughput 5 rows x 7/14 = 2.5; model min
+ *   6+6+12+30+0+60+24+12 = 150 in 14 d -> 75 per week.
  * Waiting: span 1+1+2+1+0.5+3+2+10 = 20.5; wait 0.9+0.9+1.8+0.5+0.5+2+1.6+9.8 = 18.0 -> 87.8 %.
  * Accuracy: 01 = 1/1.5 = 0.667, 02 = 2/4 = 0.5 -> median 0.583, n=2. Ledger WPs with cost: 01..07 = 7.
  */
 const EXPECTED = [
-  'Forecast 2026-11-25 (ledger n=7 WPs, classes with n>=5: S spec n=5)',
-  'Known remaining: $12 / $21 over 4 rows   Overhead k=1.19   Growth g=0.80 (4 added / 5 finished, 7 d)',
+  'Forecast 2026-11-25 (ledger n=7 WPs, classes with n>=5: S spec n=5; baseline abc1234 2026-10-01)',
+  'Known remaining: $12 / $21 over 4 rows   Overhead k=1.19   Growth g=0.80 (4 added / 5 finished, 2026-11-11..2026-11-25)',
   'ETC: $68 / $127',
-  'Throughput: 5.0 rows/week, 150 model min/week; waiting share 88 %   Accuracy: median ratio 0.58 (last 2, range 0.50..0.67)',
+  'Throughput: 2.5 rows/week (14 d), 75 model min/week; waiting share 88 %   Accuracy: median ratio 0.58 (last 2, range 0.50..0.67)',
 ].join('\n');
 
 const input = () => {
   const lines = BACKLOG.split('\n');
-  return { today: '2026-11-25', ledger: parseLedger(LEDGER), rows: parseStatusTable(lines), estimates: parseEstimates(lines), then: THEN };
+  return { today: '2026-11-25', ledger: parseLedger(LEDGER), rows: parseStatusTable(lines), estimates: parseEstimates(lines), history: HISTORY };
 };
 
 describe('budget forecast (3D-86)', () => {
@@ -104,11 +109,22 @@ describe('budget forecast (3D-86)', () => {
 
   it('reports a backlog that does not converge instead of an ETC', () => {
     const inp = input();
-    inp.then = { date: '2026-11-18', rows: inp.rows.filter((r) => r.status !== 'done') }; // nothing new, 0 finished
-    inp.rows = [...inp.rows, { id: '3D-99', size: 'S', type: 'spec', status: 'proposed' }];
+    inp.history = { ...HISTORY, done: new Map(dated(['01'], '2026-10-05')) }; // 02..06 done earlier: 0 finished
+    inp.rows = inp.rows.map((r) => (['3D-02', '3D-03', '3D-04', '3D-05', '3D-06'].includes(r.id) ? { ...r, status: 'ready' } : r));
     const f = forecast(inp);
     expect(f.etc).toBeNull();
     expect(formatBlock(f)).toContain('ETC: not converging (g >= 1)');
+  });
+
+  it('does not measure g in the plan period and says so', () => {
+    const inp = input();
+    inp.history = { ...HISTORY, baseline: { sha: 'abc1234', date: '2026-11-19' } };
+    const f = forecast(inp);
+    expect(f.g).toBeNull();
+    expect(f.etc).toBeNull();
+    const b = formatBlock(f);
+    expect(b).toContain('Growth g=TBD (plan period until 2026-12-03)');
+    expect(b).toContain('ETC: TBD (g not measured before 2026-12-03); known x k = $14 / $25');
   });
 
   it('rewrites only the fenced block, idempotently', () => {
@@ -119,20 +135,12 @@ describe('budget forecast (3D-86)', () => {
     expect(replaceBlock('# x\n', EXPECTED)).toBe('# x\n');
   });
 
-  it('reads the files and takes the window snapshot from git', () => {
+  it('reads the files', () => {
     const root = mkdtempSync(join(tmpdir(), 'budget-'));
     mkdirSync(join(root, 'docs/metrics'), { recursive: true });
     writeFileSync(join(root, 'docs/metrics/LEDGER.md'), LEDGER);
     writeFileSync(join(root, 'docs/BACKLOG.md'), BACKLOG);
-    expect(budgetBlock(root, '2026-11-25', THEN)).toBe(EXPECTED);
-    const git = (/** @type {string[]} */ a, env = {}) => execFileSync('git', a, { cwd: root, env: { ...process.env, ...env } });
-    git(['init', '-q']);
-    git(['add', '.']);
-    const at = { GIT_COMMITTER_DATE: '2026-11-20T12:00:00Z', GIT_AUTHOR_DATE: '2026-11-20T12:00:00Z' };
-    git(['-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-qm', 'c'], at);
-    const snap = snapshotBefore(root, '2026-11-11');
-    expect(snap.date).toBe('2026-11-20');
-    expect(snap.rows.map((r) => r.id)).toEqual(parseStatusTable(BACKLOG.split('\n')).map((r) => r.id));
+    expect(budgetBlock(root, '2026-11-25', HISTORY)).toBe(EXPECTED);
     expect(readFileSync(join(root, 'docs/BACKLOG.md'), 'utf8')).toBe(BACKLOG);
   });
 });
