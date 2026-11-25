@@ -1,0 +1,82 @@
+{
+  "task": "file-300-lines",
+  "run": 1,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "b4c915c13f1e3f74be1a84ff82fafe802151b1c7",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "max-300",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "done",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.7727333999999999,
+  "turns": 22,
+  "durationMs": 141194,
+  "usage": {
+    "input": 42,
+    "cacheCreate": 39623,
+    "cacheRead": 1180407,
+    "output": 10975
+  },
+  "toolCalls": 20,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-96.md"
+    },
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/segment2d.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/segment2d.test.js"
+    }
+  ],
+  "commits": [
+    "3D-96: graph node to REVIEW",
+    "3D-96: backlog overview and graph via check-docs --fix",
+    "3D-96: 2D segment helpers (segmentLength, segmentMidpoint, segmentIntersection)"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-96-segment-helpers",
+      "sha": "5746c02bbba65701656af51c90277591b9d99d47"
+    }
+  ],
+  "finalText": "I didn't put the functions in `geom2d.js`. The file is already 282 lines, and three functions with JSDoc would take it past the 300-line limit, so `npm run check:arch` (one of 3D-96's acceptance checks) would have failed. They're in a new file instead, `packages/geo-model3d/src/segment2d.js` (45 lines). I asked you about this, but you weren't available, so this placement is my call and you can override it.\n\nI also tried keeping `geom2d.js` as the import point by re-exporting from it. `check:arch` rejects that too: files sitting directly in `src/` can't import one another (3D-ADR-0002 C1 rule 2). So callers import from `segment2d.js`. Nothing imports `geom2d.js` today, so nothing breaks.\n\n**What's in it:**\n- `segmentLength` and `segmentMidpoint` return a segment's length and midpoint.\n- `segmentIntersection` returns `null` when the segments are parallel, as the backlog asked. I chose two more behaviours myself:\n  - It also returns `null` for segments on the same line, and when the lines cross outside the segments. Touching endpoints count as an intersection.\n  - The parallel test is exact, with no tolerance.\n\n**Checks:**\n- The new unit tests pass (7 of 7), as do the full test suite (758), the golden tests (42, plus 1 todo), types and `check:arch`.\n- `check:docs` fails on this branch, and would fail without my change. The base branch, `claude/keen-pascal-u7z2gk`, doesn't have the 3D-96 backlog row yet; it exists only on `claude/eval-session`. The coordinator needs to add it to "
+}

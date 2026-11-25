@@ -2,6 +2,7 @@
 // documents consistent (overview counts match the table, so `check:docs` stays green at the start).
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { fixDocs } from '../check-docs.mjs';
 
 /** @param {string} work @param {string} rel @param {string} text */
 export function write(work, rel, text) {
@@ -46,26 +47,39 @@ export function recount(text) {
 }
 
 /**
- * Add a scenario WP: table row (after the last row), Details entry, mermaid node; counts recomputed.
+ * Regenerate what `check-docs --fix` owns (graph icons and legend, overview counts, `Running:` line; D-180, D-200,
+ * D-208), so the start state passes `check:docs`. The `Updated:` date of the clone is kept: start states stay the
+ * same whatever day they are built.
  * @param {string} work
- * @param {{id: string, title: string, modules: string, deps: string, size: string, status: string, details: string}} row
+ */
+function regenerate(work) {
+  const date = /^Updated: (\d{4}-\d{2}-\d{2})$/m.exec(readFileSync(join(work, 'docs/BACKLOG.md'), 'utf8'))?.[1];
+  fixDocs(work, date ?? '2026-01-01');
+}
+
+/**
+ * Add a scenario WP: table row (after the last row, with the `Type` cell of D-221), Details entry, mermaid node;
+ * generated parts regenerated as `check-docs --fix` writes them.
+ * @param {string} work
+ * @param {{id: string, title: string, modules: string, deps: string, size: string, type?: string, status: string, details: string}} row
+ *   `type`: one of the BACKLOG types (spec, kernel, service, tests, tooling, mirror); default `kernel`.
  */
 export function addRow(work, row) {
   edit(work, 'docs/BACKLOG.md', (s) => {
     const lines = s.split('\n');
     const last = lines.findLastIndex((l) => /^\| 3D-\d+ \|/.test(l));
-    lines.splice(last + 1, 0, `| ${row.id} | ${row.title} | here | ${row.modules} | ${row.deps} | G1 | ${row.size} | ${row.status} |`);
+    const type = row.type ?? 'kernel';
+    lines.splice(last + 1, 0, `| ${row.id} | ${row.title} | here | ${row.modules} | ${row.deps} | G1 | ${row.size} | ${type} | ${row.status} |`);
     let out = lines.join('\n');
     const node = `D${row.id.slice(3)}`;
     out = out.replace('  subgraph ready["READY"]\n', `  subgraph ready["READY"]\n    ${node}["${row.id} ${row.title.slice(0, 40)}"]\n`);
-    out = `${out.trimEnd()}\n\n### ${row.id} ${row.title}\n${row.details.trim()}\n`;
-    return recount(out);
+    return `${out.trimEnd()}\n\n### ${row.id} ${row.title}\n${row.details.trim()}\n`;
   });
+  regenerate(work);
 }
 
-/** Set the status cell of an existing row; counts recomputed. @param {string} work @param {string} id @param {string} status */
+/** Set the status cell of an existing row; generated parts regenerated. @param {string} work @param {string} id @param {string} status */
 export function setStatus(work, id, status) {
-  edit(work, 'docs/BACKLOG.md', (s) =>
-    recount(s.replace(new RegExp(`^(\\| ${id} \\|.*\\|) [^|]+ \\|$`, 'm'), `$1 ${status} |`)),
-  );
+  edit(work, 'docs/BACKLOG.md', (s) => s.replace(new RegExp(`^(\\| ${id} \\|.*\\|) [^|]+ \\|$`, 'm'), `$1 ${status} |`));
+  regenerate(work);
 }

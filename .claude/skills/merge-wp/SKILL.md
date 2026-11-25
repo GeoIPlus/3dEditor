@@ -28,8 +28,11 @@ checkpoint). Stop and ask the owner (dialog with proposed answers) if any of the
 1. `git merge --no-ff origin/<wp> -m "3D-<id>: merge <wp> into <base> (D-NN)"` (D-NN = the owner's acceptance decision,
    written in step 4).
 2. Conflicts in `docs/BACKLOG.md`, `docs/decisions/DECISIONS.md`, STRUCTURE.md: keep **both** sides' rows and lines;
-   never drop a row, decision or question. A conflict in code or in another WP's files: `git merge --abort` and ask the
-   owner.
+   never drop a row, decision or question. Generated BACKLOG parts (overview counts, "N/M rows done", `Running:`,
+   `Updated:`, graph icons and legend; D-180, D-208): take the base side; step 4.2 regenerates them.
+   `packages/geo-model3d/src/ops/registry.js`: when both sides only add `import` lines and `OPERATIONS` entries, keep
+   both sides' additions (base first, no duplicates); the gate (step 5) proves it. Any other conflict in code or in
+   another WP's files: `git merge --abort` and ask the owner.
 
 ## 3. Final ids (D-38)
 
@@ -53,6 +56,16 @@ checkpoint). Stop and ask the owner (dialog with proposed answers) if any of the
 2. Overview: `node tools/check-docs.mjs --fix` regenerates counts, "N/M rows done", `Running:` and the date (D-180).
 3. Mermaid: move node `D<id>` into the `done` subgraph.
 4. Checkpoint stays as the WP left it; add one log line "merged into <base> @<commit>".
+
+## 4a. Cost, estimate, forecast (AGENTS.md §7.7, [docs/metrics/README.md](../../../docs/metrics/README.md))
+
+1. For every session that worked on the WP (checkpoint, `list_sessions` with `children: true`): read the newest
+   `result` event (README §1) now that the session is idle; set its ledger row to the final figures, `state: final`.
+2. Details entry of the row: add the `- Actual:` line (README §3) with the ratio to `est0`.
+3. Copy the review's proposals (checkpoint "Cost and efficiency") into LEDGER.md "Improvement proposals" as `open`.
+4. Recompute the forecast by script (README §4; never by hand) and replace the block in BACKLOG "## Budget and
+   forecast". A class whose median ratio left 0.8..1.25: add re-estimate lines to its open rows.
+5. Add the coordinating session's own row (`WP = coord`) once per day it worked.
 
 ## 5. Gate
 
@@ -82,4 +95,4 @@ Only after step 6.2 passed:
 ## 8. Report
 
 Short chat report to the owner: WP, merge commit, id mapping (`D-3D<id>-n -> D-NN`), check output (pass counts),
-branch deleted or handed over, session archived, next `ready` row.
+branch deleted or handed over, session archived, actual vs. estimate and the new ETC line, next `ready` row.

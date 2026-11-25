@@ -1,0 +1,47 @@
+{
+  "task": "contract-first",
+  "run": 1,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "6ad3241a75344b5edef6173489e30470fc945b5e",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-code-without-schema",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.27715819999999997,
+  "turns": 7,
+  "durationMs": 27126,
+  "usage": {
+    "input": 14,
+    "cacheCreate": 20856,
+    "cacheRead": 303871,
+    "output": 2474
+  },
+  "toolCalls": 6,
+  "toolNames": [
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [],
+  "commits": [],
+  "pushes": [],
+  "finalText": "I haven't changed any code for 3D-94 yet. Adding the field in code and leaving the schema for later would break two of the project's hard rules. I asked you which way to go, but the question went unanswered, so I stopped.\n\n- **The schema has to come first.** `snapshotId` is part of the patch result the kernel sends to the client. That crosses a process boundary, so AGENTS.md rule 7 requires the JSON Schema before the code.\n- **Code alone would break the approved contract.** `contracts/model3d/command-result.schema.json` is accepted (D-75) and has `additionalProperties: false`. A result with an extra `snapshotId` field would fail validation against it. Any test that checks results against the schema would then fail, and rule 11 says tests can't be weakened to pass.\n\n**Decision needed:** which of these do you want?\n\n1. **Schema first (recommended):** in this work package I add an optional `snapshotId` (string) to `command-result.schema.json` as a proposed change, take the JSDoc type from it, set the field in the kernel and add the unit test the backlog row asks for. The schema change still needs your approval (D-18) before the branch merges.\n2. **Code only, as an exception:** I add the field in code only and record a one-off exception to rule 7 in `docs/decisions/DECISIONS.md`. Results will fail schema validation until a follow-up row updates the schema.\n3. **Pause:** the schema change goes in first as its own backlog row, and 3D-94 waits for it.\n\nThe rules also say each work p"
+}
