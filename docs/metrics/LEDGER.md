@@ -50,6 +50,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 | 2026-11-24 | 3D-80 | session_01RNYuqJBEthWGqbZHWR5PxB | wp | 3.05 | 19.1 | 172.0 | 6393.9 | 3.4 | 3.15 | claude-haiku-5-5, claude-opus-5-5 | final | - | newest result event 2026-11-24T16:26:15Z; tokens summed over models; backfill 3D-86 |
 | 2026-11-24 | 3D-81 | session_01RNYuqF4ErqsAPBJaEC8dzq | wp | 2.32 | 17.6 | 126.8 | 4781.9 | 3.2 | 3.05 | claude-opus-5-5 | final | - | newest result event 2026-11-24T16:31:10Z; backfill 3D-86 |
 | 2026-11-25 | 3D-86 | session_01RNYuqHnuDRZzVutCfR9HFd | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals; cost inside session) | no finished turn when written (first turn); coordinator reads it at merge |
+| 2026-11-25 | 3D-89 | session_01RNYuqJtpgwUr65orM4dzJp | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals, see checkpoint 3D-89; ~105k subagent tokens, cost inside session) | no finished turn when written (first turn); coordinator reads it at merge |
 
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).
@@ -67,3 +68,6 @@ From efficiency reviews (README §5). Status: `open`, `adopted (D-NN)`, `rejecte
 | 2026-11-25 | 3D-86, session_01RNYuqHnuDRZzVutCfR9HFd | P1: an extraction subagent writes its result to a scratchpad file and returns only path + row count + one control row (AGENTS.md §7.2) | ~17k cache-write plus ~8-10k Opus output per backfill-type extraction | open |
 | 2026-11-25 | 3D-86, session_01RNYuqHnuDRZzVutCfR9HFd | P2: `npm ci` in the same batch as branch creation, and the closing edits (row status, mermaid node, ledger row) batched into one command (skill wp-session) | ~5 calls per WP | open (instruction change, AGENTS.md §10) |
 | 2026-11-25 | 3D-86, session_01RNYuqHnuDRZzVutCfR9HFd | P3: a WP session writes no `?` cost row in its first turn; the coordinator fills the row at merge (README §1) | removes a correction step per single-turn WP | open (instruction change, AGENTS.md §10) |
+| 2026-11-25 | 3D-89, session_01RNYuqJtpgwUr65orM4dzJp | P1: a session-profile reducer for list_events (one line per turn: calls, tokens, cost), so a review reads the whole session, not its last third | fewer event pages read per review | open |
+| 2026-11-25 | 3D-89, session_01RNYuqJtpgwUr65orM4dzJp | P2: a finish-step helper (ledger row template, review due, no first-turn `?` row); overlaps 3D-86 P2/P3 - batch into one skill change | a few calls and one correction step per WP | open (instruction change, AGENTS.md §10) |
+| 2026-11-25 | 3D-89, session_01RNYuqJtpgwUr65orM4dzJp | P3: `check-docs --fix` moves the mermaid node with the status change; run tsc + check:docs before the full check (overlaps 3D-88 P2) | ~2-4 calls per WP | open |

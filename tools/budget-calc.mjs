@@ -64,10 +64,13 @@ export function daysBefore(today, days) {
 /**
  * @typedef {{
  *   today: string, ledger: LedgerRow[], rows: BacklogRow[], estimates: Map<string, Estimates>,
- *   then: {rows: BacklogRow[], date: string}, windowDays?: number
+ *   history: import('./budget-history.mjs').RowHistory|null, windowDays?: number
  * }} Input
- * `then`: the status table of the newest BACKLOG commit before the window (or the oldest one inside it) and its date.
+ * `history`: per-row first appearance and first `done` from the git history of BACKLOG.md (3D-89); null = no history.
  */
+
+/** @param {string} day YYYY-MM-DD @param {number} days @returns {string} the date `days` after */
+const daysAfter = (day, days) => daysBefore(day, -days);
 
 /** @param {Input} inp */
 export function forecast(inp) {
@@ -105,13 +108,23 @@ export function forecast(inp) {
   const overheadCost = sum(recent.filter((r) => r.kind === 'coord' || r.kind === 'evals'), (r) => r.cost ?? 0) + review;
   const k = wpCost > 0 ? 1 + overheadCost / wpCost : null;
 
-  // §4.3 growth from the status-table snapshot at the start of the window
-  const before = new Map(inp.then.rows.map((r) => [r.id, r.status]));
-  const added = inp.rows.filter((r) => !before.has(r.id)).length;
-  const finished = inp.rows.filter((r) => r.status === 'done' && before.get(r.id) !== 'done').length;
-  const g = finished > 0 ? added / finished : added > 0 ? Infinity : 0;
-  const days = Math.max((Date.parse(inp.today) - Date.parse(inp.then.date)) / DAY, 1);
-  const growth = g < 1 ? 1 / (1 - g) : null;
+  // §4.3 growth (3D-89, D-250): rows dated by first appearance / first `done`; the plan baseline (first 14 days of
+  // the backlog) is not growth. Rows missing from the history (not committed yet) are dated today.
+  const h = inp.history;
+  const firstOf = (/** @type {string} */ id) => h?.first.get(id) ?? inp.today;
+  const doneOf = (/** @type {BacklogRow} */ r) => h?.done.get(r.id) ?? (r.status === 'done' ? inp.today : null);
+  const within = (/** @type {string|null} */ d, /** @type {string} */ lo) => d !== null && d >= lo && d <= inp.today;
+  const baseline = h ? h.baseline : { sha: 'none', date: inp.today };
+  const planEnd = daysAfter(baseline.date, windowDays);
+  const gFrom = from > planEnd ? from : planEnd;
+  const measured = gFrom <= inp.today;
+  const added = measured ? inp.rows.filter((r) => within(firstOf(r.id), gFrom)).length : 0;
+  const finished = measured ? inp.rows.filter((r) => within(doneOf(r), gFrom)).length : 0;
+  const g = !measured ? null : finished > 0 ? added / finished : added > 0 ? Infinity : 0;
+  const growth = g === null ? null : g < 1 ? 1 / (1 - g) : null;
+  const tFrom = from > baseline.date ? from : baseline.date;
+  const days = Math.max((Date.parse(inp.today) - Date.parse(tFrom)) / DAY, 1);
+  const done14 = inp.rows.filter((r) => within(doneOf(r), tFrom)).length;
 
   // §4.5 throughput and waiting
   const apiMin = sum(recent, (r) => r.apiMin ?? 0);
@@ -130,8 +143,9 @@ export function forecast(inp) {
   return {
     today: inp.today, ledgerWps: spent.size, classes: bigClasses, open, unestimated, known: { p50, p80 },
     k, g, added, finished, windowDays: Math.min(windowDays, Math.round(days)), growth,
+    baseline, planEnd, gWindow: measured ? { from: gFrom, to: inp.today } : null,
     etc: k !== null && growth !== null ? { p50: p50 * k * growth, p80: p80 * k * growth } : null,
-    perWeek: { rows: (finished * 7) / Math.min(days, windowDays), apiMin: (apiMin * 7) / Math.min(days, windowDays) },
+    perWeek: { rows: (done14 * 7) / Math.min(days, windowDays), apiMin: (apiMin * 7) / Math.min(days, windowDays) },
     waitShare: span > 0 ? wait / span : null,
     accuracy: { n: ratios.length, median: quantile(ratios, 0.5), min: ratios.length ? Math.min(...ratios) : null, max: ratios.length ? Math.max(...ratios) : null },
   };
@@ -142,19 +156,24 @@ const fx = (x, d) => (x === null || !Number.isFinite(x) ? 'TBD' : x.toFixed(d));
 
 /** @param {ReturnType<typeof forecast>} f @returns {string} the output block of README §4 (without fences) */
 export function formatBlock(f) {
+  const kx = (/** @type {number} */ x) => (f.k === null ? 'TBD' : fx(x * f.k, 0));
   const etc = f.etc
     ? `ETC: $${fx(f.etc.p50, 0)} / $${fx(f.etc.p80, 0)}`
-    : f.growth === null ? `ETC: not converging (g >= 1)` : 'ETC: TBD (overhead k unknown)';
+    : f.g === null ? `ETC: TBD (g not measured before ${f.planEnd}); known x k = $${kx(f.known.p50)} / $${kx(f.known.p80)}`
+      : f.growth === null ? `ETC: not converging (g >= 1)` : 'ETC: TBD (overhead k unknown)';
+  const growth = f.gWindow
+    ? `Growth g=${fx(f.g, 2)} (${f.added} added / ${f.finished} finished, ${f.gWindow.from}..${f.gWindow.to})`
+    : `Growth g=TBD (plan period until ${f.planEnd})`;
   const acc = f.accuracy.n
     ? `median ratio ${fx(f.accuracy.median, 2)} (last ${f.accuracy.n}, range ${fx(f.accuracy.min, 2)}..${fx(f.accuracy.max, 2)})`
     : 'TBD (no finished WP with est0 and actual)';
   return [
-    `Forecast ${f.today} (ledger n=${f.ledgerWps} WPs, classes with n>=5: ${f.classes.join(', ') || 'none'})`,
+    `Forecast ${f.today} (ledger n=${f.ledgerWps} WPs, classes with n>=5: ${f.classes.join(', ') || 'none'}; ` +
+      `baseline ${f.baseline.sha} ${f.baseline.date})`,
     `Known remaining: $${fx(f.known.p50, 0)} / $${fx(f.known.p80, 0)} over ${f.open} rows` +
-      (f.unestimated ? ` (${f.unestimated} without estimate)` : '') +
-      `   Overhead k=${fx(f.k, 2)}   Growth g=${fx(f.g, 2)} (${f.added} added / ${f.finished} finished, ${f.windowDays} d)`,
+      (f.unestimated ? ` (${f.unestimated} without estimate)` : '') + `   Overhead k=${fx(f.k, 2)}   ${growth}`,
     etc,
-    `Throughput: ${fx(f.perWeek.rows, 1)} rows/week, ${fx(f.perWeek.apiMin, 0)} model min/week; waiting share ` +
-      `${f.waitShare === null ? 'TBD' : fx(f.waitShare * 100, 0)} %   Accuracy: ${acc}`,
+    `Throughput: ${fx(f.perWeek.rows, 1)} rows/week (${f.windowDays} d), ${fx(f.perWeek.apiMin, 0)} model min/week; ` +
+      `waiting share ${f.waitShare === null ? 'TBD' : fx(f.waitShare * 100, 0)} %   Accuracy: ${acc}`,
   ].join('\n');
 }
