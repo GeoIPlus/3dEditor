@@ -44,6 +44,9 @@ Checks outstanding: <list>
 2. Ids this WP creates stay provisional: `D-3D<wp>-<n>`, `Q-3D<wp>-<n>`, rows `3D-<wp>.<n>`, ADRs `3D-ADR-<wp>-<n>`; the
    merging session assigns final ids (D-38, D-179). Update: module card, STRUCTURE.md, DECISIONS.md, BACKLOG row -> `review` (PR link, or "local, PR not requested"),
    overview via `node tools/check-docs.mjs --fix`, mermaid group; mirror rows if the WP touches another repository.
+   Run `--fix` in the same commit as the row change, never as a commit of its own. When the base is merged into the WP
+   branch: take the base side of generated BACKLOG parts (overview, `Running:`, `Updated:`, graph icons) and run
+   `--fix` inside that merge commit.
 3. Checkpoint: `status: done`, results with numbers, what the next WP needs to know.
 4. Report to the owner in chat: what was done, check results, open questions (asked via dialog, not as text). When the
    owner accepts, send_message to the coordinator: "WP 3D-<id> done, owner accepted, <branch>@<sha>".

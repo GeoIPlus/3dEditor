@@ -28,8 +28,11 @@ checkpoint). Stop and ask the owner (dialog with proposed answers) if any of the
 1. `git merge --no-ff origin/<wp> -m "3D-<id>: merge <wp> into <base> (D-NN)"` (D-NN = the owner's acceptance decision,
    written in step 4).
 2. Conflicts in `docs/BACKLOG.md`, `docs/decisions/DECISIONS.md`, STRUCTURE.md: keep **both** sides' rows and lines;
-   never drop a row, decision or question. A conflict in code or in another WP's files: `git merge --abort` and ask the
-   owner.
+   never drop a row, decision or question. Generated BACKLOG parts (overview counts, "N/M rows done", `Running:`,
+   `Updated:`, graph icons and legend; D-180, D-208): take the base side; step 4.2 regenerates them.
+   `packages/geo-model3d/src/ops/registry.js`: when both sides only add `import` lines and `OPERATIONS` entries, keep
+   both sides' additions (base first, no duplicates); the gate (step 5) proves it. Any other conflict in code or in
+   another WP's files: `git merge --abort` and ask the owner.
 
 ## 3. Final ids (D-38)
 
