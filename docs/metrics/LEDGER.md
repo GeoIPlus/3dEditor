@@ -13,7 +13,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 | 2026-11-24 | 3D-84 | session_01RNYuqJWJrEJKEesXCMg4gc | wp | 3.92 | 43.0 | 113.8 | 10716.4 | 6.9 | 1.41 | claude-opus-5-5 | final | - | newest result event 2026-11-24T18:08:36Z; session archived |
 | 2026-11-25 | 3D-00.1 | session_01RNYuqGReWdMPazLVoyejTW | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - | no finished turn when written; coordinator reads it at merge |
 | 2026-11-25 | evals | - | evals | 15.31 | ? | ? | ? | ? | ? | claude-opus-5-5 | final | - | agent evals 2026-11-25-3d85 summary.md (38 runs, gate of 3D-00.1) |
-| 2026-11-25 | 3D-00.4 | session_01RNYuqGYcTF5pjsGKsqgM9e | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | pending | no finished turn when written (first turn); `get_session` had no `usage` field at 12:4x Z; coordinator reads it at merge |
+| 2026-11-25 | 3D-00.4 | session_01RNYuqGYcTF5pjsGKsqgM9e | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | done (Fable; 3 proposals, see checkpoint 3D-00.4) | no finished turn when written (first turn); `get_session` had no `usage` field at 12:4x Z; coordinator reads it at merge |
 
 Backfill of the other finished WPs (their sessions still list in `list_sessions`) is part of row 3D-00.2.
 
