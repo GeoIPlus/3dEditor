@@ -62,6 +62,35 @@
 7. **Relation to 3D-08 (Q-01):** this ADR admits one third-party runtime package (`proj4`) for this module only. If the
    3D-08 kernel ADR (ADR-001) sets a rule that excludes it, Option A is the fallback with the same API and tests.
 
+## Amendment 2026-11-25: projections in the CRS table (3D-69, 3D-83)
+
+Status: proposed (needs the owner's approval, D-18). It adds a second generator input and a verification rule; the
+decision above is unchanged.
+
+- [D] D-198 (3D-69): a point cloud in another projected CRS than the building is reprojected with every projection
+  method proj4js implements, not only Transverse Mercator; for that the table needs each projected CRS's projection.
+- [V] Second input: PROJ's own proj-string of every projected CRS, written by `tools/crs-table/proj-defs.py` from the
+  same pinned pyproj 3.8.0 wheel (PROJ 9.8.1, EPSG v12.029), with nine sample points per CRS (3 x 3 grid at 5 / 50 /
+  95 % of its area of use) as PROJ computes them. `source.projDefs` in the table names it. The intermediate
+  `proj-defs.json` (1.6 MB) is not committed.
+- [V] Normalisation (`tools/crs-table/projections.mjs`): datum tokens (`+datum`, `+ellps`, `+towgs84`, `+nadgrids`) are
+  dropped and the ellipsoid is written as `+a` / `+rf` or `+b` from `proj.db`, so proj4js does no datum shift and reads no
+  grid (decision 1 holds); definitions with `+pm`, `+axis`, `+to_meter` or non-metre `+units` are refused.
+- [V] Verification rule: a definition is kept only when proj4js forward and inverse agree with every PROJ sample within
+  **0.001 m** (`SAMPLE_TOL_M`). Reason: the same bound as the write-back rule of spec §4a (changed vertices within
+  0.001 m). [A] The check covers the nine samples only; agreement between them is assumed from the smoothness of the
+  projection formulas, not proven.
+- [V] Result (table `projections`, `skippedProjections`): **4207 of 4262** projected CRSs carry a verified projection.
+  Left out (55): prime meridian other than Greenwich 38, proj4js differs beyond 0.001 m 13 (`laea` 9, `aeqd` 3,
+  `labrd` 1), no PROJ definition 3, no ellipsoid 1. A projected CRS without an entry stays valid as a building CRS
+  (decision 2) but cannot be a reprojection source or target: `INVALID_CRS` with reason `NO_PROJECTION`
+  (`src/crs/reproject.js`, D-198).
+- [V] Size: `epsg-table.json` grew from 110 kB to 605 kB (604 451 bytes, text JSON). The 110 KB in decision 2 is the
+  3D-32 size.
+- Q-43 (EPSG terms of use) is unchanged by this amendment and still open: the proj-strings are derived from the same
+  EPSG data as the rest of the table.
+- Regenerating: `tools/crs-table/README.md`.
+
 ## Checks
 
 - `packages/geo-model3d/test/crs/*.test.js` (Vitest `unit`):
