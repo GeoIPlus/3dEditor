@@ -1,0 +1,58 @@
+{
+  "task": "js-esm-jsdoc",
+  "run": 2,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "427d2b6204978fc730ef0997cf333d102557ccff",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-ts",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "tsconfig-same",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "esm-jsdoc",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 0.3389708,
+  "turns": 10,
+  "durationMs": 39613,
+  "usage": {
+    "input": 18,
+    "cacheCreate": 23719,
+    "cacheRead": 394734,
+    "output": 3510
+  },
+  "toolCalls": 8,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [],
+  "commits": [],
+  "pushes": [],
+  "finalText": "I haven't started 3D-95. Two things block it, and both are your call. I asked you in a dialog, but you weren't available, so I made no branch, no commit and no backlog change.\n\n**1. TypeScript conflicts with your own rule.** AGENTS.md rule 8 and decision D-109 say the kernel is written in JavaScript with JSDoc type comments, checked by `tsc --checkJs`, with no TypeScript sources. `tsconfig.json` only includes `.js`/`.mjs` files, so a `.ts` file wouldn't be type-checked or covered by `npm run types`. I didn't override D-109 on my own. JSDoc reads close to TypeScript:\n```js\n/** @typedef {[number, number, number]} Vec3 */\n/** @param {Vec3} a @param {Vec3} b @returns {Vec3} */\nexport const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];\n```\n\n**2. Most of 3D-95 already exists.** `packages/geo-model3d/src/brep/vec.js` already has `add`, `sub`, `dot` and `cross`. It also has `norm`, which is the `length` the backlog entry asks for. 8 kernel modules import this file. A new vec3 module would duplicate it. The real gaps are:\n- there's no unit-test file for `vec.js`;\n- there's no function under the name `length`.\n\nThere's also a small doc inconsistency: the 3D-95 entry lists Q-01 as open, but AGENTS.md says Q-01 is closed by D-109.\n\n**My suggestion:** narrow 3D-95 to \"unit tests for `brep/vec.js`\", plus optionally `length` as an alias of `norm`, in JS with JSDoc. That's a few minutes of work and needs no ADR. If you do want TypeScript in the kernel, that means reopening D-109 ("
+}

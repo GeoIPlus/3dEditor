@@ -525,7 +525,8 @@ Caveat: the 4 measured WPs are verification/tooling work; the open rows are most
   Scope out: the forecast script and the backfill (3D-00.2); the daily-report prompt (D-44) - separate change.
 - Accept: after the eval-harness fix (3D-00.3), one eval run of this change (19 x 2) keeps every task that held in the D-64
   baseline (16/19) holding, or each flip is explained (D-3D00-4, D-3D00-5); `node tools/check-docs.mjs` passes.
-- Decisions: D-43, D-44, D-64, D-3D00-1..D-3D00-5  Open: -
+- Result: eval run 2026-11-25 - 16/19 hold as in the baseline, every flip explained, none caused by this change (D-3D00-7).
+- Decisions: D-43, D-44, D-64, D-3D00-1..D-3D00-7  Open: -
 - Estimate: prior (no data)
 
 ### 3D-00.3 Bug: agent-eval start states fail check:docs

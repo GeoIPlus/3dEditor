@@ -1,0 +1,69 @@
+{
+  "task": "intake-new-request",
+  "run": 1,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "9dd06d3a5520bdea7c14e4bc71946388c414cbec",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "row-proposed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-ready",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.6505297999999999,
+  "turns": 16,
+  "durationMs": 78737,
+  "usage": {
+    "input": 30,
+    "cacheCreate": 41499,
+    "cacheRead": 831489,
+    "output": 7606
+  },
+  "toolCalls": 14,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "intake: 3D-88 distance tool in the 3D view (shared mirror, proposed), Q-47"
+  ],
+  "pushes": [],
+  "finalText": "I've added the distance tool to the backlog as row **3D-88**, status `proposed`. No code was written; intake only records the work. Nothing in the backlog, decisions or spec already covers it.\n\n- **Class:** `external`. The 3D view and all operator tools are built in `shared_compnents`, so 3D-88 is a mirror row there. It depends on 3D-42 (tools and snapping) and 3D-47 (picking in the 3D view), and is size S. The Details entry also has the text of the row to add in `shared_compnents`.\n- **Rows changed:** new row 3D-88 with its Details entry and graph node, and open question **Q-47** in `docs/decisions/DECISIONS.md`. The docs check passes, and it's committed as `f53710a`.\n- **What you need to do:** answer Q-47, then set 3D-88 to `ready`. You didn't answer my four questions, so I wrote the row with the option I'd recommend for each:\n  1. **First release:** add it now. It isn't in the v0.3 list of operator tools (E-01..E-15), so this widens the first-release scope a little.\n  2. **What it keeps:** nothing. The tool only shows the result on screen and clears it on `Esc`, with no server call or contract change. If you want measurements saved into the model instead, 3D-88 grows to M or L and needs extra spec and kernel rows.\n  3. **What it shows:** 3D distance, horizontal distance and height difference (ΔZ), in metres.\n  4. **What points snap to:** model vertices, edges and point-cloud points. Point-cloud coordinates come from the original data, not the screen buffer, so the number i"
+}
