@@ -22,10 +22,10 @@ Updated: 2026-11-25
 | Progress | Rows |
 |---|---:|
 | Done | 42 / 74 |
-| Review | 0 |
+| Review | 1 |
 | In progress | 5 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 23 |
+| Proposed (waiting for the owner to set `ready`) | 22 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 42/74 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
@@ -79,6 +79,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D86["🔍 🔧 3D-86 Forecast script + backfill"]
   end
   subgraph ready["READY"]
     D88["🚧 🔧 3D-88 Eval rubric false negatives"]
@@ -88,7 +89,6 @@ flowchart TB
     D51["▶️ 🔗 3D-51 geoviewer scene3d adapter"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
-    D86["💡 🔧 3D-86 Forecast script + backfill"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
   end
@@ -268,11 +268,10 @@ flowchart TB
 Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script ([method §4](metrics/README.md#4-forecast-etc-and-tuning)).
 
 ```
-Forecast 2026-11-25 (ledger n=4 WPs: 3D-01, 3D-27, 3D-29, 3D-84; no class with n>=5)
-Known remaining: prior only - 34 open rows (S 6, M 19, L 9) x all-WP median $3.43 = $117; p80 not computable (n=4)
-Overhead k: TBD   Growth g: TBD (needs 3D-86)   ETC: TBD
-Caveat: the 4 measured WPs are verification/tooling work; the open rows are mostly kernel code (9 of them L).
-        Read $117 as a lower bound, not as a forecast.
+Forecast 2026-11-25 (ledger n=39 WPs, classes with n>=5: L kernel n=5, M kernel n=5, M tooling n=5, S spec n=8)
+Known remaining: $252 / $306 over 32 rows   Overhead k=1.06   Growth g=0.81 (30 added / 37 finished, 6 d)
+ETC: $1414 / $1717
+Throughput: 43.2 rows/week, 422 model min/week; waiting share 99 %   Accuracy: TBD (no finished WP with est0 and actual)
 ```
 
 ## Work-package status
@@ -341,7 +340,7 @@ Caveat: the 4 measured WPs are verification/tooling work; the open rows are most
 | 3D-85 | Session cost ledger, per-row estimates, backlog forecast (ETC) and independent efficiency review: rules in AGENTS.md §7.7/§7.9 and the skills (D-236..D-240) | here | AGENTS.md, .claude/skills, docs/metrics, docs/templates | 00 | G0 | S | tooling | done (D-244; merged into base, no PR) |
 | 3D-87 | Bug: agent-eval start states fail `check:docs` - scenario rows lack the `Type` cell (D-221) and documents link into the paths hidden from the agent | here | tools/agent-evals, docs/agent-evals | 28, 84 | G0 | S | tooling | done (D-244; merged into base, no PR) |
 | 3D-88 | Bug: two eval rubrics give false negatives - `js-esm-jsdoc` `esm-jsdoc` (re-export-only file needs `@param`) and `never-push-main` `names-rule` (misses "not to `main`") | here | docs/agent-evals, tools/agent-evals | 28, 00.3 | G0 | S | tooling | in-progress (D-243; wp/3d-00.4-rubric-false-negatives) |
-| 3D-86 | Forecast script `tools/budget.mjs` (ledger + BACKLOG -> ETC block) and ledger backfill of every finished WP session | here | tools, docs/metrics | 00.1 | G0 | S | tooling | proposed |
+| 3D-86 | Forecast script `tools/budget.mjs` (ledger + BACKLOG -> ETC block) and ledger backfill of every finished WP session | here | tools, docs/metrics | 00.1 | G0 | S | tooling | review (wp/3d-86-forecast-script; local, PR not requested) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | mirror | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | mirror | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | mirror | proposed (UI per brandbook, D-40) |
