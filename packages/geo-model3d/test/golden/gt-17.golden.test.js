@@ -61,7 +61,7 @@ describe('GT-17 ADD_CHIMNEY', () => {
     expect(Math.abs(buildingVolume(after) - 520)).toBeLessThanOrEqual(tol.volumeM3);
     // the entity sets are those of the input version again
     for (const k of ['vertices', 'halfEdges', 'faces', 'shells', 'solids', 'semantics']) {
-      expect(Object.keys(after[k]).sort()).toEqual(Object.keys(r.model[k]).sort());
+      expect(Object.keys(/** @type {any} */ (after)[k]).sort()).toEqual(Object.keys(/** @type {any} */ (r.model)[k]).sort());
     }
     expect(out.result.topologyLineage.deleted).toEqual(expect.arrayContaining([...installation(m).faces]));
   });
