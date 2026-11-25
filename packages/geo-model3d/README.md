@@ -139,6 +139,18 @@ constraint the current model violates is refused `CONSTRAINT_CONFLICT` by the co
 FIXED_POINT, spec §5 r6). Unknown ids -> `INVALID_PAYLOAD` (D-228); a command that changes nothing (same
 `surfaceKind`, a constraint equal to a stored one) -> `INVALID_PAYLOAD` (D-229).
 
+**3D-20** (spec §10.11; D-256..D-260): `installation-place.js` (roof face of a Building / BuildingPart body, its plane
+and plan rings; points on the plane within `planarTolM`; outline normalised CCW, no self-crossing, area above
+`minFaceAreaM2`; outline inside the face, boundary allowed within `topologySnapTolM`), `installation-shell.js` (own
+planar Boolean of the K-12 P0 scope, D-109: vertical prism over the outline, cut below by the roof plane and above by
+the lower envelope of one or two top planes; faces ClosureSurface base, WallSurface per outline edge, RoofSurface
+per top plane, no roof component (D-261, as D-227); vertices derived from their faces), `add-chimney.js` (box along local
+x / y (D-261), top at the downhill corner + h, D-256), `add-dormer.js` (FLAT top at the highest outline corner + `heightM`,
+D-257; GABLE ridge on the fall line through the outline centroid, `ridgeRiseM` above the wall top, convex outline
+only, D-258), `remove-installation.js` (deletes the node, its children and every entity of their bodies; faces
+leave roof components). The roof face is never cut (D-260): the installation touches it. Refusals D-259;
+`measurementId` sizing -> `INVALID_MEASUREMENT` (Q-28). New semantic node id kind `installation` (`installation-<n>`).
+
 ## Internal modules
 ### solve (3D-13)
 
@@ -276,6 +288,13 @@ run spread ~0.1 ms).
   off-centre ridge; target skew to the locked eave -> `CONSTRAINT_CONFLICT` (spec §10.7 r2); KEEP_PLANES on / without a
   target; FIT_MEASUREMENTS and its refusals; ALIGN_EAVE KEEP_RIDGE, off-wall target conflict (D-232), soft vs held-hard
   `FIXED_EAVE` (D-234); MATCH_ELEVATIONS number / MIN / MAX / MEAN, ground-vertex and hard-face conflicts.
+- `test/ops/installations.test.js`, `installations-refusals.test.js` (3D-20): GABLE ridge 8.675 at x = 5, volume
+  5.8875 m3, two slopes of 1.5·√1.64 m2; chimney axes and sizes; WORLD centre; PREVIEW = COMMIT; ADD patch only
+  `added`, REMOVE deletes exactly those ids (lineage `deleted` = every face, edge, vertex); two installations; 22
+  refusals with their codes on frozen models; FLAT dormer on a flat roof.
+- Golden GT-17, GT-18 (3D-20, `installation.golden.helpers.js`): GT-17 building 520 m3, chimney 0.625 m3, top 7.125,
+  base in z = 5 + 0.75 y, closed separate body; then REMOVE -> roof 100 m2, 520 m3, entity sets of the input. GT-18
+  dormer 4.6875 m3, no vertex below the slope beyond `planarTolM`, no `SOLID_OVERLAP`, outline 2 x 1.5 m.
 - Golden GT-07, GT-09 (3D-16, `align.golden.helpers.js`): GT-07 eaves Z 5, roof 106.3015 m2, volume 540 m3, only the
   two slope planes change; GT-09 `CONSTRAINT_CONFLICT`, version and model unchanged.
 - Bench (`npm run bench`, non-gate scenes `*-roof`, REPLACE_ROOF PREVIEW through `executeCommand`, 3 x 1000): GT-03
