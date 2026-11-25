@@ -243,6 +243,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D00-3 | The efficiency reviewer is a fresh subagent on Claude Fable 5.2 (`model: "fable"`), about $0.5-1 per review at the list price of 2026-11-03 ($8/$40 per MTok), with a fixed prompt and raw data, at most ~150k input tokens | Owner, dialog, 2026-11-25 (3D-00.1) |
 | D-3D00-4 | The instruction change of 3D-00.1 is merged into the base only after the agent evals (3D-28) hold on it: every task holding in the baseline (D-64, 16/19) still holds, 19 tasks x 2 runs (~$13) | Owner, dialog, 2026-11-25 (3D-00.1) |
 | D-3D00-5 | Eval protocol for 3D-00.1 (refines D-3D00-4): first the eval harness is fixed (`tools/agent-evals/scenario.mjs` writes rows without the `Type` column of D-221, so start states fail `check-docs`; separate bug row via intake); then one run of the change only (19 tasks x 2, ~$13), compared with the D-64 baseline. Known limit: the base changed since 078b464, so a task that stops holding is a signal to investigate, not proof that 3D-00.1 caused it | Owner, dialog, 2026-11-25 (3D-00.1) |
+| D-3D00-6 | Row 3D-00.3 (eval start states fail `check:docs`) is `ready` and done in the 3D-00.1 session on its branch `claude/peaceful-newton-nylh62`, as a separate commit: the platform lets this session push only that branch (exception to one WP per branch, AGENTS.md §2.3) | Owner, chat, 2026-11-25 |
 
 ## Open questions
 
