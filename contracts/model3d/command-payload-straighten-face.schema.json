@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-straighten-face:v1",
+  "title": "STRAIGHTEN_FACE payload",
+  "description": "Straighten a face boundary (v0.2 C.10; v0.3 §6; spec §10.6 rule 6). FORCE_RECTANGLE is dropped.",
+  "type": "object",
+  "properties": {
+    "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "mode": { "enum": ["REMOVE_COLLINEAR_VERTICES", "ALIGN_SELECTED_EDGES"] },
+    "edgeIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "type": "array",
+      "minItems": 1,
+      "description": "ALIGN_SELECTED_EDGES only."
+    }
+  },
+  "required": ["faceId", "mode"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "mode": { "const": "ALIGN_SELECTED_EDGES" } }, "required": ["mode"] },
+      "then": { "required": ["edgeIds"] }
+    }
+  ],
+  "$comment": "[P] Field names. Collinearity tolerance: Q-18 (3D-15)."
+}

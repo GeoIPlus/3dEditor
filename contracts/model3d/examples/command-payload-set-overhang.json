@@ -1,0 +1,7 @@
+{
+  "valid": [{ "eaveEdgeIds": ["he-eave-1", "he-eave-2"], "overhangM": 0.5 }],
+  "invalid": [
+    { "why": "negative overhang", "instance": { "eaveEdgeIds": ["he-1"], "overhangM": -0.5 } },
+    { "why": "no eaves", "instance": { "eaveEdgeIds": [], "overhangM": 0.5 } }
+  ]
+}

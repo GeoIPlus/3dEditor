@@ -1,0 +1,10 @@
+{
+  "valid": [
+    { "faceId": "f-1", "mode": "REMOVE_COLLINEAR_VERTICES" },
+    { "faceId": "f-1", "mode": "ALIGN_SELECTED_EDGES", "edgeIds": ["he-1", "he-2"] }
+  ],
+  "invalid": [
+    { "why": "FORCE_RECTANGLE dropped (v0.3 §6)", "instance": { "faceId": "f-1", "mode": "FORCE_RECTANGLE" } },
+    { "why": "ALIGN_SELECTED_EDGES without edges", "instance": { "faceId": "f-1", "mode": "ALIGN_SELECTED_EDGES" } }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "task": "intake-new-request",
+  "run": 1,
+  "ref": "078b464904e5a1c9f1825e31855234251aea807f",
+  "startSha": "2043c2aac2ac9f3b2cb6f786e63966eaabb4250f",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "row-proposed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-ready",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.58466,
+  "turns": 15,
+  "durationMs": 68496,
+  "usage": {
+    "input": 24,
+    "cacheCreate": 40173,
+    "cacheRead": 633400,
+    "output": 6825
+  },
+  "toolCalls": 13,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "intake: 3D-52 3DQM distance tool (proposed), Q-17"
+  ],
+  "pushes": [],
+  "finalText": "I added the distance tool to the backlog as a proposed task. Nothing is built yet: new requests only go into the backlog until you approve them.\n\n- **Class:** `external`. The code would live in shared_compnents (the 3DQM tools area), so `3D-52` here is a mirror row. Nothing like it existed in the backlog, and it doesn't reopen any decision. The spec has no quick measuring tool; its saved measurements (M-03, M-07) are a different thing, inputs for constraints.\n- **Created:** row `3D-52` \"3DQM distance tool\" (size M, depends on `3D-42`, status `proposed`), plus its details entry, the graph edge, the updated counts, and open question `Q-17`. Committed as `557f270`; the docs check and the backlog sync check both passed.\n- **What you need to do:** answer `Q-17`, then set `3D-52` to `ready`. You didn't answer the questions, so the row is written with the defaults I'd recommend:\n  - **What it is:** a read-only ruler. Nothing is saved and the kernel (the server-side geometry engine) is never called.\n  - **What it shows:** 3D distance, horizontal distance and height difference, in metres.\n  - **What points snap to:** the building model and the point cloud.\n\n  If you'd rather save each result as a stored measurement, the row will depend on the contract schemas (`3D-06`) and the kernel service (`3D-23`), so it will land much later.\n\nOnce `3D-52` is approved, add this row to shared_compnents:\n\n```\n| 3D-52 | 3DQM distance tool: two picked points in the 3D view -> 3D / horizontal / dZ dist"
+}

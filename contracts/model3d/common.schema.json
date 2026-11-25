@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-common:v1",
+  "title": "model3d common definitions",
+  "description": "Shared $defs of the model3d contracts (3D-06). Units: metres and degrees; coordinates double precision (spec §1.2). Not a message on its own: the root accepts nothing.",
+  "$comment": "[P] Grouping of shared definitions into one schema is a 3D-06 proposal (D-18).",
+  "not": {},
+  "$defs": {
+    "EntityId": {
+      "description": "Id of a model entity, command, preview or project. v0.2 B.2 `type UUID = string`; the server creates UUIDs at COMMIT, a PREVIEW may use ephemeral ids in an explicit namespace (v0.2 B.6). v0.2 D.3 examples use non-UUID strings ('cmd-001', 'ridge-7'), so the format is not narrowed here; the ephemeral namespace syntax is TBD (Q-26).",
+      "type": "string",
+      "minLength": 1
+    },
+    "EntityIdList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/EntityId" },
+      "uniqueItems": true
+    },
+    "V2": {
+      "description": "Local horizontal coordinates [x, y], metres (v0.2 B.2).",
+      "type": "array",
+      "prefixItems": [{ "type": "number" }, { "type": "number" }],
+      "items": false,
+      "minItems": 2
+    },
+    "V3": {
+      "description": "Point [x, y, z], metres; frame given by the message (v0.2 B.2, B.6).",
+      "type": "array",
+      "prefixItems": [{ "type": "number" }, { "type": "number" }, { "type": "number" }],
+      "items": false,
+      "minItems": 3
+    },
+    "Line3": {
+      "description": "A line given by two points, as `targetLine` in v0.2 D.3.",
+      "type": "array",
+      "prefixItems": [{ "$ref": "#/$defs/V3" }, { "$ref": "#/$defs/V3" }],
+      "items": false,
+      "minItems": 2
+    },
+    "Line2": {
+      "description": "A line in plan given by two points [x, y].",
+      "$comment": "[P] Used where only a plan line is meaningful (vertical wall plane, ALIGN_WALL).",
+      "type": "array",
+      "prefixItems": [{ "$ref": "#/$defs/V2" }, { "$ref": "#/$defs/V2" }],
+      "items": false,
+      "minItems": 2
+    },
+    "Ring2": {
+      "description": "Closed ring in plan; unique coordinates, implicit closing segment (v0.2 B.2 Footprint.outerRing).",
+      "type": "array",
+      "items": { "$ref": "#/$defs/V2" },
+      "minItems": 3
+    },
+    "PointSelection": {
+      "description": "Cloud points chosen by the operator (rectangle or lasso in the view, v0.3 §7), in the LOCAL frame of the building. The service queries the points port by the bounding box and filters by the shape; the kernel receives the points (spec §9). BOX: min <= max per axis (checked by the kernel). POLYGON: plan ring plus a height range.",
+      "$comment": "D-132 (Q-18 for FIT_PLANE). [P] Member names.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "BOX" },
+            "min": { "$ref": "#/$defs/V3" },
+            "max": { "$ref": "#/$defs/V3" }
+          },
+          "required": ["kind", "min", "max"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "POLYGON" },
+            "ringXY": { "$ref": "#/$defs/Ring2" },
+            "zMin": { "type": "number" },
+            "zMax": { "type": "number" }
+          },
+          "required": ["kind", "ringXY", "zMin", "zMax"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Plane": {
+      "description": "Plane `normal · p + d = 0` with |normal| = 1 (v0.2 B.2). The unit length is checked by the kernel, not expressible here.",
+      "type": "object",
+      "properties": {
+        "normal": { "$ref": "#/$defs/V3" },
+        "d": { "type": "number" }
+      },
+      "required": ["normal", "d"],
+      "additionalProperties": false
+    },
+    "ModelState": {
+      "description": "v0.2 B.2; unchanged by v0.3 §4.2.",
+      "enum": ["DRAFT_SURFACE", "DRAFT_SOLID", "VALID_SOLID", "APPROVED"]
+    },
+    "SurfaceKind": {
+      "description": "v0.2 B.2.",
+      "enum": ["RoofSurface", "WallSurface", "GroundSurface", "ClosureSurface", "OuterCeilingSurface", "OuterFloorSurface", "Window", "Door", "Unclassified"]
+    },
+    "EdgeRole": {
+      "description": "v0.2 B.2.",
+      "enum": ["RIDGE", "EAVE", "VALLEY", "HIP", "RAKE", "BOUNDARY", "CUT", "GENERIC"]
+    },
+    "ConstraintKind": {
+      "description": "v0.2 B.2 + v0.3 §4.2 (`BOUNDARY_ON_FOOTPRINT`, `PREFERRED_AXIS`); hard/soft split in spec §5 rule 1.",
+      "enum": ["FIXED_POINT", "COINCIDENT", "ON_PLANE", "PLANAR_FACE", "SHARED_EDGE", "PARALLEL", "PERPENDICULAR", "HORIZONTAL", "VERTICAL", "EQUAL_Z", "FIXED_LINE", "FIXED_RIDGE", "FIXED_EAVE", "ROOF_SLOPE", "SYMMETRY", "CLOSE_TO_MEASUREMENT", "MINIMIZE_DISPLACEMENT", "BOUNDARY_ON_FOOTPRINT", "PREFERRED_AXIS"]
+    },
+    "Frame": {
+      "description": "Coordinate frame tag of a message (v0.2 D.2 `coordinateFrame`, v0.3 §4.2 Measurement3D.frame).",
+      "enum": ["LOCAL", "WORLD"]
+    },
+    "LocalAxis": {
+      "description": "Building axes, including `buildingAxisDeg` (v0.3 §4.3); `ridgeAxis: LOCAL_X` in v0.2 D.3.",
+      "enum": ["LOCAL_X", "LOCAL_Y"]
+    },
+    "OperationKind": {
+      "description": "v0.3 §9.1, spec §2.2: 37 kinds.",
+      "enum": ["IMPORT_BUILDING", "RESTORE_BASELINE", "MOVE_VERTEX", "MOVE_EDGE", "OFFSET_FACE", "SPLIT_FACE", "INSERT_ROOF_BREAK", "MERGE_FACES", "REMOVE_DETAILS", "ALIGN_RIDGE", "ALIGN_EAVE", "MATCH_ELEVATIONS", "STRAIGHTEN_FACE", "TRIM_FACE", "EXTEND_FACE", "REMOVE_FACE", "HEAL_HOLE", "FIT_TO_SHARED_EDGE", "ALIGN_JUNCTION", "RESIZE_ROOF", "SET_OVERHANG", "REGULARIZE_FOOTPRINT", "ALIGN_WALL", "SET_HEIGHT", "TRANSLATE_BUILDING", "ROTATE_BUILDING", "ADD_DORMER", "ADD_CHIMNEY", "REMOVE_INSTALLATION", "REPLACE_ROOF", "REBUILD_ENVELOPE", "SET_SEMANTICS", "SET_CONSTRAINT", "REMOVE_CONSTRAINT", "FIT_PLANE", "UNDO", "REDO"]
+    },
+    "NonNegativeLength": { "description": "Metres, >= 0.", "type": "number", "minimum": 0 },
+    "PositiveLength": { "description": "Metres, > 0.", "type": "number", "exclusiveMinimum": 0 },
+    "Version": { "description": "Model version number; every commit, Undo and Redo is a new version (v0.2 §13.6).", "type": "integer", "minimum": 0 },
+    "Timestamp": { "description": "RFC 3339 date-time from the injected clock (spec §1.2).", "type": "string", "format": "date-time" }
+  }
+}

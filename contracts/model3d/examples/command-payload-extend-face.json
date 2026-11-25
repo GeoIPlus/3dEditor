@@ -1,0 +1,6 @@
+{
+  "valid": [{ "faceId": "f-1", "edgeId": "he-1", "targetLine": [[0, -0.5, 4.6], [10, -0.5, 4.6]] }],
+  "invalid": [
+    { "why": "missing boundary edge", "instance": { "faceId": "f-1", "targetLine": [[0, -0.5, 4.6], [10, -0.5, 4.6]] } }
+  ]
+}

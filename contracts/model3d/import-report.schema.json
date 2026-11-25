@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-import-report:v1",
+  "title": "ImportReport",
+  "description": "Result of IMPORT_BUILDING (v0.3 §5 step 11; spec §6): issues, merged / inferred tags, the state assigned by validation (the operator does not choose it), warnings such as more than 500 faces (spec §6 rule 15).",
+  "$comment": "[P] Shape and member names are a 3D-06 proposal (spec §2 row 11: 'shape by 3D-06').",
+  "type": "object",
+  "properties": {
+    "buildingId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "assignedState": { "enum": ["DRAFT_SOLID", "VALID_SOLID"], "description": "Spec §6 rule 10." },
+    "issues": { "type": "array", "items": { "$ref": "urn:geoiplus:schema:model3d-validation-report:v1#/$defs/ValidationIssue" } },
+    "mergedFaces": {
+      "type": "object",
+      "additionalProperties": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 2 },
+      "description": "Face id -> sourceRefs of the coplanar input surfaces merged into it (spec §6 rule 5, GT-I3)."
+    },
+    "inferredSemanticsFaceIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList", "description": "Faces tagged SEMANTICS_INFERRED (spec §6 rule 7)." },
+    "nonPlanarFaceIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList", "description": "Faces tagged NON_PLANAR_FACE (spec §6 rule 4)." },
+    "faceCount": { "type": "integer", "minimum": 0 },
+    "warnings": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["buildingId", "modelVersion", "assignedState", "issues", "mergedFaces", "inferredSemanticsFaceIds", "nonPlanarFaceIds", "faceCount", "warnings"],
+  "additionalProperties": false
+}

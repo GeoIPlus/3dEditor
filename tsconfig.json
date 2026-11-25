@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["packages/*/src/**/*.js", "packages/*/test/**/*.js", "packages/*/spike/**/*.js", "services/*/src/**/*.js", "services/*/test/**/*.js", "tools/**/*.mjs", "docs/agent-evals/**/*.mjs", "contracts/*/test/**/*.mjs", "*.mjs"],
+  "exclude": ["node_modules", "**/fixtures/**"]
+}

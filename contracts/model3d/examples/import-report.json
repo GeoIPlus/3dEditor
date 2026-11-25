@@ -1,0 +1,69 @@
+{
+  "valid": [
+    {
+      "buildingId": "b-1",
+      "modelVersion": 1,
+      "assignedState": "DRAFT_SOLID",
+      "issues": [
+        {
+          "code": "OPEN_BOUNDARY",
+          "scope": "TOPOLOGY",
+          "severity": "WARNING",
+          "entityIds": ["he-1", "he-9"],
+          "message": "open boundary"
+        }
+      ],
+      "mergedFaces": { "f-roof-1": ["DEBY_1:12", "DEBY_1:13"] },
+      "inferredSemanticsFaceIds": [],
+      "nonPlanarFaceIds": [],
+      "faceCount": 7,
+      "warnings": []
+    }
+  ],
+  "invalid": [
+    {
+      "why": "operator-chosen APPROVED state",
+      "instance": {
+        "buildingId": "b-1",
+        "modelVersion": 1,
+        "assignedState": "APPROVED",
+        "issues": [
+          {
+            "code": "OPEN_BOUNDARY",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "mergedFaces": { "f-roof-1": ["DEBY_1:12", "DEBY_1:13"] },
+        "inferredSemanticsFaceIds": [],
+        "nonPlanarFaceIds": [],
+        "faceCount": 7,
+        "warnings": []
+      }
+    },
+    {
+      "why": "merge of a single surface",
+      "instance": {
+        "buildingId": "b-1",
+        "modelVersion": 1,
+        "assignedState": "DRAFT_SOLID",
+        "issues": [
+          {
+            "code": "OPEN_BOUNDARY",
+            "scope": "TOPOLOGY",
+            "severity": "WARNING",
+            "entityIds": ["he-1", "he-9"],
+            "message": "open boundary"
+          }
+        ],
+        "mergedFaces": { "f-roof-1": ["DEBY_1:12"] },
+        "inferredSemanticsFaceIds": [],
+        "nonPlanarFaceIds": [],
+        "faceCount": 7,
+        "warnings": []
+      }
+    }
+  ]
+}

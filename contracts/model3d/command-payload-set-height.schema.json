@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-set-height:v1",
+  "title": "SET_HEIGHT payload",
+  "description": "Change the base level or one selected eave (v0.3 §6 F-41; spec §10.10 rule 5).",
+  "type": "object",
+  "properties": {
+    "kind": { "enum": ["BASE", "EAVE"] },
+    "z": { "type": "number", "description": "New Z, metres." },
+    "eaveEdgeId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "EAVE only: the selected eave."
+    }
+  },
+  "required": ["kind", "z"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "EAVE" } }, "required": ["kind"] },
+      "then": { "required": ["eaveEdgeId"] }
+    }
+  ],
+  "$comment": "BASE/EAVE from v0.3 §6; [P] field names. Planes changed by EAVE: Q-18 (3D-19)."
+}

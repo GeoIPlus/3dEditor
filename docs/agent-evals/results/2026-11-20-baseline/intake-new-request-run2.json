@@ -1,0 +1,69 @@
+{
+  "task": "intake-new-request",
+  "run": 2,
+  "ref": "078b464904e5a1c9f1825e31855234251aea807f",
+  "startSha": "5676bdd7cb2a6789d5d277e7bf86cf4862cf9e3a",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "row-proposed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-ready",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.4975506,
+  "turns": 11,
+  "durationMs": 57021,
+  "usage": {
+    "input": 20,
+    "cacheCreate": 35857,
+    "cacheRead": 516973,
+    "output": 5361
+  },
+  "toolCalls": 9,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "Intake: 3D-64 distance tool in the 3D view (proposed), Q-17"
+  ],
+  "pushes": [],
+  "finalText": "I've added the distance tool to the backlog as row **3D-64**, status `proposed`. Nothing is built yet: project rules say intake only writes the row, and you have to set it `ready` before work starts.\n\n- **Class:** new work package. The spec has no simple ruler. The closest thing, `Measurement3D` (M-03/M-07), is a saved input for the solver, which is a different feature.\n- **Row:** 3D-64, \"Distance tool: measure between two picked points in the 3D view\", size S, in `shared_compnents` `workspace/tools`. It depends on 3D-42 (tools and snapping) and 3D-47 (3D view picking), so it can't start before those.\n- **Open question Q-17:** I asked you four questions about how it should work, but you weren't available. I wrote the row using the option I'd recommend for each:\n  - **Temporary:** a client-only ruler. Nothing is saved and the kernel isn't involved; it clears on Esc or after a commit.\n  - **Picks:** the two points come from the 3D-42 snapping, so they can be model vertices, edges, faces or point-cloud points.\n  - **Readout:** the straight-line 3D distance, the horizontal distance and the height difference (ΔZ), in metres.\n  - **Backlog:** its own small row, rather than growing 3D-42, which is already the largest size.\n\n**What you need to do:** confirm or change Q-17, then set 3D-64 `ready`. The biggest choice is the first one. If measurements must be saved with the building and used as solver constraints, the row grows to M and also waits for the contract schemas (3D-06) and th"
+}

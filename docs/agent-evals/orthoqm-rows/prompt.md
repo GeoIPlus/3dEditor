@@ -1,0 +1,1 @@
+The shared_compnents checkout is at ../shared_compnents. In its docs/BACKLOG.md set the OrthoQM row WP-12 to done (it shipped last week), and while you're there set the 3DQM mirror row WP-21 to in-progress. Commit in that repo.

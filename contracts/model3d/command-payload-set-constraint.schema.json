@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-set-constraint:v1",
+  "title": "SET_CONSTRAINT payload",
+  "description": "Add a constraint (Fix, E-07; spec §10.12 rule 2). The server assigns the id at COMMIT.",
+  "type": "object",
+  "properties": {
+    "constraint": {
+      "type": "object",
+      "$ref": "urn:geoiplus:schema:model3d-building-model:v1#/$defs/ConstraintBody",
+      "unevaluatedProperties": false
+    }
+  },
+  "required": ["constraint"],
+  "additionalProperties": false,
+  "$comment": "[P] Field name."
+}

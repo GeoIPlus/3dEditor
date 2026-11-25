@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-restore-baseline:v1",
+  "title": "RESTORE_BASELINE payload",
+  "description": "Empty payload. The service passes the baseline to the kernel (spec §3, §10.9 rule 4).",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}

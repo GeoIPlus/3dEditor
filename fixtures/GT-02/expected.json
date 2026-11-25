@@ -1,0 +1,25 @@
+{
+  "gt": "GT-02",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G2",
+    "input": "R-02, 5 → 8 через ширину 8",
+    "expected": "Крыша 85,440 м², объём 520 м³; 1 грань крыши"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "roofAreaM2": 85.44,
+    "volumeM3": 520,
+    "roofFaces": 1
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`REPLACE_ROOF`)",
+    "row": "3D-14"
+  }
+}

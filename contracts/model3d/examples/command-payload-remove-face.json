@@ -1,0 +1,4 @@
+{
+  "valid": [{ "faceId": "f-roof-2" }],
+  "invalid": [{ "why": "list instead of one face", "instance": { "faceIds": ["f-roof-2"] } }]
+}

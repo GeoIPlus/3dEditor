@@ -1,0 +1,25 @@
+{
+  "valid": [
+    { "edgeIds": ["he-a", "he-b"], "leadingFaceId": "f-roof-1", "maxDisplacementM": 0.05, "movableFaceIds": [] },
+    {
+      "edgeIds": ["he-a", "he-b"],
+      "leadingFaceId": "f-roof-1",
+      "maxDisplacementM": 0.05,
+      "movableFaceIds": ["f-roof-2"]
+    }
+  ],
+  "invalid": [
+    {
+      "why": "no tolerance (v0.2 C.8: diagnostic error)",
+      "instance": { "edgeIds": ["he-a", "he-b"], "leadingFaceId": "f-roof-1", "movableFaceIds": [] }
+    },
+    {
+      "why": "no strategy",
+      "instance": { "edgeIds": ["he-a", "he-b"], "leadingFaceId": "f-roof-1", "maxDisplacementM": 0.05 }
+    },
+    {
+      "why": "three edges",
+      "instance": { "edgeIds": ["a", "b", "c"], "leadingFaceId": "f", "maxDisplacementM": 0.05, "movableFaceIds": [] }
+    }
+  ]
+}

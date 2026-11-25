@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-regularize-footprint:v1",
+  "title": "REGULARIZE_FOOTPRINT payload",
+  "description": "Straighten the footprint within footprintAngleTolDeg, remove noise vertices (v0.2 F-39; spec §10.10 rule 3).",
+  "type": "object",
+  "properties": {
+    "footprintId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "allowCourtyardRemoval": {
+      "type": "boolean",
+      "description": "Courtyards are kept unless the operator allows removal."
+    },
+    "orthogonalize": { "type": "boolean", "description": "Orthogonalisation is optional (v0.2 F-39)." }
+  },
+  "required": ["footprintId", "allowCourtyardRemoval", "orthogonalize"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names; both flags explicit (no hidden default)."
+}

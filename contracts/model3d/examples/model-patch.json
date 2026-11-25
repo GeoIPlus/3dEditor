@@ -1,0 +1,98 @@
+{
+  "valid": [
+    {
+      "added": [
+        {
+          "type": "Face",
+          "entity": {
+            "id": "f-roof-1b",
+            "outerLoopId": "he-1",
+            "innerLoopIds": [],
+            "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+            "surfaceKind": "RoofSurface",
+            "tags": [],
+            "roofComponentId": "rc-1"
+          }
+        }
+      ],
+      "updated": [
+        {
+          "type": "Vtx",
+          "entity": {
+            "id": "v-1",
+            "p": [0, 0, 5],
+            "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+            "positionMode": "DERIVED",
+            "sourceRef": "12"
+          }
+        }
+      ],
+      "deleted": [{ "type": "HalfEdge", "id": "he-9" }],
+      "affectedMetrics": ["roofArea"]
+    },
+    { "added": [], "updated": [], "deleted": [], "affectedMetrics": [] }
+  ],
+  "invalid": [
+    {
+      "why": "entity does not match its type",
+      "instance": {
+        "added": [
+          {
+            "type": "Face",
+            "entity": {
+              "id": "v-1",
+              "p": [0, 0, 5],
+              "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+              "positionMode": "EXPLICIT",
+              "sourceRef": "12"
+            }
+          }
+        ],
+        "updated": [],
+        "deleted": [],
+        "affectedMetrics": []
+      }
+    },
+    {
+      "why": "unknown entity type (RoofTemplateInstance is not stored)",
+      "instance": {
+        "added": [{ "type": "RoofTemplateInstance", "entity": {} }],
+        "updated": [],
+        "deleted": [],
+        "affectedMetrics": []
+      }
+    },
+    {
+      "why": "missing affectedMetrics",
+      "instance": {
+        "added": [
+          {
+            "type": "Face",
+            "entity": {
+              "id": "f-roof-1b",
+              "outerLoopId": "he-1",
+              "innerLoopIds": [],
+              "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+              "surfaceKind": "RoofSurface",
+              "tags": [],
+              "roofComponentId": "rc-1"
+            }
+          }
+        ],
+        "updated": [
+          {
+            "type": "Vtx",
+            "entity": {
+              "id": "v-1",
+              "p": [0, 0, 5],
+              "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+              "positionMode": "DERIVED",
+              "sourceRef": "12"
+            }
+          }
+        ],
+        "deleted": [{ "type": "HalfEdge", "id": "he-9" }]
+      }
+    }
+  ]
+}

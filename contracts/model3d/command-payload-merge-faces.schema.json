@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-merge-faces:v1",
+  "title": "MERGE_FACES payload",
+  "description": "Merge adjacent faces (v0.2 C.6; spec §10.6 rule 4).",
+  "type": "object",
+  "properties": {
+    "faceIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList", "type": "array", "minItems": 2 },
+    "mode": { "enum": ["MERGE_COPLANAR", "MERGE_REFIT"] },
+    "movableFaceIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "description": "MERGE_REFIT only: faces whose planes may be refitted; others fixed (v0.2 C.6)."
+    },
+    "surfaceKind": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/SurfaceKind",
+      "description": "Semantics of the result when the merged faces are not compatible (v0.2 C.6 \"request mapping\")."
+    }
+  },
+  "required": ["faceIds", "mode"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "mode": { "const": "MERGE_REFIT" } }, "required": ["mode"] },
+      "then": { "required": ["movableFaceIds"] }
+    }
+  ],
+  "$comment": "Modes from v0.3 §6; [P] field names."
+}

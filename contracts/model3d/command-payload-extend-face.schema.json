@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-extend-face:v1",
+  "title": "EXTEND_FACE payload",
+  "description": "Move a boundary of a face within its support plane (v0.2 §13.5, E-08; spec §10.6 rule 7).",
+  "type": "object",
+  "properties": {
+    "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "edgeId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "Boundary half-edge to move."
+    },
+    "targetLine": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Line3" }
+  },
+  "required": ["faceId", "edgeId", "targetLine"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names."
+}

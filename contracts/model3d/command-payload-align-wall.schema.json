@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-align-wall:v1",
+  "title": "ALIGN_WALL payload",
+  "description": "Set a wall plane to the vertical plane through a reference line; adjoining roof and floor rebuilt (v0.2 F-40; spec §10.10 rule 4).",
+  "type": "object",
+  "properties": {
+    "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId", "description": "The wall face." },
+    "referenceLine": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Line2",
+      "description": "Reference line in plan [A]."
+    }
+  },
+  "required": ["faceId", "referenceLine"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names."
+}

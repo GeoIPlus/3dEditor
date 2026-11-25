@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-result:v1",
+  "title": "GeometryCommandResult",
+  "description": "Result of a command (v0.2 D.2; v0.3 §9; spec §2 row 6). Carries canonical entities and topologyLineage (v0.3 §6). On a refusal the model is unchanged (spec §3 rule 2).",
+  "type": "object",
+  "properties": {
+    "commandId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "status": { "enum": ["PREVIEW", "COMMITTED", "REJECTED", "CONFLICT"] },
+    "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version", "description": "PREVIEW / refusals: the unchanged version; COMMITTED: the new version [A]." },
+    "previewId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "patch": { "$ref": "urn:geoiplus:schema:model3d-model-patch:v1" },
+    "topologyLineage": { "$ref": "urn:geoiplus:schema:model3d-topology-lineage:v1" },
+    "validation": { "$ref": "urn:geoiplus:schema:model3d-validation-report:v1" },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "error": { "$ref": "urn:geoiplus:schema:model3d-error:v1" }
+  },
+  "required": ["commandId", "status", "modelVersion", "validation", "warnings"],
+  "additionalProperties": false,
+  "$comment": "[A] Status coupling below is this schema's reading of v0.2 D.2 / v0.3 §3: PREVIEW carries previewId, patch and lineage; COMMITTED carries patch and lineage; REJECTED and CONFLICT carry error and no patch.",
+  "allOf": [
+    { "if": { "properties": { "status": { "const": "PREVIEW" } } }, "then": { "required": ["previewId", "patch", "topologyLineage"], "not": { "required": ["error"] } } },
+    { "if": { "properties": { "status": { "const": "COMMITTED" } } }, "then": { "required": ["patch", "topologyLineage"], "not": { "required": ["error"] } } },
+    { "if": { "properties": { "status": { "enum": ["REJECTED", "CONFLICT"] } } }, "then": { "required": ["error"], "not": { "anyOf": [{ "required": ["patch"] }, { "required": ["topologyLineage"] }] } } }
+  ]
+}

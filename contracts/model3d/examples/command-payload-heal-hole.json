@@ -1,0 +1,13 @@
+{
+  "valid": [
+    { "boundaryEdgeIds": ["he-1", "he-2", "he-3"], "mode": "COPY_NEIGHBOR_PLANE", "neighborFaceId": "f-roof-1" },
+    { "boundaryEdgeIds": ["he-1"], "mode": "FILL_PLANAR", "maxDisplacementM": 0.02 }
+  ],
+  "invalid": [
+    { "why": "v0.2 F-33 mode name", "instance": { "boundaryEdgeIds": ["he-1"], "mode": "HEAL_TO_NEIGHBOR" } },
+    {
+      "why": "COPY_NEIGHBOR_PLANE without a neighbour",
+      "instance": { "boundaryEdgeIds": ["he-1"], "mode": "COPY_NEIGHBOR_PLANE" }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "valid": [
+    {
+      "faceId": "f-roof-1",
+      "breakLine": [[0, 2, 6.5], [10, 2, 6.5]],
+      "newPlane": { "normal": [0, -0.8, 0.6], "d": -2.5 }
+    }
+  ],
+  "invalid": [
+    {
+      "why": "no new plane (v0.2 C.5: required)",
+      "instance": { "faceId": "f", "breakLine": [[0, 2, 6.5], [10, 2, 6.5]] }
+    }
+  ]
+}

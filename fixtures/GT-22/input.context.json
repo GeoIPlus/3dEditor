@@ -1,0 +1,27 @@
+{
+  "actors": [
+    {
+      "id": "usr-operator",
+      "roles": ["3dqm.production"]
+    },
+    {
+      "id": "usr-reviewer",
+      "roles": ["3dqm.qa"]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "asg-1",
+      "actorId": "usr-operator",
+      "buildingIds": ["bld-gt-22"],
+      "leaseRef": "TBD (Q-39)"
+    },
+    {
+      "id": "asg-2",
+      "actorId": "usr-reviewer",
+      "buildingIds": ["bld-gt-22"],
+      "leaseRef": "TBD (Q-39)"
+    }
+  ],
+  "exportRequiresApproval": false
+}

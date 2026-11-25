@@ -1,0 +1,21 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-15-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-15",
+      "actorId": "usr-operator",
+      "operation": "SET_HEIGHT",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "kind": "BASE",
+        "z": -1
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

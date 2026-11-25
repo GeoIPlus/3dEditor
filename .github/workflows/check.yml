@@ -1,0 +1,25 @@
+# 3D-05: what `npm run check` runs locally runs here (AGENTS.md §5). Offline after `npm ci`: backlog:sync reads
+# pinned snapshots, the negative control builds into a temp dir.
+name: check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # 3D-78 (D-179): on a wp/* branch `check:docs` compares ids with the base; tools/base-branch.mjs names it.
+      - run: git fetch --no-tags --depth=1 origin +refs/heads/claude/keen-pascal-u7z2gk:refs/remotes/origin/claude/keen-pascal-u7z2gk
+      - run: npm run check

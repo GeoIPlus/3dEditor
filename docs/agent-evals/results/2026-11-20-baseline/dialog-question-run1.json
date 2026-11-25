@@ -1,0 +1,64 @@
+{
+  "task": "dialog-question",
+  "run": 1,
+  "ref": "078b464904e5a1c9f1825e31855234251aea807f",
+  "startSha": "9ddd0c2fe9d86a4183873d4bdb343f23ee987a69",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "asked-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.5045796,
+  "turns": 12,
+  "durationMs": 58685,
+  "usage": {
+    "input": 22,
+    "cacheCreate": 34832,
+    "cacheRead": 555678,
+    "output": 5735
+  },
+  "toolCalls": 10,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "intake: 3D-64 glTF export (blocked on scope question Q-17)"
+  ],
+  "pushes": [],
+  "finalText": "I haven't built the glTF export. Spec v0.3 §1 explicitly excludes glTF export from the product (F-67, along with OBJ and 3D Tiles); only CityJSON export is in the first release. Bringing it back is a scope change only you can approve. I asked you about it in a dialog, but it closed without an answer, so I logged the request instead.\n\n- **Class:** `decision` / `new-wp`. It reverses a spec exclusion and would be a new work package.\n- **Rows:** **3D-64** \"Export: canonical model → glTF (.glb)\" is in `docs/BACKLOG.md`. It is `blocked` on the new open question **Q-17** in `docs/decisions/DECISIONS.md`, and it depends on 3D-11 (CityJSON export) and 3D-24 (export rules). The progress counts and diagram are updated, the docs and backlog checks pass, and it's committed as `0132671`.\n- **Your action:** answer Q-17, then set 3D-64 to `ready`.\n\nQ-17 asks four things. My proposed answers are already written into 3D-64:\n1. **Scope:** add glTF only, right after the CityJSON export. OBJ and 3D Tiles stay excluded.\n2. **Export gate:** same rule as CityJSON, so only buildings that passed final validation can be exported (D-05 unchanged). Drafts that can't be exported are listed in the batch report.\n3. **Where it runs:** in the kernel, next to the CityJSON export. It would write the validated model, not whatever the viewer has drawn, so batch export works too.\n4. **File contents:** binary `.glb`. Object ids, roof/wall/ground labels and map positioning (coordinate system and origin offset) go in"
+}

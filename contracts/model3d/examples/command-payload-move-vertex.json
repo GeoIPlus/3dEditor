@@ -1,0 +1,10 @@
+{
+  "valid": [
+    { "vertexId": "v-1", "targetPoint": [0, 0, 5.2], "movableFaceIds": ["f-roof-1"] },
+    { "vertexId": "v-1", "targetPoint": [0, 0, 5], "movableFaceIds": [] }
+  ],
+  "invalid": [
+    { "why": "no movable set", "instance": { "vertexId": "v-1", "targetPoint": [0, 0, 5.2] } },
+    { "why": "2D target", "instance": { "vertexId": "v-1", "targetPoint": [0, 0], "movableFaceIds": [] } }
+  ]
+}

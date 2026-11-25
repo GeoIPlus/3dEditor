@@ -1,0 +1,674 @@
+{
+  "valid": [
+    {
+      "schemaVersion": "1",
+      "projectId": "p-1",
+      "buildingId": "b-1",
+      "version": 3,
+      "state": "DRAFT_SOLID",
+      "frame": {
+        "horizontalCrs": "EPSG:25832",
+        "verticalCrs": "EPSG:7837",
+        "axisOrder": "EAST_NORTH_UP",
+        "unit": "m",
+        "originWorld": [500000, 6000000, 0],
+        "buildingAxisDeg": 0
+      },
+      "footprints": {
+        "fp-1": {
+          "id": "fp-1",
+          "outerRing": [[0, 0], [10, 0], [10, 8], [0, 8]],
+          "innerRings": [],
+          "baseElevationM": 0,
+          "sourceMeasurementIds": [],
+          "sourceKind": "DERIVED_FROM_GROUND"
+        }
+      },
+      "constructionEntities": {},
+      "vertices": {
+        "v-1": {
+          "id": "v-1",
+          "p": [0, 0, 5],
+          "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+          "positionMode": "EXPLICIT",
+          "sourceRef": "12"
+        }
+      },
+      "halfEdges": {
+        "he-1": {
+          "id": "he-1",
+          "startVertexId": "v-1",
+          "nextId": "he-2",
+          "prevId": "he-4",
+          "faceId": "f-roof-1",
+          "twinId": null,
+          "edgeRole": "EAVE"
+        }
+      },
+      "faces": {
+        "f-roof-1": {
+          "id": "f-roof-1",
+          "outerLoopId": "he-1",
+          "innerLoopIds": [],
+          "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+          "surfaceKind": "RoofSurface",
+          "tags": [],
+          "roofComponentId": "rc-1"
+        }
+      },
+      "shells": { "sh-1": { "id": "sh-1", "faceIds": ["f-roof-1"], "intendedRole": "OUTER", "isClosed": false } },
+      "solids": { "s-1": { "id": "s-1", "outerShellId": "sh-1", "voidShellIds": [] } },
+      "roofComponents": { "rc-1": { "id": "rc-1", "ownerId": "b-1", "faceIds": ["f-roof-1"] } },
+      "constraints": {
+        "c-1": { "id": "c-1", "kind": "FIXED_POINT", "entityIds": ["v-1"], "hard": true, "target": [0, 0, 5] }
+      },
+      "measurements": {
+        "m-1": {
+          "id": "m-1",
+          "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+          "sourceType": "POINT_CLOUD",
+          "sourceId": "cloud-1",
+          "horizontalCrs": "EPSG:25832",
+          "verticalCrs": null,
+          "frame": "LOCAL",
+          "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+          "status": "MEASURED",
+          "createdBy": "u-1"
+        }
+      },
+      "semantics": {
+        "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
+      },
+      "toleranceProfileId": "tp-1"
+    }
+  ],
+  "invalid": [
+    {
+      "why": "v0.3 §4.2 removed templateInstances",
+      "instance": {
+        "schemaVersion": "1",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "version": 3,
+        "state": "DRAFT_SOLID",
+        "frame": {
+          "horizontalCrs": "EPSG:25832",
+          "verticalCrs": "EPSG:7837",
+          "axisOrder": "EAST_NORTH_UP",
+          "unit": "m",
+          "originWorld": [500000, 6000000, 0],
+          "buildingAxisDeg": 0
+        },
+        "footprints": {
+          "fp-1": {
+            "id": "fp-1",
+            "outerRing": [[0, 0], [10, 0], [10, 8], [0, 8]],
+            "innerRings": [],
+            "baseElevationM": 0,
+            "sourceMeasurementIds": [],
+            "sourceKind": "DERIVED_FROM_GROUND"
+          }
+        },
+        "constructionEntities": {},
+        "vertices": {
+          "v-1": {
+            "id": "v-1",
+            "p": [0, 0, 5],
+            "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+            "positionMode": "EXPLICIT",
+            "sourceRef": "12"
+          }
+        },
+        "halfEdges": {
+          "he-1": {
+            "id": "he-1",
+            "startVertexId": "v-1",
+            "nextId": "he-2",
+            "prevId": "he-4",
+            "faceId": "f-roof-1",
+            "twinId": null,
+            "edgeRole": "EAVE"
+          }
+        },
+        "faces": {
+          "f-roof-1": {
+            "id": "f-roof-1",
+            "outerLoopId": "he-1",
+            "innerLoopIds": [],
+            "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+            "surfaceKind": "RoofSurface",
+            "tags": [],
+            "roofComponentId": "rc-1"
+          }
+        },
+        "shells": { "sh-1": { "id": "sh-1", "faceIds": ["f-roof-1"], "intendedRole": "OUTER", "isClosed": false } },
+        "solids": { "s-1": { "id": "s-1", "outerShellId": "sh-1", "voidShellIds": [] } },
+        "roofComponents": { "rc-1": { "id": "rc-1", "ownerId": "b-1", "faceIds": ["f-roof-1"] } },
+        "constraints": {
+          "c-1": { "id": "c-1", "kind": "FIXED_POINT", "entityIds": ["v-1"], "hard": true, "target": [0, 0, 5] }
+        },
+        "measurements": {
+          "m-1": {
+            "id": "m-1",
+            "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+            "sourceType": "POINT_CLOUD",
+            "sourceId": "cloud-1",
+            "horizontalCrs": "EPSG:25832",
+            "verticalCrs": null,
+            "frame": "LOCAL",
+            "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+            "status": "MEASURED",
+            "createdBy": "u-1"
+          }
+        },
+        "semantics": {
+          "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
+        },
+        "toleranceProfileId": "tp-1",
+        "templateInstances": {}
+      }
+    },
+    {
+      "why": "frame without buildingAxisDeg (v0.3 §4.2)",
+      "instance": {
+        "schemaVersion": "1",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "version": 3,
+        "state": "DRAFT_SOLID",
+        "frame": {
+          "horizontalCrs": "EPSG:25832",
+          "verticalCrs": "EPSG:7837",
+          "axisOrder": "EAST_NORTH_UP",
+          "unit": "m",
+          "originWorld": [500000, 6000000, 0]
+        },
+        "footprints": {
+          "fp-1": {
+            "id": "fp-1",
+            "outerRing": [[0, 0], [10, 0], [10, 8], [0, 8]],
+            "innerRings": [],
+            "baseElevationM": 0,
+            "sourceMeasurementIds": [],
+            "sourceKind": "DERIVED_FROM_GROUND"
+          }
+        },
+        "constructionEntities": {},
+        "vertices": {
+          "v-1": {
+            "id": "v-1",
+            "p": [0, 0, 5],
+            "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+            "positionMode": "EXPLICIT",
+            "sourceRef": "12"
+          }
+        },
+        "halfEdges": {
+          "he-1": {
+            "id": "he-1",
+            "startVertexId": "v-1",
+            "nextId": "he-2",
+            "prevId": "he-4",
+            "faceId": "f-roof-1",
+            "twinId": null,
+            "edgeRole": "EAVE"
+          }
+        },
+        "faces": {
+          "f-roof-1": {
+            "id": "f-roof-1",
+            "outerLoopId": "he-1",
+            "innerLoopIds": [],
+            "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+            "surfaceKind": "RoofSurface",
+            "tags": [],
+            "roofComponentId": "rc-1"
+          }
+        },
+        "shells": { "sh-1": { "id": "sh-1", "faceIds": ["f-roof-1"], "intendedRole": "OUTER", "isClosed": false } },
+        "solids": { "s-1": { "id": "s-1", "outerShellId": "sh-1", "voidShellIds": [] } },
+        "roofComponents": { "rc-1": { "id": "rc-1", "ownerId": "b-1", "faceIds": ["f-roof-1"] } },
+        "constraints": {
+          "c-1": { "id": "c-1", "kind": "FIXED_POINT", "entityIds": ["v-1"], "hard": true, "target": [0, 0, 5] }
+        },
+        "measurements": {
+          "m-1": {
+            "id": "m-1",
+            "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+            "sourceType": "POINT_CLOUD",
+            "sourceId": "cloud-1",
+            "horizontalCrs": "EPSG:25832",
+            "verticalCrs": null,
+            "frame": "LOCAL",
+            "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+            "status": "MEASURED",
+            "createdBy": "u-1"
+          }
+        },
+        "semantics": {
+          "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
+        },
+        "toleranceProfileId": "tp-1"
+      }
+    },
+    {
+      "why": "RoofComponent with v0.2 buildingPartId instead of ownerId",
+      "instance": {
+        "schemaVersion": "1",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "version": 3,
+        "state": "DRAFT_SOLID",
+        "frame": {
+          "horizontalCrs": "EPSG:25832",
+          "verticalCrs": "EPSG:7837",
+          "axisOrder": "EAST_NORTH_UP",
+          "unit": "m",
+          "originWorld": [500000, 6000000, 0],
+          "buildingAxisDeg": 0
+        },
+        "footprints": {
+          "fp-1": {
+            "id": "fp-1",
+            "outerRing": [[0, 0], [10, 0], [10, 8], [0, 8]],
+            "innerRings": [],
+            "baseElevationM": 0,
+            "sourceMeasurementIds": [],
+            "sourceKind": "DERIVED_FROM_GROUND"
+          }
+        },
+        "constructionEntities": {},
+        "vertices": {
+          "v-1": {
+            "id": "v-1",
+            "p": [0, 0, 5],
+            "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+            "positionMode": "EXPLICIT",
+            "sourceRef": "12"
+          }
+        },
+        "halfEdges": {
+          "he-1": {
+            "id": "he-1",
+            "startVertexId": "v-1",
+            "nextId": "he-2",
+            "prevId": "he-4",
+            "faceId": "f-roof-1",
+            "twinId": null,
+            "edgeRole": "EAVE"
+          }
+        },
+        "faces": {
+          "f-roof-1": {
+            "id": "f-roof-1",
+            "outerLoopId": "he-1",
+            "innerLoopIds": [],
+            "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+            "surfaceKind": "RoofSurface",
+            "tags": [],
+            "roofComponentId": "rc-1"
+          }
+        },
+        "shells": { "sh-1": { "id": "sh-1", "faceIds": ["f-roof-1"], "intendedRole": "OUTER", "isClosed": false } },
+        "solids": { "s-1": { "id": "s-1", "outerShellId": "sh-1", "voidShellIds": [] } },
+        "roofComponents": { "rc-1": { "id": "rc-1", "buildingPartId": "b-1", "faceIds": [] } },
+        "constraints": {
+          "c-1": { "id": "c-1", "kind": "FIXED_POINT", "entityIds": ["v-1"], "hard": true, "target": [0, 0, 5] }
+        },
+        "measurements": {
+          "m-1": {
+            "id": "m-1",
+            "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+            "sourceType": "POINT_CLOUD",
+            "sourceId": "cloud-1",
+            "horizontalCrs": "EPSG:25832",
+            "verticalCrs": null,
+            "frame": "LOCAL",
+            "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+            "status": "MEASURED",
+            "createdBy": "u-1"
+          }
+        },
+        "semantics": {
+          "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
+        },
+        "toleranceProfileId": "tp-1"
+      }
+    },
+    {
+      "why": "vertex without definingFaceIds (v0.3 §4.1)",
+      "instance": {
+        "schemaVersion": "1",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "version": 3,
+        "state": "DRAFT_SOLID",
+        "frame": {
+          "horizontalCrs": "EPSG:25832",
+          "verticalCrs": "EPSG:7837",
+          "axisOrder": "EAST_NORTH_UP",
+          "unit": "m",
+          "originWorld": [500000, 6000000, 0],
+          "buildingAxisDeg": 0
+        },
+        "footprints": {
+          "fp-1": {
+            "id": "fp-1",
+            "outerRing": [[0, 0], [10, 0], [10, 8], [0, 8]],
+            "innerRings": [],
+            "baseElevationM": 0,
+            "sourceMeasurementIds": [],
+            "sourceKind": "DERIVED_FROM_GROUND"
+          }
+        },
+        "constructionEntities": {},
+        "vertices": { "v-1": { "id": "v-1", "p": [0, 0, 5], "positionMode": "EXPLICIT", "sourceRef": "12" } },
+        "halfEdges": {
+          "he-1": {
+            "id": "he-1",
+            "startVertexId": "v-1",
+            "nextId": "he-2",
+            "prevId": "he-4",
+            "faceId": "f-roof-1",
+            "twinId": null,
+            "edgeRole": "EAVE"
+          }
+        },
+        "faces": {
+          "f-roof-1": {
+            "id": "f-roof-1",
+            "outerLoopId": "he-1",
+            "innerLoopIds": [],
+            "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+            "surfaceKind": "RoofSurface",
+            "tags": [],
+            "roofComponentId": "rc-1"
+          }
+        },
+        "shells": { "sh-1": { "id": "sh-1", "faceIds": ["f-roof-1"], "intendedRole": "OUTER", "isClosed": false } },
+        "solids": { "s-1": { "id": "s-1", "outerShellId": "sh-1", "voidShellIds": [] } },
+        "roofComponents": { "rc-1": { "id": "rc-1", "ownerId": "b-1", "faceIds": ["f-roof-1"] } },
+        "constraints": {
+          "c-1": { "id": "c-1", "kind": "FIXED_POINT", "entityIds": ["v-1"], "hard": true, "target": [0, 0, 5] }
+        },
+        "measurements": {
+          "m-1": {
+            "id": "m-1",
+            "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+            "sourceType": "POINT_CLOUD",
+            "sourceId": "cloud-1",
+            "horizontalCrs": "EPSG:25832",
+            "verticalCrs": null,
+            "frame": "LOCAL",
+            "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+            "status": "MEASURED",
+            "createdBy": "u-1"
+          }
+        },
+        "semantics": {
+          "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
+        },
+        "toleranceProfileId": "tp-1"
+      }
+    },
+    {
+      "why": "hard constraint with a weight",
+      "instance": {
+        "schemaVersion": "1",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "version": 3,
+        "state": "DRAFT_SOLID",
+        "frame": {
+          "horizontalCrs": "EPSG:25832",
+          "verticalCrs": "EPSG:7837",
+          "axisOrder": "EAST_NORTH_UP",
+          "unit": "m",
+          "originWorld": [500000, 6000000, 0],
+          "buildingAxisDeg": 0
+        },
+        "footprints": {
+          "fp-1": {
+            "id": "fp-1",
+            "outerRing": [[0, 0], [10, 0], [10, 8], [0, 8]],
+            "innerRings": [],
+            "baseElevationM": 0,
+            "sourceMeasurementIds": [],
+            "sourceKind": "DERIVED_FROM_GROUND"
+          }
+        },
+        "constructionEntities": {},
+        "vertices": {
+          "v-1": {
+            "id": "v-1",
+            "p": [0, 0, 5],
+            "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+            "positionMode": "EXPLICIT",
+            "sourceRef": "12"
+          }
+        },
+        "halfEdges": {
+          "he-1": {
+            "id": "he-1",
+            "startVertexId": "v-1",
+            "nextId": "he-2",
+            "prevId": "he-4",
+            "faceId": "f-roof-1",
+            "twinId": null,
+            "edgeRole": "EAVE"
+          }
+        },
+        "faces": {
+          "f-roof-1": {
+            "id": "f-roof-1",
+            "outerLoopId": "he-1",
+            "innerLoopIds": [],
+            "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+            "surfaceKind": "RoofSurface",
+            "tags": [],
+            "roofComponentId": "rc-1"
+          }
+        },
+        "shells": { "sh-1": { "id": "sh-1", "faceIds": ["f-roof-1"], "intendedRole": "OUTER", "isClosed": false } },
+        "solids": { "s-1": { "id": "s-1", "outerShellId": "sh-1", "voidShellIds": [] } },
+        "roofComponents": { "rc-1": { "id": "rc-1", "ownerId": "b-1", "faceIds": ["f-roof-1"] } },
+        "constraints": {
+          "c-1": {
+            "id": "c-1",
+            "kind": "FIXED_POINT",
+            "entityIds": ["v-1"],
+            "hard": true,
+            "target": [0, 0, 5],
+            "weight": 2
+          }
+        },
+        "measurements": {
+          "m-1": {
+            "id": "m-1",
+            "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+            "sourceType": "POINT_CLOUD",
+            "sourceId": "cloud-1",
+            "horizontalCrs": "EPSG:25832",
+            "verticalCrs": null,
+            "frame": "LOCAL",
+            "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+            "status": "MEASURED",
+            "createdBy": "u-1"
+          }
+        },
+        "semantics": {
+          "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
+        },
+        "toleranceProfileId": "tp-1"
+      }
+    },
+    {
+      "why": "ROOF_SLOPE target that is not degrees (a point)",
+      "instance": {
+        "schemaVersion": "1",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "version": 3,
+        "state": "DRAFT_SOLID",
+        "frame": {
+          "horizontalCrs": "EPSG:25832",
+          "verticalCrs": "EPSG:7837",
+          "axisOrder": "EAST_NORTH_UP",
+          "unit": "m",
+          "originWorld": [500000, 6000000, 0],
+          "buildingAxisDeg": 0
+        },
+        "footprints": {
+          "fp-1": {
+            "id": "fp-1",
+            "outerRing": [[0, 0], [10, 0], [10, 8], [0, 8]],
+            "innerRings": [],
+            "baseElevationM": 0,
+            "sourceMeasurementIds": [],
+            "sourceKind": "DERIVED_FROM_GROUND"
+          }
+        },
+        "constructionEntities": {},
+        "vertices": {
+          "v-1": {
+            "id": "v-1",
+            "p": [0, 0, 5],
+            "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+            "positionMode": "EXPLICIT",
+            "sourceRef": "12"
+          }
+        },
+        "halfEdges": {
+          "he-1": {
+            "id": "he-1",
+            "startVertexId": "v-1",
+            "nextId": "he-2",
+            "prevId": "he-4",
+            "faceId": "f-roof-1",
+            "twinId": null,
+            "edgeRole": "EAVE"
+          }
+        },
+        "faces": {
+          "f-roof-1": {
+            "id": "f-roof-1",
+            "outerLoopId": "he-1",
+            "innerLoopIds": [],
+            "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+            "surfaceKind": "RoofSurface",
+            "tags": [],
+            "roofComponentId": "rc-1"
+          }
+        },
+        "shells": { "sh-1": { "id": "sh-1", "faceIds": ["f-roof-1"], "intendedRole": "OUTER", "isClosed": false } },
+        "solids": { "s-1": { "id": "s-1", "outerShellId": "sh-1", "voidShellIds": [] } },
+        "roofComponents": { "rc-1": { "id": "rc-1", "ownerId": "b-1", "faceIds": ["f-roof-1"] } },
+        "constraints": {
+          "c-1": { "id": "c-1", "kind": "ROOF_SLOPE", "entityIds": ["f-roof-1"], "hard": true, "target": [0, 0, 1] }
+        },
+        "measurements": {
+          "m-1": {
+            "id": "m-1",
+            "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+            "sourceType": "POINT_CLOUD",
+            "sourceId": "cloud-1",
+            "horizontalCrs": "EPSG:25832",
+            "verticalCrs": null,
+            "frame": "LOCAL",
+            "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+            "status": "MEASURED",
+            "createdBy": "u-1"
+          }
+        },
+        "semantics": {
+          "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
+        },
+        "toleranceProfileId": "tp-1"
+      }
+    },
+    {
+      "why": "schemaVersion of v0.2",
+      "instance": {
+        "schemaVersion": "0.2",
+        "projectId": "p-1",
+        "buildingId": "b-1",
+        "version": 3,
+        "state": "DRAFT_SOLID",
+        "frame": {
+          "horizontalCrs": "EPSG:25832",
+          "verticalCrs": "EPSG:7837",
+          "axisOrder": "EAST_NORTH_UP",
+          "unit": "m",
+          "originWorld": [500000, 6000000, 0],
+          "buildingAxisDeg": 0
+        },
+        "footprints": {
+          "fp-1": {
+            "id": "fp-1",
+            "outerRing": [[0, 0], [10, 0], [10, 8], [0, 8]],
+            "innerRings": [],
+            "baseElevationM": 0,
+            "sourceMeasurementIds": [],
+            "sourceKind": "DERIVED_FROM_GROUND"
+          }
+        },
+        "constructionEntities": {},
+        "vertices": {
+          "v-1": {
+            "id": "v-1",
+            "p": [0, 0, 5],
+            "definingFaceIds": ["f-roof-1", "f-wall-1", "f-wall-4"],
+            "positionMode": "EXPLICIT",
+            "sourceRef": "12"
+          }
+        },
+        "halfEdges": {
+          "he-1": {
+            "id": "he-1",
+            "startVertexId": "v-1",
+            "nextId": "he-2",
+            "prevId": "he-4",
+            "faceId": "f-roof-1",
+            "twinId": null,
+            "edgeRole": "EAVE"
+          }
+        },
+        "faces": {
+          "f-roof-1": {
+            "id": "f-roof-1",
+            "outerLoopId": "he-1",
+            "innerLoopIds": [],
+            "supportPlane": { "normal": [0, -0.6, 0.8], "d": -4 },
+            "surfaceKind": "RoofSurface",
+            "tags": [],
+            "roofComponentId": "rc-1"
+          }
+        },
+        "shells": { "sh-1": { "id": "sh-1", "faceIds": ["f-roof-1"], "intendedRole": "OUTER", "isClosed": false } },
+        "solids": { "s-1": { "id": "s-1", "outerShellId": "sh-1", "voidShellIds": [] } },
+        "roofComponents": { "rc-1": { "id": "rc-1", "ownerId": "b-1", "faceIds": ["f-roof-1"] } },
+        "constraints": {
+          "c-1": { "id": "c-1", "kind": "FIXED_POINT", "entityIds": ["v-1"], "hard": true, "target": [0, 0, 5] }
+        },
+        "measurements": {
+          "m-1": {
+            "id": "m-1",
+            "geometry": { "kind": "POINT", "coordinates": [[5, 4, 8.01]] },
+            "sourceType": "POINT_CLOUD",
+            "sourceId": "cloud-1",
+            "horizontalCrs": "EPSG:25832",
+            "verticalCrs": null,
+            "frame": "LOCAL",
+            "uncertainty": { "sigmaZ": 0.02, "unit": "m" },
+            "status": "MEASURED",
+            "createdBy": "u-1"
+          }
+        },
+        "semantics": {
+          "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
+        },
+        "toleranceProfileId": "tp-1"
+      }
+    }
+  ]
+}

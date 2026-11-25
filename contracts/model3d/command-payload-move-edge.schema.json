@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-move-edge:v1",
+  "title": "MOVE_EDGE payload",
+  "description": "Move an edge to a target line (two points) by solving the planes of the incident faces marked movable (spec §10.4).",
+  "type": "object",
+  "properties": {
+    "edgeId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "A half-edge id of the edge (either of the twin pair) [A]."
+    },
+    "targetLine": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Line3" },
+    "movableFaceIds": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
+      "description": "Faces whose support planes may change; every other plane is fixed (spec §5 rule 7, §10.1 rule 3)."
+    }
+  },
+  "required": ["edgeId", "targetLine", "movableFaceIds"],
+  "additionalProperties": false,
+  "$comment": "`edgeId`, `targetLine` as in v0.2 D.3; [P] movableFaceIds."
+}

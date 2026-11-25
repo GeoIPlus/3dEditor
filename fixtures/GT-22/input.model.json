@@ -1,0 +1,479 @@
+{
+  "schemaVersion": "1",
+  "projectId": "prj-golden",
+  "buildingId": "bld-gt-22",
+  "version": 1,
+  "state": "VALID_SOLID",
+  "frame": {
+    "horizontalCrs": "EPSG:25832",
+    "verticalCrs": null,
+    "axisOrder": "EAST_NORTH_UP",
+    "unit": "m",
+    "originWorld": [0, 0, 0],
+    "buildingAxisDeg": 0
+  },
+  "footprints": {
+    "fp-1": {
+      "id": "fp-1",
+      "outerRing": [
+        [0, 0],
+        [10, 0],
+        [10, 8],
+        [0, 8]
+      ],
+      "innerRings": [],
+      "baseElevationM": 0,
+      "sourceMeasurementIds": [],
+      "sourceKind": "DERIVED_FROM_GROUND"
+    }
+  },
+  "constructionEntities": {},
+  "vertices": {
+    "v-b0": {
+      "id": "v-b0",
+      "p": [0, 0, 0],
+      "definingFaceIds": ["f-ground", "f-wall-s", "f-wall-w"],
+      "positionMode": "DERIVED"
+    },
+    "v-b1": {
+      "id": "v-b1",
+      "p": [10, 0, 0],
+      "definingFaceIds": ["f-ground", "f-wall-s", "f-wall-e"],
+      "positionMode": "DERIVED"
+    },
+    "v-b2": {
+      "id": "v-b2",
+      "p": [10, 8, 0],
+      "definingFaceIds": ["f-ground", "f-wall-e", "f-wall-n"],
+      "positionMode": "DERIVED"
+    },
+    "v-b3": {
+      "id": "v-b3",
+      "p": [0, 8, 0],
+      "definingFaceIds": ["f-ground", "f-wall-n", "f-wall-w"],
+      "positionMode": "DERIVED"
+    },
+    "v-e0": {
+      "id": "v-e0",
+      "p": [0, 0, 5],
+      "definingFaceIds": ["f-wall-s", "f-wall-w", "f-roof-s"],
+      "positionMode": "DERIVED"
+    },
+    "v-e1": {
+      "id": "v-e1",
+      "p": [10, 0, 5],
+      "definingFaceIds": ["f-wall-s", "f-wall-e", "f-roof-s"],
+      "positionMode": "DERIVED"
+    },
+    "v-e2": {
+      "id": "v-e2",
+      "p": [10, 8, 5],
+      "definingFaceIds": ["f-wall-e", "f-wall-n", "f-roof-n"],
+      "positionMode": "DERIVED"
+    },
+    "v-e3": {
+      "id": "v-e3",
+      "p": [0, 8, 5],
+      "definingFaceIds": ["f-wall-n", "f-wall-w", "f-roof-n"],
+      "positionMode": "DERIVED"
+    },
+    "v-r0": {
+      "id": "v-r0",
+      "p": [0, 4, 8],
+      "definingFaceIds": ["f-wall-w", "f-roof-s", "f-roof-n"],
+      "positionMode": "DERIVED"
+    },
+    "v-r1": {
+      "id": "v-r1",
+      "p": [10, 4, 8],
+      "definingFaceIds": ["f-wall-e", "f-roof-s", "f-roof-n"],
+      "positionMode": "DERIVED"
+    }
+  },
+  "halfEdges": {
+    "he-f-ground-0": {
+      "id": "he-f-ground-0",
+      "startVertexId": "v-b3",
+      "nextId": "he-f-ground-1",
+      "prevId": "he-f-ground-3",
+      "faceId": "f-ground",
+      "twinId": "he-f-wall-n-0",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-ground-1": {
+      "id": "he-f-ground-1",
+      "startVertexId": "v-b2",
+      "nextId": "he-f-ground-2",
+      "prevId": "he-f-ground-0",
+      "faceId": "f-ground",
+      "twinId": "he-f-wall-e-0",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-ground-2": {
+      "id": "he-f-ground-2",
+      "startVertexId": "v-b1",
+      "nextId": "he-f-ground-3",
+      "prevId": "he-f-ground-1",
+      "faceId": "f-ground",
+      "twinId": "he-f-wall-s-0",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-ground-3": {
+      "id": "he-f-ground-3",
+      "startVertexId": "v-b0",
+      "nextId": "he-f-ground-0",
+      "prevId": "he-f-ground-2",
+      "faceId": "f-ground",
+      "twinId": "he-f-wall-w-0",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-s-0": {
+      "id": "he-f-wall-s-0",
+      "startVertexId": "v-b0",
+      "nextId": "he-f-wall-s-1",
+      "prevId": "he-f-wall-s-3",
+      "faceId": "f-wall-s",
+      "twinId": "he-f-ground-2",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-s-1": {
+      "id": "he-f-wall-s-1",
+      "startVertexId": "v-b1",
+      "nextId": "he-f-wall-s-2",
+      "prevId": "he-f-wall-s-0",
+      "faceId": "f-wall-s",
+      "twinId": "he-f-wall-e-4",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-s-2": {
+      "id": "he-f-wall-s-2",
+      "startVertexId": "v-e1",
+      "nextId": "he-f-wall-s-3",
+      "prevId": "he-f-wall-s-1",
+      "faceId": "f-wall-s",
+      "twinId": "he-f-roof-s-0",
+      "edgeRole": "EAVE"
+    },
+    "he-f-wall-s-3": {
+      "id": "he-f-wall-s-3",
+      "startVertexId": "v-e0",
+      "nextId": "he-f-wall-s-0",
+      "prevId": "he-f-wall-s-2",
+      "faceId": "f-wall-s",
+      "twinId": "he-f-wall-w-1",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-e-0": {
+      "id": "he-f-wall-e-0",
+      "startVertexId": "v-b1",
+      "nextId": "he-f-wall-e-1",
+      "prevId": "he-f-wall-e-4",
+      "faceId": "f-wall-e",
+      "twinId": "he-f-ground-1",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-e-1": {
+      "id": "he-f-wall-e-1",
+      "startVertexId": "v-b2",
+      "nextId": "he-f-wall-e-2",
+      "prevId": "he-f-wall-e-0",
+      "faceId": "f-wall-e",
+      "twinId": "he-f-wall-n-3",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-e-2": {
+      "id": "he-f-wall-e-2",
+      "startVertexId": "v-e2",
+      "nextId": "he-f-wall-e-3",
+      "prevId": "he-f-wall-e-1",
+      "faceId": "f-wall-e",
+      "twinId": "he-f-roof-n-3",
+      "edgeRole": "RAKE"
+    },
+    "he-f-wall-e-3": {
+      "id": "he-f-wall-e-3",
+      "startVertexId": "v-r1",
+      "nextId": "he-f-wall-e-4",
+      "prevId": "he-f-wall-e-2",
+      "faceId": "f-wall-e",
+      "twinId": "he-f-roof-s-1",
+      "edgeRole": "RAKE"
+    },
+    "he-f-wall-e-4": {
+      "id": "he-f-wall-e-4",
+      "startVertexId": "v-e1",
+      "nextId": "he-f-wall-e-0",
+      "prevId": "he-f-wall-e-3",
+      "faceId": "f-wall-e",
+      "twinId": "he-f-wall-s-1",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-n-0": {
+      "id": "he-f-wall-n-0",
+      "startVertexId": "v-b2",
+      "nextId": "he-f-wall-n-1",
+      "prevId": "he-f-wall-n-3",
+      "faceId": "f-wall-n",
+      "twinId": "he-f-ground-0",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-n-1": {
+      "id": "he-f-wall-n-1",
+      "startVertexId": "v-b3",
+      "nextId": "he-f-wall-n-2",
+      "prevId": "he-f-wall-n-0",
+      "faceId": "f-wall-n",
+      "twinId": "he-f-wall-w-4",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-n-2": {
+      "id": "he-f-wall-n-2",
+      "startVertexId": "v-e3",
+      "nextId": "he-f-wall-n-3",
+      "prevId": "he-f-wall-n-1",
+      "faceId": "f-wall-n",
+      "twinId": "he-f-roof-n-0",
+      "edgeRole": "EAVE"
+    },
+    "he-f-wall-n-3": {
+      "id": "he-f-wall-n-3",
+      "startVertexId": "v-e2",
+      "nextId": "he-f-wall-n-0",
+      "prevId": "he-f-wall-n-2",
+      "faceId": "f-wall-n",
+      "twinId": "he-f-wall-e-1",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-w-0": {
+      "id": "he-f-wall-w-0",
+      "startVertexId": "v-b3",
+      "nextId": "he-f-wall-w-1",
+      "prevId": "he-f-wall-w-4",
+      "faceId": "f-wall-w",
+      "twinId": "he-f-ground-3",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-w-1": {
+      "id": "he-f-wall-w-1",
+      "startVertexId": "v-b0",
+      "nextId": "he-f-wall-w-2",
+      "prevId": "he-f-wall-w-0",
+      "faceId": "f-wall-w",
+      "twinId": "he-f-wall-s-3",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-wall-w-2": {
+      "id": "he-f-wall-w-2",
+      "startVertexId": "v-e0",
+      "nextId": "he-f-wall-w-3",
+      "prevId": "he-f-wall-w-1",
+      "faceId": "f-wall-w",
+      "twinId": "he-f-roof-s-3",
+      "edgeRole": "RAKE"
+    },
+    "he-f-wall-w-3": {
+      "id": "he-f-wall-w-3",
+      "startVertexId": "v-r0",
+      "nextId": "he-f-wall-w-4",
+      "prevId": "he-f-wall-w-2",
+      "faceId": "f-wall-w",
+      "twinId": "he-f-roof-n-1",
+      "edgeRole": "RAKE"
+    },
+    "he-f-wall-w-4": {
+      "id": "he-f-wall-w-4",
+      "startVertexId": "v-e3",
+      "nextId": "he-f-wall-w-0",
+      "prevId": "he-f-wall-w-3",
+      "faceId": "f-wall-w",
+      "twinId": "he-f-wall-n-1",
+      "edgeRole": "GENERIC"
+    },
+    "he-f-roof-s-0": {
+      "id": "he-f-roof-s-0",
+      "startVertexId": "v-e0",
+      "nextId": "he-f-roof-s-1",
+      "prevId": "he-f-roof-s-3",
+      "faceId": "f-roof-s",
+      "twinId": "he-f-wall-s-2",
+      "edgeRole": "EAVE"
+    },
+    "he-f-roof-s-1": {
+      "id": "he-f-roof-s-1",
+      "startVertexId": "v-e1",
+      "nextId": "he-f-roof-s-2",
+      "prevId": "he-f-roof-s-0",
+      "faceId": "f-roof-s",
+      "twinId": "he-f-wall-e-3",
+      "edgeRole": "RAKE"
+    },
+    "he-f-roof-s-2": {
+      "id": "he-f-roof-s-2",
+      "startVertexId": "v-r1",
+      "nextId": "he-f-roof-s-3",
+      "prevId": "he-f-roof-s-1",
+      "faceId": "f-roof-s",
+      "twinId": "he-f-roof-n-2",
+      "edgeRole": "RIDGE"
+    },
+    "he-f-roof-s-3": {
+      "id": "he-f-roof-s-3",
+      "startVertexId": "v-r0",
+      "nextId": "he-f-roof-s-0",
+      "prevId": "he-f-roof-s-2",
+      "faceId": "f-roof-s",
+      "twinId": "he-f-wall-w-2",
+      "edgeRole": "RAKE"
+    },
+    "he-f-roof-n-0": {
+      "id": "he-f-roof-n-0",
+      "startVertexId": "v-e2",
+      "nextId": "he-f-roof-n-1",
+      "prevId": "he-f-roof-n-3",
+      "faceId": "f-roof-n",
+      "twinId": "he-f-wall-n-2",
+      "edgeRole": "EAVE"
+    },
+    "he-f-roof-n-1": {
+      "id": "he-f-roof-n-1",
+      "startVertexId": "v-e3",
+      "nextId": "he-f-roof-n-2",
+      "prevId": "he-f-roof-n-0",
+      "faceId": "f-roof-n",
+      "twinId": "he-f-wall-w-3",
+      "edgeRole": "RAKE"
+    },
+    "he-f-roof-n-2": {
+      "id": "he-f-roof-n-2",
+      "startVertexId": "v-r0",
+      "nextId": "he-f-roof-n-3",
+      "prevId": "he-f-roof-n-1",
+      "faceId": "f-roof-n",
+      "twinId": "he-f-roof-s-2",
+      "edgeRole": "RIDGE"
+    },
+    "he-f-roof-n-3": {
+      "id": "he-f-roof-n-3",
+      "startVertexId": "v-r1",
+      "nextId": "he-f-roof-n-0",
+      "prevId": "he-f-roof-n-2",
+      "faceId": "f-roof-n",
+      "twinId": "he-f-wall-e-2",
+      "edgeRole": "RAKE"
+    }
+  },
+  "faces": {
+    "f-ground": {
+      "id": "f-ground",
+      "outerLoopId": "he-f-ground-0",
+      "innerLoopIds": [],
+      "supportPlane": {
+        "normal": [0, 0, -1],
+        "d": 0
+      },
+      "surfaceKind": "GroundSurface",
+      "tags": []
+    },
+    "f-wall-s": {
+      "id": "f-wall-s",
+      "outerLoopId": "he-f-wall-s-0",
+      "innerLoopIds": [],
+      "supportPlane": {
+        "normal": [0, -1, 0],
+        "d": 0
+      },
+      "surfaceKind": "WallSurface",
+      "tags": []
+    },
+    "f-wall-e": {
+      "id": "f-wall-e",
+      "outerLoopId": "he-f-wall-e-0",
+      "innerLoopIds": [],
+      "supportPlane": {
+        "normal": [1, 0, 0],
+        "d": -10
+      },
+      "surfaceKind": "WallSurface",
+      "tags": []
+    },
+    "f-wall-n": {
+      "id": "f-wall-n",
+      "outerLoopId": "he-f-wall-n-0",
+      "innerLoopIds": [],
+      "supportPlane": {
+        "normal": [0, 1, 0],
+        "d": -8
+      },
+      "surfaceKind": "WallSurface",
+      "tags": []
+    },
+    "f-wall-w": {
+      "id": "f-wall-w",
+      "outerLoopId": "he-f-wall-w-0",
+      "innerLoopIds": [],
+      "supportPlane": {
+        "normal": [-1, 0, 0],
+        "d": 0
+      },
+      "surfaceKind": "WallSurface",
+      "tags": []
+    },
+    "f-roof-s": {
+      "id": "f-roof-s",
+      "outerLoopId": "he-f-roof-s-0",
+      "innerLoopIds": [],
+      "supportPlane": {
+        "normal": [0, -0.6, 0.8],
+        "d": -4
+      },
+      "surfaceKind": "RoofSurface",
+      "tags": [],
+      "roofComponentId": "rc-1"
+    },
+    "f-roof-n": {
+      "id": "f-roof-n",
+      "outerLoopId": "he-f-roof-n-0",
+      "innerLoopIds": [],
+      "supportPlane": {
+        "normal": [0, 0.6, 0.8],
+        "d": -8.8
+      },
+      "surfaceKind": "RoofSurface",
+      "tags": [],
+      "roofComponentId": "rc-1"
+    }
+  },
+  "shells": {
+    "sh-1": {
+      "id": "sh-1",
+      "faceIds": ["f-ground", "f-wall-s", "f-wall-e", "f-wall-n", "f-wall-w", "f-roof-s", "f-roof-n"],
+      "intendedRole": "OUTER",
+      "isClosed": true
+    }
+  },
+  "solids": {
+    "so-1": {
+      "id": "so-1",
+      "outerShellId": "sh-1",
+      "voidShellIds": []
+    }
+  },
+  "roofComponents": {
+    "rc-1": {
+      "id": "rc-1",
+      "ownerId": "sem-bld",
+      "faceIds": ["f-roof-s", "f-roof-n"]
+    }
+  },
+  "constraints": {},
+  "measurements": {},
+  "semantics": {
+    "sem-bld": {
+      "id": "sem-bld",
+      "kind": "Building",
+      "solidIds": ["so-1"],
+      "attributes": {}
+    }
+  },
+  "toleranceProfileId": "tp-default"
+}

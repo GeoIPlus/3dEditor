@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-journal-entry:v1",
+  "title": "JournalEntry",
+  "description": "One committed operation in the audit journal (v0.2 §13.6; spec §2 row 12, §11 rule 10). Undo and Redo are entries too; the journal is never deleted; kept >= 90 days.",
+  "type": "object",
+  "properties": {
+    "operationId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "commandId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "beforeVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "afterVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "actorId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId", "description": "The authenticated user (spec §11 rule 1), not the envelope's actorId [A]." },
+    "timestamp": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Timestamp" },
+    "input": { "$ref": "urn:geoiplus:schema:model3d-command:v1", "description": "The command as received [A]." },
+    "affectedEntityIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" },
+    "forwardPatch": { "$ref": "urn:geoiplus:schema:model3d-model-patch:v1" },
+    "inversePatch": { "$ref": "urn:geoiplus:schema:model3d-model-patch:v1" },
+    "validationSummary": { "$ref": "urn:geoiplus:schema:model3d-validation-report:v1", "$comment": "[P] The summary is the full report: the sources name the field but not its shape." },
+    "topologyLineage": { "$ref": "urn:geoiplus:schema:model3d-topology-lineage:v1" },
+    "warnings": { "type": "array", "items": { "type": "string" }, "description": "E.g. the TRANSLATE_BUILDING / ROTATE_BUILDING journal warning (v0.3 §6).", "$comment": "[P] Field name; not in v0.2 §13.6." }
+  },
+  "required": ["operationId", "commandId", "beforeVersion", "afterVersion", "actorId", "timestamp", "input", "affectedEntityIds", "forwardPatch", "inversePatch", "validationSummary", "topologyLineage"],
+  "additionalProperties": false
+}

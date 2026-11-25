@@ -1,0 +1,27 @@
+{
+  "gt": "GT-I2",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G1",
+    "input": "То же, но ребро конька продублировано с зазором 0,03 м",
+    "expected": "`DRAFT_SOLID`; `OPEN_BOUNDARY` на двух рёбрах; модель загружена полностью"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "state": "DRAFT_SOLID",
+    "openBoundaryEdges": 2,
+    "issueCode": "OPEN_BOUNDARY",
+    "fullyLoaded": true,
+    "gapM": 0.03
+  },
+  "decided": [],
+  "owner": {
+    "module": "`import`",
+    "row": "3D-10"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-add-dormer:v1",
+  "title": "ADD_DORMER payload",
+  "description": "Add a dormer as a separate BuildingInstallation body (v0.3 §6 F-36; v0.2 C.16; spec §10.11).",
+  "type": "object",
+  "properties": {
+    "roofFaceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "dormerType": { "enum": ["FLAT", "GABLE"] },
+    "outline": {
+      "type": "array",
+      "items": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3" },
+      "minItems": 3,
+      "description": "Outline on the roof face."
+    },
+    "heightM": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength",
+      "description": "Manual size [A]."
+    },
+    "measurementId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "Size from a plane-fit measurement."
+    }
+  },
+  "required": ["roofFaceId", "dormerType", "outline"],
+  "additionalProperties": false,
+  "anyOf": [{ "required": ["heightM"] }, { "required": ["measurementId"] }],
+  "$comment": "[P] Field names. Which dimensions define a FLAT / GABLE dormer beyond the outline is not given: TBD (Q-38, 3D-20)."
+}

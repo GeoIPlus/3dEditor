@@ -1,0 +1,22 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-10-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-10",
+      "actorId": "usr-operator",
+      "operation": "MOVE_VERTEX",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "vertexId": "v-r0",
+        "targetPoint": [0, 4, 8.5],
+        "movableFaceIds": ["f-roof-s", "f-roof-n", "f-wall-w"]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

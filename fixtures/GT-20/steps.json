@@ -1,0 +1,25 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-20-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-20",
+      "actorId": "usr-operator",
+      "operation": "FIT_PLANE",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "selection": {
+          "kind": "BOX",
+          "min": [0, 0, 2],
+          "max": [10, 4, 11]
+        },
+        "apply": "MEASUREMENT"
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-split-face:v1",
+  "title": "SPLIT_FACE payload",
+  "description": "Split a face into coplanar parts along a line projected onto its support plane; no new slope (v0.2 C.5; spec §10.6 rule 2).",
+  "type": "object",
+  "properties": {
+    "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "splitLine": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Line3" }
+  },
+  "required": ["faceId", "splitLine"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names."
+}

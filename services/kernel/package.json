@@ -1,0 +1,13 @@
+{
+  "name": "@geoiplus/kernel-service",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Host of the 3DQM kernel: ports, interim adapters, Operaflow handling (3D-ADR-0002 C2). 3D-22 adds the points port; 3D-23 the handler.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "laz-perf": "0.0.7"
+  }
+}

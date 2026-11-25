@@ -1,0 +1,13 @@
+{
+  "valid": [
+    { "mapped": { "f-roof-1": ["f-roof-1a", "f-roof-1b"] }, "deleted": [], "preserved": ["f-roof-2"] },
+    { "mapped": {}, "deleted": ["f-roof-2"], "preserved": [] }
+  ],
+  "invalid": [
+    { "why": "v0.2 D.2 flat map instead of {mapped, deleted, preserved}", "instance": { "f-roof-1": ["f-roof-1a"] } },
+    {
+      "why": "mapped to an empty list (use deleted)",
+      "instance": { "mapped": { "f-1": [] }, "deleted": [], "preserved": [] }
+    }
+  ]
+}

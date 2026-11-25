@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-resize-roof:v1",
+  "title": "RESIZE_ROOF payload",
+  "description": "New roof extent; whether walls follow is explicit (v0.2 F-29; spec §10.10 rule 2).",
+  "type": "object",
+  "properties": {
+    "roofOutline": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Ring2",
+      "description": "New roof outline in plan, local frame [A]."
+    },
+    "moveWallFootprint": { "type": "boolean" },
+    "hardConstraintIds": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList" }
+  },
+  "required": ["roofOutline", "moveWallFootprint"],
+  "additionalProperties": false,
+  "$comment": "`moveWallFootprint` from v0.2 F-29; [P] roofOutline (the form of \"new extent\" is not given, Q-37, 3D-19)."
+}

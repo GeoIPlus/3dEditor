@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-tolerance-profile:v1",
+  "title": "ToleranceProfile",
+  "description": "Starting tolerance profile, set per project (v0.3 §10, D-13; spec §2.3). 14 fields; `lockTtlMin` dropped (D-69); `measurementTolM` of v0.2 B.4 has no value (TBD, Q-24) and is not a member. `default` = the D-13 value. Tolerances are algorithm settings, not accuracy claims (v0.3 §10).",
+  "$comment": "[P] Every field is required in a delivered profile, so no consumer relies on implicit defaults; `id` (v0.2 B.4, referenced by BuildingModel.toleranceProfileId) is optional identity, not a tolerance. Lower bounds (> 0, ratio <= 1, integers) are 3D-06 readings [A] of what a tolerance means.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "numericEpsilon": { "type": "number", "exclusiveMinimum": 0, "default": 1e-9, "description": "Numeric predicates in the local frame." },
+    "topologySnapTolM": { "type": "number", "exclusiveMinimum": 0, "default": 0.01, "description": "Vertex merge, welding (m)." },
+    "planarTolM": { "type": "number", "exclusiveMinimum": 0, "default": 0.02, "description": "Face planarity, vertex-to-plane distance (m)." },
+    "zAlignTolM": { "type": "number", "exclusiveMinimum": 0, "default": 0.01, "description": "Equal Z (m)." },
+    "minEdgeLengthM": { "type": "number", "exclusiveMinimum": 0, "default": 0.05, "description": "Degenerate edge (m)." },
+    "minFaceAreaM2": { "type": "number", "exclusiveMinimum": 0, "default": 0.1, "description": "Degenerate / small face (m2)." },
+    "coplanarTolDeg": { "type": "number", "exclusiveMinimum": 0, "default": 1.0, "description": "Face merge (deg)." },
+    "footprintAngleTolDeg": { "type": "number", "exclusiveMinimum": 0, "default": 5.0, "description": "Regularisation, rectangle check (deg)." },
+    "flatRoofTolDeg": { "type": "number", "exclusiveMinimum": 0, "default": 1.0, "description": "Flat vs shed boundary (deg)." },
+    "screenSnapPx": { "type": "number", "exclusiveMinimum": 0, "default": 10, "description": "UX only, client (px)." },
+    "heatmapBufferM": { "type": "number", "exclusiveMinimum": 0, "default": 1.0, "description": "Point selection for the heatmap (m)." },
+    "planeFitMinPoints": { "type": "integer", "minimum": 3, "default": 30, "description": "Minimum points for plane fit." },
+    "planeFitMinInlierRatio": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "default": 0.6, "description": "Minimum inlier share." },
+    "exportRoundDecimals": { "type": "integer", "minimum": 0, "default": 3, "description": "Rounding on export (3 = mm)." }
+  },
+  "required": ["numericEpsilon", "topologySnapTolM", "planarTolM", "zAlignTolM", "minEdgeLengthM", "minFaceAreaM2", "coplanarTolDeg", "footprintAngleTolDeg", "flatRoofTolDeg", "screenSnapPx", "heatmapBufferM", "planeFitMinPoints", "planeFitMinInlierRatio", "exportRoundDecimals"],
+  "additionalProperties": false
+}

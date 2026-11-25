@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-remove-installation:v1",
+  "title": "REMOVE_INSTALLATION payload",
+  "description": "Remove an installation and restore the underlying roof face (v0.2 §13.5; spec §10.11 rule 5).",
+  "type": "object",
+  "properties": {
+    "installationId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "SemanticNode id of the BuildingInstallation."
+    }
+  },
+  "required": ["installationId"],
+  "additionalProperties": false,
+  "$comment": "[P] Field name."
+}

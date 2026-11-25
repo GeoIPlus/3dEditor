@@ -1,0 +1,24 @@
+{
+  "gt": "GT-25",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G1",
+    "input": "Здание с координатами порядка 6 000 000 м",
+    "expected": "world → local → world в пределах 0,001 м"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "coordinateOrderM": 6000000,
+    "roundTripToleranceM": 0.001
+  },
+  "decided": [],
+  "owner": {
+    "module": "`brep`",
+    "row": "3D-09"
+  }
+}

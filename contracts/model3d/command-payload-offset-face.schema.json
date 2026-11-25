@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-offset-face:v1",
+  "title": "OFFSET_FACE payload",
+  "description": "Move a support plane parallel to itself along its unit normal; boundaries are re-intersected (v0.2 F-31; spec §10.6 rule 1).",
+  "type": "object",
+  "properties": {
+    "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "offsetM": { "type": "number", "description": "Signed offset along the unit normal, metres." },
+    "fixedMode": {
+      "enum": ["NONE", "FIXED_BOUNDARY", "FIXED_RIDGE", "FIXED_EAVE"],
+      "description": "v0.2 F-31 \"mode fixed boundary/ridge/eave\": a hard constraint."
+    }
+  },
+  "required": ["faceId", "offsetM", "fixedMode"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names and the enum spelling (NONE = nothing fixed)."
+}

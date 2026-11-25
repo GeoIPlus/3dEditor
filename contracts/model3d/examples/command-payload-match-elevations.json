@@ -1,0 +1,10 @@
+{
+  "valid": [
+    { "vertexIds": ["v-1", "v-2"], "targetZ": 5 },
+    { "vertexIds": ["v-1", "v-2", "v-3"], "targetZ": "MEAN", "hardConstraintIds": [] }
+  ],
+  "invalid": [
+    { "why": "one vertex", "instance": { "vertexIds": ["v-1"], "targetZ": 5 } },
+    { "why": "unknown target", "instance": { "vertexIds": ["v-1", "v-2"], "targetZ": "MEDIAN" } }
+  ]
+}

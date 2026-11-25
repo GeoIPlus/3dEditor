@@ -1,0 +1,9 @@
+{
+  "valid": [{ "edgeId": "he-1", "targetLine": [[0, 0, 5.1], [10, 0, 5.1]], "movableFaceIds": ["f-roof-1"] }],
+  "invalid": [
+    {
+      "why": "target point instead of line",
+      "instance": { "edgeId": "he-1", "targetLine": [0, 0, 5], "movableFaceIds": [] }
+    }
+  ]
+}

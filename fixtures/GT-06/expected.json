@@ -1,0 +1,25 @@
+{
+  "gt": "GT-06",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G3",
+    "input": "GT-I2 → `FIT_TO_SHARED_EDGE`, ведущий — первый скат",
+    "expected": "Общий конёк; `VALID_SOLID`; плоскость ведущего ската не изменилась"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "sharedRidge": true,
+    "state": "VALID_SOLID",
+    "leadingPlaneUnchanged": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`FIT_TO_SHARED_EDGE`)",
+    "row": "3D-17"
+  }
+}

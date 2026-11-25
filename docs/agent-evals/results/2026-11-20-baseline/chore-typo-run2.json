@@ -1,0 +1,61 @@
+{
+  "task": "chore-typo",
+  "run": 2,
+  "ref": "078b464904e5a1c9f1825e31855234251aea807f",
+  "startSha": "152a6df7192e695b03c7a8c160cd68ea2726a9f2",
+  "model": "claude-opus-5-5",
+  "score": 0.8,
+  "holds": false,
+  "checks": [
+    {
+      "id": "fixed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "chores-line",
+      "pass": false,
+      "weak": false
+    },
+    {
+      "id": "no-row",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "scope",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.13362000000000002,
+  "turns": 4,
+  "durationMs": 9965,
+  "usage": {
+    "input": 8,
+    "cacheCreate": 11317,
+    "cacheRead": 149660,
+    "output": 656
+  },
+  "toolCalls": 3,
+  "toolNames": [
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    }
+  ],
+  "commits": [],
+  "pushes": [],
+  "finalText": "I fixed the typo in `STRUCTURE.md:39`. The heading now reads \"## 2. Dependency rules\". It was spelled with a capital \"D\", so a search for \"dependancy\" in lowercase wouldn't have found it.\n\nThat was the only place in the repo with the misspelling, and nothing links to the heading's old anchor, so changing it breaks no links. The change hasn't been committed."
+}

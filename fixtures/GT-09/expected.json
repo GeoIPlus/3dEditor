@@ -1,0 +1,24 @@
+{
+  "gt": "GT-09",
+  "source": {
+    "document": "docs/source/fullSpecsV0.3.md",
+    "section": "§12",
+    "gate": "G3",
+    "input": "GT-03 → `ALIGN_RIDGE`, `KEEP_PLANES`, произвольная цель",
+    "expected": "Отказ `CONSTRAINT_CONFLICT`; версия не изменилась"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "refusal": "CONSTRAINT_CONFLICT",
+    "versionUnchanged": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`ALIGN_RIDGE`)",
+    "row": "3D-16"
+  }
+}

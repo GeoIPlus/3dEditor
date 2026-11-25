@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-trim-face:v1",
+  "title": "TRIM_FACE payload",
+  "description": "Remove part of a face along an actual intersection line (v0.2 §13.5, E-08; spec §10.6 rule 7).",
+  "type": "object",
+  "properties": {
+    "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "trimLine": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Line3" },
+    "keepPoint": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3",
+      "description": "A point on the part that stays."
+    }
+  },
+  "required": ["faceId", "trimLine", "keepPoint"],
+  "additionalProperties": false,
+  "$comment": "[P] Field names; `keepPoint` (which side stays) is not in the sources: proposal (Q-35, 3D-15)."
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-command-payload-import-building:v1",
+  "title": "IMPORT_BUILDING payload",
+  "description": "Empty payload. Spec §6: input is the original CityJSON read by the service and the building id of the envelope.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "$comment": "[A] Empty: the service resolves the source document and CityObject from the CP assignment (dataset + unit) and reads the bytes (spec §6 API, §11). How a CityObject id maps to `buildingId`: TBD (Q-32)."
+}
