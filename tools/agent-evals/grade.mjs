@@ -127,3 +127,14 @@ export const mentions = (run, re) => re.test(said(run));
 
 /** Added or modified files matching a predicate. @param {Run} run @param {(p: string) => boolean} pred */
 export const touched = (run, pred) => run.changed.filter((c) => c.status !== 'D' && pred(c.path)).map((c) => c.path);
+
+/**
+ * True when the code of a JS file, comments stripped, is only `export {..} from '..'` / `export * from '..'`
+ * statements (at least one). Such a file defines no function, so it has nothing to carry `@param` (3D-88).
+ * @param {string} src
+ */
+export function reexportOnly(src) {
+  const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const RE = /export\s+(\*(\s+as\s+[\w$]+)?|\{[^}]*\})\s+from\s+(['"])[^'"]+\3\s*;?/g;
+  return RE.test(code) && code.replace(RE, '').trim() === '';
+}

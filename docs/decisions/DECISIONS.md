@@ -260,6 +260,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-244 | 3D-85 (session cost ledger, estimates, forecast, Fable efficiency review; AGENTS.md §6/§7.7/§7.9/§9 and skills) and 3D-87 (eval start states) accepted (done) and merged into the base by the coordinating session (D-178); the owner confirmed the instruction change to the coordinator in a dialog (AGENTS.md §10); provisional ids became D-236..D-243, rows 3D-85..3D-88; `merge-wp` step 4a applies from the next merge | Owner, dialog, 2026-11-25 |
 | D-245 | Context7 MCP server enters the base (reverses the deferral of D-46 / D-80): `.mcp.json` with `npx -y @upstash/context7-mcp@4.7.3` (no `cmd /c`, runs on Linux cloud sessions; the Windows `cmd /c` form of `main` is not taken) | Owner, dialog, 2026-11-25 |
 | D-246 | 3D-86 (forecast script and ledger backfill) set `ready` and started in session_01RNYuqHnuDRZzVutCfR9HFd from the base @14f8cca (started by the 3D-85 session, not by the coordinator - recorded after the fact, D-178) | Owner, chat, 2026-11-25 (3D-85 session) |
+| D-247 | 3D-88 accepted (done); merged into the base by the coordinating session (D-178); no new ids (its provisional references renamed to 3D-85..3D-88, D-236..D-243; checkpoint file renamed 3D-88.md). merge-wp §4a: the 3D-88 and 3D-85 sessions were still running at merge, so their ledger rows stay `as of` and the `Actual:` line waits for the idle re-read; no forecast block yet (the script is 3D-86, never by hand) | Owner, WP session 3D-88, 2026-11-25 |
 
 ## Open questions
 
