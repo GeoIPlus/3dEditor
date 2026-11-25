@@ -22,3 +22,4 @@ From efficiency reviews (README §5). Status: `open`, `adopted (D-NN)`, `rejecte
 
 | date | from (WP, session) | proposal | expected saving | status |
 |---|---|---|---|---|
+| 2026-11-25 | 3D-00.1, session_01RNYuqGReWdMPazLVoyejTW | Read session cost from `get_session` -> `external_metadata.usage` (`cost_usd`, token counts; one short answer) instead of `result` events (~15k characters each); verify it equals the newest `total_cost_usd` on one session first | a few k tokens per measurement | open |
