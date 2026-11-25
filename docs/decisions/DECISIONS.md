@@ -244,6 +244,11 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-228 | An id in a 3D-21 payload that is not in the model (`SET_SEMANTICS` face, `REMOVE_CONSTRAINT` constraint, `SET_CONSTRAINT` entity) -> `INVALID_PAYLOAD` with the ids (3D-14 precedent) | Owner, dialog, 2026-11-24 (3D-21) |
 | D-229 | A 3D-21 command that changes nothing (every face already has the `surfaceKind`; a constraint equal to a stored one in kind, entities, hard, target, weight, measurement) -> `INVALID_PAYLOAD`, no new version | Owner, dialog, 2026-11-24 (3D-21) |
 | D-230 | 3D-21 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-226..D-229 | Owner, WP session 3D-21, 2026-11-25 |
+| D-231 | Q-18 for `MATCH_ELEVATIONS`: the movable planes are the non-vertical roof faces that define the selected vertices; walls, ground and faces with a hard constraint stay fixed; no solution -> `CONSTRAINT_CONFLICT`; the footprint never changes | Owner, dialog, 2026-11-24 (3D-16) |
+| D-232 | `ALIGN_EAVE`: only the roof face of the eave moves; walls stay fixed; a target line off the adjacent wall plane -> `CONSTRAINT_CONFLICT` (overhangs are `SET_OVERHANG`, 3D-19) | Owner, dialog, 2026-11-24 (3D-16) |
+| D-233 | `FIT_MEASUREMENTS` of `ALIGN_RIDGE` / `ALIGN_EAVE`: each `POINT` measurement (D-215 layout) is a soft term on its nearest adjacent roof plane with weight 1/σz²; `targetLine`, if given, is hard; `LINE` / `PLANE` measurements -> `INVALID_MEASUREMENT` (TBD, Q-28) | Owner, dialog, 2026-11-24 (3D-16) |
+| D-234 | Payload `hardConstraintIds` (`ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS`; v0.2 D.3): each id must be a model constraint (unknown -> `INVALID_PAYLOAD`); a listed constraint is held hard for this command even if stored soft; hard model constraints apply in any case | Owner, dialog, 2026-11-24 (3D-16) |
+| D-235 | 3D-16 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-231..D-234; Q-18 narrowed further (MATCH_ELEVATIONS movable planes closed by D-231) | Owner, WP session 3D-16, 2026-11-25 |
 
 ## Open questions
 
@@ -340,3 +345,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-45 | 2026-11-24, owner | closed by D-162 | Maps of `validate` (scope, structural problems, val3dity codes) accepted as written |
 | Q-41 | 2026-11-23, owner (3D-10) | closed by D-156 | Two ridge edges; short one-face edges are `DEGENERATE_EDGE` |
 | Q-29 | 2026-11-23, owner (3D-13) | closed by D-171 | `"<faceId>:OFFSET" | "<faceId>:ROTATION"` strings, contract unchanged |
+| Q-18 | 2026-11-24, owner (3D-16) | narrowed, open | `MATCH_ELEVATIONS` movable planes closed by D-231; SET_HEIGHT EAVE, SET_OVERHANG, STRAIGHTEN_FACE stay open |

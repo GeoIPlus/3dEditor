@@ -19,20 +19,21 @@ Updated: 2026-11-25
 
 | Progress | Rows |
 |---|---:|
-| Done | 39 / 70 |
+| Done | 40 / 70 |
 | Review | 0 |
-| In progress | 5 |
+| In progress | 4 |
 | Ready | 3 |
 | Proposed (waiting for the owner to set `ready`) | 22 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 39/70 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 40/70 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-15 Core edits; 3D-16 Ridge, eave, elevations; 3D-17 Repair ops; 3D-20 Installations; 3D-47 SC: 3D view port + host.
+**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-20 Installations; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D16["✅ ⚙️ 3D-16 Ridge, eave, elevations"]
     D21["✅ ⚙️ 3D-21 Semantics, constraints cmds"]
     D84["✅ 🔧 3D-84 BACKLOG graph icons"]
     D14["✅ ⚙️ 3D-14 Replace roof, rebuild envelope"]
@@ -89,7 +90,6 @@ flowchart TB
     D82["💡 📐 3D-82 Spec: 3D-69 cloud CRS (provisional)"]
     D83["💡 📐 3D-83 ADR-0007 note: projections (provisional)"]
     D15["🚧 ⚙️ 3D-15 Core edits"]
-    D16["🚧 ⚙️ 3D-16 Ridge, eave, elevations"]
     D17["🚧 ⚙️ 3D-17 Repair ops"]
     D18["💡 ⚙️ 3D-18 History"]
     D19["💡 ⚙️ 3D-19 Envelope ops"]
@@ -271,7 +271,7 @@ flowchart TB
 | 3D-13 | Constraint solver and conflict diagnostics | here | geo-model3d/solve | 09 | G3 | L | kernel | done (D-174; merged into base, no PR) |
 | 3D-14 | `REPLACE_ROOF` R-01..R-04, `REBUILD_ENVELOPE` | here | geo-model3d/ops | 12, 13 | G2 | L | kernel | done (D-219; merged into base, no PR; D-212..D-218) |
 | 3D-15 | Core edits: `MOVE_VERTEX`, `MOVE_EDGE`, `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | here | geo-model3d/ops | 13 | G3 | L | kernel | in-progress (D-220; wp/3d-15-core-edits) |
-| 3D-16 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | here | geo-model3d/ops | 13 | G3 | M | kernel | in-progress (D-220; wp/3d-16-align) |
+| 3D-16 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | here | geo-model3d/ops | 13 | G3 | M | kernel | done (D-235; merged into base, no PR; D-231..D-234) |
 | 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | kernel | in-progress (D-220; wp/3d-17-repair) |
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | proposed |
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | kernel | proposed |
