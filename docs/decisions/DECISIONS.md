@@ -259,6 +259,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-243 | Owner accepted 3D-85 and 3D-87 (handed to the coordinator for merge, D-178); row 3D-88 (eval rubric false negatives) is `ready` and started now in a fresh session, on the owner's word | Owner, chat, 2026-11-25 |
 | D-244 | 3D-85 (session cost ledger, estimates, forecast, Fable efficiency review; AGENTS.md §6/§7.7/§7.9/§9 and skills) and 3D-87 (eval start states) accepted (done) and merged into the base by the coordinating session (D-178); the owner confirmed the instruction change to the coordinator in a dialog (AGENTS.md §10); provisional ids became D-236..D-243, rows 3D-85..3D-88; `merge-wp` step 4a applies from the next merge | Owner, dialog, 2026-11-25 |
 | D-245 | Context7 MCP server enters the base (reverses the deferral of D-46 / D-80): `.mcp.json` with `npx -y @upstash/context7-mcp@4.7.3` (no `cmd /c`, runs on Linux cloud sessions; the Windows `cmd /c` form of `main` is not taken) | Owner, dialog, 2026-11-25 |
+| D-246 | 3D-86 (forecast script and ledger backfill) set `ready` and started in session_01RNYuqKAz95ujvKr1wbdi5D from the base @14f8cca (started by the 3D-85 session, not by the coordinator - recorded after the fact, D-178) | Owner, chat, 2026-11-25 (3D-85 session) |
 
 ## Open questions
 
