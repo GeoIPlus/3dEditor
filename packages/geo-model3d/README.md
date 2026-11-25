@@ -143,9 +143,9 @@ FIXED_POINT, spec §5 r6). Unknown ids -> `INVALID_PAYLOAD` (D-228); a command t
 and plan rings; points on the plane within `planarTolM`; outline normalised CCW, no self-crossing, area above
 `minFaceAreaM2`; outline inside the face, boundary allowed within `topologySnapTolM`), `installation-shell.js` (own
 planar Boolean of the K-12 P0 scope, D-109: vertical prism over the outline, cut below by the roof plane and above by
-the lower envelope of one or two top planes; faces ClosureSurface base [A], WallSurface per outline edge, RoofSurface
-per top plane, no roof component [A, as D-227]; vertices derived from their faces), `add-chimney.js` (box along local
-x / y, top at the downhill corner + h, D-3D20-1), `add-dormer.js` (FLAT top at the highest outline corner + `heightM`,
+the lower envelope of one or two top planes; faces ClosureSurface base, WallSurface per outline edge, RoofSurface
+per top plane, no roof component (D-3D20-6, as D-227); vertices derived from their faces), `add-chimney.js` (box along local
+x / y (D-3D20-6), top at the downhill corner + h, D-3D20-1), `add-dormer.js` (FLAT top at the highest outline corner + `heightM`,
 D-3D20-2; GABLE ridge on the fall line through the outline centroid, `ridgeRiseM` above the wall top, convex outline
 only, D-3D20-3), `remove-installation.js` (deletes the node, its children and every entity of their bodies; faces
 leave roof components). The roof face is never cut (D-3D20-5): the installation touches it. Refusals D-3D20-4;

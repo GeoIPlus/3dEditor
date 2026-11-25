@@ -2,7 +2,7 @@
 // a convex or simple plan outline, cut below by the roof face plane (face-half-space) and above by the lower envelope
 // of one or two top planes (plane-plane: a GABLE ridge is where the two top planes meet). Own planar Boolean of the K-12
 // P0 scope, no library (D-109, 3D-ADR-0004 B1). The roof face itself is not cut (D-3D20-5).
-// Faces: base (ClosureSurface [A], in the roof plane, normal down), one WallSurface per outline edge, one RoofSurface
+// Faces: base (ClosureSurface, D-3D20-6, in the roof plane, normal down), one WallSurface per outline edge, one RoofSurface
 // per used top plane; installation roof faces join no roof component (as D-227 for new roof faces). Plane terms (D-08):
 // every face gets its plane and every vertex is derived from the faces it lies on (`rederive`).
 import { rederive } from '../brep/index.js';

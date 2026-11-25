@@ -1,5 +1,5 @@
 // ops (3D-20): ADD_CHIMNEY (spec §10.11 r2, r3; v0.3 §6 F-37; GT-17): a box chimney as a separate BuildingInstallation
-// body. Box axes = local building axes, `widthM` along x, `depthM` along y [A]; base centred on `center` in the roof
+// body. Box axes = local building axes, `widthM` along x, `depthM` along y (D-3D20-6); base centred on `center` in the roof
 // face plane; horizontal top at the lowest base corner z + `heightAboveRoofM` (D-3D20-1). Sizing from the cloud
 // (`measurementId`) -> INVALID_MEASUREMENT until the measurement layout is defined (Q-28, D-3D20-4).
 import { resolveRoof, localPoint, onRoofPlane, insideRoof } from './installation-place.js';
