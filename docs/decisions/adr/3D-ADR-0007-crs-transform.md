@@ -1,6 +1,7 @@
 # 3D-ADR-0007: CRS support - transform library, EPSG table, local ENU frame
 
-- Status: accepted (owner, 2026-11-23, D-125). Owner answers that shaped it: D-121..D-124.
+- Status: accepted (owner, 2026-11-23, D-125). Owner answers that shaped it: D-121..D-124. Amendment of 2026-11-25
+  (projections in the CRS table) accepted: D-3D83-1.
 - WP: 3D-32   Questions closed: -   Opened: Q-43 (EPSG terms of use)
 
 ## Context
@@ -64,7 +65,7 @@
 
 ## Amendment 2026-11-25: projections in the CRS table (3D-69, 3D-83)
 
-Status: proposed (needs the owner's approval, D-18). It adds a second generator input and a verification rule; the
+Status: accepted (owner, dialog, 2026-11-25, D-3D83-1). It adds a second generator input and a verification rule; the
 decision above is unchanged.
 
 - [D] D-198 (3D-69): a point cloud in another projected CRS than the building is reprojected with every projection
