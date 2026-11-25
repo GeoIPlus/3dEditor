@@ -47,7 +47,9 @@ Intake writes documents only. It never writes code, schemas or fixtures and neve
      `D-3D<wp>-<n>`, `Q-3D<wp>-<n>`, rows `3D-<wp>.<n>` (node `D<wp>_<n>`), ADRs `3D-ADR-<wp>-<n>`; only the coordinator
      assigns final ids (D-38, D-179).
 6. **Size**: S < 1 day of agent work, M up to ~3 days, L larger. An L row that has more than one acceptance group is
-   split now into several rows.
+   split now into several rows. **Estimate** the row from the ledger by its class (Size x Type) as
+   [docs/metrics/README.md §3](../../../docs/metrics/README.md) says; never a number without a basis. A `change-wp`
+   that changes scope adds a `Re-estimate` line; `est0` stays.
 7. **Report** in chat in three lines: class, row id(s) created/changed, what the owner must do (set `ready`, answer Q-NN).
 
 ## Row format
@@ -67,6 +69,7 @@ Details entry under `## Details`:
 - Scope in: <list>   Scope out: <list>
 - Accept: <testable lines; golden test ids where they exist>
 - Decisions: <D-NN used>  Open: <Q-NN that block it>
+- Estimate: $<p50> (p80 $<p80>), ~<min> min model time; basis: <class> n=<count> | prior (no data)
 ```
 
 ## Judgement calls

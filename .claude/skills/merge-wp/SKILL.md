@@ -57,6 +57,16 @@ checkpoint). Stop and ask the owner (dialog with proposed answers) if any of the
 3. Mermaid: move node `D<id>` into the `done` subgraph.
 4. Checkpoint stays as the WP left it; add one log line "merged into <base> @<commit>".
 
+## 4a. Cost, estimate, forecast (AGENTS.md §7.7, [docs/metrics/README.md](../../../docs/metrics/README.md))
+
+1. For every session that worked on the WP (checkpoint, `list_sessions` with `children: true`): read the newest
+   `result` event (README §1) now that the session is idle; set its ledger row to the final figures, `state: final`.
+2. Details entry of the row: add the `- Actual:` line (README §3) with the ratio to `est0`.
+3. Copy the review's proposals (checkpoint "Cost and efficiency") into LEDGER.md "Improvement proposals" as `open`.
+4. Recompute the forecast by script (README §4; never by hand) and replace the block in BACKLOG "## Budget and
+   forecast". A class whose median ratio left 0.8..1.25: add re-estimate lines to its open rows.
+5. Add the coordinating session's own row (`WP = coord`) once per day it worked.
+
 ## 5. Gate
 
 Strict, never with `--allow-provisional`:
@@ -85,4 +95,4 @@ Only after step 6.2 passed:
 ## 8. Report
 
 Short chat report to the owner: WP, merge commit, id mapping (`D-3D<id>-n -> D-NN`), check output (pass counts),
-branch deleted or handed over, session archived, next `ready` row.
+branch deleted or handed over, session archived, actual vs. estimate and the new ETC line, next `ready` row.

@@ -1,0 +1,69 @@
+{
+  "task": "intake-new-request",
+  "run": 2,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "5adca84b1c95f69f4022dd37d531f48a51d487b7",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "row-proposed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-ready",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.6122504,
+  "turns": 15,
+  "durationMs": 74190,
+  "usage": {
+    "input": 28,
+    "cacheCreate": 39302,
+    "cacheRead": 748512,
+    "output": 7401
+  },
+  "toolCalls": 13,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "intake: 3D-88 distance tool in the 3D view (proposed), Q-47"
+  ],
+  "pushes": [],
+  "finalText": "I've added the distance tool to the backlog as row **3D-88** with status `proposed`. I tried to ask you four scope questions in a dialog, but you weren't available. I recorded them as open question **Q-47**, with a recommended answer for each, and committed both to `claude/eval-session` (62a305e). `check-docs` passes. Nothing is implemented yet; intake only writes the backlog.\n\n- **Class:** `external`. The tool isn't in spec v0.3, and picking and snapping are client code in shared_compnents. So 3D-88 is a mirror row (repo: shared, size S, gate G3). It depends on 3D-42 (tools and snapping) and 3D-47 (3D view port, still in progress).\n- **Not a \"measurement\":** in this project, a measurement is data that feeds the model's constraints (M-03/M-07). By default this tool only shows the distance on screen and never changes the model. Saving the result would be a separate kernel row if you want it.\n- **What it does by default:**\n  - Picks snap to building vertices, edges and faces and to point-cloud points.\n  - The readout shows 3D distance, horizontal distance and height difference (ΔZ) in metres.\n  - It sends nothing to the kernel and doesn't change the model version.\n- **Estimate:** $3.43, the median of the 4 finished work packages. There are no cost records yet for size-S or mirror rows.\n\n**What you need to do:**\n1. Answer Q-47 or accept the four recommended answers:\n   - (a) give the tool its own row rather than adding it to 3D-42, which is already size L;\n   - (b) show the dist"
+}

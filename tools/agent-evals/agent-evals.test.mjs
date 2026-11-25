@@ -1,13 +1,17 @@
 // Offline tests of the agent-evals runner (3D-28): transcript parsing, grading, the simulated owner,
 // scenario recount, and that every task in docs/agent-evals loads with a valid rubric. No model calls.
 import { describe, expect, it } from 'vitest';
-import { join, resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, relative, resolve, dirname } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { checkDocs } from '../check-docs.mjs';
 import { parseTranscript } from './transcript.mjs';
 import { addedBacklogRows, askedDialog, grade, onlyDocs, validateRubric } from './grade.mjs';
 import { answerPermission, DECLINE_MESSAGE } from './session.mjs';
 import { recount } from './scenario.mjs';
 import { loadTasks } from './tasks.mjs';
+import { HIDDEN, hide, STUB_TEXT } from './workspace.mjs';
 import { summarize } from './report.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -139,6 +143,49 @@ describe('tasks in docs/agent-evals', () => {
       expect(covers).toMatch(new RegExp(`§${rule.replace('.', '\\.')}(?![0-9a])`));
     for (const named of ['intake of a new request', 'chore half', 'non-chore half', 'client import of the kernel', 'TBD', 're-open a decision', 'handoff', 'dialog'])
       expect(covers).toContain(named);
+  });
+});
+
+describe('task start states', () => {
+  // Every setup.mjs must leave documents that pass check:docs, as `prepare` builds them (hidden paths removed).
+  // Provisional ids are allowed: they come from the checked-out branch, not from the scenario.
+  it('pass check-docs after setup', async () => {
+    const { tasks } = await loadTasks(join(root, 'docs', 'agent-evals'));
+    const failures = [];
+    for (const task of tasks.filter((t) => existsSync(join(t.dir, 'setup.mjs')))) {
+      const dir = mkdtempSync(join(tmpdir(), `eval-start-${task.id}-`)); // like prepare(): <dir>/work, siblings allowed
+      const work = join(dir, 'work');
+      try {
+        cpSync(root, work, {
+          recursive: true,
+          filter: (src) => !/^(\.git|node_modules)(\/|$)/.test(relative(root, src)),
+        });
+        hide(work);
+        const mod = await import(pathToFileURL(join(task.dir, 'setup.mjs')).href);
+        await mod.default({ work, git: () => { throw new Error('setup.mjs must not need git here'); } });
+        for (const p of checkDocs(work, { allowProvisional: true })) failures.push(`${task.id}: ${p}`);
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    }
+    expect(failures).toEqual([]);
+  }, 60_000);
+
+  it('hide() leaves only neutral stubs under the hidden paths', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'eval-hide-'));
+    const work = join(dir, 'work');
+    try {
+      cpSync(root, work, { recursive: true, filter: (src) => !/^(\.git|node_modules)(\/|$)/.test(relative(root, src)) });
+      const stubs = hide(work);
+      expect(existsSync(join(work, 'tools/agent-evals/grade.mjs'))).toBe(false);
+      for (const rel of stubs) {
+        expect(HIDDEN.some((h) => rel === h || rel.startsWith(`${h}/`))).toBe(true);
+        expect(readFileSync(join(work, rel), 'utf8')).toBe(STUB_TEXT);
+      }
+      expect(existsSync(join(work, 'docs/agent-evals/README.md'))).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 

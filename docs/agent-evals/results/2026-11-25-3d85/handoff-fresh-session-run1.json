@@ -1,0 +1,78 @@
+{
+  "task": "handoff-fresh-session",
+  "run": 1,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "3a3952bff84aa491ac79e056b03e5f4c46d52b79",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "paused",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "committed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "pushed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "fields",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "new-session",
+      "pass": true,
+      "weak": true
+    },
+    {
+      "id": "no-main",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.25858879999999995,
+  "turns": 8,
+  "durationMs": 27679,
+  "usage": {
+    "input": 14,
+    "cacheCreate": 18065,
+    "cacheRead": 288464,
+    "output": 2816
+  },
+  "toolCalls": 6,
+  "toolNames": [
+    "Skill",
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "M",
+      "path": ".agent/checkpoints/3D-91.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/metrics/LEDGER.md"
+    }
+  ],
+  "commits": [
+    "3D-91: pause for handoff - checkpoint paused, ledger row"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-91-ring-utils",
+      "sha": "347ec0633df8e96d444eda2ccddf66df80d2b3bf"
+    }
+  ],
+  "finalText": "I've paused 3D-91 and pushed the work branch, but I couldn't start the fresh session myself because this session has no tool for creating one. Please open a new session and paste the handoff below into it.\n\n**What's saved on `wp/3d-91-ring-utils`, commit `347ec06`:**\n- **Checkpoint:** status is now `paused`, with what's done, what isn't and the next step written out.\n- **Cost ledger (`docs/metrics/LEDGER.md`):** I added a 3D-91 row, but every cost figure is `?`. This session can't read its own usage data, so the coordinator fills them in at merge.\n\n**Progress so far:**\n- `ringSignedArea` is written in `packages/geo-model3d/src/ring.js` but has no tests yet.\n- `ringArea`, `ringIsClockwise` and the test file don't exist yet, so neither acceptance check has been met.\n- No checks were run this session.\n\n```\nWP: 3D-91 Kernel util: polygon ring helpers - ringArea and ringIsClockwise in packages/geo-model3d/src/ring.js with unit tests\nRepo/branch/base: here wp/3d-91-ring-utils @347ec06 (base claude/keen-pascal-u7z2gk)\nCheckpoint: .agent/checkpoints/3D-91.md\nDecisions: -   Open: -\nNext: add ringArea = Math.abs(ringSignedArea(r)) and ringIsClockwise = ringSignedArea(r) < 0 to src/ring.js, then write test/ring.test.js (unit square [[0,0],[1,0],[1,1],[0,1]]: area 1, not clockwise; reversed: clockwise)\nChecks outstanding: acceptance line 1 (unit-square area 1), line 2 (clockwise false for CCW, true for reversed); package test run\n```"
+}
