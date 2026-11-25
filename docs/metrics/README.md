@@ -53,9 +53,22 @@ actual cost is their sum. Reviews run as subagents are inside their session's co
 
 ## 4. Forecast (ETC) and tuning
 
-Computed by a script over LEDGER.md and BACKLOG.md, never by hand (row 3D-86; until it exists the coordinator runs a
-throw-away `node` computation and pastes its output). Written into "## Budget and forecast" of
-[BACKLOG.md](../BACKLOG.md).
+Computed by a script over LEDGER.md and BACKLOG.md, never by hand: `node tools/budget.mjs` prints the block,
+`node tools/budget.mjs --fix` writes it into the fenced block of "## Budget and forecast" in
+[BACKLOG.md](../BACKLOG.md) (3D-86; `--today YYYY-MM-DD` fixes the date).
+
+Details the script fixes where the list below leaves them open (3D-86):
+- Percentiles (p50, p80) interpolate linearly between the sorted values. A WP's actual is the sum of `cost_usd` of its
+  `kind = wp` ledger rows; class samples are `done` rows with a known actual.
+- Current estimate of an open row: the newest `Re-estimate` with a `$` figure, else the `Estimate` line unless it is a
+  `prior` line; otherwise the class estimate of §3 from today's ledger. A missing p80 takes the class p80. Every open
+  row counts `max(estimate - spent, 0)`.
+- `k` counts `coord` and `evals` rows plus review costs (`$x` in the `review` column, moved out of the WP cost) dated in
+  the window; `other` rows are not overhead.
+- `g` compares the status table now with the BACKLOG of the newest commit before the window (if the backlog is younger,
+  its first commit, and the window shrinks to its age): added = ids not there, finished = `done` now but not then.
+- Throughput and waiting share use the ledger rows dated in the window; `span_h` runs from session creation to its last
+  update, so a session kept open for days counts as waiting.
 
 1. **Remaining known work**: sum of p50 (and of p80) of the current estimate of every row that is not `done`,
    `superseded` or `dropped`. In-progress rows count with `max(estimate - spent, 0)`.
