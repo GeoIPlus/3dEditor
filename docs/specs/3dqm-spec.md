@@ -849,9 +849,9 @@ dimensions or a plane-fit measurement; installation id (`REMOVE_INSTALLATION`).
 6. Roof not cut (D-260, reading of GT-17): the roof face is not cut or imprinted; the installation is a separate closed
    body touching the roof plane; the building's volume is unchanged (GT-17: 520 m3).
 7. `ADD_CHIMNEY` (D-256, D-261): box with vertical walls along the local building axes, `widthM` along local x,
-   `depthM` along local y, base centred on `center` ([V] `packages/geo-model3d/src/ops/add-chimney.js`) in the roof face plane, horizontal top. `heightAboveRoofM` is
-   measured at the lowest (downhill) base corner: top z = lowest base corner z + `heightAboveRoofM` (GT-17: top
-   7.125 m). A top at or below the highest base corner -> `INVALID_GEOMETRY`.
+   `depthM` along local y, base centred on `center` ([V] `packages/geo-model3d/src/ops/add-chimney.js`) in the roof
+   face plane, horizontal top. `heightAboveRoofM` is measured at the lowest (downhill) base corner: top z = lowest base
+   corner z + `heightAboveRoofM` (GT-17: top 7.125 m). A top at or below the highest base corner -> `INVALID_GEOMETRY`.
 8. `ADD_DORMER` `FLAT` (D-257): the body is the vertical prism over the whole outline, base in the roof face plane,
    horizontal top at the highest outline corner z + `heightM`. `heightM` is the back (uphill) wall height, set by the
    operator from the cloud or stereo (GT-18: top 7.875 m).
