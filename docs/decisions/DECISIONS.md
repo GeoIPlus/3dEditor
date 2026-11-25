@@ -284,6 +284,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-268 | 3D-45: `GeoIPlus/shared_compnents` had no mirror row; the owner approved adding it there as **SC row 77** (branch `wp/77-model3d-vendor`) and implementing it in this session; delivery: push the SC branch and open an SC pull request, the owner merges (SC D-126). 3dEditor bookkeeping stays on `wp/3d-45-sc-schemas` without a PR | Owner, dialog, 2026-11-25 (3D-45) |
 | D-269 | 3D-45 scope: SC `npm run check:vendor` (`tools/check-vendor-provenance.js`) verifies every `contracts/vendor/*/provenance.json`, operaflow included, not only `vendor/3deditor/`. Loading module: `tools/sync-contract-assets.js` packages `contracts/vendor/3deditor/*.schema.json` into `packages/geo-core/src/contracts/schemas/vendor/3deditor/`; `@geoiplus/geo-core/contracts` exports `model3dSchemaDocuments` and `MODEL3D_SCHEMA_REVISION` (`model3d-schemas.js`). 3D-41 loads them from there | Owner, dialog, 2026-11-25 (3D-45) |
 | D-270 | 3D-45 accepted by the owner; its 3dEditor bookkeeping merged into the base by the coordinating session (D-178); provisional ids became D-268, D-269. The row stays `review` as a mirror of SC row 77 until the owner merges SC PR #68; then the SC pin is refreshed (`backlog:sync --fetch shared <sha>`) and the row becomes `done` | Owner, WP session 3D-45, 2026-11-25 |
+| D-271 | 3D-101 spec diff (§10.11 r1..r10, §14 Q-38 closed) accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-101-spec-installations | Owner, dialog, 2026-11-25 (3D-101) |
+| D-272 | 3D-101 accepted (done); merged into the base by the coordinating session (D-178); provisional id became D-271 | Owner, WP session 3D-101, 2026-11-25 |
 
 ## Open questions
 
