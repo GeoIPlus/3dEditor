@@ -234,6 +234,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-218 | A footprint whose body cannot be resolved uniquely (its Building / BuildingPart semantic node has no solid or several) -> `INVALID_TOPOLOGY` with the footprint and semantic node ids | Owner, dialog, 2026-11-24 (3D-14) |
 | D-219 | 3D-14 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-212..D-218; the `executeCommand` pipeline is in the base, operation rows 3D-15..3D-21 and 3D-71 can build on it | Owner, WP session 3D-14, 2026-11-24 |
 | D-220 | Operations 3D-15, 3D-16, 3D-17, 3D-20, 3D-21 set `ready` and started in parallel fresh sessions on the 3D-14 pipeline; each adds only its own entries to `ops/registry.js` and its own `ops/*` files; merged one at a time | Owner, chat, 2026-11-24 |
+| D-3D17-1 | Q-36: `HEAL_HOLE` `maxDisplacementM` = largest move of a hole-boundary vertex when the new face's plane joins its defining planes; omitted -> the project's `planarTolM` (D-13, configurable per project; the owner notes the right value follows GSD / point density). A closing over it is refused `INVALID_GEOMETRY` with `details.admissibleModes` (D-76); GT-11 unchanged: a copy that would lift the north eave 5 -> 11 m is refused, never applied silently | Owner, dialog, 2026-11-25 (3D-17) |
+| D-3D17-2 | Repair principle: a closing the kernel can compute (e.g. `FILL_PLANAR` over the hole edges) is a proposal in the refusal's `details.admissibleModes`; it is applied only when the operator sends that command. No operation substitutes another mode for the one requested | Owner, chat + dialog, 2026-11-25 (3D-17) |
+| D-3D17-3 | Surface kind of the face `HEAL_HOLE` creates: always the spec §6 r7 normal thresholds (`abs(n.z) < 0.1` wall, `n.z < -0.9` ground, else roof) with the tag `SEMANTICS_INFERRED`; the operator confirms with `SET_SEMANTICS` (3D-21) | Owner, chat, 2026-11-25 (3D-17) |
+| D-3D17-4 | `ALIGN_JUNCTION` node point: the largest set of the node's planes that contains every fixed plane (primary / non-selected) and meets in one point within `topologySnapTolM` (D-152 spread), with three independent planes; only the planes outside it move, through its point (O1, D-110). No unique such set (e.g. 2+2) or the fixed planes are the outliers -> fallback: the point on the fixed planes closest in least squares (normal distance) to the movable planes | Owner, chat + dialog, 2026-11-25 (3D-17) |
 
 ## Open questions
 
@@ -330,3 +334,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-45 | 2026-11-24, owner | closed by D-162 | Maps of `validate` (scope, structural problems, val3dity codes) accepted as written |
 | Q-41 | 2026-11-23, owner (3D-10) | closed by D-156 | Two ridge edges; short one-face edges are `DEGENERATE_EDGE` |
 | Q-29 | 2026-11-23, owner (3D-13) | closed by D-171 | `"<faceId>:OFFSET" | "<faceId>:ROTATION"` strings, contract unchanged |
+| Q-36 | 2026-11-25, owner (3D-17) | closed by D-3D17-1 | Omitted `maxDisplacementM` = project `planarTolM`; closing over it refused with proposals |
