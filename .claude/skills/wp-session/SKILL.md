@@ -24,6 +24,8 @@ coordinator's.
 
 1. Commit and push work in progress on the WP branch (never `main`).
 2. Update the checkpoint: `status: paused`, what is done (with check output), what fails (with output), next step.
+   Measure the session (AGENTS.md §7.7, [docs/metrics/README.md §1](../../../docs/metrics/README.md)): own row in
+   `docs/metrics/LEDGER.md` (`as of` the newest result event) and the checkpoint section "Cost and efficiency".
 3. Handoff text - only these fields, no conversation history:
 
 ```
@@ -45,6 +47,13 @@ Checks outstanding: <list>
    merging session assigns final ids (D-38, D-179). Update: module card, STRUCTURE.md, DECISIONS.md, BACKLOG row -> `review` (PR link, or "local, PR not requested"),
    overview via `node tools/check-docs.mjs --fix`, mermaid group; mirror rows if the WP touches another repository.
 3. Checkpoint: `status: done`, results with numbers, what the next WP needs to know.
+3a. **Cost and efficiency** (AGENTS.md §7.7, §7.9; method in [docs/metrics/README.md](../../../docs/metrics/README.md)):
+   - Read the newest `result` event of this session (README §1); write the own ledger row (`as of`) and the checkpoint
+     section: figures, `est0` of the row, ratio, and a self-retro of at most 5 lines (what cost tokens without moving
+     an acceptance line: re-reads, large tool output, failed attempts, waits).
+   - If the review is due (README §5: calibration count < 10, or a trigger), run it now with the fixed prompt
+     (Agent tool, `model: "fable"`). Paste its answer unedited, reply to each proposal, fill `review` in the ledger row.
+   - Commit both files on the WP branch with the finish commit.
 4. Report to the owner in chat: what was done, check results, open questions (asked via dialog, not as text). When the
    owner accepts, send_message to the coordinator: "WP 3D-<id> done, owner accepted, <branch>@<sha>".
 5. **Keep the repository clean (D-42).** After the coordinating session has merged the WP into the base and confirmed
