@@ -117,7 +117,7 @@ spec §2.4 table; lineage members; every example judged as labelled. The spec ta
 | Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-15 |
 | Q-36 | `HEAL_HOLE` "allowed corrections" (read as `maxDisplacementM`) | 3D-17 |
 | Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | 3D-19 |
-| Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
+| Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | closed by D-3D20-1..D-3D20-3 (3D-20) |
 | Q-39 | Whether the command carries `leaseRef` / `leaseEpoch` (spec §11 rule 11) or the service takes them from the session | 3D-23 |
 
 Also open and not decided here: Q-17 (solver objective), Q-18 (op details incl. the `FIT_PLANE` selection), Q-24 (numbers

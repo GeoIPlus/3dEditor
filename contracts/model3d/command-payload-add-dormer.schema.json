@@ -15,7 +15,11 @@
     },
     "heightM": {
       "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength",
-      "description": "Manual size [A]."
+      "description": "Back (uphill) wall height: the top is at the highest outline corner z + heightM (D-3D20-2)."
+    },
+    "ridgeRiseM": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength",
+      "description": "GABLE only: ridge height above the wall top (D-3D20-3)."
     },
     "measurementId": {
       "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
@@ -25,5 +29,7 @@
   "required": ["roofFaceId", "dormerType", "outline"],
   "additionalProperties": false,
   "anyOf": [{ "required": ["heightM"] }, { "required": ["measurementId"] }],
-  "$comment": "[P] Field names. Which dimensions define a FLAT / GABLE dormer beyond the outline is not given: TBD (Q-38, 3D-20)."
+  "if": { "properties": { "dormerType": { "const": "GABLE" } }, "required": ["dormerType", "heightM"] },
+  "then": { "required": ["ridgeRiseM"] },
+  "$comment": "[P] Field names. Dimensions: D-3D20-2 (FLAT), D-3D20-3 (GABLE); Q-38 closed."
 }

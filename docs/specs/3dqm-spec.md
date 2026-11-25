@@ -1066,7 +1066,7 @@ Contract open questions of 3D-06 (D-75; source and wording:
 | Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-15 |
 | Q-36 | `HEAL_HOLE` "allowed corrections" (read as `maxDisplacementM`) | 3D-17 |
 | Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | 3D-19 |
-| Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
+| Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | closed by D-3D20-1..D-3D20-3 (3D-20) |
 | Q-39 | Whether the command carries `leaseRef` / `leaseEpoch` (§11 rule 11) or the service takes them from the session | 3D-23 |
 
 Existing questions this spec depends on: Q-03 (CP extension content, 3D-43), Q-10 (val3dity binding, 3D-12). Q-01

@@ -12,7 +12,10 @@
     },
     "widthM": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength" },
     "depthM": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength" },
-    "heightAboveRoofM": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength" },
+    "heightAboveRoofM": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/PositiveLength",
+      "description": "Top above the lowest (downhill) base corner (D-3D20-1)."
+    },
     "measurementId": {
       "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
       "description": "Dimensions from the cloud."
@@ -21,5 +24,5 @@
   "required": ["roofFaceId", "center"],
   "additionalProperties": false,
   "anyOf": [{ "required": ["widthM", "depthM", "heightAboveRoofM"] }, { "required": ["measurementId"] }],
-  "$comment": "[P] Field names; box axes = building axes [A] (Q-38, 3D-20)."
+  "$comment": "[P] Field names. Box axes = local building axes, widthM along x, depthM along y [A]; heightAboveRoofM at the lowest base corner (D-3D20-1)."
 }
