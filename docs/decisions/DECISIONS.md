@@ -281,6 +281,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-265 | 3D-102 (eval scenario rows in a reserved id range) set `ready` and started in a fresh session | Owner, chat, 2026-11-25 |
 | D-266 | MVP of 3DQM = E2E 3D-25 (import -> edit -> validate -> approve -> export -> re-import on the CP/DP mock) with the operations already done plus 3D-15 and 3D-17. Critical path: server 3D-18 -> 3D-23 -> 3D-24; client 3D-45 -> 3D-41 -> 3D-43 -> 3D-50; 3D-47 (SC). Not required for MVP: 3D-19, 3D-71, 3D-100, 3D-33 (P1), crowdsource rows 3D-60..3D-63 (interim store, D-35) | Owner, dialog, 2026-11-25 |
 | D-267 | 3D-18, 3D-45, 3D-82, 3D-83, 3D-101, 3D-19 and 3D-71 set `ready` and started in parallel fresh sessions (3D-19, 3D-71 by owner choice beside the MVP path) | Owner, dialog, 2026-11-25 |
+| D-3D101-1 | 3D-101 spec diff (§10.11 r1..r10, §14 Q-38 closed) accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-101-spec-installations | Owner, dialog, 2026-11-25 (3D-101) |
 
 ## Open questions
 
