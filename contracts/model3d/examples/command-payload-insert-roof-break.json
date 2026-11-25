@@ -3,13 +3,18 @@
     {
       "faceId": "f-roof-1",
       "breakLine": [[0, 2, 6.5], [10, 2, 6.5]],
-      "newPlane": { "normal": [0, -0.8, 0.6], "d": -2.5 }
+      "newPlane": { "normal": [0, -0.8, 0.6], "d": -2.5 },
+      "movingSidePoint": [5, 3, 7.25]
     }
   ],
   "invalid": [
     {
       "why": "no new plane (v0.2 C.5: required)",
-      "instance": { "faceId": "f", "breakLine": [[0, 2, 6.5], [10, 2, 6.5]] }
+      "instance": { "faceId": "f", "breakLine": [[0, 2, 6.5], [10, 2, 6.5]], "movingSidePoint": [5, 3, 7.25] }
+    },
+    {
+      "why": "no moving side (owner decision 01, D-3D15-1: required)",
+      "instance": { "faceId": "f", "breakLine": [[0, 2, 6.5], [10, 2, 6.5]], "newPlane": { "normal": [0, -0.8, 0.6], "d": -2.5 } }
     }
   ]
 }
