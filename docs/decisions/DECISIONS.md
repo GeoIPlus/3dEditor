@@ -265,6 +265,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-249 | Daily report (D-44, `trig_01STtubMobM7cpZpFr2NnpBB`) re-enabled with a new prompt: cost of the day per session from the difference of cumulative `total_cost_usd` in `result` events (not `get_session` usage, D-248), and the budget block of `node tools/budget.mjs --today <day>` with a plain explanation; open ledger proposals listed | Owner, chat and dialog, 2026-11-25 |
 | D-250 | Growth g of the forecast (README §4 item 3) is computed from per-row first appearance in the git history of BACKLOG.md: rows first appearing in the plan baseline (the first 14 days of the backlog) do not count as growth; the forecast block names its baseline commit and the script refuses a shallow clone (row 3D-89). Chosen over "g only with a full 14-day window" and "reproducibility only" | Owner, dialog, 2026-11-25 (intake after 3D-86) |
 | D-251 | Intake of 3D-89 merged (provisional ids became D-250, 3D-89). Coordinator check: the committed forecast ($3827 / $4620) is reproducible on the full history (first BACKLOG commit d7c472d, 33 rows); the lower figure came from a shallow clone. The method weakness stands: with g near 1, ETC = known x 1/(1-g) is unstable (x4.3 at g 0.77, x14.7 at g 0.93), so ETC figures are not reliable until 3D-89 is done | Coordinating session, 2026-11-25 |
+| D-252 | 3D-89 (forecast growth g from per-row first appearance, shallow-clone refusal) set `ready` and started in a fresh session | Owner, chat, 2026-11-25 |
 
 ## Open questions
 

@@ -23,14 +23,14 @@ Updated: 2026-11-25
 |---|---:|
 | Done | 44 / 75 |
 | Review | 0 |
-| In progress | 4 |
+| In progress | 5 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 23 |
+| Proposed (waiting for the owner to set `ready`) | 22 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 44/75 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-20 Installations; 3D-47 SC: 3D view port + host.
+**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-20 Installations; 3D-89 Growth g per row; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -89,7 +89,7 @@ flowchart TB
     D51["▶️ 🔗 3D-51 geoviewer scene3d adapter"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
-    D89["💡 🔧 3D-89 Growth g per row"]
+    D89["🚧 🔧 3D-89 Growth g per row"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
   end
@@ -343,7 +343,7 @@ Throughput: 51.3 rows/week, 422 model min/week; waiting share 99 %   Accuracy: T
 | 3D-87 | Bug: agent-eval start states fail `check:docs` - scenario rows lack the `Type` cell (D-221) and documents link into the paths hidden from the agent | here | tools/agent-evals, docs/agent-evals | 28, 84 | G0 | S | tooling | done (D-244; merged into base, no PR) |
 | 3D-88 | Bug: two eval rubrics give false negatives - `js-esm-jsdoc` `esm-jsdoc` (re-export-only file needs `@param`) and `never-push-main` `names-rule` (misses "not to `main`") | here | docs/agent-evals, tools/agent-evals | 28, 00.3 | G0 | S | tooling | done (D-247; merged into base, no PR) |
 | 3D-86 | Forecast script `tools/budget.mjs` (ledger + BACKLOG -> ETC block) and ledger backfill of every finished WP session | here | tools, docs/metrics | 85 | G0 | S | tooling | done (D-248; merged into base, no PR) |
-| 3D-89 | Forecast growth g from per-row first appearance: rows dated by the commit where they first appear, the plan baseline (first 14 days of the backlog) excluded; baseline commit printed, shallow clone refused (D-250) | here | tools, docs/metrics | 86 | G0 | S | tooling | proposed |
+| 3D-89 | Forecast growth g from per-row first appearance: rows dated by the commit where they first appear, the plan baseline (first 14 days of the backlog) excluded; baseline commit printed, shallow clone refused (D-250) | here | tools, docs/metrics | 86 | G0 | S | tooling | in-progress (D-252; wp/3d-89-forecast-growth) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | mirror | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | mirror | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | mirror | proposed (UI per brandbook, D-40) |
