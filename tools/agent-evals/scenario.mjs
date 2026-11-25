@@ -1,6 +1,6 @@
 // Helpers for task setup.mjs files (3D-28): build a scenario in the throwaway clone while keeping the
 // documents consistent (overview counts match the table, so `check:docs` stays green at the start).
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fixDocs } from '../check-docs.mjs';
 
@@ -57,6 +57,42 @@ function regenerate(work) {
   fixDocs(work, date ?? '2026-01-01');
 }
 
+/** Row ids reserved for scenario rows, far above the real backlog (D-264, D-3D102-1). Real rows never use them. */
+export const SCENARIO_IDS = { min: 900, max: 999 };
+
+/** @param {string} id */
+const idNumber = (id) => Number(/^3D-(\d+)$/.exec(id)?.[1] ?? NaN);
+
+/**
+ * Scenario row ids declared by the tasks' setup.mjs (`id: '3D-NNN'` passed to addRow), with their task.
+ * @param {string} evalsDir
+ * @returns {{task: string, id: string}[]}
+ */
+export function scenarioRowIds(evalsDir) {
+  return readdirSync(evalsDir)
+    .filter((n) => existsSync(join(evalsDir, n, 'setup.mjs')))
+    .sort()
+    .flatMap((task) => [...readFileSync(join(evalsDir, task, 'setup.mjs'), 'utf8').matchAll(/\bid: '(3D-\d+)'/g)]
+      .map((m) => ({ task, id: m[1] })));
+}
+
+/**
+ * Problems of scenario ids against a backlog text: an id outside the reserved range, or equal to a real row id.
+ * @param {string} backlog
+ * @param {{task: string, id: string}[]} ids
+ * @returns {string[]}
+ */
+export function scenarioIdProblems(backlog, ids) {
+  const real = new Set([...backlog.matchAll(/^\| (3D-\d+) \|/gm)].map((m) => m[1]));
+  return ids.flatMap(({ task, id }) => {
+    const n = idNumber(id);
+    const out = [];
+    if (!(n >= SCENARIO_IDS.min && n <= SCENARIO_IDS.max)) out.push(`${task}: ${id} outside 3D-${SCENARIO_IDS.min}..3D-${SCENARIO_IDS.max}`);
+    if (real.has(id)) out.push(`${task}: ${id} is a real row in docs/BACKLOG.md`);
+    return out;
+  });
+}
+
 /**
  * Add a scenario WP: table row (after the last row, with the `Type` cell of D-221), Details entry, mermaid node;
  * generated parts regenerated as `check-docs --fix` writes them.
@@ -65,6 +101,16 @@ function regenerate(work) {
  *   `type`: one of the BACKLOG types (spec, kernel, service, tests, tooling, mirror); default `kernel`.
  */
 export function addRow(work, row) {
+  const problems = scenarioIdProblems(readFileSync(join(work, 'docs/BACKLOG.md'), 'utf8'), [{ task: 'setup', id: row.id }]);
+  if (problems.length) throw new Error(`scenario row id: ${problems.join('; ')}`);
+  insertRow(work, row);
+}
+
+/**
+ * addRow without the id guard; tests use it to plant a real row. @param {string} work
+ * @param {{id: string, title: string, modules: string, deps: string, size: string, type?: string, status: string, details: string}} row
+ */
+export function insertRow(work, row) {
   edit(work, 'docs/BACKLOG.md', (s) => {
     const lines = s.split('\n');
     const last = lines.findLastIndex((l) => /^\| 3D-\d+ \|/.test(l));

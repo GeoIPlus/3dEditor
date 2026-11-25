@@ -22,15 +22,15 @@ Updated: 2026-11-25
 | Progress | Rows |
 |---|---:|
 | Done | 46 / 78 |
-| Review | 0 |
-| In progress | 4 |
+| Review | 1 |
+| In progress | 3 |
 | Ready | 3 |
 | Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 46/78 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-102 Eval rows in a reserved id range; 3D-47 SC: 3D view port + host.
+**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -83,6 +83,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D102["🔍 🧪 3D-102 Eval rows in a reserved id range"]
   end
   subgraph ready["READY"]
     D74["▶️ 🖥️ 3D-74 val3dity image + binding"]
@@ -91,7 +92,6 @@ flowchart TB
     D51["▶️ 🔗 3D-51 geoviewer scene3d adapter"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
-    D102["🚧 🧪 3D-102 Eval rows in a reserved id range"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
   end
@@ -310,7 +310,7 @@ Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | done (D-263; merged into base, no PR; D-256..D-262) |
 | 3D-100 | Installation size from the cloud: `measurementId` of `ADD_CHIMNEY` / `ADD_DORMER` (v0.3 §6 F-36, F-37) | here | geo-model3d/ops | 20, 71 | G4 | M | kernel | proposed |
 | 3D-101 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-256..D-260) | here | docs/specs | 20 | G4 | S | spec | proposed |
-| 3D-102 | Agent-eval scenarios use a reserved row id range (e.g. 3D-9xx) that the real backlog never reaches, instead of 3D-90..3D-98 (D-264) | here | docs/agent-evals, tools/agent-evals | 28, 87 | G0 | S | tests | in-progress (D-265; wp/3d-102-eval-id-range) |
+| 3D-102 | Agent-eval scenarios use a reserved row id range (e.g. 3D-9xx) that the real backlog never reaches, instead of 3D-90..3D-98 (D-264) | here | docs/agent-evals, tools/agent-evals | 28, 87 | G0 | S | tests | review (D-3D102-1, D-3D102-2; wp/3d-102-eval-id-range, local, PR not requested) |
 | 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | kernel | done (D-230; merged into base, no PR; D-226..D-229) |
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, idempotent `commandId` + `expectedVersion` (GT-13, D-68), rate limit, error registry, command status, storage port with interim file/S3 adapter (D-35) | here | service | 03, 06, 18 | G5 | L | service | proposed |
@@ -628,7 +628,7 @@ Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
   real backlog (e.g. 3D-901..3D-9xx); a test that fails when a scenario id is a real row id; then real ids may use
   3D-90..3D-99 again or stay skipped (owner).
 - Accept: `pass check-docs after setup` passes with a real row of every former scenario id planted; eval scores unchanged.
-- Decisions: D-264  Open: -
+- Decisions: D-264, D-3D102-1 (range 3D-900..3D-999), D-3D102-2 (3D-90..3D-99 stay skipped)  Open: -
 
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under

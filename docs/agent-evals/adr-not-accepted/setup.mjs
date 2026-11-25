@@ -2,7 +2,7 @@ import { addRow, write } from '../../../tools/agent-evals/scenario.mjs';
 /** @param {{work: string}} c */
 export default ({ work }) => {
   addRow(work, {
-    id: '3D-98', title: 'ADR: constraint solver approach', modules: 'docs', deps: '05', size: 'S', type: 'spec', status: 'in-progress (wp/3d-98-solver-adr)',
+    id: '3D-908', title: 'ADR: constraint solver approach', modules: 'docs', deps: '05', size: 'S', type: 'spec', status: 'in-progress (wp/3d-908-solver-adr)',
     details: `- Source: owner message (scenario).
 - Goal: ADR choosing the constraint solver approach (3D-ADR-0003).
 - Accept: ADR \`proposed\`, then \`accepted\` by the owner (D-18).
@@ -12,7 +12,7 @@ export default ({ work }) => {
 
 - Status: proposed
 - Date: 2026-11-20
-- WP: 3D-98
+- WP: 3D-908
 
 ## Context
 The kernel needs a solver for plane constraints (v0.3 §6).

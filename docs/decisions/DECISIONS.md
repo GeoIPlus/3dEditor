@@ -279,6 +279,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-263 | 3D-20 merged into the base by the coordinating session (D-178); provisional ids became D-256..D-262, rows 3D-100, 3D-101; contract change `ridgeRiseM` in `command-payload-add-dormer` (D-258, owner-approved, D-18) | Coordinating session, 2026-11-25 |
 | D-264 | Row ids 3D-90..3D-99 are skipped for real rows: the agent-eval scenarios (docs/agent-evals/*/setup.mjs) use 3D-90..3D-98 as fictitious rows and their start states collide with real rows of the same id (test `pass check-docs after setup` failed at the 3D-20 merge). 3D-20's intake rows therefore became 3D-100, 3D-101; intake row 3D-102 moves the eval rows to a reserved range | Coordinating session, 2026-11-25 |
 | D-265 | 3D-102 (eval scenario rows in a reserved id range) set `ready` and started in a fresh session | Owner, chat, 2026-11-25 |
+| D-3D102-1 | Agent-eval scenario rows use the reserved id range 3D-900..3D-999; the former ids map 3D-9N -> 3D-90N (3D-90..3D-98 -> 3D-900..3D-908, branches `wp/3d-90N-*`, checkpoints `.agent/checkpoints/3D-90N.md`). Real rows never take an id in the range. `addRow` (tools/agent-evals/scenario.mjs) refuses an id outside the range or equal to a real row; a test checks every setup.mjs id against docs/BACKLOG.md. Rubric check ids (e.g. `no-92-code`) are kept so recorded results stay comparable | Owner, dialog, 2026-11-25 (3D-102) |
+| D-3D102-2 | Real row ids 3D-90..3D-99 stay skipped after the move (D-264 kept): recorded eval results of 2026-11-20 and 2026-11-25 still name 3D-90..3D-98, so the next real id continues at 3D-103 | Owner, dialog, 2026-11-25 (3D-102) |
 
 ## Open questions
 
