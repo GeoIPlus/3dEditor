@@ -278,6 +278,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-262 | 3D-20 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-20-installations | Owner, dialog, 2026-11-25 (3D-20) |
 | D-263 | 3D-20 merged into the base by the coordinating session (D-178); provisional ids became D-256..D-262, rows 3D-100, 3D-101; contract change `ridgeRiseM` in `command-payload-add-dormer` (D-258, owner-approved, D-18) | Coordinating session, 2026-11-25 |
 | D-264 | Row ids 3D-90..3D-99 are skipped for real rows: the agent-eval scenarios (docs/agent-evals/*/setup.mjs) use 3D-90..3D-98 as fictitious rows and their start states collide with real rows of the same id (test `pass check-docs after setup` failed at the 3D-20 merge). 3D-20's intake rows therefore became 3D-100, 3D-101; intake row 3D-102 moves the eval rows to a reserved range | Coordinating session, 2026-11-25 |
+| D-265 | 3D-102 (eval scenario rows in a reserved id range) set `ready` and started in a fresh session | Owner, chat, 2026-11-25 |
 
 ## Open questions
 
