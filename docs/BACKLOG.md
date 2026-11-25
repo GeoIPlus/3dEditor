@@ -22,15 +22,15 @@ Updated: 2026-11-25
 | Progress | Rows |
 |---|---:|
 | Done | 46 / 78 |
-| Review | 0 |
-| In progress | 11 |
+| Review | 1 |
+| In progress | 10 |
 | Ready | 3 |
 | Proposed (waiting for the owner to set `ready`) | 17 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 46/78 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-18 History; 3D-19 Envelope ops; 3D-101 Spec: 3D-20 installations; 3D-102 Eval rows in a reserved id range; 3D-71 FIT_PLANE command; 3D-82 Spec: 3D-69 cloud CRS (provisional); 3D-83 ADR-0007 note: projections (provisional); 3D-45 SC: pinned model3d schemas; 3D-47 SC: 3D view port + host.
+**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-18 History; 3D-19 Envelope ops; 3D-101 Spec: 3D-20 installations; 3D-102 Eval rows in a reserved id range; 3D-71 FIT_PLANE command; 3D-82 Spec: 3D-69 cloud CRS (provisional); 3D-83 ADR-0007 note: projections (provisional); 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -83,6 +83,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D45["🔍 🔗 3D-45 SC: pinned model3d schemas"]
   end
   subgraph ready["READY"]
     D74["▶️ 🖥️ 3D-74 val3dity image + binding"]
@@ -120,7 +121,6 @@ flowchart TB
     D42["💡 🔗 3D-42 3DQM tools"]
     D43["💡 🔗 3D-43 plans/3dqm"]
     D44["💡 🔗 3D-44 3DQM UI panels"]
-    D45["🚧 🔗 3D-45 SC: pinned model3d schemas"]
     D50["💡 🔗 3D-50 geoviewer host adapter"]
     D60["💡 🔗 3D-60 crowdsource 3D project + CityJSON"]
     D61["💡 🔗 3D-61 crowdsource COPC stream"]
@@ -359,7 +359,7 @@ Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | mirror | proposed (UI per brandbook, D-40) |
 | 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-28 | G5 | M | mirror | proposed (Q-03 shape known, 3D-01 §6; extension URI content-named, no product) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | mirror | proposed (UI per brandbook, D-40) |
-| 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared | contracts | 06, 27 | G3 | S | mirror | in-progress (D-267; wp/3d-45-sc-schemas) |
+| 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared (77) | contracts | 06, 27 | G3 | S | mirror | review (D-267, D-3D45-1, D-3D45-2; wp/3d-45-sc-schemas, no PR here; code: SC row 77, [SC pull request #68](https://github.com/GeoIPlus/shared_compnents/pull/68), `wp/77-model3d-vendor`) |
 | 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | mirror | in-progress (D-61; SC wp/70-3d-view-host, wp/71-3d-camera-controls; started in a fresh cloud session; UI per brandbook, D-40) |
 | 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | mirror | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared (76) | tools, CI | 27 | G0 | S | mirror | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
