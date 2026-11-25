@@ -21,14 +21,14 @@ Updated: 2026-11-25
 
 | Progress | Rows |
 |---|---:|
-| Done | 44 / 74 |
+| Done | 44 / 75 |
 | Review | 0 |
 | In progress | 4 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 22 |
+| Proposed (waiting for the owner to set `ready`) | 23 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 44/74 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 44/75 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-20 Installations; 3D-47 SC: 3D view port + host.
 
@@ -89,6 +89,7 @@ flowchart TB
     D51["▶️ 🔗 3D-51 geoviewer scene3d adapter"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
+    D86_1["💡 🔧 3D-86.1 Growth g per row"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
   end
@@ -192,6 +193,7 @@ flowchart TB
   D73 --> D84
   D00 --> D85
   D85 --> D86
+  D86 --> D86_1
   D28 --> D87
   D84 --> D87
   D87 --> D85
@@ -341,6 +343,7 @@ Throughput: 51.3 rows/week, 422 model min/week; waiting share 99 %   Accuracy: T
 | 3D-87 | Bug: agent-eval start states fail `check:docs` - scenario rows lack the `Type` cell (D-221) and documents link into the paths hidden from the agent | here | tools/agent-evals, docs/agent-evals | 28, 84 | G0 | S | tooling | done (D-244; merged into base, no PR) |
 | 3D-88 | Bug: two eval rubrics give false negatives - `js-esm-jsdoc` `esm-jsdoc` (re-export-only file needs `@param`) and `never-push-main` `names-rule` (misses "not to `main`") | here | docs/agent-evals, tools/agent-evals | 28, 00.3 | G0 | S | tooling | done (D-247; merged into base, no PR) |
 | 3D-86 | Forecast script `tools/budget.mjs` (ledger + BACKLOG -> ETC block) and ledger backfill of every finished WP session | here | tools, docs/metrics | 85 | G0 | S | tooling | done (D-248; merged into base, no PR) |
+| 3D-86.1 | Forecast growth g from per-row first appearance: rows dated by the commit where they first appear, the plan baseline (first 14 days of the backlog) excluded; baseline commit printed, shallow clone refused (D-3D86-1) | here | tools, docs/metrics | 86 | G0 | S | tooling | proposed |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | mirror | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-28 | G3 | M | mirror | proposed (Q-13 closed by D-52, D-53) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | mirror | proposed (UI per brandbook, D-40) |
@@ -569,6 +572,29 @@ Throughput: 51.3 rows/week, 422 model min/week; waiting share 99 %   Accuracy: T
   `node tools/check-docs.mjs` pass; the backfilled ledger has rows for at least the WPs whose sessions are listed.
 - Decisions: D-236  Open: -
 - Estimate: prior (no data) - all-WP median $3.43 (n=4)
+
+### 3D-86.1 Forecast growth g from per-row first appearance (D-3D86-1)
+- Source: owner, 2026-11-25, after the 3D-86 merge: the committed ETC jumped to $3827 / $4620 (g = 0.93, 41 added /
+  44 finished) while the script on the merged base @f5cf8d5 gives $1131 / $1365 (g = 0.77, 30 / 39); no commit on any
+  branch has the ~33-row BACKLOG that 41 added would need, so the committed figure is not reproducible. Method weakness
+  found with it: the backlog is younger than the 14-day window, so the first commit is the baseline and the initial
+  plan counts as growth; ETC multiplies by 1/(1-g), so g 0.77 -> x4.3, g 0.93 -> x14.7.
+- Goal: g measures scope growth only, from the git history of BACKLOG.md, and any forecast block can be reproduced.
+- Scope in: `tools/budget.mjs` / `budget-calc.mjs`: walk the BACKLOG.md history of HEAD once; date each row by the
+  commit where its id first appears in the status table and by the commit where its status first becomes `done`;
+  added = rows first appearing inside the 14-day window and after the plan baseline (first appearance of BACKLOG.md
+  + 14 days); finished = rows becoming `done` inside the window; the block prints the baseline commit and the window;
+  the script exits non-zero on a shallow clone (`git rev-parse --is-shallow-repository`); README §4 item 3 and the
+  "Details the script fixes" list updated; tests. Scope out: changing the 1/(1-g) series itself; overhead k
+  (coordinator rows); a CI check of a stale forecast.
+- Accept: a test git repository with dated commits reproduces hand-checked added / finished / g, including a row
+  added and finished inside the window, a row added in the plan period, and a merge commit that must not count twice;
+  a shallow clone makes the script fail with a message; the regenerated block on the base names its baseline commit
+  and two runs on different full clones give the same block; `npm run check` passes.
+- Note: with the plan baseline of 14 days, g counts no rows before 2026-12-03 (the backlog started 2026-11-19) and
+  the block must say so rather than show g = 0 as a measurement.
+- Decisions: D-236, D-3D86-1  Open: -
+- Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S tooling n=4 < 5)
 
 ### 3D-84 BACKLOG graph icons (D-208)
 - Source: owner, 2026-11-24 ("icons for each WP were agreed; I do not see them"; no record found, decided anew).
