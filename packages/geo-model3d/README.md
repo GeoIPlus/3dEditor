@@ -86,7 +86,8 @@ Surface `src/validate/index.js` for kernel modules (`ops` uses `runChecks` and `
 | `codes.js` | one table code -> severity in DRAFT_SOLID / VALID_SOLID (spec §8 rule 4, D-77) + scope [A]; `DRAFT_SURFACE` -> draft column, `APPROVED` -> valid column (D-153) |
 | `modes.js` | `runChecks`: FAST_PREVIEW = local checks of the affected faces + one ring of neighbours [A]; COMMIT_VALIDATION = whole-model invariants, shell closure / orientation, self-intersection of the affected volume, everything with `fullSolid`; FINAL = full COMMIT + external port |
 | `structure.js` | open boundary (a one-face edge shorter than `minEdgeLengthM` is left to `DEGENERATE_EDGE`, D-156), non-manifold edge / vertex (fans), shell closure and connectivity; brep structural kinds -> codes [A] |
-| `geometry.js` | degenerate edge / face (`minEdgeLengthM`, `minFaceAreaM2`), non-planar face (`planarTolM`), ring orientation vs support-plane normal, shell orientation by signed volume, junctions |
+| `geometry.js` | degenerate edge / face (`minEdgeLengthM`, `minFaceAreaM2`; a verified overhang end cap is measured with its end wall, `caps.js`), non-planar face (`planarTolM`), ring orientation vs support-plane normal, shell orientation by signed volume, junctions |
+| `caps.js` | verified overhang end cap (3D-117, D-343): ten conditions C1..C10 (WallSurface + OVERHANG triangle, non-degenerate, manifold, neighbours end wall / strip / soffit, strip-soffit edge at the apex, vertical, coplanar with the end wall, no self-intersection or overlap, cap + wall area >= `minFaceAreaM2`); never on the tag alone, never throws |
 | `intersect.js`, `polygon.js` | ring self-intersection (x-sweep), face pairs piercing / overlapping in one shell; tolerance predicates only (D-150) |
 | `overlap.js` | `SOLID_OVERLAP` between bodies of one building (crossing faces, vertex deeper than `planarTolM`, centroid; winding number); never between buildings (D-89) |
 | `lineage.js` | "new" issues: an old issue's ids mapped through `topology-lineage` meet the new issue's ids -> not new [A]; `newErrors` = commit gate of spec §8 rule 7 |
@@ -225,7 +226,7 @@ the slope solved, the overhang rebuilt at the same width with the same ids), `ov
 WallSurface + OVERHANG end caps in the gable planes; width carried by the soffit height and recovered from geometry;
 same width no-op, 0 removes, a new width keeps every id; unsupported junction -> INVALID_TOPOLOGY, D-344).
 Limitations: the eave vertices under an overhang have two independent planes and are EXPLICIT (spec §4 r3), so
-operations of other rows do not rebuild an overhang (3D-115); GT-14 caps are below `minFaceAreaM2` (3D-117);
+operations of other rows do not rebuild an overhang (3D-115); GT-14 caps are below `minFaceAreaM2` and pass as verified caps (3D-117, D-343);
 RESIZE_ROOF, REGULARIZE_FOOTPRINT: 3D-114; ALIGN_WALL: not assigned (owner).
 
 ## Internal modules

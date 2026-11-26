@@ -4,6 +4,7 @@
 import { distance, dot, signedDistance, inconsistentJunctions, endVertexId } from '../brep/index.js';
 import { newell, faceArea } from './polygon.js';
 import { shellFaces } from './context.js';
+import { verifiedCapWall } from './caps.js';
 
 /** @typedef {import('./context.js').Ctx} Ctx */
 /** @typedef {import('./context.js').RawIssue} RawIssue */
@@ -33,7 +34,8 @@ export function degenerateEdges(ctx) {
 }
 
 /**
- * Per face: DEGENERATE_FACE (area below `minFaceAreaM2`), NON_PLANAR_FACE (a ring vertex farther than `planarTolM` from
+ * Per face: DEGENERATE_FACE (area below `minFaceAreaM2`; a verified overhang end cap is measured together with its
+ * coplanar end wall instead, D-343 / caps.js - never on the tag alone), NON_PLANAR_FACE (a ring vertex farther than `planarTolM` from
  * the support plane; this includes imported vertices kept at file position, spec §4 rule 3a), and
  * INCONSISTENT_RING_ORIENTATION (outer ring not counter-clockwise about the plane normal, or an inner ring not clockwise).
  * [A] Ring convention: the support-plane normal points out of the solid (v0.2 B.2) and the outer ring turns about it
@@ -50,7 +52,7 @@ export function faceChecks(ctx) {
     const rings = ctx.ringPts(f);
     const ids = ctx.ringIds(f);
     const area = faceArea(rings, n);
-    if (area < tol.minFaceAreaM2) out.push({ code: 'DEGENERATE_FACE', entityIds: [f], detail: `area ${area}` });
+    if (area < tol.minFaceAreaM2 && !verifiedCapWall(ctx, f, area)) out.push({ code: 'DEGENERATE_FACE', entityIds: [f], detail: `area ${area}` });
     /** @type {string[]} */
     const off = [];
     let worst = 0;

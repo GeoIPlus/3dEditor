@@ -392,6 +392,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-376 | Row 3D-114 set `ready` by the owner (chat in WP session 3D-19); 3D-114 (session_01RNYuqGw3pck2hciMrRxtCX, wp/3d-114-footprint-ops) and 3D-117 (D-369; session_01RNYuqH3YksLareDpQLNkR1, wp/3d-117-overhang-cap-area) started in fresh sessions after the 3D-118/3D-120 merge; 3D-114 Details gain D-346, D-367, D-372 and an `ALIGN_WALL` Accept line to be confirmed by the owner; its size M is to be re-estimated in its first turn | Owner, WP session 3D-19, 2026-11-26 |
 | D-377 | Row 3D-119 (spec update for 3D-19) set `ready` by the owner (chat in WP session 3D-19) and started in a fresh session (session_01RNYuqJH9LwvUdFdJkvfUgn, wp/3d-119-spec-envelope); its Details corrected: Q-18 closed, Decisions D-328, D-336..D-348, D-367, D-370..D-374 | Owner, WP session 3D-19, 2026-11-26 |
 | D-378 | Row 3D-115 (parametric geometry dependencies) set `ready` by the owner (chat in WP session 3D-19) and started in a fresh session (session_01RNYuqEtcBd4unsqJjFBuDq, wp/3d-115-dependencies); phase 1 is the ADR and owner dialogs only; code in ops/pipeline.js, overhang.js or validate/ starts after the coordinator has merged 3D-114 and 3D-117 | Owner, WP session 3D-19, 2026-11-26 |
+| D-379 | 3D-117 accepted (done); merged into the base by the coordinating session (D-178); no provisional ids; GT-14 CAP-01 is a plain test (VALID_SOLID with the standard profile) | Owner, WP session 3D-117, 2026-11-26 |
 
 ## Open questions
 
