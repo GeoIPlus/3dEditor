@@ -57,6 +57,8 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 | 2026-11-25 | 3D-45 | session_01RNYuqJFtBeT6aAjyt9bxQo | wp | 2.70 | 25.2 | 73.3 | 8024.5 | ? | 0.26 | claude-opus-5-5 | as of 2026-11-25T15:46:29Z | yes (Fable, 3 proposals, see checkpoint 3D-45; ~100k subagent tokens, cost inside session; review estimates the finish at ~$4.3-4.5) | get_session `usage` (cumulative; api_min not in it); current turn not included; coordinator re-reads |
 | 2026-11-26 | 3D-71 | session_01RNYuqFfd7PWPVauTxGedzj | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | done (Fable; 3 proposals, see checkpoint 3D-71) | no finished turn when written (first turn; list_events kinds result empty); coordinator reads it at merge |
 | 2026-11-26 | 3D-18 | session_01RNYuqGxiYZi2wfiNykmaH8 | wp | 5.19 | 47.3 | 248.0 | 11301.3 | 8.4 | 8.6 | claude-opus-5-5 | as of 2026-11-26T00:23:54Z | - | newest result event at merge; cumulative of the worker process after its restart, so turns before the restart may be missing (lower bound) |
+| 2026-11-26 | 3D-15 | session_01RNYuqHPWJCzxxo4MB7DUiv | wp | 14.54 | 148.2 | 572.4 | 34912.2 | 23.7 | ? | claude-opus-5-5 | as of 2026-11-26T00:23:30Z | - | newest result event at merge (coordinator); worker process index 3, earlier restarts may be missing (lower bound) |
+| 2026-11-26 | 3D-17 | session_01RNYuqHyM23ncvW234vj4iQ | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - | no result event in the newest events at merge; session inactive; coordinator re-reads later |
 
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).

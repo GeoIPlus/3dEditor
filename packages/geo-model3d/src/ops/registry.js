@@ -2,6 +2,11 @@
 // 3D-15..3D-21 and 3D-71 add their modules here; a kind without a module is refused INTERNAL by the pipeline.
 import { replaceRoof } from './replace-roof.js';
 import { rebuildEnvelope } from './rebuild-envelope.js';
+import { moveVertex, moveEdge } from './move.js';
+import { offsetFace } from './offset-face.js';
+import { splitFace } from './split-face.js';
+import { insertRoofBreak } from './insert-roof-break.js';
+import { mergeFaces } from './merge-faces.js';
 import { setSemantics } from './set-semantics.js';
 import { setConstraint, removeConstraint } from './constraint-commands.js';
 import { alignRidge, alignEave } from './align-line.js';
@@ -31,6 +36,12 @@ export const OPERATION_KINDS = new Set([
 export const OPERATIONS = {
   REPLACE_ROOF: { run: replaceRoof },
   REBUILD_ENVELOPE: { run: rebuildEnvelope },
+  MOVE_VERTEX: { run: moveVertex }, // 3D-15
+  MOVE_EDGE: { run: moveEdge }, // 3D-15
+  OFFSET_FACE: { run: offsetFace }, // 3D-15
+  SPLIT_FACE: { run: splitFace }, // 3D-15
+  INSERT_ROOF_BREAK: { run: insertRoofBreak }, // 3D-15
+  MERGE_FACES: { run: mergeFaces }, // 3D-15
   SET_SEMANTICS: { run: setSemantics },
   SET_CONSTRAINT: { run: setConstraint },
   REMOVE_CONSTRAINT: { run: removeConstraint },

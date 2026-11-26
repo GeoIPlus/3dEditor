@@ -1,6 +1,6 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21), `FIT_PLANE` command (3D-71), `UNDO` / `REDO` / `RESTORE_BASELINE` (3D-18), repair `REMOVE_FACE` / `HEAL_HOLE` / `FIT_TO_SHARED_EDGE` / `ALIGN_JUNCTION` (3D-17); other operations follow their rows (3D-15..3D-21, 3D-71)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `MOVE_VERTEX` / `MOVE_EDGE` / `OFFSET_FACE` / `SPLIT_FACE` / `INSERT_ROOF_BREAK` / `MERGE_FACES` (3D-15), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21), `FIT_PLANE` command (3D-71), `UNDO` / `REDO` / `RESTORE_BASELINE` (3D-18), repair `REMOVE_FACE` / `HEAL_HOLE` / `FIT_TO_SHARED_EDGE` / `ALIGN_JUNCTION` (3D-17); other operations follow their rows (3D-15..3D-21, 3D-71)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
@@ -183,6 +183,28 @@ D-257; GABLE ridge on the fall line through the outline centroid, `ridgeRiseM` a
 only, D-258), `remove-installation.js` (deletes the node, its children and every entity of their bodies; faces
 leave roof components). The roof face is never cut (D-260): the installation touches it. Refusals D-259;
 `measurementId` sizing -> `INVALID_MEASUREMENT` (Q-28). New semantic node id kind `installation` (`installation-<n>`).
+## Core edits (3D-15)
+Operations on the pipeline (spec §10.4, §10.6; D-297..D-306), one entry each in `ops/registry.js`:
+
+| File | Kind | Plane terms |
+|---|---|---|
+| `move.js` | `MOVE_VERTEX`, `MOVE_EDGE` | target points as hard point-on-plane conditions on movable incident planes; fixed incident planes checked (`CONSTRAINT_CONFLICT`); a hard FIXED_POINT on the moved vertex checked directly (GT-10); O1 for free degrees; only an explicit vertex (fewer than three planes) takes the target as position |
+| `offset-face.js` | `OFFSET_FACE` | `d_new = d - offsetM`, pinned by three hard points (`plane-pin.js`); fixedMode interlock (D-300); offset 0 -> `noChange` (D-301) |
+| `face-cut.js`, `split-face.js` | `SPLIT_FACE` | cut topology (D-299, D-302), both parts on the same plane, no vertex moved |
+| `insert-roof-break.js` | `INSERT_ROOF_BREAK` | same cut; the part holding `movingSidePoint` gets `newPlane` (pinned), neighbours re-derived (D-297) |
+| `merge-faces.js` | `MERGE_FACES` | union loops, joint vertices dissolved, COPLANAR / REFIT (D-303) |
+| `inherit.js` | - | constraint policy table on split / merge (D-298); lineage in `warnings` (D-306) |
+
+Constraint policy (D-298): split - plane kinds COPY_TO_CHILDREN (PRESERVE_ORIGINAL on a roof break), edge kinds
+copied to the new fragment of a crossed edge (FIXED_LINE / FIXED_EAVE / FIXED_RIDGE: TRANSFORM_PARAMETERS, the copy
+fixes the fragment's points), vertex kinds PRESERVE_ORIGINAL, TBD / unknown kinds REJECT_IF_UNSUPPORTED; merge -
+REBIND_TO_CHILD, duplicates and trivial self relations dropped, hard PERPENDICULAR of one face refused. No kind uses
+REBIND_TO_CHILD on a split: no constraint kind names a sub-region of a face.
+
+Limitations (first version, D-302): a cut must cross the outer ring exactly twice and no hole; constraint lineage is
+text in `warnings`, not in `topologyLineage` (D-306); after `INSERT_ROOF_BREAK` only the chord's edge role is
+recomputed (other roles kept); `FIXED_POINT` without `target` and the FIXED_* edge kinds fix the positions the model
+holds before the operation (compile reads the draft before the solve).
 
 ## Internal modules
 ### solve (3D-13)

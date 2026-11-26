@@ -614,7 +614,7 @@ semantic inputs listed per operation below; their schema names are 3D-06's.
 | `IMPORT_BUILDING` | 3D-10 | §6 | - |
 | `REPLACE_ROOF`, `REBUILD_ENVELOPE` | 3D-14 | v0.2 C.1-C.4, §11.4 | R-01..R-04 |
 | `MOVE_VERTEX`, `MOVE_EDGE` | 3D-15 | §10.4 (C.11 restated) | movable incident faces |
-| `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | 3D-15 | v0.2 F-31, C.5, C.6, C.10, §13.5 | `MERGE_COPLANAR`, `MERGE_REFIT`; `REMOVE_COLLINEAR_VERTICES`, `ALIGN_SELECTED_EDGES` |
+| `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES` (3D-15); `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` (3D-104, D-305) | 3D-15 | v0.2 F-31, C.5, C.6, C.10, §13.5 | `MERGE_COPLANAR`, `MERGE_REFIT`; `REMOVE_COLLINEAR_VERTICES`, `ALIGN_SELECTED_EDGES` |
 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | 3D-16 | v0.2 C.7, F-34 | `KEEP_EAVES` / `KEEP_RIDGE` / `KEEP_PLANES` / `FIT_MEASUREMENTS` |
 | `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | 3D-17 | v0.2 C.14, §10.5 (C.8 restated), C.9 | `COPY_NEIGHBOR_PLANE`, `FIT_MEASUREMENTS`, `FILL_PLANAR`; `KEEP_PRIMARY_PLANE`, `REFIT_SELECTED_PLANES` |
 | `UNDO`, `REDO`, `RESTORE_BASELINE` | 3D-18 | v0.2 §13.6 | empty payload for `UNDO` / `REDO` |
@@ -762,6 +762,12 @@ intersection line (`TRIM_FACE`); face + new boundary within its plane (`EXTEND_F
    Q-18.
 7. `TRIM_FACE` removes part of a face along an actual intersection line; `EXTEND_FACE` moves a boundary within the face's
    support plane; both check the resulting topology (v0.2 §13.5).
+8. Decided in 3D-15 (provisional ids, D-38): `INSERT_ROOF_BREAK` payload `newPlane` + required `movingSidePoint`, the
+   part holding it gets `newPlane`, the other keeps plane and face id (D-297); constraint policy on split / merge
+   (D-298); split ids (D-299); `OFFSET_FACE` fixedMode interlock, `INVALID_PAYLOAD` when the mode does not apply
+   (D-300), offset 0 a valid empty operation without a new version (D-301); cut domain and codes (D-302);
+   `MERGE_FACES` survivor, dissolve, REFIT (D-303); refusal codes (D-304). `REMOVE_DETAILS`, `STRAIGHTEN_FACE`,
+   `TRIM_FACE`, `EXTEND_FACE` move to row 3D-104, rule 7 of §10.1 applies to them (D-305).
 
 **Accept:**
 - Accept: GT-08 (§13).
@@ -1118,8 +1124,8 @@ Contract open questions of 3D-06 (D-75; source and wording:
 | Q-31 | Names of `affectedMetrics`; how a patch carries model-level changes (`state`, `frame`) | 3D-09 / 3D-12 |
 | Q-32 | How the CityJSON CityObject of `IMPORT_BUILDING` maps to `buildingId` (CP assignment unit) | 3D-10 / 3D-43 |
 | Q-33 | `INSERT_ROOF_BREAK` with a ridge constraint instead of a new plane | 3D-15 |
-| Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | 3D-15 |
-| Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-15 |
+| Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | 3D-104 (D-305) |
+| Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-104 (D-305) |
 | Q-36 | `HEAL_HOLE` "allowed corrections" (read as `maxDisplacementM`) | 3D-17 |
 | Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | 3D-19 |
 | Q-38 | **Closed by D-256** (D-256..D-258; §10.11 r7..r9). Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |

@@ -30,9 +30,10 @@ import { OPERATIONS, OPERATION_KINDS } from './registry.js';
 
 /**
  * What an operation module returns. `removed`: ids it deleted (for the constraint step); `movableFaceIds`,
- * `conditions`, `targetVertexIds`: its solver targets (spec §10.1 r2, r3).
+ * `conditions`, `targetVertexIds`: its solver targets (spec §10.1 r2, r3). `noChange`: a valid empty operation; when
+ * the candidate equals the input a COMMIT keeps the version and writes no journal entry (3D-15 D-301).
  * @typedef {{ ok: true, mapped?: Record<string, string[]>, removed?: Set<string>, movableFaceIds?: string[],
- *   conditions?: any[], targetVertexIds?: string[], warnings?: string[] } | { ok: false, refusal: ContractError }} OpResult
+ *   conditions?: any[], targetVertexIds?: string[], warnings?: string[], noChange?: boolean } | { ok: false, refusal: ContractError }} OpResult
  */
 
 /**
@@ -84,9 +85,11 @@ export function runPipeline(model, command, opts) {
   const warnings = [];
   /** @type {import('../validate/context.js').RawIssue[]} */
   let raw = [];
+  let noChange = false;
   const tx = transact(model, (draft) => {
     const r = op.run(draft, command.payload, ctx);
     if (!r.ok) return /** @type {any} */ (r);
+    noChange = r.noChange === true;
     warnings.push(...(r.warnings ?? []));
     const c = constraintStep(draft, r, tol);
     if (!c.ok) return /** @type {any} */ (c);
@@ -115,6 +118,10 @@ export function runPipeline(model, command, opts) {
     // a PREVIEW never confirms a valid solid (spec §8 r1)
     const result = { ...common, status: 'PREVIEW', modelVersion: model.version, previewId: opts.previewId ?? `${command.commandId}-preview`, validation: report(model.version, issues, false) };
     return { model, result };
+  }
+  const p = tx.forwardPatch;
+  if (noChange && p.added.length + p.updated.length + p.deleted.length === 0 && (tx.modelLevel ?? []).length === 0) {
+    return { model, result: { ...common, status: 'COMMITTED', modelVersion: model.version, validation: report(model.version, issues, true) } };
   }
   const validation = report(tx.model.version, issues, true);
   const result = { ...common, status: 'COMMITTED', modelVersion: tx.model.version, validation };

@@ -7,9 +7,13 @@
   "properties": {
     "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
     "breakLine": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Line3" },
-    "newPlane": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Plane" }
+    "newPlane": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Plane" },
+    "movingSidePoint": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3",
+      "description": "A point inside the part of the face that gets newPlane (local frame, as newPlane); the other part keeps the face plane and the face id (owner decision 01, D-297)."
+    }
   },
-  "required": ["faceId", "breakLine", "newPlane"],
+  "required": ["faceId", "breakLine", "newPlane", "movingSidePoint"],
   "additionalProperties": false,
   "$comment": "[P] Field names. Sources say \"new plane / ridge constraint\"; the ridge-constraint variant is TBD (Q-33, 3D-15)."
 }
