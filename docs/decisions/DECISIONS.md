@@ -395,6 +395,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-379 | 3D-117 accepted (done); merged into the base by the coordinating session (D-178); no provisional ids; GT-14 CAP-01 is a plain test (VALID_SOLID with the standard profile) | Owner, WP session 3D-117, 2026-11-26 |
 | D-380 | 3D-45 done: the owner merged SC PR #68 (shared_compnents main d035c4a); the SC row of 3D-45 is **78** (77 was taken by SC PR #52; amends the row number in D-268, D-270); SC pin refreshed to d035c4a | Owner, chat with the coordinator, 2026-11-26 |
 | D-381 | 3D-41, 3D-43 and 3D-50 set `ready` by the owner. 3D-41 and 3D-43 also depend on SC WP-28 (shared factory, registry, plan v2; `ready` in SC, size L, not started); 3D-50 depends on 3D-43. They start when their dependencies are done or the owner decides otherwise | Owner, chat with the coordinator, 2026-11-26 |
+| D-382 | 3D-119 accepted (done); spec §10.10, §10.7, §13, §14 updated for 3D-19 and 3D-118/3D-120; merged into the base by the coordinating session (D-178); no provisional ids | Owner, WP session 3D-119, 2026-11-26 |
 
 ## Open questions
 
