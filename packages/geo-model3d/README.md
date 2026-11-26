@@ -240,7 +240,7 @@ RESIZE_ROOF, REGULARIZE_FOOTPRINT: 3D-114; ALIGN_WALL: not assigned (owner).
 | `body.js` | main body by structure (semantic node -> solids -> shells; installations out, a shared face = unsupported); ring points relative to the body's min corner (MET-19) |
 | `area.js`, `union2d.js` | 3D face areas (Newell, holes subtracted); exact area of a union of polygons with holes (slab method: vertex and crossing x-coordinates, even-odd per polygon, midpoint rule exact per slab; O(E^2)) |
 | `volume.js` | signed divergence volume about a local point; outer > 0, void < 0, finite, else null (no `Math.abs`) |
-| `status.js` | volume proof: blocking codes (open, non-manifold, orientation, self-intersection, non-planar, junction, overlap, CRS) -> N/A; `DEGENERATE_FACE` / `_EDGE` safe only if every edge > `numericEpsilon` and area / longest edge > `numericEpsilon` [A]; FINAL needs VALID_SOLID / APPROVED and no VALID-column ERROR on the body |
+| `status.js` | volume proof: blocking codes (open, non-manifold, orientation, self-intersection, non-planar, junction, overlap, CRS) -> N/A; `DEGENERATE_FACE` / `_EDGE` safe only if every edge > `numericEpsilon` and area / longest edge > `numericEpsilon` (D-3D116-2); FINAL needs VALID_SOLID / APPROVED and no VALID-column ERROR on the body |
 | `overhang.js` | OVERHANG groups by shared edges; one simple loop (reasons `OPEN`, `BRANCH`, `MULTIPLE_LOOPS`, `ZERO_EDGE`, `NOT_IN_WALL_PLANE`, `SELF_INTERSECTION`, `PROTRUDES`, `ORIENTATION`, `EMPTY`, `OVERLAP`; internal, tests only) in a bordering wall plane within `numericEpsilon`; volume about the loop centroid (the fan closure adds 0); groups proven disjoint by a separating wall or face plane |
 
 ## Internal modules

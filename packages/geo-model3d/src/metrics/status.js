@@ -4,9 +4,8 @@
 //   - Codes that make the volume undefined: open, non-manifold, orientation, self-intersection, non-planar, junction,
 //     overlap, CRS (`BLOCKING`). Any of them on the body -> NOT_AVAILABLE.
 //   - DEGENERATE_FACE / DEGENERATE_EDGE: safe only when the face / edge is independently non-degenerate: every edge
-//     longer than `numericEpsilon` and the face's width (area / longest edge) above `numericEpsilon` [A: the owner
-//     asked for "mathematically correct small face" vs "degenerate face"; `numericEpsilon` is the profile's linear
-//     predicate tolerance in m, spec §2.3]. Otherwise NOT_AVAILABLE.
+//     longer than `numericEpsilon` and the face's width (area / longest edge) above `numericEpsilon` [D: D-3D116-2;
+//     `numericEpsilon` is the profile's linear predicate tolerance in m, spec §2.3]. Otherwise NOT_AVAILABLE.
 //   - Every other code (constraints, semantics, measurement, export) leaves the volume proven.
 // FINAL: state VALID_SOLID / APPROVED and no issue on the body with severity ERROR in the VALID_SOLID column.
 import { distance, endVertexId } from '../brep/index.js';
