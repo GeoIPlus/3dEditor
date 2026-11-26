@@ -964,7 +964,7 @@ Throughput: 62.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 - Scope in: the fix through 3D-115 (rebuild), or until then a refusal of such edits; a test per operation of 3D-15,
   3D-16, 3D-17, 3D-105 that changes a roof plane. Scope out: the dependency mechanism itself (3D-115).
 - Accept: both cases above either keep the strip coplanar with its slope at the same width or are refused, model unchanged.
-- Decisions: D-336, D-341, D-367, D-372  Open: none (refuse until 3D-115, pipeline guard)
+- Decisions: D-336, D-341, D-367 (interim refusal until 3D-115), D-372 (generic pipeline post-check), D-373  Open: none
 - Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
 
 ### 3D-100 Installation size from the cloud
