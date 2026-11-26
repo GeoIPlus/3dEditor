@@ -24,6 +24,8 @@ import { OPERATIONS, OPERATION_KINDS } from './registry.js';
  * @property {'LOCAL' | 'WORLD'} frame the command's `coordinateFrame`
  * @property {(z: number) => number} heightToLocal WORLD height -> local z (building frame)
  * @property {(p: [number, number, number], frame: string) => [number, number, number]} pointToLocal
+ * @property {string} actorId the command's `actorId` (measurement `createdBy`, 3D-71)
+ * @property {(selection: any) => ({ result: any } | { error: any })} [planeFit] plane fit of the command's points (3D-71)
  */
 
 /**
@@ -43,6 +45,8 @@ import { OPERATIONS, OPERATION_KINDS } from './registry.js';
  *   them; else computed (COMMIT_VALIDATION, full solid)
  * @property {(z: number) => number} heightToLocal
  * @property {(p: [number, number, number], frame: string) => [number, number, number]} pointToLocal
+ * @property {(selection: any) => ({ result: any } | { error: any })} [planeFit] `fitPlane` on the points the service
+ *   read for a FIT_PLANE command (3D-71)
  */
 
 /**
@@ -74,7 +78,8 @@ export function runPipeline(model, command, opts) {
   if (target !== 'VALID_SOLID' && target !== 'DRAFT_SOLID') return reject(contractError('INVALID_PAYLOAD', [], 'targetState'));
 
   /** @type {OpContext} */
-  const ctx = { tol, ids: opts.ids ?? freshIds(model), frame: command.coordinateFrame, heightToLocal: opts.heightToLocal, pointToLocal: opts.pointToLocal };
+  const ctx = { tol, ids: opts.ids ?? freshIds(model), frame: command.coordinateFrame, heightToLocal: opts.heightToLocal, pointToLocal: opts.pointToLocal,
+    actorId: command.actorId, planeFit: opts.planeFit };
   /** @type {string[]} */
   const warnings = [];
   /** @type {import('../validate/context.js').RawIssue[]} */

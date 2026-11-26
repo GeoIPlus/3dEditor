@@ -49,3 +49,30 @@ export async function readLocalPoints(dataset, frame, sel, options) {
   for (let i = 0; i < world.length; i += 3) list.push([world[i], world[i + 1], world[i + 2]]);
   return Float64Array.from(cloudToLocal(frame, dataset.horizontalCrs, list).flat());
 }
+
+/** @param {unknown} v */
+const finite3 = (v) => Array.isArray(v) && v.length === 3 && v.every(Number.isFinite);
+
+/**
+ * Points a command needs from the cloud (3D-71): for `FIT_PLANE` the points of its payload `selection`, read through
+ * the dataset's port and mapped to the building's LOCAL frame, for `executeCommand(model, command, { points })`;
+ * `undefined` for every other operation. A selection without finite bounds reads nothing (empty array): the kernel
+ * then refuses the payload (`INVALID_PAYLOAD`, D-132). Port and CRS failures reject (mapping: 3D-23).
+ * @param {PointsDataset} dataset @param {{ frame: import('@geoiplus/geo-model3d').CoordinateFrame }} model
+ * @param {{ operation: string, payload?: any }} command contract `command`
+ * @param {{ signal?: AbortSignal }} [options]
+ * @returns {Promise<Float64Array | undefined>}
+ */
+export async function commandPoints(dataset, model, command, options) {
+  if (command.operation !== 'FIT_PLANE') return undefined;
+  const sel = command.payload?.selection;
+  const box = sel?.kind === 'BOX' || sel?.kind === 'POLYGON' ? safeBounds(sel) : null;
+  if (!box || !finite3(box.min) || !finite3(box.max)) return new Float64Array(0);
+  return readLocalPoints(dataset, model.frame, sel, options);
+}
+
+/** @param {any} sel @returns {{ min: V3, max: V3 } | null} */
+function safeBounds(sel) {
+  if (sel.kind === 'POLYGON' && (!Array.isArray(sel.ringXY) || sel.ringXY.length < 3 || !sel.ringXY.every(Array.isArray))) return null;
+  return localBounds(sel);
+}

@@ -28,6 +28,9 @@ No `index.js` yet (the handler `createKernelHandler(ports)` is 3D-23). Modules:
 - `src/cloud-points.js` - `worldBoxOf(frame, cloudCrs, selection)`, `readLocalPoints(dataset, frame, selection)`
   with `PointsDataset { port, horizontalCrs }` (3D-69, D-196): LOCAL `PointSelection` (D-132) -> box of the
   dataset's world -> port -> LOCAL points for `fitPlane` / `deviationStats` (kernel `localBoxToCloud`, `cloudToLocal`).
+  `commandPoints(dataset, model, command)` (3D-71): for `FIT_PLANE` the LOCAL points of the payload `selection`, passed
+  as `executeCommand(model, command, { points })`; `undefined` for other operations; a selection without finite bounds
+  reads nothing (empty array, the kernel refuses `INVALID_PAYLOAD`).
 
 ## Rules and invariants
 - The dataset's horizontal CRS comes from its descriptor, set by the host from the CP 3DQM extension `dataset` member
@@ -53,4 +56,6 @@ through the adapter, no `laz-perf` in the kernel.
 `test/cloud-crs.test.js` (3D-69): GT-I1 in EPSG:4937 vs EPSG:25832 with one generated UTM cloud (seeded, 10 %
 outliers): `FIT_PLANE` planes agree within 1.1e-6 m, heatmap values within 2.8e-4 m (`planarTolM` 0.02); same-CRS path
 bit for bit; WGS 84 cloud over ETRS89 building -> `INVALID_CRS` `DATUM_MISMATCH`.
+`test/fit-plane-command.test.js` (3D-71): GT-20 at a UTM origin through an in-memory port: world box of the
+selection, the committed measurement equals the LOCAL fit; other operations and bad selections read nothing.
 Golden GT-20 / GT-21 run on the kernel functions (`packages/geo-model3d/test/golden/`).

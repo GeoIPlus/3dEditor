@@ -293,6 +293,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-277 | 3D-102 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-275, D-276; eval scenario rows now live in 3D-900..3D-999, real ids keep skipping 3D-90..3D-99 | Owner, WP session 3D-102, 2026-11-26 |
 | D-278 | 3D-82 edits spec §3 (`cloudToLocal`, `localBoxToCloud`) and §11 (points port through the dataset descriptor) besides §4a and §9, as the row's scope says; the handoff limit "only §4a and §9" guarded 3D-101's §10.11 and §14, which stay untouched | Owner, dialog, 2026-11-26 (3D-82) |
 | D-279 | 3D-82 accepted (done); merged into the base by the coordinating session (D-178); provisional id became D-278 | Owner, WP session 3D-82, 2026-11-26 |
+| D-280 | Q-28, `PLANE` measurement layout: `geometry.coordinates = [[nx, ny, nz, d]]`, one row holding the contract `Plane` (`normal · p + d = 0`, unit normal) in the measurement's `frame`; `FIT_PLANE` `MEASUREMENT` writes it in LOCAL. Closes Q-28 for `PLANE` (POINT: D-215; LINE stays open) | Owner, dialog, 2026-11-26 (3D-71) |
+| D-281 | σ of a `PLANE` measurement from `FIT_PLANE`: `uncertainty.sigmaX = sigmaY = sigmaZ = rmseM` of the fit, `fit = { method: RANSAC_SVD, inliers, rmseM }`; its default soft weight is `1/σ²` (v0.3 §7), read from `sigmaZ` as D-233 does | Owner, dialog, 2026-11-26 (3D-71) |
+| D-282 | `FIT_PLANE` `FACE_PLANE` replaces only the face's `supportPlane` (outward sign kept) and re-derives its vertices; no measurement is stored (v0.3 §7 "measurement or direct replacement"); the fit numbers stay in the command result / journal | Owner, dialog, 2026-11-26 (3D-71) |
+| D-283 | 3D-71 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-280..D-282; Q-28 narrowed (PLANE layout closed by D-280, LINE open) | Owner, WP session 3D-71, 2026-11-26 |
 
 ## Open questions
 
@@ -391,3 +395,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-29 | 2026-11-23, owner (3D-13) | closed by D-171 | `"<faceId>:OFFSET" | "<faceId>:ROTATION"` strings, contract unchanged |
 | Q-18 | 2026-11-24, owner (3D-16) | narrowed, open | `MATCH_ELEVATIONS` movable planes closed by D-231; SET_HEIGHT EAVE, SET_OVERHANG, STRAIGHTEN_FACE stay open |
 | Q-38 | 2026-11-25, owner (3D-20) | closed by D-256 | Chimney height at the downhill corner; FLAT `heightM` = back wall height over the full outline (D-257); GABLE gets `ridgeRiseM` (D-258) |
+| Q-28 | 2026-11-26, owner (3D-71) | narrowed, open | `PLANE` layout closed by D-280 (POINT by D-215); `LINE` stays open |
