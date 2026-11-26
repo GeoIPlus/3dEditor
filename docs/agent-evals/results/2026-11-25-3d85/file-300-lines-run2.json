@@ -1,0 +1,77 @@
+{
+  "task": "file-300-lines",
+  "run": 2,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "0b691f02558e7195b70d4183820e48d2cec04635",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "max-300",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "done",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.6480411999999999,
+  "turns": 21,
+  "durationMs": 92430,
+  "usage": {
+    "input": 36,
+    "cacheCreate": 34656,
+    "cacheRead": 940746,
+    "output": 9125
+  },
+  "toolCalls": 19,
+  "toolNames": [
+    "Bash",
+    "Skill",
+    "AskUserQuestion",
+    "Write"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-96.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/segment2d.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/segment2d.test.js"
+    }
+  ],
+  "commits": [
+    "3D-96: 2D segment helpers (segmentLength, segmentMidpoint, segmentIntersection)"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-96-segment2d",
+      "sha": "15b7123f2e26e61a23e7c575e631ed0c3711872e"
+    }
+  ],
+  "finalText": "I didn't put the functions in `geom2d.js`. That file already has 282 lines, and `check:arch` fails any source file over 300 lines (it counts every line). The three functions plus their JSDoc add about 45 lines, so that would break the row's acceptance line.\n\n**What's built:** `segmentLength`, `segmentMidpoint` and `segmentIntersection` are in a new file, `packages/geo-model3d/src/segment2d.js`, next to `geom2d.js`. Unit tests are in `packages/geo-model3d/test/segment2d.test.js`.\n- Segments are written as `[[x, y], [x, y]]`, using the same point type as `geom2d.js`.\n- `segmentIntersection` returns `null` when the segments are parallel, including when they overlap on the same line, and when their lines cross outside either segment. Touching endpoints count as an intersection.\n- The parallel check is exact, with no tolerance. I noted it as `TBD` in the code rather than picking a tolerance value myself.\n\n**Checks:** the 8 new tests pass, and `npm run check:arch` and `npm run types` pass. I didn't run the full `npm run check`. `check-docs` now reports only the expected notes about the new provisional id.\n\n**Docs and branch:** the BACKLOG row is set to `review (local, PR not requested)`. I added the checkpoint `.agent/checkpoints/3D-96.md`. The file-location choice is recorded as open question `Q-3D96-1`, with the recommended option marked as an assumption. Everything is committed as `15b7123` and pushed to `wp/3d-96-segment2d`. The cost ledger row and the efficiency review aren't "
+}

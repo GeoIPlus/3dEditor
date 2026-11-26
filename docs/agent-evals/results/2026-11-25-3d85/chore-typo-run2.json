@@ -1,0 +1,65 @@
+{
+  "task": "chore-typo",
+  "run": 2,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "abd3a164311f52d49aa41e042dfef24fcf6b4c30",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "fixed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "chores-line",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-row",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "scope",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.17544579999999999,
+  "turns": 5,
+  "durationMs": 13260,
+  "usage": {
+    "input": 10,
+    "cacheCreate": 14155,
+    "cacheRead": 196429,
+    "output": 1144
+  },
+  "toolCalls": 4,
+  "toolNames": [
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/CHORES.md"
+    }
+  ],
+  "commits": [],
+  "pushes": [],
+  "finalText": "I fixed the typo: the heading at `STRUCTURE.md:60` now reads \"## 2. Dependency rules\". That was the only place it appeared in the repo.\n\nA one-word typo counts as a chore under your rules (D-26), so I skipped the backlog row and added one line to `docs/CHORES.md` as those rules require. The docs check (`node tools/check-docs.mjs`) passes.\n\nI haven't committed anything; say if you want me to."
+}

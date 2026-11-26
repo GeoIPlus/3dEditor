@@ -1,0 +1,64 @@
+{
+  "task": "dialog-question",
+  "run": 2,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "de413fe1fbb9b14c523b103a2fb4854912b3a4a8",
+  "model": "claude-opus-5-5",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "asked-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.5412698,
+  "turns": 15,
+  "durationMs": 70688,
+  "usage": {
+    "input": 28,
+    "cacheCreate": 31877,
+    "cacheRead": 694409,
+    "output": 7363
+  },
+  "toolCalls": 13,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "intake: 3D-88 glTF export (proposed), Q-47..Q-50"
+  ],
+  "pushes": [],
+  "finalText": "I've added glTF export to the backlog as row **3D-88**, status `proposed`. No code is written yet: it needs four decisions from you, and I tried to ask but couldn't reach you, so they're logged as open questions.\n\nThe main problem is that the current spec rules this out. v0.3 §1 excludes glTF export (F-67, along with OBJ and 3D Tiles) and textures, and our spec keeps both out of the first release (D-12). Today the only export is CityJSON (3D-11), and only for buildings whose geometry is a valid closed solid (`VALID_SOLID`). I haven't overridden that.\n\n- **Type:** new work package, M-sized kernel work, estimated at about $3.43. That's the median of the 4 work packages finished so far, not a measured rate for this kind of work.\n- **What it would deliver:** a single `.glb` file per building. Acceptance requires zero errors from Khronos's glTF validator and geometry that matches the edited model within the tolerance profile. It depends on 3D-11 (CityJSON export) and 3D-24 (export rules and approval gate).\n- **Decisions you need to make** (my recommendation for each):\n  - **Q-47, scope:** allow glTF only, after the first release, so the current release plan doesn't change.\n  - **Q-48, which buildings can be exported:** the same gate as CityJSON, so a customer never receives a model that failed validation.\n  - **Q-49, coordinates:** local metres around the building centre, with the coordinate system and origin stored in the file so viewers can still place it.\n  - **Q-50, content:**"
+}

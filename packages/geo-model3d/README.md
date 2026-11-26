@@ -1,6 +1,6 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), repair `REMOVE_FACE` / `HEAL_HOLE` / `FIT_TO_SHARED_EDGE` / `ALIGN_JUNCTION` (3D-17); other operations follow their rows (3D-15..3D-21, 3D-71)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21), repair `REMOVE_FACE` / `HEAL_HOLE` / `FIT_TO_SHARED_EDGE` / `ALIGN_JUNCTION` (3D-17); other operations follow their rows (3D-15..3D-21, 3D-71)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
@@ -112,6 +112,9 @@ checked only when the candidate has an ERROR. A PREVIEW report never confirms (s
 | `footprint.js` | footprint body (D-218), rings normalised (outer CCW, courtyards CW), R-01 errors, rectangle test, axis pairing (exact tie -> `UNDERCONSTRAINED_GEOMETRY`) |
 | `envelope.js`, `topology.js` | ground + one vertical wall per footprint edge (top through every roof vertex on the edge: no T-junction) + roof faces; twins by opposite traversal; RTG roles (import's rule restated); ids per D-212; vertices re-derived from their planes |
 | `geom2.js`, `errors.js`, `ids.js`, `registry.js` | plan helpers; error objects (HTTP table of spec §2.4); default id source skipping every id of the input (deterministic) |
+| `align-line.js` (3D-16) | `ALIGN_RIDGE` / `ALIGN_EAVE` (spec §10.7 r1, r2; v0.2 C.7): both `targetLine` points on every face of the edge (hard, `planarTolM`); movable = adjacent roof faces without a hard constraint, walls fixed (D-232); `KEEP_PLANES` moves nothing (off-line target -> `CONSTRAINT_CONFLICT`, GT-09); `KEEP_EAVES` / `KEEP_RIDGE` lock the `EAVE` / `RIDGE` lines of each movable face as fixed points on its plane; `FIT_MEASUREMENTS` adds POINT terms; other modes `INVALID_PAYLOAD` `INVALID_MODE` |
+| `match-elevations.js` (3D-16) | `MATCH_ELEVATIONS` (spec §10.7 r3): `EQUAL_Z` hard per vertex (`zAlignTolM`), target number (WORLD mapped) / MIN / MAX / MEAN of current z; movable = non-vertical roof faces defining the vertices, no hard constraint (D-231) |
+| `align-common.js` (3D-16) | payload `hardConstraintIds` held hard (D-234); POINT measurements soft on the nearest adjacent roof plane, weight 1/σz² (D-233) |
 
 Readings [A] for the owner's review: unknown `footprintId` / measurement id -> `INVALID_PAYLOAD`; a non-POINT
 measurement for SHED -> `INVALID_MEASUREMENT`; plan point identity on a 1e-7 m grid; degenerate hip when the ridge is
@@ -119,6 +122,11 @@ within `topologySnapTolM` (apex = midpoint of both ridge ends); a footprint zero
 `REBUILD_ENVELOPE` uses the building's own footprint (no `buildingPartId`) and writes `baseZ` into `baseElevationM`;
 new roof faces join the replaced roof's component. R-04 "undetermined ridge length" (spec §10.3 r5) cannot occur with
 the accepted payload (four slopes required); only the axis tie gives UNDERCONSTRAINED_GEOMETRY.
+3D-16 readings [A]: unknown edge / vertex / constraint / measurement id -> `INVALID_PAYLOAD` with the id; edge role
+must match the kind (`RIDGE` / `EAVE`); `INVALID_MODE` is the message prefix of `INVALID_PAYLOAD`; a missing or zero
+`sigmaZ` -> `INVALID_MEASUREMENT`; a listed soft constraint the solver cannot hold hard (soft-only kind) -> `INVALID_PAYLOAD`;
+condition ids in conflicts are the edge (target line), the locked half-edges, the vertices (EQUAL_Z) and constraint ids;
+`KEEP_PLANES` with no target or a target on the line commits a version with unchanged planes (C.7 "rebuild on that line").
 Lineage (D-212): kept ids are not in `mapped`; old roof faces map to all new roof faces; new half-edges and
 vertices without a predecessor are only in the patch `added` (the owner's reading of spec §10.1 Accept 3).
 
@@ -138,6 +146,26 @@ measurements (cannot be checked before the points are chosen); `COPY_NEIGHBOR_PL
 the A copy explicit; majority = planes through the current node position (with four planes every three meet).
 Gap (owner question of 3D-17): GT-19 "Fixed" variant uses `ON_PLANE` with one face and a plane target, which `solve`
 does not compile (D-169: `[vertex, face]`); its golden assertion is `todo`.
+**3D-21** (spec §10.12): `set-semantics.js` (`SET_SEMANTICS`: only `surfaceKind` changes; a face leaving RoofSurface
+leaves its roof component, an emptied component is deleted, a new roof face joins none, D-227) and
+`constraint-commands.js` (`SET_CONSTRAINT`: the constraint is read by `compileConstraints` before it is stored, a
+rejection of any reason, `TBD` kinds included, is `INVALID_PAYLOAD` with the reason in `message`, D-226; a hard
+constraint the current model violates is refused `CONSTRAINT_CONFLICT` by the constraint step, nothing movable, spec
+§10.12 r3; id from `ctx.ids('constraint')`, default `constraint-<n>`. `REMOVE_CONSTRAINT`: the explicit unlock of a
+FIXED_POINT, spec §5 r6). Unknown ids -> `INVALID_PAYLOAD` (D-228); a command that changes nothing (same
+`surfaceKind`, a constraint equal to a stored one) -> `INVALID_PAYLOAD` (D-229).
+
+**3D-20** (spec §10.11; D-256..D-260): `installation-place.js` (roof face of a Building / BuildingPart body, its plane
+and plan rings; points on the plane within `planarTolM`; outline normalised CCW, no self-crossing, area above
+`minFaceAreaM2`; outline inside the face, boundary allowed within `topologySnapTolM`), `installation-shell.js` (own
+planar Boolean of the K-12 P0 scope, D-109: vertical prism over the outline, cut below by the roof plane and above by
+the lower envelope of one or two top planes; faces ClosureSurface base, WallSurface per outline edge, RoofSurface
+per top plane, no roof component (D-261, as D-227); vertices derived from their faces), `add-chimney.js` (box along local
+x / y (D-261), top at the downhill corner + h, D-256), `add-dormer.js` (FLAT top at the highest outline corner + `heightM`,
+D-257; GABLE ridge on the fall line through the outline centroid, `ridgeRiseM` above the wall top, convex outline
+only, D-258), `remove-installation.js` (deletes the node, its children and every entity of their bodies; faces
+leave roof components). The roof face is never cut (D-260): the installation touches it. Refusals D-259;
+`measurementId` sizing -> `INVALID_MEASUREMENT` (Q-28). New semantic node id kind `installation` (`installation-<n>`).
 
 ## Internal modules
 ### solve (3D-13)
@@ -266,9 +294,25 @@ run spread ~0.1 ms).
   Accept: 4 walls, ground 80, closed, 400 m3; GT-03 base -1 -> 600 m3), constraints, body rule, roof components.
   Every result, model and journal entry is checked against its contract (Ajv); area and volume are computed by the
   tests (Newell, divergence theorem).
+- `test/ops/semantics-constraints.test.js` (3D-21): SET_SEMANTICS geometry patch empty, roof components, PREVIEW =
+  COMMIT; SET_CONSTRAINT accepted kinds, conflicts with the model and with a stored constraint, every compiler
+  rejection reason; REMOVE_CONSTRAINT patch and inverse, FIXED_POINT blocks REPLACE_ROOF until unlocked.
 - Golden GT-01..GT-05 (`gt-0[1-5].golden.test.js`, PREVIEW then COMMIT with the `previewId`): GT-01 roof 80 m2 /
   400 m3; GT-02 85.440 / 520, 1 face; GT-03 100 / 520, 2 faces; GT-04 ridge Z 8, length 2, 4 faces, 100 / 488; GT-05
   `UNSUPPORTED_FOOTPRINT`, model unchanged.
+- `test/ops/align-line.test.js`, `match-elevations.test.js` (3D-16): KEEP_RIDGE on ALIGN_RIDGE -> `INVALID_MODE`;
+  off-centre ridge; target skew to the locked eave -> `CONSTRAINT_CONFLICT` (spec §10.7 r2); KEEP_PLANES on / without a
+  target; FIT_MEASUREMENTS and its refusals; ALIGN_EAVE KEEP_RIDGE, off-wall target conflict (D-232), soft vs held-hard
+  `FIXED_EAVE` (D-234); MATCH_ELEVATIONS number / MIN / MAX / MEAN, ground-vertex and hard-face conflicts.
+- `test/ops/installations.test.js`, `installations-refusals.test.js` (3D-20): GABLE ridge 8.675 at x = 5, volume
+  5.8875 m3, two slopes of 1.5·√1.64 m2; chimney axes and sizes; WORLD centre; PREVIEW = COMMIT; ADD patch only
+  `added`, REMOVE deletes exactly those ids (lineage `deleted` = every face, edge, vertex); two installations; 22
+  refusals with their codes on frozen models; FLAT dormer on a flat roof.
+- Golden GT-17, GT-18 (3D-20, `installation.golden.helpers.js`): GT-17 building 520 m3, chimney 0.625 m3, top 7.125,
+  base in z = 5 + 0.75 y, closed separate body; then REMOVE -> roof 100 m2, 520 m3, entity sets of the input. GT-18
+  dormer 4.6875 m3, no vertex below the slope beyond `planarTolM`, no `SOLID_OVERLAP`, outline 2 x 1.5 m.
+- Golden GT-07, GT-09 (3D-16, `align.golden.helpers.js`): GT-07 eaves Z 5, roof 106.3015 m2, volume 540 m3, only the
+  two slope planes change; GT-09 `CONSTRAINT_CONFLICT`, version and model unchanged.
 - Bench (`npm run bench`, non-gate scenes `*-roof`, REPLACE_ROOF PREVIEW through `executeCommand`, 3 x 1000): GT-03
   p95 1.7 ms; sawtooth-199 p95 30.3 ms (kernel mean 9.3 ms; the rest is the bench's Ajv check of the 199-face reply).
 - Golden: `test/golden/gt-25.golden.test.js` (GT-25, world -> local -> world <= 0.001 m; measured 0 m).
