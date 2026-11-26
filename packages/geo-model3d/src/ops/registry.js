@@ -25,6 +25,7 @@ import { setOverhang } from './set-overhang.js';
 import { trimFace } from './trim-face.js';
 import { extendFace } from './extend-face.js';
 import { resizeRoof } from './resize-roof.js';
+import { alignWall } from './align-wall.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -69,4 +70,5 @@ export const OPERATIONS = {
   TRIM_FACE: { run: trimFace }, // 3D-105
   EXTEND_FACE: { run: extendFace }, // 3D-105
   RESIZE_ROOF: { run: resizeRoof }, // 3D-114
+  ALIGN_WALL: { run: alignWall }, // 3D-114
 };

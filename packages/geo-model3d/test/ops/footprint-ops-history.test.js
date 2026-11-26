@@ -68,3 +68,33 @@ describe('RESIZE_ROOF history (RR-15)', () => {
     }
   });
 });
+
+describe('ALIGN_WALL history', () => {
+  const P = { faceId: 'f-wall-s', referenceLine: [[0, -1], [10, -1]] };
+  it('PREVIEW gives the COMMIT patch; the inverse patch restores the input (also with an overhang)', () => {
+    const oh = exec(gable(), 'SET_OVERHANG', { eaveEdgeIds: ['he-f-roof-s-0'], overhangM: 0.6 }, OPTS).model;
+    for (const m of [gable(), oh]) {
+      const commit = exec(m, 'ALIGN_WALL', P, OPTS);
+      expect(commit.result.status).toBe('COMMITTED');
+      expect(exec(m, 'ALIGN_WALL', P, OPTS, { phase: 'PREVIEW' }).result.patch).toEqual(commit.result.patch);
+      inverseRestores(m, commit);
+    }
+  });
+
+  it('SET_OVERHANG -> ALIGN_WALL -> RESIZE_ROOF, three UNDO and three REDO step through the same models', () => {
+    const s = session();
+    const steps = [
+      ['SET_OVERHANG', { eaveEdgeIds: ['he-f-roof-s-0'], overhangM: 0.6 }],
+      ['ALIGN_WALL', { faceId: 'f-wall-w', referenceLine: [[-1, 0], [-1, 8]] }],
+      ['RESIZE_ROOF', { roofOutline: [[-1, -1.6], [10, -1.6], [10, 8.4], [-1, 8.4]], moveWallFootprint: false }],
+    ];
+    const models = [s.model];
+    for (const [op, p] of steps) models.push(s.send(/** @type {string} */ (op), p).model);
+    for (let i = steps.length - 1; i >= 0; i--) sameEntities(s.send('UNDO').model, models[i]);
+    for (let i = 1; i <= steps.length; i++) {
+      const r = s.send('REDO');
+      sameEntities(r.model, models[i]);
+      sound(r.model, OPTS.toleranceProfile);
+    }
+  });
+});

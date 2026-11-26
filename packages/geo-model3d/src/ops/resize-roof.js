@@ -41,7 +41,7 @@ export function resizeRoof(draft, payload, ctx) {
 
   const installations = Object.values(draft.semantics).filter((s) => s.kind === 'BuildingInstallation' && s.parentId === body.ownerId).map((s) => s.id);
   if (installations.length > 0) return refuse('INVALID_TOPOLOGY', installations.sort(), 'an installation joins the roof; not a lower-envelope roof (D-339, D-3D114-3)');
-  const shellFaces = draft.shells[body.shellId].faceIds;
+  const shellFaces = /** @type {string[]} */ (draft.shells[body.shellId].faceIds);
   const roofIds = shellFaces.filter((f) => draft.faces[f].surfaceKind === 'RoofSurface' && !draft.faces[f].tags.includes(OVERHANG)).sort();
   const other = shellFaces.filter((f) => !['RoofSurface', 'WallSurface', 'GroundSurface'].includes(draft.faces[f].surfaceKind) && !draft.faces[f].tags.includes(OVERHANG));
   if (roofIds.length === 0 || other.length > 0) return refuse('INVALID_TOPOLOGY', [body.footprintId, ...other], 'body is not walls, ground and one roof (D-3D114-3)');
