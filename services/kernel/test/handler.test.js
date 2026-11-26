@@ -15,7 +15,7 @@ describe('lease (spec §11 r11, D-69, D-3D110-2)', () => {
   it('Accept: a command with a stale leaseEpoch -> 403 FORBIDDEN, model unchanged', async () => {
     const m = base();
     const { handle, history } = await handlerWith(m);
-    const before = await history.head(m.projectId, m.buildingId);
+    const before = /** @type {number} */ (await history.head(m.projectId, m.buildingId));
     for (const phase of ['COMMIT', 'PREVIEW']) {
       const r = json(await handle(post(CMDS(m), command(m, `c-stale-${phase}`, 'ALIGN_RIDGE', ALIGN, { phase }), headers('tok-op', `${LEASE.leaseRef};${LEASE.leaseEpoch - 1}`))));
       expect(r.status).toBe(403);

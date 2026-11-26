@@ -22,15 +22,15 @@ Updated: 2026-11-26
 | Progress | Rows |
 |---|---:|
 | Done | 60 / 100 |
-| Review | 1 |
-| In progress | 5 |
+| Review | 2 |
+| In progress | 4 |
 | Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 28 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 60/100 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-116 F-53 metrics; 3D-118 Bug: EQUAL_Z vs FIXED_POINT; 3D-120 Bug: overhang left behind; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
+**Running:** 3D-116 F-53 metrics; 3D-118 Bug: EQUAL_Z vs FIXED_POINT; 3D-120 Bug: overhang left behind; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -97,6 +97,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D110["🔍 🖥️ 3D-110 Kernel service III: handler, ports"]
     D45["🔍 🔗 3D-45 SC: pinned model3d schemas"]
   end
   subgraph ready["READY"]
@@ -129,7 +130,6 @@ flowchart TB
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["💡 🔧 3D-79 Service image licence check"]
-    D110["🚧 🖥️ 3D-110 Kernel service III: handler, ports"]
     D110_1["💡 🖥️ 3D-110.1 datasets port + file adapter"]
     D121["▶️ 🔧 3D-121 Bench gate on the real PREVIEW path"]
     D111["💡 🖥️ 3D-111 history S3 adapter"]
@@ -381,7 +381,7 @@ Throughput: 60.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service I: `history` port + file adapter (3D-ADR-0003, append-only, `journal/{N+1}` create-if-absent), port contract suite, COMMIT path (idempotent `commandId` + `expectedVersion`, GT-13, D-68), command status; PREVIEW/API -> 3D-109, handler/ports -> 3D-110 (D-314) | here | service | 03, 06, 18 | G5 | M | service | done (D-321; merged into base, no PR; D-314..D-320) |
 | 3D-109 | Kernel service II: command API - PREVIEW store by `previewId` (expiry 10 min, D-315), COMMIT by `previewId`, PREVIEW rate limit 20/s (D-316), payload limit 1 MiB (D-317), error registry mapping, request/reply validation against `contracts/model3d/` | here | service | 23 | G5 | M | service | done (D-359; merged into base, no PR; D-351..D-358) |
-| 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69, Q-39 by header), command status route, heatmap request (`INVALID_CRS`, 3D-69), bench gate through the handler (D-111, Q-42 interim); `datasets` -> 3D-110.1 (D-3D110-1) | here | service | 109 | G5 | M | service | in-progress (D-366; wp/3d-110-kernel-handler) |
+| 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69, Q-39 by header), command status route, heatmap request (`INVALID_CRS`, 3D-69), bench gate through the handler (D-111, Q-42 interim); `datasets` -> 3D-110.1 (D-3D110-1) | here | service | 109 | G5 | M | service | review (local, PR not requested; wp/3d-110-kernel-handler; D-3D110-1..5) |
 | 3D-110.1 | `datasets` port + file adapter: input CityJSON read with entity tag, `progress.save` whole-body `PUT` + `If-Match`, content-addressed delivered bytes (3D-ADR-0003 §4; split from 3D-110, D-3D110-1) | here | service | 109 | G5 | M | service | proposed |
 | 3D-111 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-319) | here | service | 23 | G5 | M | service | proposed |
 | 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 123 | G3 | L | spec | proposed |
