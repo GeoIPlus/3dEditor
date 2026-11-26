@@ -17,18 +17,18 @@ method and session data in [docs/metrics/](metrics/README.md) (D-236).
 
 ## Progress overview
 
-Updated: 2026-11-25
+Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 46 / 78 |
+| Done | 46 / 81 |
 | Review | 0 |
 | In progress | 11 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 17 |
+| Proposed (waiting for the owner to set `ready`) | 20 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 46/78 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 46/81 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-18 History; 3D-19 Envelope ops; 3D-101 Spec: 3D-20 installations; 3D-102 Eval rows in a reserved id range; 3D-71 FIT_PLANE command; 3D-82 Spec: 3D-69 cloud CRS (provisional); 3D-83 ADR-0007 note: projections (provisional); 3D-45 SC: pinned model3d schemas; 3D-47 SC: 3D view port + host.
 
@@ -102,6 +102,9 @@ flowchart TB
     D17["🚧 ⚙️ 3D-17 Repair ops"]
     D18["🚧 ⚙️ 3D-18 History"]
     D19["🚧 ⚙️ 3D-19 Envelope ops"]
+    D19_1["💡 ⚙️ 3D-19.1 Resize roof, regularize footprint"]
+    D19_2["💡 ⚙️ 3D-19.2 Parametric dependencies"]
+    D19_3["💡 ⚙️ 3D-19.3 F-53 metrics"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
     D101["🚧 📐 3D-101 Spec: 3D-20 installations"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
@@ -227,6 +230,12 @@ flowchart TB
   D14 --> D19
   D12 --> D20
   D13 --> D20
+  D19 --> D19_1
+  D15 --> D19_2
+  D17 --> D19_2
+  D18 --> D19_2
+  D19 --> D19_2
+  D19 --> D19_3
   D20 --> D100
   D71 --> D100
   D20 --> D101
@@ -307,6 +316,9 @@ Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
 | 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | kernel | in-progress (D-220; wp/3d-17-repair) |
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | in-progress (D-267; wp/3d-18-history) |
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | kernel | in-progress (D-267; wp/3d-19-envelope-ops) |
+| 3D-19.1 | `RESIZE_ROOF` (lower envelope, D-3D19-4) and `REGULARIZE_FOOTPRINT` (algorithm to be stated first, D-3D19-5) | here | geo-model3d/ops | 19 | G4 | M | kernel | proposed |
+| 3D-19.2 | Parametric geometry dependency management: parent / dependent surfaces (overhangs, soffits, dormers), rebuild after a parent edit in the pipeline (D-3D19-6) | here | geo-model3d/ops, docs/decisions/adr | 15, 17, 18, 19 | G4 | L | kernel | proposed |
+| 3D-19.3 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-3D19-7, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | proposed |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | done (D-263; merged into base, no PR; D-256..D-262) |
 | 3D-100 | Installation size from the cloud: `measurementId` of `ADD_CHIMNEY` / `ADD_DORMER` (v0.3 §6 F-36, F-37) | here | geo-model3d/ops | 20, 71 | G4 | M | kernel | proposed |
 | 3D-101 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-256..D-260) | here | docs/specs | 20 | G4 | S | spec | in-progress (D-267; wp/3d-101-spec-installations) |
@@ -735,6 +747,43 @@ Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
 - Accept: no spec line says a cloud must be in the building's CRS or that reprojection is open; §4a and §9 name the two
   refusal reasons and the descriptor; `npm run check` passes.
 - Decisions: D-92, D-93, D-164, D-165, D-196..D-198  Open: -
+
+### 3D-19.1 RESIZE_ROOF and REGULARIZE_FOOTPRINT
+- Source: owner, chat, 2026-11-26 (3D-19 split, D-3D19-5).
+- Goal: the two footprint-and-extent operations of spec §10.10 r2, r3 split off 3D-19.
+- Scope in: `RESIZE_ROOF` as D-3D19-4 (lower envelope of the roof planes clipped to `roofOutline`; FLAT, SHED, GABLE,
+  HIP, PYRAMID by geometry; convex outlines; `moveWallFootprint` both ways; tests RR-01..RR-15). `REGULARIZE_FOOTPRINT`:
+  first a stated algorithm (straightening within `footprintAngleTolDeg`, noise vertices, courtyards, optional
+  orthogonalisation), footprint change rules, admissible deformation limits and acceptance criteria, agreed with the
+  owner; then the code. Scope out: roofs that are not their lower envelope (valleys), dormers, corner rules of overhangs.
+- Accept: RR-01..RR-15 pass; the lower-envelope precondition refuses a valley roof without change; `REGULARIZE_FOOTPRINT`
+  acceptance lines are written and owner-approved before its code; `npm run check`, golden pass.
+- Decisions: D-3D19-1, D-3D19-4, D-3D19-5, D-212..D-218  Open: none for `RESIZE_ROOF`; `REGULARIZE_FOOTPRINT` algorithm (to ask)
+- Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
+
+### 3D-19.2 Parametric geometry dependency management
+- Source: owner, chat, 2026-11-26 (D-3D19-6); found in 3D-19: an overhang strip is a dependent face, but operations of
+  other rows (`ALIGN_RIDGE`, `MATCH_ELEVATIONS`, 3D-15, 3D-17) change a parent roof plane without rebuilding it.
+- Goal: dependent geometry follows its parent in every operation, through the shared pipeline.
+- Scope in: explicit parent / dependent links (contract change, D-18), detection before an edit, rebuild after a parent
+  change keeping component parameters (overhang width, dormer size), constraint checks of dependent elements, atomic
+  apply or rollback, integration with `ops/pipeline.js`; overhangs, soffits, end caps, dormers, future components;
+  an ADR. Review scenario for the Geometry Core Architecture Review. Scope out: new component kinds.
+- Accept: after `ALIGN_RIDGE`, `MATCH_ELEVATIONS` and every 3D-15 / 3D-17 operation on a roof face with an overhang the
+  overhang keeps its width in plan and the shell stays `VALID_SOLID`, or the operation is refused; a test per operation.
+- Decisions: D-3D19-1, D-3D19-2, D-3D19-6  Open: link representation in the contract (ADR)
+- Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
+
+### 3D-19.3 F-53 geometric metrics
+- Source: owner, chat, 2026-11-26 (D-3D19-7); v0.2 F-53, §16.5 (geometric metrics only without a MeasurementProfile).
+- Goal: the kernel reports geometric metrics with overhang parts separate.
+- Scope in: main building volume, overhang volume, total solid volume, roof / overhang / soffit area, footprint and
+  roof-plan area; names of `affectedMetrics` (Q-31); public function name (D-119 extension, owner). Scope out:
+  tax MeasurementProfile rules (v0.3 §1 excluded).
+- Accept: GT-14 reference of D-3D19-1 reproduced by the API (80 / 90 / 112.5 / 12.5 / 10 m2, 520 / 1.875 / 521.875 m3);
+  `npm run check` passes.
+- Decisions: D-3D19-1, D-3D19-7  Open: Q-31
+- Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
 
 ### 3D-100 Installation size from the cloud
 - Source: 3D-20 session 2026-11-25; D-259 refuses `measurementId` sizing with `INVALID_MEASUREMENT` until the
