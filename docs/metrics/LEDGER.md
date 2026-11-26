@@ -59,6 +59,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 | 2026-11-26 | 3D-18 | session_01RNYuqGxiYZi2wfiNykmaH8 | wp | 5.19 | 47.3 | 248.0 | 11301.3 | 8.4 | 8.6 | claude-opus-5-5 | as of 2026-11-26T00:23:54Z | - | newest result event at merge; cumulative of the worker process after its restart, so turns before the restart may be missing (lower bound) |
 | 2026-11-26 | 3D-15 | session_01RNYuqHPWJCzxxo4MB7DUiv | wp | 14.54 | 148.2 | 572.4 | 34912.2 | 23.7 | ? | claude-opus-5-5 | as of 2026-11-26T00:23:30Z | - | newest result event at merge (coordinator); worker process index 3, earlier restarts may be missing (lower bound) |
 | 2026-11-26 | 3D-17 | session_01RNYuqHyM23ncvW234vj4iQ | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - | no result event in the newest events at merge; session inactive; coordinator re-reads later |
+| 2026-11-26 | 3D-103 | session_01RNYuqHL2wwwM67eByZVGDo | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals, see checkpoint 3D-103; ~103k subagent tokens, cost inside session) | no finished turn when written (first turn); coordinator reads it at merge |
 
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).
