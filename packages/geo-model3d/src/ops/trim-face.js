@@ -49,7 +49,7 @@ export function trimFace(draft, payload, ctx) {
   for (const v of Object.values(draft.vertices)) {
     if (v.definingFaceIds.includes(rId)) v.definingFaceIds = v.definingFaceIds.filter((/** @type {string} */ f) => f !== rId);
   }
-  const closure = closeOpenEdges(draft, fId, created, tol);
+  const closure = closeOpenEdges(draft, fId, new Set(created), tol, ctx.ids);
   for (const [from] of closure.welded) if (!created.has(from)) removed.add(from);
   return { ok: true, mapped: lineage(draft, cut.mapped, closure.welded, created), removed };
 }
@@ -83,6 +83,7 @@ function lineage(m, cutMap, welded, created) {
     const t = vs.filter(live);
     if (t.length > 0 && !(t.length === 1 && t[0] === k)) out[k] = t;
   }
-  for (const [from, to] of welded) if (!created.has(from) && live(to)) out[from] = [to];
+  const end = (/** @type {string} */ v) => { let x = v; for (const [a, b] of welded) if (a === x) x = b; return x; };
+  for (const [from] of welded) if (!created.has(from) && live(end(from))) out[from] = [end(from)];
   return out;
 }

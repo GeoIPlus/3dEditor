@@ -1,9 +1,10 @@
 // ops (3D-105): geometry shared by TRIM_FACE and EXTEND_FACE (spec §10.6 r7, r8): the line of two face planes, a point
 // in a face, a face's in-plane 2D frame, and the closure step of r7.5 (pair coinciding open half-edges of one shell).
-// Closure vertex rule [A] (spec r7.5 / r8.5 name no survivor): when two paired half-edges end in different vertices at
-// the same place, a vertex created by this command yields to the other; otherwise the vertex of the edited face survives
-// (so EXTEND keeps the ids of the edge's ends, r8.5). The survivor takes the union of both defining-face lists and is
-// DERIVED when those planes give a unique point within `planarTolM` of it (spec §4 r3), else EXPLICIT.
+// Closure vertex rule (owner, D-3D105-3): when two paired half-edges end in different vertices at the same place, the
+// two become one; the id of the vertex that did not move survives; if both moved (a vertex this command created counts
+// as moved), a new vertex id replaces both. If neither moved, the edited face's vertex survives [A]. The survivor takes
+// the union of both defining-face lists and is DERIVED when those planes give a unique point within `planarTolM` of it
+// (spec §4 r3), else EXPLICIT.
 import { cross, derivePoint, distance, dot, norm, scale, sub } from '../brep/index.js';
 import { mergeVertex, ringOf, ringStarts, endOf } from './repair-topology.js';
 import { assignRoles } from './topology.js';
@@ -76,11 +77,12 @@ function settle(m, vId, tol) {
 /**
  * Spec r7.5: every open half-edge of `faceId` whose two ends coincide (within `topologySnapTolM`, reversed) with an open
  * half-edge of another face of the same shell is paired with it; the ends are welded by the rule in the file header.
- * @param {BuildingModel} m mutated @param {string} faceId @param {Set<string>} created vertex ids this command created
- * @param {any} tol
+ * @param {BuildingModel} m mutated @param {string} faceId
+ * @param {Set<string>} moved vertex ids this command moved or created
+ * @param {any} tol @param {(kind: string) => string} ids
  * @returns {{ paired: string[], welded: [string, string][] }} paired half-edges of `faceId`; [yielding, surviving] vertices
  */
-export function closeOpenEdges(m, faceId, created, tol) {
+export function closeOpenEdges(m, faceId, moved, tol, ids) {
   const shell = Object.values(m.shells).find((s) => s.faceIds.includes(faceId));
   const others = new Set((shell?.faceIds ?? []).filter((f) => f !== faceId));
   const P = (/** @type {string} */ v) => /** @type {P3} */ (m.vertices[v].p);
@@ -98,20 +100,29 @@ export function closeOpenEdges(m, faceId, created, tol) {
   }
   /** @type {[string, string][]} */
   const welded = [];
-  const own = new Set(pairs.flatMap(([h]) => [m.halfEdges[h].startVertexId, endOf(m, h)]));
-  const weld = (/** @type {string} */ ours, /** @type {string} */ theirs) => {
-    if (ours === theirs || !m.vertices[ours] || !m.vertices[theirs]) return;
-    const [from, to] = created.has(ours) && !created.has(theirs) ? [ours, theirs] : [theirs, ours];
-    mergeVertex(m, from, to);
-    welded.push([from, to]);
+  /** @type {Map<string, string>} */
+  const alias = new Map();
+  const live = (/** @type {string} */ v) => { let x = v; while (alias.has(x)) x = /** @type {string} */ (alias.get(x)); return x; };
+  const into = (/** @type {string} */ from, /** @type {string} */ to) => { mergeVertex(m, from, to); alias.set(from, to); welded.push([from, to]); };
+  const weld = (/** @type {string} */ o, /** @type {string} */ t) => {
+    const ours = live(o), theirs = live(t);
+    if (ours === theirs) return;
+    if (moved.has(ours) && moved.has(theirs)) {
+      const n = ids('vertex');
+      m.vertices[n] = { ...m.vertices[ours], id: n, definingFaceIds: [...m.vertices[ours].definingFaceIds] };
+      moved.add(n);
+      into(ours, n);
+      into(theirs, n);
+    } else if (moved.has(ours)) into(ours, theirs);
+    else into(theirs, ours);
   };
   for (const [h, k] of pairs) {
     weld(m.halfEdges[h].startVertexId, endOf(m, k));
     weld(endOf(m, h), m.halfEdges[k].startVertexId);
   }
   for (const [h, k] of pairs) { m.halfEdges[h].twinId = k; m.halfEdges[k].twinId = h; }
-  for (const [, to] of welded) if (m.vertices[to]) settle(m, to, tol);
-  for (const v of own) if (m.vertices[v] && !welded.some(([, t]) => t === v)) settle(m, v, tol);
+  const own = new Set(pairs.flatMap(([h]) => [m.halfEdges[h].startVertexId, endOf(m, h)]));
+  for (const v of own) settle(m, v, tol);
   assignRoles(m, pairs.flat(), tol.zAlignTolM);
   return { paired: pairs.map(([h]) => h), welded };
 }

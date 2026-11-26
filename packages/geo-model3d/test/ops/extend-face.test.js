@@ -13,12 +13,12 @@ describe('EXTEND_FACE', () => {
     expect(faceArea(g, 'f-roof-s')).toBeCloseTo(43.75, 9);
     const out = extend(g, {});
     const m = committed(out);
-    // ids of F, e and its ends kept (r8.5); the ridge ends of the north slope / gables are welded into them
+    // ids of F and e kept (r8.5); the moved ends are welded into the ridge ends that did not move (owner, D-3D105-3)
     expect(m.halfEdges[TOP].faceId).toBe('f-roof-s');
-    at(m, 'v-t0', [0, 4, 8]);
-    at(m, 'v-t1', [10, 4, 8]);
-    expect(m.vertices['v-r0']).toBeUndefined();
-    expect(out.result.topologyLineage.mapped).toEqual({ 'v-r0': ['v-t0'], 'v-r1': ['v-t1'] });
+    at(m, 'v-r0', [0, 4, 8]);
+    at(m, 'v-r1', [10, 4, 8]);
+    expect(m.vertices['v-t0']).toBeUndefined();
+    expect(out.result.topologyLineage.mapped).toEqual({ 'v-t0': ['v-r0'], 'v-t1': ['v-r1'] });
     expect(faceArea(m, 'f-roof-s')).toBeCloseTo(50, 9);
     expect(m.faces['f-roof-s'].supportPlane).toEqual(g.faces['f-roof-s'].supportPlane);
     const k = metrics(m);

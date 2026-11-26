@@ -4,7 +4,7 @@ import { committedCase } from './trim-extend.golden.helpers.js';
 
 describe('GT-28 EXTEND_FACE', () => {
   const { commit, cmd, expected } = committedCase('GT-28');
-  it('ends re-derived on the ridge; edge and end ids kept', () => {
+  it('ends re-derived on the ridge; edge id kept, ends welded into the unmoved ridge vertices (D-3D105-3)', () => {
     const e = commit.model.halfEdges[cmd.payload.edgeId];
     expect(e.faceId).toBe(cmd.payload.faceId);
     const ends = [e.startVertexId, commit.model.halfEdges[e.nextId].startVertexId].map((v) => commit.model.vertices[v].p);

@@ -2,9 +2,9 @@
 // moves within the plane of F onto L = plane(F) ∩ plane(G) (G = `targetFaceId`): its ring neighbours `a` (before) and
 // `b` (after) are prolonged along their lines, and the new ends of `e` are the points of three planes (F, the plane
 // across `a` / `b`, G); an open `a` / `b` gives its line in F and an explicit end (spec §4 r3). L must lie outside F on
-// the far side of `e` (the area grows), otherwise it is a trim. The plane of F and the ids of F, `e` and its ends are
-// kept; closure as r7.5 (`face-line.js`). "Parallel" for a line of `a` / `b` and L uses `coplanarTolDeg` [A], as the
-// planes of r8.2.
+// the far side of `e` (the area grows), otherwise it is a trim. The plane of F and the ids of F and `e` are kept; the
+// ends keep their ids unless closure welds them into a vertex that did not move (D-3D105-3; r7.5, `face-line.js`).
+// "Parallel" for a line of `a` / `b` and L uses `coplanarTolDeg`, as the planes of r8.2 (owner, D-3D105-4).
 import { cross, derivePoint, dot, norm, sub } from '../brep/index.js';
 import { refuse } from './errors.js';
 import { endOf, ringOf } from './repair-topology.js';
@@ -74,11 +74,14 @@ export function extendFace(draft, payload, ctx) {
     x.definingFaceIds = n.faces;
     x.positionMode = n.faces.length >= 3 ? 'DERIVED' : 'EXPLICIT';
   }
-  const closure = closeOpenEdges(draft, fId, new Set(), tol);
+  const existing = new Set(Object.keys(draft.vertices));
+  const closure = closeOpenEdges(draft, fId, new Set([vs, ve]), tol, ctx.ids);
   /** @type {Record<string, string[]>} */
   const mapped = {};
   const removed = new Set();
-  for (const [from, to] of closure.welded) { mapped[from] = [to]; removed.add(from); }
+  // a pre-existing vertex welded away maps to its survivor (through a chain of welds)
+  const end = (/** @type {string} */ v) => { let x = v; for (const [a, b] of closure.welded) if (a === x) x = b; return x; };
+  for (const [from] of closure.welded) if (existing.has(from)) { mapped[from] = [end(from)]; removed.add(from); }
   return { ok: true, mapped, removed };
 }
 

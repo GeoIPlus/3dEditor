@@ -838,6 +838,8 @@ face + kept side (`TRIM_FACE`); face + open boundary edge + target face (`EXTEND
       the crossed edge; explicit when fewer than three, §4 r3).
    5. Closure: an open half-edge of the kept part that coincides with an open half-edge of another face of the same shell
       within `topologySnapTolM` (both ends) is paired with it; the state follows `validate` (may become `VALID_SOLID`).
+      Two vertices at one place become one: the id of the vertex that did not move survives, a new id if both moved
+      (D-3D105-3, 3D-105).
 8. `EXTEND_FACE` (3D-104; D-324; v0.2 §13.5, E-08). Payload (schema change in 3D-105, D-18 approved): `faceId`,
    `edgeId`, `targetFaceId` (replaces the free `targetLine`). Algorithm:
    1. `e` = `edgeId` must be a half-edge of the outer ring of `F` (else `INVALID_PAYLOAD`) and open; a shared edge ->
@@ -848,7 +850,8 @@ face + kept side (`TRIM_FACE`); face + open boundary edge + target face (`EXTEND
       (§4 r3). A line of `a` / `b` parallel to `L` -> `INVALID_GEOMETRY`.
    4. `L` must lie outside `F` on the far side of `e` (the area of `F` grows); otherwise `INVALID_GEOMETRY` (that is a
       trim). A self-crossing ring or a collapsed edge -> `INVALID_GEOMETRY`.
-   5. The plane of `F` is unchanged; ids of `F`, `e`, its ends kept (ends re-derived); closure as r7.5.
+   5. The plane of `F` is unchanged; ids of `F`, `e`, its ends kept (ends re-derived), except an end welded by closure into
+      a vertex that did not move (D-3D105-3); closure as r7.5. "Parallel" in r8.3 is within `coplanarTolDeg` (D-3D105-4).
 9. Decided in 3D-15 (provisional ids, D-38): `INSERT_ROOF_BREAK` payload `newPlane` + required `movingSidePoint`, the
    part holding it gets `newPlane`, the other keeps plane and face id (D-297); constraint policy on split / merge
    (D-298); split ids (D-299); `OFFSET_FACE` fixedMode interlock, `INVALID_PAYLOAD` when the mode does not apply
