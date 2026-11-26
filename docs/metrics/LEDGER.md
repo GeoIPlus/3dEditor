@@ -61,6 +61,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 | 2026-11-26 | 3D-17 | session_01RNYuqHyM23ncvW234vj4iQ | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - | no result event in the newest events at merge; session inactive; coordinator re-reads later |
 | 2026-11-26 | 3D-103 | session_01RNYuqHL2wwwM67eByZVGDo | wp | 3.95 | 30.4 | 199.4 | 7103.6 | 6.0 | 0.52 | claude-fable-5-2, claude-opus-5-5 | as of 2026-11-26T01:04:48Z | yes (Fable, 3 proposals, see checkpoint 3D-103; ~103k subagent tokens, cost inside session) | newest result event at merge (coordinator); tokens summed over models |
 | 2026-11-26 | 3D-23 | session_01RNYuqFLUgbVc5u5YcbhjUe | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals, see checkpoint 3D-23; ~124k subagent tokens, cost inside session) | no finished turn when written (one long first turn, worker restart inside it); coordinator reads it at merge |
+| 2026-11-26 | 3D-19 | session_01RNYuqEUUMW5XXzcX9wt98A | wp | ? | ? | ? | ? | ? | ? | ? | as of 2026-11-26 | yes (Fable, 3 proposals, see checkpoint 3D-19; ~97k subagent tokens, cost inside session) | no `result` event readable in the running turn (four worker restarts); Fable review saw 337k-360k cache-read per call; coordinator reads the actual at merge |
 
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).

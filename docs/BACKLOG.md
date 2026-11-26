@@ -21,14 +21,14 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 57 / 95 |
+| Done | 57 / 96 |
 | Review | 2 |
 | In progress | 3 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 29 |
+| Proposed (waiting for the owner to set `ready`) | 30 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 57/95 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 57/96 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-105 Core edits II; 3D-109 Kernel service II: command API; 3D-47 SC: 3D view port + host.
 
@@ -120,6 +120,7 @@ flowchart TB
     D19_4["💡 ⚙️ 3D-19.4 Validator: overhang end caps"]
     D19_5["💡 ⚙️ 3D-19.5 Bug: EQUAL_Z vs FIXED_POINT"]
     D19_6["💡 📐 3D-19.6 Spec: 3D-19 envelope"]
+    D19_7["💡 ⚙️ 3D-19.7 Bug: overhang left behind"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
   end
@@ -262,6 +263,7 @@ flowchart TB
   D19 --> D19_4
   D16 --> D19_5
   D19 --> D19_6
+  D19_2 --> D19_7
   D20 --> D100
   D71 --> D100
   D20 --> D101
@@ -351,6 +353,7 @@ Throughput: 57.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-19.4 | Validator: minimum face area of dependent overhang end caps measured with their coplanar end wall; degeneracy and minimum-area policy separated (D-3D19-8; unblocks GT-14) | here | geo-model3d/validate | 12, 19 | G4 | S | kernel | proposed |
 | 3D-19.5 | Bug: a hard FIXED_POINT on a vertex with an EQUAL_Z target is met by turning the roof plane almost vertical (MATCH_ELEVATIONS commits `VALID_SOLID`) | here | geo-model3d/solve, validate | 13, 16 | G3 | S | kernel | proposed |
 | 3D-19.6 | Spec update for 3D-19: §10.10 overhang profile, SET_HEIGHT EAVE, rigid moves and measurements, refusal codes; §13 GT-14 note; §14 Q-18 narrowed, Q-37 closed (D-3D19-1..D-3D19-10) | here | docs/specs | 19 | G4 | S | spec | proposed |
+| 3D-19.7 | Bug: `ALIGN_RIDGE` and `MATCH_ELEVATIONS` on a slope with an overhang commit `VALID_SOLID` with the overhang strip left on the old plane (D-3D19-6) | here | geo-model3d/ops | 19.2 | G4 | S | kernel | proposed |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | done (D-263; merged into base, no PR; D-256..D-262) |
 | 3D-100 | Installation size from the cloud: `measurementId` of `ADD_CHIMNEY` / `ADD_DORMER` (v0.3 §6 F-36, F-37) | here | geo-model3d/ops | 20, 71 | G4 | M | kernel | proposed |
 | 3D-101 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-256..D-260) | here | docs/specs | 20 | G4 | S | spec | done (D-272; merged into base, no PR) |
@@ -919,6 +922,18 @@ Throughput: 57.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
   Q-37 closed. Scope out: changes of behaviour.
 - Accept: `node tools/check-docs.mjs` passes; every rule cites its D-id.
 - Decisions: D-3D19-1..D-3D19-10  Open: none
+- Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
+
+### 3D-19.7 Bug: other operations leave an overhang strip behind
+- Source: 3D-19 session 2026-11-26 (bug, D-3D19-6: "a result with broken dependent geometry is not acceptable").
+  Reproduced on the GT-03 gable with `SET_OVERHANG` 0.6 m on `he-f-roof-s-0`, then: `ALIGN_RIDGE` KEEP_EAVES to Z 8.5
+  commits `VALID_SOLID` with `f-roof-s` at normal (0, -0.6585, 0.7526) and the strip still at (0, -0.6, 0.8);
+  `MATCH_ELEVATIONS` of `v-r0`, `v-r1` to 8.4 does the same. No validation issue is raised.
+- Goal: no operation commits a parent roof plane change while its overhang stays on the old plane.
+- Scope in: the fix through 3D-19.2 (rebuild), or until then a refusal of such edits; a test per operation of 3D-15,
+  3D-16, 3D-17, 3D-105 that changes a roof plane. Scope out: the dependency mechanism itself (3D-19.2).
+- Accept: both cases above either keep the strip coplanar with its slope at the same width or are refused, model unchanged.
+- Decisions: D-3D19-1, D-3D19-6  Open: refuse-until-3D-19.2 or wait (owner)
 - Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
 
 ### 3D-100 Installation size from the cloud
