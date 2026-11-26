@@ -21,14 +21,14 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 60 / 99 |
+| Done | 60 / 100 |
 | Review | 1 |
 | In progress | 5 |
 | Ready | 5 |
-| Proposed (waiting for the owner to set `ready`) | 27 |
+| Proposed (waiting for the owner to set `ready`) | 28 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 60/99 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 60/100 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-116 F-53 metrics; 3D-118 Bug: EQUAL_Z vs FIXED_POINT; 3D-120 Bug: overhang left behind; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
 
@@ -130,6 +130,7 @@ flowchart TB
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["💡 🔧 3D-79 Service image licence check"]
     D110["🚧 🖥️ 3D-110 Kernel service III: handler, ports"]
+    D110_1["💡 🖥️ 3D-110.1 datasets port + file adapter"]
     D121["▶️ 🔧 3D-121 Bench gate on the real PREVIEW path"]
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
@@ -284,6 +285,8 @@ flowchart TB
   D23 --> D111
   D12 --> D24
   D110 --> D24
+  D109 --> D110_1
+  D110_1 --> D24
   D24 --> D25
   D43 --> D25
   D50 --> D25
@@ -378,11 +381,12 @@ Throughput: 60.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service I: `history` port + file adapter (3D-ADR-0003, append-only, `journal/{N+1}` create-if-absent), port contract suite, COMMIT path (idempotent `commandId` + `expectedVersion`, GT-13, D-68), command status; PREVIEW/API -> 3D-109, handler/ports -> 3D-110 (D-314) | here | service | 03, 06, 18 | G5 | M | service | done (D-321; merged into base, no PR; D-314..D-320) |
 | 3D-109 | Kernel service II: command API - PREVIEW store by `previewId` (expiry 10 min, D-315), COMMIT by `previewId`, PREVIEW rate limit 20/s (D-316), payload limit 1 MiB (D-317), error registry mapping, request/reply validation against `contracts/model3d/` | here | service | 23 | G5 | M | service | done (D-359; merged into base, no PR; D-351..D-358) |
-| 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69), `datasets` port + file adapter (`progress.save`, delivered bytes), heatmap request (`INVALID_CRS`, 3D-69), bench gate on the service image (D-111, Q-42) | here | service | 109 | G5 | M | service | in-progress (D-366; wp/3d-110-kernel-handler) |
+| 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69, Q-39 by header), command status route, heatmap request (`INVALID_CRS`, 3D-69), bench gate through the handler (D-111, Q-42 interim); `datasets` -> 3D-110.1 (D-3D110-1) | here | service | 109 | G5 | M | service | in-progress (D-366; wp/3d-110-kernel-handler) |
+| 3D-110.1 | `datasets` port + file adapter: input CityJSON read with entity tag, `progress.save` whole-body `PUT` + `If-Match`, content-addressed delivered bytes (3D-ADR-0003 §4; split from 3D-110, D-3D110-1) | here | service | 109 | G5 | M | service | proposed |
 | 3D-111 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-319) | here | service | 23 | G5 | M | service | proposed |
 | 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 123 | G3 | L | spec | proposed |
 | 3D-113 | `STRAIGHTEN_FACE` `ALIGN_SELECTED_EDGES` extensions: leading edge chosen by the operator, `BEST_FIT_LINE` mode | here | docs/specs, geo-model3d/ops | 122 | G3 | S | spec | proposed |
-| 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110 | G5 | M | kernel | proposed |
+| 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110, 110.1 | G5 | M | kernel | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
@@ -1075,6 +1079,25 @@ Throughput: 60.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
   entity tag is not sent, a `412` keeps the result; bench numbers and fingerprint recorded on the production class
   (Q-42; a miss is an owner escalation, D-06).
 - Decisions: D-06, D-33, D-51, D-69, D-82..D-85, D-111, D-196..D-198  Open: Q-42, Q-40 (only if touched)
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+- Change 2026-11-26 (WP session 3D-110, owner dialog, D-3D110-1..4): the `datasets` port, its file adapter and the
+  Accept lines "delivered address ..." and "`PUT` without a stored entity tag ..." move to 3D-110.1. Lease from the
+  request header `X-3DQM-Lease` (Q-39 closed, D-3D110-2); command status at
+  `GET /api/projects/{projectId}/commands/{commandId}` (D-3D110-3); the bench gate runs through the handler on the
+  cloud agent container with its fingerprint, the production-class re-measure stays Q-42 (D-3D110-4).
+- Re-estimate 2026-11-26: scope reduced by the split; M service $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-110.1 `datasets` port + file adapter
+- Source: split of 3D-110 (owner dialog in WP session 3D-110, 2026-11-26, D-3D110-1).
+- Goal: the `datasets` port of 3D-ADR-0003 §1 with a file adapter standing in for the DP datasets (D-35, D-82).
+- Scope in: port (read input CityJSON with its entity tag; `progress.save` whole-body `PUT` + `If-Match`; put / read
+  delivered bytes under a content-addressed key); file adapter; port contract suite that 3D-63's CS adapter will run.
+  Scope out: export gate and the export action (3D-24); CS adapters (3D-60, 3D-63); the S3 store (3D-111).
+- Accept (3D-ADR-0003 Checks): a delivered byte address contains no query string or credential, and a second write of
+  the same digest is a no-op; a `PUT` to `progress.save` without a stored entity tag is not sent (operator told); a `412`
+  leaves the result kept (Operaflow suite `progress/` cases as fixtures, 3D-01 §9.3); no adapter method deletes or
+  overwrites (`check:arch`).
+- Decisions: D-35, D-82..D-85, D-3D110-1  Open: none
 - Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
 
 ### 3D-111 `history` S3 adapter
