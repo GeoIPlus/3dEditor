@@ -345,6 +345,16 @@ ETC: TBD (g not measured before 2026-12-03); known x k = $282 / $354
 Throughput: 67.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
 ```
 
+MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
+3D-25 plus 3D-24 = $40.9 p50 / $53.8 p80 (sum of row estimates), x k 1.07 = **$43.7 / $57.5** (3D-50 split in two M
+rows, D-397; before the split $36.6 / $47.9). Critical path wall time, SC WP-28 slice already on SC main: five
+serial sessions, 5-13 h of agent work; with owner dialogs and PR merges in SC/GV at the observed M span (p50 16 h,
+p80 32 h per row) ~3.3-6.7 days.
+3D-24 runs in parallel after 3D-110 (in progress) and is not critical if it ends before 3D-127. Not included: SC WP-28
+(L in SC, estimated in SC; its time is added before 3D-41), 3D-110 remainder, 3D-47. Assumptions [A]: one session per
+row, no split; mirror rows cost like M (no mirror data at M; S mirror n=2 median $5.53 vs S $3.05 suggests a premium);
+accuracy ratio 1.30 is n=1 and not applied.
+
 ## Work-package status
 
 | WP | Title | Repo | Modules | Depends on | Gate | Size | Type | Status |
