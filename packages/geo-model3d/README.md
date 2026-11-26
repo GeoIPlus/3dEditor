@@ -161,8 +161,8 @@ Readings [A] for the owner's review: `HEAL_HOLE` lists `FIT_MEASUREMENTS` as adm
 measurements (cannot be checked before the points are chosen); `COPY_NEIGHBOR_PLANE` needs a face beside the hole
 (`INVALID_PAYLOAD` otherwise); an ambiguous ring gives `admissibleModes: []`; a weld with < 3 independent planes keeps
 the A copy explicit; majority = planes through the current node position (with four planes every three meet).
-Gap (owner question of 3D-17): GT-19 "Fixed" variant uses `ON_PLANE` with one face and a plane target, which `solve`
-does not compile (D-169: `[vertex, face]`); its golden assertion is `todo`.
+GT-19 "Fixed" variant (hard `ON_PLANE` `[face]` + `Plane` on east, north, west) is refused `CONSTRAINT_CONFLICT`
+listing `f-roof-e` since 3D-103 (D-289).
 **3D-21** (spec §10.12): `set-semantics.js` (`SET_SEMANTICS`: only `surfaceKind` changes; a face leaving RoofSurface
 leaves its roof component, an emptied component is deleted, a new roof face joins none, D-227) and
 `constraint-commands.js` (`SET_CONSTRAINT`: the constraint is read by `compileConstraints` before it is stored, a
@@ -229,12 +229,13 @@ of O1 (stage 1) or singular values of the objective in the hard null space (stag
 counted per face by rank (rotations = rank of the normal part, offsets = the rest), reported `"<faceId>:ROTATION"` /
 `"<faceId>:OFFSET"` (D-171). A movable plane no condition reads stays bit-identical (spec §5 r7).
 
-Constraint kinds (D-169; tolerance of the hard check D-170; [S] stated by the spec, [P] accepted proposal):
+Constraint kinds (D-169, amended by D-289; tolerance of the hard check D-170; [S] stated by the spec, [P] accepted proposal):
 
 | Kind | entityIds | target | Condition on the movable planes | Hard tolerance |
 |---|---|---|---|---|
 | FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point | `planarTolM` |
 | ON_PLANE [S] | [vertex, face] | V3 optional | the target point, else the derived vertex, lies on the face plane | `planarTolM` |
+| ON_PLANE [D-289] | [face] | Plane (required) | fixed face plane: unit normal equals the target's (scaled to unit, oriented like the stored face normal [A]) and offset equals its `d` | normal `numericEpsilon`, offset `planarTolM` |
 | FIXED_LINE / FIXED_EAVE / FIXED_RIDGE [S] | [half-edge] | - | both incident planes contain the edge's current line; EAVE / RIDGE need that `edgeRole` | `planarTolM` |
 | EQUAL_Z [S] | [vertex, vertex, ...] or [vertex...] + number | number optional | derived z equal to the first vertex's (or to the number) | `zAlignTolM` |
 | COINCIDENT [P] | [vertex, vertex] | - | derived positions equal | `topologySnapTolM` |
@@ -376,6 +377,8 @@ run spread ~0.1 ms).
 - `test/solve/` (3D-13): stage-1 parity with the 3D-08 spike, conflicts and minimal sets, underconstrained shapes valid
   against the `error` contract, soft weights against a closed form, compiler table, and the property test of spec §5
   Accept 3 (60 seeded scenarios on GT-03: no plane outside the movable set in the result, input untouched, deterministic).
+  `fixed-plane.test.js` (3D-103): ON_PLANE `[face]` + `Plane` target - compile shape and tolerances, rejections, orientation
+  and scale of the target, driven plane, conflicts on movable and fixed faces.
 - `test/canary.test.js`: marker format, entry exports it.
 - `test/import/` (3D-10): contract validity (Ajv) of model, baseline, report; `checkTopology` clean; vertices EXPLICIT
   with `sourceRef` (D-70); frozen input; determinism; semantics inference thresholds; CRS refusals and ENU import;

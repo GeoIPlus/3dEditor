@@ -1,6 +1,7 @@
 // solve (3D-13): model `Constraint` entities (contract building-model `$defs/Constraint`) -> plane-terms conditions.
 // Per-kind reading: D-169 (table in the module card); check tolerances: D-170. A constraint the table cannot read
 // is returned in `rejected` with a reason, never guessed; the refusal code for it belongs to the operation row.
+// ON_PLANE [face] + Plane target = fixed face plane (D-289, amends D-169; row 3D-103).
 import { edgeFaceIds } from '../brep/halfedge.js';
 import { builders } from './conditions.js';
 
@@ -66,7 +67,7 @@ function check(model, c) {
   const all = (/** @type {(id: string) => boolean} */ p, n = 1) => ids.length >= n && ids.every(p);
   const shape = {
     FIXED_POINT: () => ids.length === 1 && isV(ids[0]),
-    ON_PLANE: () => ids.length === 2 && isV(ids[0]) && isF(ids[1]),
+    ON_PLANE: () => (ids.length === 2 && isV(ids[0]) && isF(ids[1])) || (ids.length === 1 && isF(ids[0]) && isPlane(c.target)),
     FIXED_LINE: () => ids.length === 1 && isE(ids[0]),
     FIXED_EAVE: () => ids.length === 1 && isE(ids[0]) && model.halfEdges[ids[0]].edgeRole === 'EAVE',
     FIXED_RIDGE: () => ids.length === 1 && isE(ids[0]) && model.halfEdges[ids[0]].edgeRole === 'RIDGE',
@@ -103,6 +104,10 @@ function kindConditions(model, b, c, tol) {
       return v.definingFaceIds.map((f) => b.pointOnPlane(t, f, p, tol.planarTolM));
     }
     case 'ON_PLANE':
+      if (ids.length === 1) {
+        const p = targetPlane(c.target, model.faces[ids[0]].supportPlane.normal);
+        return [b.planeEquals(t, ids[0], p, 'NORMAL', ang), b.planeEquals(t, ids[0], p, 'OFFSET', tol.planarTolM)];
+      }
       return [Array.isArray(c.target) ? b.pointOnPlane(t, ids[1], c.target, tol.planarTolM) : b.vertexOnPlane(t, ids[0], ids[1], tol.planarTolM)];
     case 'FIXED_LINE':
     case 'FIXED_EAVE':
@@ -140,4 +145,21 @@ function kindConditions(model, b, c, tol) {
     default:
       return [];
   }
+}
+
+/** Contract `Plane` with a finite non-zero normal. @param {any} t @returns {boolean} */
+function isPlane(t) {
+  if (!t || typeof t !== 'object' || Array.isArray(t) || !Array.isArray(t.normal) || t.normal.length !== 3) return false;
+  return Number.isFinite(t.d) && t.normal.every(Number.isFinite) && Math.hypot(...t.normal) > 0;
+}
+
+/**
+ * The target plane scaled to a unit normal and oriented like the face's stored normal [A]: the same geometric plane
+ * given with the opposite orientation is not a conflict (the face orientation is the model's, spec §4).
+ * @param {{ normal: P3, d: number }} t @param {P3} faceNormal
+ */
+function targetPlane(t, faceNormal) {
+  const n = t.normal;
+  const s = (n[0] * faceNormal[0] + n[1] * faceNormal[1] + n[2] * faceNormal[2] < 0 ? -1 : 1) / Math.hypot(...n);
+  return { normal: /** @type {P3} */ (n.map((x) => x * s)), d: t.d * s };
 }

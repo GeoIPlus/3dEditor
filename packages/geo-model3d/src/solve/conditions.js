@@ -81,6 +81,15 @@ export function builders(model) {
     pointOnPlane: (t, faceId, p, tol) =>
       make({ ...tag(t, [face(faceId)]), tol, faces: [faceId], linear: { faceId, point: p },
         residual: (ctx) => { const pl = ctx.plane(faceId); return [dot(pl.normal, p) + pl.d]; } }),
+    /** The face plane equals a fixed plane (ON_PLANE [face] + Plane target, D-289): residual on the unit normal (angular,
+     * tol `numericEpsilon`) or on the offset (plane distance once the normals agree, tol `planarTolM`), D-170.
+     * @param {Tag} t @param {string} faceId @param {Plane} target unit normal @param {'NORMAL' | 'OFFSET'} part @param {number} tol */
+    planeEquals: (t, faceId, target, part, tol) =>
+      make({ ...tag(t, [face(faceId)]), tol, faces: [faceId],
+        residual: (ctx) => {
+          const pl = ctx.plane(faceId);
+          return part === 'NORMAL' ? pl.normal.map((x, i) => x - target.normal[i]) : [pl.d - target.d];
+        } }),
     /** A (derived) vertex lies on a face plane. @param {Tag} t @param {string} vId @param {string} faceId @param {number} tol */
     vertexOnPlane: (t, vId, faceId, tol) =>
       make({ ...tag(t, [vId, face(faceId)]), tol, faces: [...new Set([...facesOf(vId), faceId])].sort(),
