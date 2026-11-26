@@ -23,9 +23,19 @@
       "httpStatus": 422,
       "messageKey": "model3d.error.healHole",
       "details": { "admissibleModes": ["FILL_PLANAR"] }
+    },
+    {
+      "code": "INVALID_CRS",
+      "httpStatus": 422,
+      "messageKey": "model3d.error.invalidCrs",
+      "details": { "crsReason": "DATUM_MISMATCH" }
     }
   ],
   "invalid": [
+    {
+      "why": "INVALID_CRS with a reason outside the list (D-3D110-5)",
+      "instance": { "code": "INVALID_CRS", "httpStatus": 422, "messageKey": "model3d.error.invalidCrs", "details": { "crsReason": "ELLIPSOID" } }
+    },
     {
       "why": "code outside the registry (v0.2 GEOMETRY_INVALID)",
       "instance": {

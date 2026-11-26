@@ -22,7 +22,7 @@ export const payloadSchema = (kind) => `command-payload-${kind.toLowerCase().rep
  * @returns {{ names: string[], check: (name: string, message: unknown) => string | null,
  *   request: (name: string, message: unknown) => { httpStatus: number, body: any } | null,
  *   command: (message: any) => { httpStatus: number, body: any } | null,
- *   reply: (reply: { httpStatus: number, body: any }) => { httpStatus: number, body: any } }}
+ *   reply: (reply: { httpStatus: number, body: any }, name?: string) => { httpStatus: number, body: any } }}
  */
 export function createContractValidator(options = {}) {
   const dir = options.dir ?? CONTRACTS_DIR;
@@ -58,10 +58,14 @@ export function createContractValidator(options = {}) {
   /** The schema of a reply body: `command-status`, `command-result` or `error`. @param {any} body */
   const replySchema = (body) => (body?.state ? 'command-status' : body?.status ? 'command-result' : 'error');
 
-  /** @param {{ httpStatus: number, body: any }} r */
-  function reply(r) {
-    const why = check(replySchema(r.body), r.body);
-    return why === null ? r : errorReply('INTERNAL', [], `invalid reply (${replySchema(r.body)}): ${why}`);
+  /**
+   * @param {{ httpStatus: number, body: any }} r
+   * @param {string} [name] schema of a successful body other than a command reply (`heatmap-result`, `building-model`)
+   */
+  function reply(r, name) {
+    const schema = name !== undefined && r.httpStatus < 400 ? name : replySchema(r.body);
+    const why = check(schema, r.body);
+    return why === null ? r : errorReply('INTERNAL', [], `invalid reply (${schema}): ${why}`);
   }
 
   return { names, check, request, command, reply };

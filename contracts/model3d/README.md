@@ -53,6 +53,7 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 - Changes inside `v1` before the first release, approved per D-18 (precedent `insert-roof-break`, 3D-15): 3D-105 (D-331)
   replaced `trim-face.trimLine` by `cuttingFaceId` (D-322) and `extend-face.targetLine` by `targetFaceId` (D-324), added
   `remove-details.maxAreaM2` (D-326) and `maxDisplacementM` (D-330), and the optional `command-result.candidates` (D-325).
+  3D-110 (D-3D110-5) added the error code `INVALID_CRS` (422) with `details.crsReason`.
 
 ### Proposals accepted by the owner (D-75)
 

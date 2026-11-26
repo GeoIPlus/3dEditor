@@ -1,7 +1,7 @@
 // Command API of the kernel service (3D-109; spec §3 r3, §11 r4-r6, r12, §2.4): contract validation of every request
 // and reply, PREVIEW with its stored COMMIT outcome by `previewId`, COMMIT by `previewId`, the PREVIEW rate limit, the
 // body size limit and the registry reply of every thrown failure. The HTTP server, auth and the lease are 3D-110:
-// `actor` is the authenticated user.
+// `actor` is the authenticated user; `authorize` (handler.js) refuses a valid message before the kernel runs.
 import { isDeepStrictEqual } from 'node:util';
 import { createCommitService } from './commit.js';
 import { createContractValidator } from './contracts.js';
@@ -32,6 +32,10 @@ export function previewOf(result, baseVersion, previewId) {
   return { ...result, status: 'PREVIEW', modelVersion: baseVersion, previewId, validation };
 }
 
+/**
+ * @typedef {{ authorize?: (command: any) => Promise<import('./commit.js').Reply | undefined> | import('./commit.js').Reply | undefined }} CommandOptions
+ */
+
 /** @param {any} result a `command-result` @returns {import('./commit.js').Reply} */
 const replyOf = (result) => ({ httpStatus: result.error?.httpStatus ?? 200, body: result });
 
@@ -44,15 +48,18 @@ export function createCommandApi(deps) {
   const rate = createRateLimiter({ now: deps.now });
 
   /**
-   * One `command` message (PREVIEW or COMMIT) as `actor`.
-   * @param {unknown} message @param {{ actorId: string }} actor
+   * One `command` message (PREVIEW or COMMIT) as `actor`. `authorize` runs on the valid message, before anything is
+   * read or run; a reply from it is returned as is (role, lease: 3D-110, spec §11 r2, r11).
+   * @param {unknown} message @param {{ actorId: string }} actor @param {CommandOptions} [options]
    * @returns {Promise<import('./commit.js').Reply>}
    */
-  async function command(message, actor) {
+  async function command(message, actor, options = {}) {
     return guarded(async () => {
       const bad = contracts.command(message);
       if (bad) return bad;
       const c = /** @type {any} */ (message);
+      const refused = await options.authorize?.(c);
+      if (refused) return refused;
       return c.phase === 'PREVIEW' ? preview(c, actor) : commit(c, actor);
     });
   }
@@ -60,7 +67,7 @@ export function createCommandApi(deps) {
   /**
    * A request body (stream, chunks or bytes): size limit before parsing (D-317), then `command`.
    * @param {Parameters<typeof readJsonBody>[0]} source @param {{ actorId: string }} actor
-   * @param {{ declaredLength?: number }} [options]
+   * @param {{ declaredLength?: number } & CommandOptions} [options]
    */
   async function commandBody(source, actor, options = {}) {
     let r;
@@ -69,7 +76,7 @@ export function createCommandApi(deps) {
     } catch (err) {
       return contracts.reply(failureReply(err));  // the stream failed while reading
     }
-    return r.ok ? command(r.value, actor) : contracts.reply(r.reply);
+    return r.ok ? command(r.value, actor, options) : contracts.reply(r.reply);
   }
 
   /** Command status by `commandId` (contract `command-status`). @param {string} projectId @param {string} commandId */
