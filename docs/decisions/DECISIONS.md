@@ -442,6 +442,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-426 | 3D-126 (`REGULARIZE_FOOTPRINT`) accepted (done); merged into the base by the coordinating session (D-178); provisional ids D-417..D-425 became D-417..D-425 | Owner, WP session 3D-126, 2026-11-26 |
 | D-427 | At a merge the coordinator runs `npm run bench` (about 25 min since 3D-121) only when the WP changes `packages/geo-model3d/`, `services/kernel/` or `tools/bench/`; docs, spec, estimate and mirror-only merges run `check-docs` and `npm run check` (plus `npm run golden` when tests or fixtures change) | Owner, chat with the coordinator, 2026-11-26 |
 | D-428 | Row 3D-124 (overhang rebuild after a parent change, replaces the D-367 / D-372 refusal) set `ready` by the owner; started in a fresh session on wp/3d-124-overhang-rebuild in the environment "3dEditor" | Owner, chat with the coordinator, 2026-11-26 |
+| D-3D74-1 | 3D-74 build environment: the val3dity source is read through the session's git proxy (anonymous public clone of `tudelft3d/val3dity`, tag `2.7.0` = commit `fbe9e4d65376e1c3f63401f15967485783f78c0a`); the agent proxy refuses the GitHub archive URLs | Owner, dialog, 2026-11-26 (WP session 3D-74) |
+| D-3D74-2 | 3D-74 proves its acceptance lines in the cloud container against val3dity 2.7.0 built **on the host** (Ubuntu 24.04: CGAL 5.6, GEOS 3.12.1) and packed with its libraries into a network-free test image; the from-source multi-stage Dockerfile (the production image) is written but its full build is an open check for CI or the owner's machine, because a build-time proxy and CA inside `docker build` are refused by the session's permission rules | Owner, dialog, 2026-11-26 (WP session 3D-74) |
 
 ## Open questions
 
