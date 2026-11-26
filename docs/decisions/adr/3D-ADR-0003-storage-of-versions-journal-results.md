@@ -91,6 +91,12 @@ p/{p}/cmd/{commandId}.json            write-once: idempotency record -> result, 
 Version numbering: the baseline is version `v0` (the import's version; its value is 3D-06's). Shapes of every object are
 the `contracts/model3d/` schemas (3D-06): `building-model`, `journal-entry`, `command-result`. This ADR adds no field.
 
+Amendment (owner, dialog, 2026-11-26, D-318; 3D-23): the journal patch holds no model-level members (`state`,
+..., Q-31), so a version cannot be rebuilt from patches. Every version gets a full snapshot (K = 1), written **before**
+the commit point under `p/{p}/b/{b}/snapshot/{N}/{commandId}.json` (write-once) instead of `snapshot/{N}.json`;
+`journal/{N}` stays the only commit point and `readVersion(N)` follows its `commandId` to the snapshot. Snapshots of
+lost commits stay as orphans (nothing deleted, D-84).
+
 ### 3. Port operations and their guarantees
 
 | Operation | Guarantee |

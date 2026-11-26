@@ -1,6 +1,6 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21); other operations follow their rows (3D-15..3D-21, 3D-71)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `MOVE_VERTEX` / `MOVE_EDGE` / `OFFSET_FACE` / `SPLIT_FACE` / `INSERT_ROOF_BREAK` / `MERGE_FACES` (3D-15), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21), `FIT_PLANE` command (3D-71), `UNDO` / `REDO` / `RESTORE_BASELINE` (3D-18), repair `REMOVE_FACE` / `HEAL_HOLE` / `FIT_TO_SHARED_EDGE` / `ALIGN_JUNCTION` (3D-17); other operations follow their rows (3D-15..3D-21, 3D-71)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
@@ -51,7 +51,7 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   `cityjson` is the parsed document the model was imported from (kept by the service, never written); the output is a
   CityJSON document with this building only (D-192); `findings` (`PRECISION_LOSS`) go to `validateModel` (D-151).
   Refusals throw `ExportError` (`INVALID_PAYLOAD` / `NOT_FOUND`) or the `crs` error (`INVALID_CRS`).
-- `executeCommand(model, command, { toleranceProfile, clock, ids?, previewId?, previousIssues? })` -> `{ result,
+- `executeCommand(model, command, { toleranceProfile, clock, ids?, previewId?, previousIssues?, points? })` -> `{ result,
   model, journal?, modelLevel? }` (3D-14, spec §3, D-119). Sync, pure. `result` is a contract `command-result`:
   PREVIEW (`previewId`, default `<commandId>-preview` [A]; the input model object returned, nothing persisted),
   COMMITTED (`model` = new version, `journal` = contract `journal-entry` without `operationId` / `actorId`, which the
@@ -59,7 +59,12 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   CONFLICT (`error` = contract `error`; the input model object returned unchanged). Kernel-side refusals before the
   operation: unknown kind `INVALID_PAYLOAD`, a kind without a module yet `INTERNAL`, other `buildingId` `NOT_FOUND`,
   stale `expectedVersion` `VERSION_CONFLICT` (status CONFLICT, as the contract example) [A]. Implemented kinds:
-  `REPLACE_ROOF`, `REBUILD_ENVELOPE`; see `ops` below.
+  `REPLACE_ROOF`, `REBUILD_ENVELOPE`; see `ops` below. `points` (3D-71): for `FIT_PLANE` the points the service read
+  for the payload `selection` (Float64Array, x y z, LOCAL; services/kernel `commandPoints`); `index.js` gives the op a
+  `planeFit(selection)` closure over `cloud.fitPlane`, so `ops` does not import `cloud` (module DAG unchanged).
+  History kinds `UNDO`, `REDO`, `RESTORE_BASELINE` (3D-18) take
+  `options.history = { journal, baseline?, actorId }`: the building's journal entries oldest first (with `actorId`), the
+  immutable baseline, the authenticated actor; see `ops` history below.
 
 ## Modules (`src/`, DAG of 3D-ADR-0002 C1 rule 2, enforced by `check:arch`)
 `brep` (3D-09) is the leaf every other module imports. Its surface (`src/brep/index.js`), for kernel modules only:
@@ -94,9 +99,20 @@ same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 ru
 
 ## `ops` (3D-14; spec §3, §10; imports `brep`, `solve`, `validate`)
 Surface `src/ops/index.js`: `runPipeline` (wrapped by `executeCommand`), `OPERATIONS` / `OPERATION_KINDS` (registry; rows
-3D-15..3D-21, 3D-71 add `{ run(draft, payload, ctx) }` entries), `contractError`, `freshIds`.
+3D-15..3D-21, 3D-71 add `{ run(draft, payload, ctx) }` entries), `contractError`, `freshIds`, `runHistory` /
+`historyStacks` / `HISTORY_KINDS` (3D-18).
 
-Pipeline (`pipeline.js`, spec §3 r1-r6): kernel envelope checks -> `brep.transact` (isolated copy): operation module
+History (`history.js`, 3D-18, spec §10.9; D-291..D-294): not a registry entry - `executeCommand` dispatches the three kinds
+to `runHistory`, because they need the journal and baseline and pass no commit gate. Same envelope checks and output
+shape as the pipeline; payload must be `{}`. `historyStacks(journal)` replays: an edit (incl. `RESTORE_BASELINE`) pushes
+and clears redo, `UNDO` moves the top to redo, `REDO` back; a journal that does not replay or end at the model version
+-> `INTERNAL` (service fault). UNDO applies the top entry's `inversePatch` (original ids), REDO its `forwardPatch`,
+RESTORE_BASELINE the baseline (entities and model-level members); each a new version; `state` and shell `isClosed`
+from validation. Refusals: empty stack / already baseline `INVALID_PAYLOAD`; top of another actor `FORBIDDEN` (with its
+`commandId`). Idempotency on `commandId` is the service's (3D-23, D-68). Limitation: model-level members other than
+`state` are not restored by UNDO / REDO, a patch cannot carry them (Q-31).
+
+Pipeline (`pipeline.js`, spec §3 r1-r6; the op context carries `actorId` and the optional `planeFit`, 3D-71): kernel envelope checks -> `brep.transact` (isolated copy): operation module
 builds the candidate in plane terms -> constraint step (`constraints.js`: hard constraint on a removed entity ->
 `CONSTRAINT_CONFLICT`, soft one dropped, D-213; model constraints compiled and solved for the operation's
 `movableFaceIds` / conditions, re-checked at the result) -> `runChecks` COMMIT_VALIDATION with full solid, shell
@@ -114,6 +130,7 @@ checked only when the candidate has an ERROR. A PREVIEW report never confirms (s
 | `geom2.js`, `errors.js`, `ids.js`, `registry.js` | plan helpers; error objects (HTTP table of spec §2.4); default id source skipping every id of the input (deterministic) |
 | `align-line.js` (3D-16) | `ALIGN_RIDGE` / `ALIGN_EAVE` (spec §10.7 r1, r2; v0.2 C.7): both `targetLine` points on every face of the edge (hard, `planarTolM`); movable = adjacent roof faces without a hard constraint, walls fixed (D-232); `KEEP_PLANES` moves nothing (off-line target -> `CONSTRAINT_CONFLICT`, GT-09); `KEEP_EAVES` / `KEEP_RIDGE` lock the `EAVE` / `RIDGE` lines of each movable face as fixed points on its plane; `FIT_MEASUREMENTS` adds POINT terms; other modes `INVALID_PAYLOAD` `INVALID_MODE` |
 | `match-elevations.js` (3D-16) | `MATCH_ELEVATIONS` (spec §10.7 r3): `EQUAL_Z` hard per vertex (`zAlignTolM`), target number (WORLD mapped) / MIN / MAX / MEAN of current z; movable = non-vertical roof faces defining the vertices, no hard constraint (D-231) |
+| `fit-plane.js` (3D-71) | `FIT_PLANE` (spec §10.12 r4, §9 r4-r5): payload checked (`apply`, `faceId` for FACE_PLANE only, unknown face -> `INVALID_PAYLOAD`), fit refusals passed on (`INVALID_MEASUREMENT` with `pointCount` / `inlierRatio`, the face named); `MEASUREMENT` adds a PLANE measurement `[[nx, ny, nz, d]]` LOCAL, σ = RMSE on all three axes, `fit` RANSAC_SVD, `MEASURED`, `createdBy` = `actorId`, `sourceId` null (D-280, -2); `FACE_PLANE` sets the face's `supportPlane` (outward sign kept) and re-derives its vertices, hard constraints re-checked by the constraint step (D-282). No points from the service -> `INTERNAL` [A] |
 | `align-common.js` (3D-16) | payload `hardConstraintIds` held hard (D-234); POINT measurements soft on the nearest adjacent roof plane, weight 1/σz² (D-233) |
 
 Readings [A] for the owner's review: unknown `footprintId` / measurement id -> `INVALID_PAYLOAD`; a non-POINT
@@ -130,6 +147,22 @@ condition ids in conflicts are the edge (target line), the locked half-edges, th
 Lineage (D-212): kept ids are not in `mapped`; old roof faces map to all new roof faces; new half-edges and
 vertices without a predecessor are only in the patch `added` (the owner's reading of spec §10.1 Accept 3).
 
+### Repair operations (3D-17; spec §10.5, §10.8; D-76, D-284..D-287)
+
+| File | Contents |
+|---|---|
+| `fit-to-shared-edge.js` | `FIT_TO_SHARED_EDGE`: B copies welded into the closest A copies (twin pair opposite, else `INVALID_TOPOLOGY`); welded vertex derived from the union of planes; B movable -> hard ON_PLANE of the A edge ends (O1 for the rest); hard `MAX_DISPLACEMENT` per weld -> `CONSTRAINT_CONFLICT` (minimal set) |
+| `remove-face.js` | `REMOVE_FACE`: face, its half-edges and unused vertices deleted, twins opened, shell / roof component updated (empty component deleted [A]); vertices with < 3 independent planes become EXPLICIT; VALID_SOLID target refused by the gate |
+| `heal-hole.js`, `heal-closing.js` | `HEAL_HOLE`: edges chained into the new ring (several ways -> `UNDERCONSTRAINED_GEOMETRY`, open -> `INVALID_TOPOLOGY`); plane copied / fitted (POINT measurements, D-215) / fitted to the hole; closing compatible when each boundary vertex moves <= `maxDisplacementM` (default `planarTolM`, D-284), stays on its planes, ring simple with area; else `INVALID_GEOMETRY` with `details.admissibleModes` (D-285); kind by spec §6 r7 + `SEMANTICS_INFERRED` (D-286) |
+| `align-junction.js`, `junction-point.js` | `ALIGN_JUNCTION`: node point by majority (planes through the current vertex position within `planarTolM`, containing the fixed planes, spread <= `topologySnapTolM`) else least squares on the fixed planes (D-287); moving planes get "contains the point" (stage 1, O1); optional `maxDisplacementM` per vertex |
+| `repair-topology.js` | ring walk, half-edge drop, vertex merge, zero-length edge collapse, the `MAX_DISPLACEMENT` hard condition |
+
+Readings [A] for the owner's review: `HEAL_HOLE` lists `FIT_MEASUREMENTS` as admissible when the model holds >= 3 POINT
+measurements (cannot be checked before the points are chosen); `COPY_NEIGHBOR_PLANE` needs a face beside the hole
+(`INVALID_PAYLOAD` otherwise); an ambiguous ring gives `admissibleModes: []`; a weld with < 3 independent planes keeps
+the A copy explicit; majority = planes through the current node position (with four planes every three meet).
+GT-19 "Fixed" variant (hard `ON_PLANE` `[face]` + `Plane` on east, north, west) is refused `CONSTRAINT_CONFLICT`
+listing `f-roof-e` since 3D-103 (D-289).
 **3D-21** (spec §10.12): `set-semantics.js` (`SET_SEMANTICS`: only `surfaceKind` changes; a face leaving RoofSurface
 leaves its roof component, an emptied component is deleted, a new roof face joins none, D-227) and
 `constraint-commands.js` (`SET_CONSTRAINT`: the constraint is read by `compileConstraints` before it is stored, a
@@ -150,6 +183,28 @@ D-257; GABLE ridge on the fall line through the outline centroid, `ridgeRiseM` a
 only, D-258), `remove-installation.js` (deletes the node, its children and every entity of their bodies; faces
 leave roof components). The roof face is never cut (D-260): the installation touches it. Refusals D-259;
 `measurementId` sizing -> `INVALID_MEASUREMENT` (Q-28). New semantic node id kind `installation` (`installation-<n>`).
+## Core edits (3D-15)
+Operations on the pipeline (spec §10.4, §10.6; D-297..D-306), one entry each in `ops/registry.js`:
+
+| File | Kind | Plane terms |
+|---|---|---|
+| `move.js` | `MOVE_VERTEX`, `MOVE_EDGE` | target points as hard point-on-plane conditions on movable incident planes; fixed incident planes checked (`CONSTRAINT_CONFLICT`); a hard FIXED_POINT on the moved vertex checked directly (GT-10); O1 for free degrees; only an explicit vertex (fewer than three planes) takes the target as position |
+| `offset-face.js` | `OFFSET_FACE` | `d_new = d - offsetM`, pinned by three hard points (`plane-pin.js`); fixedMode interlock (D-300); offset 0 -> `noChange` (D-301) |
+| `face-cut.js`, `split-face.js` | `SPLIT_FACE` | cut topology (D-299, D-302), both parts on the same plane, no vertex moved |
+| `insert-roof-break.js` | `INSERT_ROOF_BREAK` | same cut; the part holding `movingSidePoint` gets `newPlane` (pinned), neighbours re-derived (D-297) |
+| `merge-faces.js` | `MERGE_FACES` | union loops, joint vertices dissolved, COPLANAR / REFIT (D-303) |
+| `inherit.js` | - | constraint policy table on split / merge (D-298); lineage in `warnings` (D-306) |
+
+Constraint policy (D-298): split - plane kinds COPY_TO_CHILDREN (PRESERVE_ORIGINAL on a roof break), edge kinds
+copied to the new fragment of a crossed edge (FIXED_LINE / FIXED_EAVE / FIXED_RIDGE: TRANSFORM_PARAMETERS, the copy
+fixes the fragment's points), vertex kinds PRESERVE_ORIGINAL, TBD / unknown kinds REJECT_IF_UNSUPPORTED; merge -
+REBIND_TO_CHILD, duplicates and trivial self relations dropped, hard PERPENDICULAR of one face refused. No kind uses
+REBIND_TO_CHILD on a split: no constraint kind names a sub-region of a face.
+
+Limitations (first version, D-302): a cut must cross the outer ring exactly twice and no hole; constraint lineage is
+text in `warnings`, not in `topologyLineage` (D-306); after `INSERT_ROOF_BREAK` only the chord's edge role is
+recomputed (other roles kept); `FIXED_POINT` without `target` and the FIXED_* edge kinds fix the positions the model
+holds before the operation (compile reads the draft before the solve).
 
 **3D-19** (spec §10.10; D-3D19-1..D-3D19-10): `rigid-move.js` (TRANSLATE_BUILDING, ROTATE_BUILDING: one isometry on every
 plane, vertex, footprint, construction entity, LOCAL measurement and constraint target; WORLD measurements and
@@ -187,12 +242,13 @@ of O1 (stage 1) or singular values of the objective in the hard null space (stag
 counted per face by rank (rotations = rank of the normal part, offsets = the rest), reported `"<faceId>:ROTATION"` /
 `"<faceId>:OFFSET"` (D-171). A movable plane no condition reads stays bit-identical (spec §5 r7).
 
-Constraint kinds (D-169; tolerance of the hard check D-170; [S] stated by the spec, [P] accepted proposal):
+Constraint kinds (D-169, amended by D-289; tolerance of the hard check D-170; [S] stated by the spec, [P] accepted proposal):
 
 | Kind | entityIds | target | Condition on the movable planes | Hard tolerance |
 |---|---|---|---|---|
 | FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point | `planarTolM` |
 | ON_PLANE [S] | [vertex, face] | V3 optional | the target point, else the derived vertex, lies on the face plane | `planarTolM` |
+| ON_PLANE [D-289] | [face] | Plane (required) | fixed face plane: unit normal equals the target's (scaled to unit, oriented like the stored face normal, D-312) and offset equals its `d` | normal `numericEpsilon`, offset `planarTolM` |
 | FIXED_LINE / FIXED_EAVE / FIXED_RIDGE [S] | [half-edge] | - | both incident planes contain the edge's current line; EAVE / RIDGE need that `edgeRole` | `planarTolM` |
 | EQUAL_Z [S] | [vertex, vertex, ...] or [vertex...] + number | number optional | derived z equal to the first vertex's (or to the number) | `zAlignTolM` |
 | COINCIDENT [P] | [vertex, vertex] | - | derived positions equal | `topologySnapTolM` |
@@ -278,6 +334,10 @@ run spread ~0.1 ms).
   covers Face / HalfEdge / Vtx; model-level changes (`state`, `frame`) are reported beside the patch (Q-31).
 
 ## Tests and golden tests
+- `test/ops/history.test.js`, `test/golden/gt-12.golden.test.js` (3D-18): GT-12 Undo 520 m3 with every entity equal
+  to the input version, Redo 540 m3, versions 1 -> 4; RESTORE_BASELINE after GT-07 equal to the baseline, version + 1,
+  undoable, clears redo; stack order, redo cleared by an edit, foreign stack top FORBIDDEN, empty stack and
+  already-baseline INVALID_PAYLOAD, PREVIEW = COMMIT patch, deterministic output, UNDO into DRAFT_SOLID without gate.
 - `test/brep/` (geometry, model, transaction; 3D-09): every golden input sound, on its planes, byte-identical
   `save -> load -> save`; broken copies reported; patches and lineage valid against the contracts (Ajv).
 - `test/validate/` (3D-12): every code x {DRAFT_SOLID, VALID_SOLID} (Accept 1), lineage "new" via real transactions
@@ -315,7 +375,12 @@ run spread ~0.1 ms).
 - Golden: `test/golden/gt-25.golden.test.js` (GT-25, world -> local -> world <= 0.001 m; measured 0 m).
 - Golden GT-20 (`gt-20.golden.test.js`): normal deviation 0.0051 deg (<= 0.2), RMSE 0.00778 m (<= 0.015), inliers
   444 / 500 = 0.888 (>= 0.85). GT-21 (`gt-21.golden.test.js`): south slope mean 0.07935 m over 447 points
-  (0.080 +/- 0.005). Both run the kernel functions; the `FIT_PLANE` command step is 3D-71.
+  (0.080 +/- 0.005). Both run the kernel functions; GT-20 also runs its step as the `FIT_PLANE` command (3D-71):
+  the committed PLANE measurement carries the same fit (since 3D-80: 0.0020 deg, RMSE 0.00765 m, 441 / 500).
+- `test/ops/fit-plane.test.js` (3D-71): MEASUREMENT patch (one Measurement3D, layout and σ), PREVIEW = COMMIT;
+  FACE_PLANE on GT-03's south slope re-derives `v-e0`, `v-e1`, `v-r0`, `v-r1` (spec §10.12 Accept 2); a fit 0.3 m higher
+  gives eaves z 5.3 and ridge y 3.8, z 8.15 (hand-computed); hard FIXED_POINT -> `CONSTRAINT_CONFLICT`; 29 points,
+  ratio < 0.6, payload and host refusals, model unchanged.
 - `test/cloud/` (3D-22): fit (clean, outliers, determinism, selection, refusals at 29 points and ratio < 0.6, Ajv
   against `plane-fit-result` / `error`), heatmap (assignment, buffer, `faceIds`, polygon edge distance, refusals, Ajv
   against `heatmap-request` / `heatmap-result`), eigen solver, generator, ring test.
@@ -325,6 +390,8 @@ run spread ~0.1 ms).
 - `test/solve/` (3D-13): stage-1 parity with the 3D-08 spike, conflicts and minimal sets, underconstrained shapes valid
   against the `error` contract, soft weights against a closed form, compiler table, and the property test of spec §5
   Accept 3 (60 seeded scenarios on GT-03: no plane outside the movable set in the result, input untouched, deterministic).
+  `fixed-plane.test.js` (3D-103): ON_PLANE `[face]` + `Plane` target - compile shape and tolerances, rejections, orientation
+  and scale of the target, driven plane, conflicts on movable and fixed faces.
 - `test/canary.test.js`: marker format, entry exports it.
 - `test/import/` (3D-10): contract validity (Ajv) of model, baseline, report; `checkTopology` clean; vertices EXPLICIT
   with `sourceRef` (D-70); frozen input; determinism; semantics inference thresholds; CRS refusals and ENU import;

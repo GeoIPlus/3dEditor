@@ -215,6 +215,9 @@ export, validate (3D-ADR-0002 C1). Function names are fixed by 3D-09.
 - Export: model -> CityJSON (§7).
 - Validate: model + mode -> `validation-report` (§8).
 - Plane fit and heatmap on point arrays passed in (§9).
+- Cloud points into the building frame [D] (D-164, D-196..D-198; 3D-69): `cloudToLocal(frame, cloudCrs, points)` maps
+  points of the cloud's horizontal CRS into the building's local frame; `localBoxToCloud(frame, cloudCrs, box)` gives
+  the box of the cloud world that holds a local box (§4a rules 6-8, §9 rule 8).
 - Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
 
 **Rules** (v0.2 C.0, §15.5; v0.3 §3, §6):
@@ -287,12 +290,15 @@ isolated copy, patch + inverse patch + lineage between two versions; RTG project
 
 ## 4a. `crs` - CRS resolution, local metric frame, write-back (3D-32)
 
-**Purpose.** Map one building between its file CRS and a local metric frame, and write changed vertices back [D]
-(D-92, D-93, [3D-ADR-0007](../decisions/adr/3D-ADR-0007-crs-transform.md), D-125).
+**Purpose.** Map one building between its file CRS and a local metric frame, and write changed vertices back; map
+point-cloud coordinates of another horizontal CRS into the building's world [D]
+(D-92, D-93, [3D-ADR-0007](../decisions/adr/3D-ADR-0007-crs-transform.md), D-125; D-164, D-197, D-198, 3D-69).
 
 **API.** `resolveCrs(referenceSystem)`; `createMetricFrame(referenceSystem, originWorld)` with `toMetric` / `toWorld`;
-`writeBackVertices({ frame, transform, fileVertices, changed, exportRoundDecimals })`; `decodeVertex`. Internal to the
-kernel (not in `index.js`); `import` (3D-10) and `export` (3D-11) call it.
+`writeBackVertices({ frame, transform, fileVertices, changed, exportRoundDecimals })`; `decodeVertex`;
+`createCrsMapping(fromRef, toRef)` -> `{ identity, forward, inverse }` (world of `from` <-> world of `to`, each in its
+own axis order). Internal to the kernel (not in `index.js`); `import` (3D-10) and `export` (3D-11) call it; the kernel
+entry composes `createCrsMapping` with the building's metric frame into `cloudToLocal` / `localBoxToCloud` (§3).
 
 **Rules.**
 1. A CRS reference is the CityJSON 2.0 OGC URL (`http(s)://www.opengis.net/def/crs/{EPSG|OGC}/{version}/{code}`) or
@@ -305,11 +311,24 @@ kernel (not in `index.js`); `import` (3D-10) and `export` (3D-11) call it.
    geodetic -> geocentric with `proj4` and the topocentric rotation; heights as in the file.
 5. Write-back: untouched vertices keep their file integers; changed vertices are rounded (§7 rule 2) and quantised to
    the file's own `transform`; a coarser grid gives `PRECISION_LOSS` (D-70, D-123).
+6. A point cloud in another horizontal CRS than the building is reprojected on the server, not refused (D-164): world
+   of the cloud CRS -> geodetic coordinates -> world of the building CRS -> the building's metric frame of rule 4.
+   Heights pass through unchanged (D-93). The same horizontal CRS is the identity: points are not touched.
+7. Reprojection only on one geodetic datum (EPSG datum code of both CRSs). Different datums -> `INVALID_CRS` with
+   reason `DATUM_MISMATCH` naming both datums; no Helmert, no grid shift, no "equal ellipsoid" shortcut (D-197).
+8. Projections: each projected CRS of the table carries its PROJ projection definition, kept only when `proj4` agrees
+   with PROJ within 0.001 m at the sample points of its area of use; every method `proj4` implements and the table
+   generator can map from `proj.db` qualifies, not only Transverse Mercator. A projected CRS without such a projection
+   -> `INVALID_CRS` with reason `NO_PROJECTION` (D-198).
 
 **Accept:**
 - Accept: an unedited geographic-CRS fixture writes back identical integers (GT-I4 rule, 0.001 m); an edited one writes
   changed vertices within 0.001 m; a projected file takes the same path with a translation only; unknown or unsupported
   CRS -> `INVALID_CRS` (tests in `packages/geo-model3d/test/crs/`).
+- Accept: a building in EPSG:4937 with a cloud in EPSG:25832 gives the `FIT_PLANE` result and heatmap values of the
+  all-EPSG:25832 case within `planarTolM`; a cloud in the building's CRS takes the unchanged path bit for bit; two
+  datums -> `INVALID_CRS` `DATUM_MISMATCH` (3D-69: `test/crs/reproject.test.js`,
+  `services/kernel/test/cloud-crs.test.js`).
 
 ---
 
@@ -518,7 +537,10 @@ service).
 (v0.3 §7). Snapping to points is a client function (§12).
 
 **API.** Input: points as typed arrays in the local frame, supplied by the service through the points port (box query;
-interim own adapters, D-35: uncompressed LAS read whole by 3D-22, COPC by box by 3D-70, D-133) (3D-ADR-0002 C1/C2). Plane fit -> `plane-fit-result`; heatmap -> `heatmap-result`.
+interim own adapters, D-35: uncompressed LAS read whole by 3D-22, COPC by box by 3D-70, D-133) (3D-ADR-0002 C1/C2).
+The service reads a cloud through a dataset descriptor `{ port, horizontalCrs }` (D-196); it maps the local box with
+`localBoxToCloud` and the returned points with `cloudToLocal` (§3, §4a rules 6-8).
+Plane fit -> `plane-fit-result`; heatmap -> `heatmap-result`.
 
 **Rules.**
 1. Plane fit: robust fit (RANSAC + SVD refinement on inliers); returns plane, inlier count, inlier ratio, RMSE (v0.3 §7).
@@ -538,10 +560,20 @@ interim own adapters, D-35: uncompressed LAS read whole by 3D-22, COPC by box by
    reported faces; points are still assigned to their nearest face of the whole model. The threshold `thresholdM` is
    configurable (v0.3 §7): a required request field with no server default [D] (D-131).
 7. Point coordinates come from the source double-precision data (v0.3 §7).
+8. Cloud CRS [D] (D-165, D-196): the cloud's horizontal CRS comes from the context, never from the cloud file's own
+   CRS records: the service-side dataset descriptor `{ port, horizontalCrs }` of the opened dataset, filled by the host
+   from the CP 3DQM extension `dataset` member (SC 3D-43) or from a CRS the user set when opening the dataset. The
+   points port keeps answering a world box in the dataset CRS; `heatmap-request` and the `FIT_PLANE` payload are
+   unchanged (no `contracts/model3d` change). Unless the cloud shares a projected building's CRS, the world box is the
+   bounds of the mapped local box grown by the earth-curvature bound d^2 / (2R) (d = largest horizontal distance of a
+   box corner from the frame origin, R = a lower bound of the radius of curvature of every table ellipsoid); the
+   kernel then filters the exact selection (D-132). A cloud CRS refused by §4a -> `INVALID_CRS` with its reason.
 
 **Accept:**
 - Accept: GT-20, GT-21 (§13).
 - Accept: 29 points (or an inlier ratio below 0.6) -> `INVALID_MEASUREMENT` carrying the count / ratio.
+- Accept: a cloud in another CRS on the building's datum gives the same plane fit and heatmap as in the building's CRS
+  (§4a accept, 3D-69); every point of the local box lies inside the grown world box (`test/crs/box.test.js`).
 
 ---
 
@@ -582,7 +614,7 @@ semantic inputs listed per operation below; their schema names are 3D-06's.
 | `IMPORT_BUILDING` | 3D-10 | §6 | - |
 | `REPLACE_ROOF`, `REBUILD_ENVELOPE` | 3D-14 | v0.2 C.1-C.4, §11.4 | R-01..R-04 |
 | `MOVE_VERTEX`, `MOVE_EDGE` | 3D-15 | §10.4 (C.11 restated) | movable incident faces |
-| `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | 3D-15 | v0.2 F-31, C.5, C.6, C.10, §13.5 | `MERGE_COPLANAR`, `MERGE_REFIT`; `REMOVE_COLLINEAR_VERTICES`, `ALIGN_SELECTED_EDGES` |
+| `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES` (3D-15); `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` (3D-104, D-305) | 3D-15 | v0.2 F-31, C.5, C.6, C.10, §13.5 | `MERGE_COPLANAR`, `MERGE_REFIT`; `REMOVE_COLLINEAR_VERTICES`, `ALIGN_SELECTED_EDGES` |
 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | 3D-16 | v0.2 C.7, F-34 | `KEEP_EAVES` / `KEEP_RIDGE` / `KEEP_PLANES` / `FIT_MEASUREMENTS` |
 | `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | 3D-17 | v0.2 C.14, §10.5 (C.8 restated), C.9 | `COPY_NEIGHBOR_PLANE`, `FIT_MEASUREMENTS`, `FILL_PLANAR`; `KEEP_PRIMARY_PLANE`, `REFIT_SELECTED_PLANES` |
 | `UNDO`, `REDO`, `RESTORE_BASELINE` | 3D-18 | v0.2 §13.6 | empty payload for `UNDO` / `REDO` |
@@ -704,8 +736,8 @@ Default values: none; the payload requires `maxDisplacementM`, there is no defau
 
 **Purpose / API.** Face-level edits of v0.3 §6 and E-08. Inputs per kind: face id(s), signed offset along the unit normal
 (`OFFSET_FACE`); split line (`SPLIT_FACE`); break line + new plane / ridge constraint (`INSERT_ROOF_BREAK`); adjacent faces
-+ mode (`MERGE_FACES`); candidate list confirmation (`REMOVE_DETAILS`); mode + edges (`STRAIGHTEN_FACE`); face + actual
-intersection line (`TRIM_FACE`); face + new boundary within its plane (`EXTEND_FACE`).
++ mode (`MERGE_FACES`); candidate list confirmation (`REMOVE_DETAILS`); mode + edges (`STRAIGHTEN_FACE`); face + cutting
+face + kept side (`TRIM_FACE`); face + open boundary edge + target face (`EXTEND_FACE`).
 
 **Rules.**
 1. `OFFSET_FACE`: the plane moves parallel to itself (`d` changes, `normal` fixed); all affected boundaries are
@@ -721,21 +753,130 @@ intersection line (`TRIM_FACE`); face + new boundary within its plane (`EXTEND_F
    valid domain; internal boundary removed, external kept; semantics inherited if compatible, otherwise a mapping is
    requested. `MERGE_REFIT`: weighted refit only when the operator states movable vs fixed entities; no implicit fit
    against fixed constraints (v0.2 C.6).
-5. `REMOVE_DETAILS`: candidates by `minFaceAreaM2` (+ shape / measurements), shown as a remove/keep list for
-   confirmation; semantically significant dormers/chimneys are kept even below the threshold; transactional per building
-   (v0.2 C.6; v0.3 §6).
-6. `STRAIGHTEN_FACE`: modes `REMOVE_COLLINEAR_VERTICES` (topologically safe) and `ALIGN_SELECTED_EDGES` (with
-   constraints); `FORCE_RECTANGLE` of v0.2 is not in v0.3 and is dropped; never replace an arbitrary or L-shaped roof by a
-   bounding rectangle; check unchanged outer boundaries and neighbours (v0.2 C.10; v0.3 §6). Collinearity tolerance:
-   Q-18.
-7. `TRIM_FACE` removes part of a face along an actual intersection line; `EXTEND_FACE` moves a boundary within the face's
-   support plane; both check the resulting topology (v0.2 §13.5).
+5. `REMOVE_DETAILS` (3D-104; D-325..D-327; v0.2 C.6; v0.3 §6). Payload: `confirmedRemoveIds`, `keepIds`, optional
+   `maxAreaM2` (finite, `>= minFaceAreaM2`, otherwise `INVALID_PAYLOAD`; default `minFaceAreaM2`). No new profile field,
+   no shape, width or aspect criterion in v1.
+   1. **Candidates**: faces of the building's own bodies with 3D area `< maxAreaM2` (equal is not a candidate). Never
+      candidates: faces of a `BuildingInstallation` (dormers, chimneys, D-260), faces of other bodies, faces of a
+      protected parametric component. Small area alone does not make a face removable.
+   2. **Discovery** (Q-34 closed): PREVIEW with `confirmedRemoveIds = []` is the discovery mode. It changes nothing (no
+      geometry, topology, constraint, semantics or provenance change, no new version, no undo entry) and returns the
+      optional result field `candidates: [{ faceId, areaM2, removable, reason }]`, always present (an empty array when
+      there are none) on a successful discovery PREVIEW, absent for other operations. Order: `areaM2` ascending, then
+      `faceId` ascending; no duplicate `faceId`. `removable` is the individual check of r5.4; `reason` is `null` or the
+      §2.4 domain code the removal of that face alone would get (`INVALID_GEOMETRY`, `INVALID_TOPOLOGY`,
+      `CONSTRAINT_CONFLICT`); no new public code. No separate endpoint; not in `warnings` or the validation report.
+      Schema change (D-18 approved): `command-result.candidates`, `command-payload-remove-details.maxAreaM2` - in 3D-105.
+   3. **Reconstruction in plane terms** (v1; the neighbour planes are not changed, no solver step):
+      - triangle face with three distinct, independent neighbour planes: the face and its plane are deleted; its three
+        vertices become one vertex derived from the three neighbour planes (rank 3, a unique, well-conditioned point);
+      - quadrilateral face: the face is replaced by one edge on the line of the two neighbour planes across its two
+        opposite longest sides (never two adjacent sides; the pair must be unambiguous); the edge's ends are derived from
+        that line and the two end neighbour planes; the edge has non-zero length;
+      - every other configuration (pentagon and more, holes, a repeated neighbour, neighbour planes parallel and not
+        coincident - for example a wall jog between parallel walls - near-singular intersections) is `removable = false`.
+        No hidden `OFFSET_FACE`, `MERGE_FACES`, neighbour plane move or constraint change.
+   4. **Individual check**: the face exists and is a candidate; no hard constraint, measurement reference, semantic or
+      component dependency is lost (a face so referenced is `removable = false`, `CONSTRAINT_CONFLICT`); r5.3 applies;
+      the result has no new error (r5.6); the displacement limit of r5.5 holds.
+   5. **Displacement limit** (D-330, Q-47 closed; as D-284): `maxAreaM2` sets only detection, not the
+      admissible deformation. Optional payload field `maxDisplacementM` (schema change in 3D-105, D-18 approved);
+      omitted -> the project's `planarTolM`. Displacement = the largest distance from a vertex of the removed face to the
+      vertex it collapses into. Over the limit -> `removable = false`, reason `CONSTRAINT_CONFLICT` (as D-76); a
+      confirmed face over it refuses the command with that code. Discovery and COMMIT use the same `maxDisplacementM`.
+   6. **Existing errors**: the `DEGENERATE_FACE` errors of the faces the command removes are not a reason to refuse it;
+      the validator is not switched off, no other error is masked, `VALID_SOLID` only after full validation (§3 r4).
+   7. **Confirmation and commit**: PREVIEW with a non-empty `confirmedRemoveIds` simulates the removal of the whole set;
+      COMMIT re-checks it on the current version (§3 version check; no new preview token). An id not in the current
+      candidate list (same `maxAreaM2`) -> `INVALID_PAYLOAD`; a candidate whose removal is refused -> its r5.2 code. The
+      set is checked jointly (individually removable faces can conflict); one failure refuses the whole command, nothing
+      else is removed, no partial removal; the order of ids does not change the result (faces processed by id).
+      COMMIT with `confirmedRemoveIds = []` is a valid empty operation without a new version or undo entry (D-301).
+      Transactional per building (one command per building).
+   8. Future: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria,
+      groups of details, LoD generalisation, check against measurements - row 3D-112.
+6. `STRAIGHTEN_FACE` (3D-104; D-328, D-329; v0.2 C.10; v0.3 §6): modes `REMOVE_COLLINEAR_VERTICES` and
+   `ALIGN_SELECTED_EDGES`; `FORCE_RECTANGLE` of v0.2 is not in v0.3 and is dropped; never replace an arbitrary or
+   L-shaped roof by a bounding rectangle. No contract, profile, result, solver or pipeline change.
+   1. `REMOVE_COLLINEAR_VERTICES` (Q-18 for this kind closed: `planarTolM`, no new field). A vertex `v` of a ring of `F` is
+      removed only when all hold: (a) topological degree 2; (b) both its half-edges in `F` have the same neighbour face
+      `N`; (c) its distance to the line through its two ring neighbours `<= planarTolM` (checked always, also when `F`
+      and `N` are coplanar); (d) its projection lies inside that segment; (e) no constraint, measurement, semantic
+      boundary, component or parametric reference is lost; (f) both faces stay valid. Effect: `v` leaves the rings of `F`
+      and `N`, the two consecutive half-edges of each ring become one (the criterion of `ops/merge-faces.js` dissolve);
+      plane equations, face ids and the other vertex ids unchanged; lineage per §2 (removed vertex deleted, two edges
+      -> one); no solver call.
+   2. Several vertices: processed in id order, one at a time, the local topology re-checked after each; the distance of
+      every removed vertex to the final boundary edge stays `<= planarTolM` (no accumulation beyond it). A vertex with a
+      constraint or another significant reference is skipped with a warning, never its constraint removed. No candidate
+      -> valid empty operation without a new version (D-301).
+   3. `ALIGN_SELECTED_EDGES` (D-329): `edgeIds` = at least two distinct half-edges of `F` (`INVALID_PAYLOAD`
+      otherwise) forming one continuous chain without branches (v1; otherwise `INVALID_TOPOLOGY`); every edge has a
+      neighbour face (an open edge -> `INVALID_TOPOLOGY`); no degenerate edge. Reference line `L` = the line of the
+      longest selected edge (3D length; equal lengths within `numericEpsilon` -> lowest edge id). Fixed: the plane of `F`,
+      the plane `N_primary` across that edge, every plane fixed by a hard constraint. Movable: only the planes of the other
+      neighbours `N_i` of the selected edges, each once. Conditions: `L` lies in each `N_i` (hard; two distinct points of
+      `L` pinned, as `plane-pin.js`), MINIMIZE_DISPLACEMENT soft (spec §5, D-110), all hard constraints kept. A fixed
+      plane that already contains `L` stays; one that does not -> `CONSTRAINT_CONFLICT`. Vertices re-derived; a vertex
+      bounded only by `L` takes the point of `L` nearest its old position; vertex order along the chain kept, no
+      inversion, no collapsed edge or degenerate face (otherwise `INVALID_GEOMETRY`); a vertex the solver cannot define
+      -> refusal, no solver change.
+   4. `ALIGN_SELECTED_EDGES` corrects geometry only: no vertex, edge or face is removed or merged; ids, semantics,
+      constraints, measurements, provenance kept. Vertices between different neighbour faces stay after the alignment
+      (r6.1 b); simplification is a separate `REMOVE_COLLINEAR_VERTICES`. Edges already collinear -> valid empty
+      operation without a new version (D-301). Future: an operator-chosen leading edge, `BEST_FIT_LINE` (row 3D-113).
+7. `TRIM_FACE` (3D-104; D-322, D-323; v0.2 §13.5, E-08). Payload (schema change in 3D-105, D-18 approved):
+   `faceId`, `cuttingFaceId` (replaces the free `trimLine`), `keepPoint` (Q-35 closed). Algorithm:
+   1. `L` = plane(`F`) ∩ plane(`G`), `G` = `cuttingFaceId`; planes parallel within `coplanarTolDeg` -> `INVALID_GEOMETRY`;
+      `G == F` or unknown id -> `INVALID_PAYLOAD`.
+   2. `F` is cut along `L` with the cut domain of D-302 and its codes (`ops/face-cut.js`, reused).
+   3. The part holding `keepPoint` stays; `keepPoint` farther than `planarTolM` from `F`, outside `F`, or within
+      `topologySnapTolM` of `L` -> `INVALID_GEOMETRY` (as the side point of D-304).
+   4. The removed part `R`: v1 only a dangling flap - every half-edge of `R` except the chord is open (no twin);
+      otherwise `INVALID_TOPOLOGY` (removing it would open the shell). `R`'s face, half-edges and the vertices no ring
+      uses are deleted. The plane of `F` is unchanged; the chord's ends are derived (planes `F`, `G` and the plane across
+      the crossed edge; explicit when fewer than three, §4 r3).
+   5. Closure: an open half-edge of the kept part that coincides with an open half-edge of another face of the same shell
+      within `topologySnapTolM` (both ends) is paired with it; the state follows `validate` (may become `VALID_SOLID`).
+8. `EXTEND_FACE` (3D-104; D-324; v0.2 §13.5, E-08). Payload (schema change in 3D-105, D-18 approved): `faceId`,
+   `edgeId`, `targetFaceId` (replaces the free `targetLine`). Algorithm:
+   1. `e` = `edgeId` must be a half-edge of the outer ring of `F` (else `INVALID_PAYLOAD`) and open; a shared edge ->
+      `INVALID_TOPOLOGY` (in a closed shell its move is `MOVE_EDGE` / `OFFSET_FACE` of the neighbour).
+   2. The new boundary line `L` = plane(`F`) ∩ plane(`G`); parallel within `coplanarTolDeg` -> `INVALID_GEOMETRY`.
+   3. The two ring neighbours `a`, `b` of `e` are prolonged along their lines: the new ends of `e` are the points of the
+      three planes (`F`, the plane across `a` / `b`, `G`); an open `a` / `b` gives its line in `F` and an explicit end
+      (§4 r3). A line of `a` / `b` parallel to `L` -> `INVALID_GEOMETRY`.
+   4. `L` must lie outside `F` on the far side of `e` (the area of `F` grows); otherwise `INVALID_GEOMETRY` (that is a
+      trim). A self-crossing ring or a collapsed edge -> `INVALID_GEOMETRY`.
+   5. The plane of `F` is unchanged; ids of `F`, `e`, its ends kept (ends re-derived); closure as r7.5.
+9. Decided in 3D-15 (provisional ids, D-38): `INSERT_ROOF_BREAK` payload `newPlane` + required `movingSidePoint`, the
+   part holding it gets `newPlane`, the other keeps plane and face id (D-297); constraint policy on split / merge
+   (D-298); split ids (D-299); `OFFSET_FACE` fixedMode interlock, `INVALID_PAYLOAD` when the mode does not apply
+   (D-300), offset 0 a valid empty operation without a new version (D-301); cut domain and codes (D-302);
+   `MERGE_FACES` survivor, dissolve, REFIT (D-303); refusal codes (D-304). The algorithms of `REMOVE_DETAILS`,
+   `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` (r5..r8) are specified by 3D-104 (D-305, §10.1 r7) and built by 3D-105.
 
 **Accept:**
 - Accept: GT-08 (§13).
 - Accept: `OFFSET_FACE` of one gable slope by +0.1 m with the ridge free: both eaves and the ridge are re-derived; the
   slope normal is unchanged.
 - Accept: `MERGE_FACES MERGE_COPLANAR` on the two faces of GT-08 returns one face with lineage 2 -> 1 and volume 520 m3.
+- Accept (3D-105): GT-26 .. GT-33 (table below; 3D-105 moves them into §13 with their fixtures, D-332).
+- Accept (3D-105): the owner's test lists RD-01..RD-18 and RD-T01..RD-T24 (`REMOVE_DETAILS`), SF-COL-01..SF-COL-14
+  (`REMOVE_COLLINEAR_VERTICES`), SAE-01..SAE-20 (`ALIGN_SELECTED_EDGES`), recorded in D-325..D-329.
+
+**Golden cases of 3D-105** (owner-accepted, D-331; kept here, not in §13, until their fixtures exist, D-332):
+
+| GT | Input and operation | Expected | Module | Row |
+|---|---|---|---|---|
+| GT-26 | GT-03 with slope S1 (south, `z = 5 + 0.75·y`) overshooting the ridge to `y = 4.5` (`z = 8.375`; flap edges and the S1-side gable rakes open, `DRAFT_SOLID`) -> `TRIM_FACE` S1, `cuttingFaceId` S2, `keepPoint` (5; 2; 6.5) | S1 56.25 -> 50 m2; roof 100 m2; S1 plane unchanged; flap vertices deleted; ridge and rakes paired; `VALID_SOLID`; volume 520 m3 | `ops` (`TRIM_FACE`) | 3D-105 |
+| GT-27 | GT-26 input, `keepPoint` (5; 4.25; 8.1875) on the flap | `INVALID_TOPOLOGY` (the removed eave part shares edges with the wall); version unchanged | `ops` (`TRIM_FACE`) | 3D-105 |
+| GT-28 | GT-03 with S1 ending short of the ridge at `y = 3.5` (`z = 7.625`; its top edge, the S2 ridge edge and the S1-side gable rakes open) -> `EXTEND_FACE` S1, top edge, `targetFaceId` S2 | Ends re-derived at (0; 4; 8), (10; 4; 8); S1 43.75 -> 50 m2; roof 100 m2; S1 plane unchanged; `VALID_SOLID`; volume 520 m3 | `ops` (`EXTEND_FACE`) | 3D-105 |
+| GT-29 | GT-03 -> `EXTEND_FACE` S1, eave edge (shared with the south wall), `targetFaceId` S2 | `INVALID_TOPOLOGY`; version unchanged | `ops` (`EXTEND_FACE`) | 3D-105 |
+| GT-30 | GT-03 with an extra vertex (5; 0; 5) on the S1 eave, in the rings of S1 and the south wall -> `STRAIGHTEN_FACE` S1 `REMOVE_COLLINEAR_VERTICES`; then again | 7 faces, 10 vertices, 15 edges; no vertex moved; volume 520 m3; lineage: vertex deleted, 2 -> 1 edges in both faces; second run valid empty, no new version (D-301) | `ops` (`STRAIGHTEN_FACE`) | 3D-105 |
+| GT-31 | Flat roof at `z = 5` on (0; 0), (6; 0), (10; 0.05), (10; 8), (0; 8); south wall in two faces W1 (x 0..6, `y = 0`) and W2 ((6; 0) -> (10; 0.05)) -> `STRAIGHTEN_FACE` roof `ALIGN_SELECTED_EDGES` [eave over W1 (6 m), eave over W2 (4.0003 m)] | Leading edge over W1, W1 and roof planes unchanged; W2 plane `y = 0` within 1e-6; corner (10; 0.05; z) -> (10; 0; z); vertices (6; 0; 0), (6; 0; 5) kept (rank 2, nearest point); roof 79.9 -> 80 m2; volume 399.5 -> 400 m3; no vertex, edge or face removed | `ops` (`STRAIGHTEN_FACE`) | 3D-105 |
+| GT-32 | GT-03 with the corner (10; 4; 8) clipped by a triangle T (9.8; 4; 8), (10; 3.8; 7.85), (10; 4.2; 7.85), area 0.05 m2 (`DEGENERATE_FACE`) -> `REMOVE_DETAILS` discovery with the default `maxDisplacementM`; discovery and COMMIT [T] with `maxDisplacementM` 0.3 | Default: `candidates` = [{T, 0.05, false, `CONSTRAINT_CONFLICT`}] (move 0.25 m > `planarTolM`); 0.3: [{T, 0.05, true, null}], version unchanged; COMMIT: T collapsed to S1 ∩ S2 ∩ east gable = (10; 4; 8); neighbour planes unchanged; 7 faces, 10 vertices; `VALID_SOLID`; volume 520 m3; roof 100 m2 | `ops` (`REMOVE_DETAILS`) | 3D-105 |
+| GT-33 | GT-03 with the ridge cut by a horizontal strip Q at `z = 7.9925` (S1 to `y = 3.99`, S2 from `y = 4.01`), 10 x 0.02 = 0.2 m2 -> `REMOVE_DETAILS` discovery with default threshold; discovery with `maxAreaM2` 0.25; COMMIT [Q] with 0.25 (default `maxDisplacementM`) | Default: `candidates` = []; 0.25: [{Q, 0.2, true, null}]; COMMIT: Q replaced by the edge S1 ∩ S2 from (0; 4; 8) to (10; 4; 8) (long sides opposite); 7 faces, 10 vertices; `VALID_SOLID`; volume 520 m3; roof 100 m2; largest vertex move 0.0125 m | `ops` (`REMOVE_DETAILS`) | 3D-105 |
 
 ### 10.7 `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` (3D-16)
 
@@ -836,13 +977,36 @@ dimensions or a plane-fit measurement; installation id (`REMOVE_INSTALLATION`).
 **Rules.**
 1. Pipeline (v0.2 C.16): measurement source -> roof attachment plane -> placement and bounds -> size (manual or from the
    cloud / plane fit) -> Boolean/trim of the roof only where needed -> installation shell -> validate. The report carries
-   confidence, inliers and the reason of a refusal.
+   confidence, inliers and the reason of a refusal. No case of r6..r9 trims the roof (r6).
 2. `ADD_DORMER`: type `FLAT` or `GABLE`; outline on a roof face + dimensions manual or from plane fit. `ADD_CHIMNEY`:
-   box only; dimensions manual or from the cloud (v0.3 §6).
-3. The installation is a separate closed `BuildingInstallation` body; its base lies in the roof plane (GT-17).
+   box only; dimensions manual or from the cloud (v0.3 §6). Payload fields: `command-payload-add-dormer`,
+   `command-payload-add-chimney`, `command-payload-remove-installation` ([contracts/model3d](../../contracts/model3d/README.md)).
+3. The installation is a separate closed `BuildingInstallation` body; its base lies in the roof plane (GT-17). Its base
+   face is a `ClosureSurface`; its roof faces join no roof component (as D-227) (D-261).
 4. Boolean in P0 only: plane-plane, face-half-space, union of a prism with a shell (K-12, v0.3 §14). Own implementation,
    no third-party Boolean library (D-109, [3D-ADR-0004](../decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md) B1).
-5. `REMOVE_INSTALLATION`: removes the installation and restores the underlying roof face (v0.2 §13.5).
+5. `REMOVE_INSTALLATION`: deletes the installation's semantic node, solid, shell, faces, half-edges and vertices. The
+   roof face was never changed (r6), so it is as before the installation was added (v0.2 §13.5, D-260).
+6. Roof not cut (D-260, reading of GT-17): the roof face is not cut or imprinted; the installation is a separate closed
+   body touching the roof plane; the building's volume is unchanged (GT-17: 520 m3).
+7. `ADD_CHIMNEY` (D-256, D-261): box with vertical walls along the local building axes, `widthM` along local x,
+   `depthM` along local y, base centred on `center` ([V] `packages/geo-model3d/src/ops/add-chimney.js`) in the roof
+   face plane, horizontal top. `heightAboveRoofM` is measured at the lowest (downhill) base corner: top z = lowest base
+   corner z + `heightAboveRoofM` (GT-17: top 7.125 m). A top at or below the highest base corner -> `INVALID_GEOMETRY`.
+8. `ADD_DORMER` `FLAT` (D-257): the body is the vertical prism over the whole outline, base in the roof face plane,
+   horizontal top at the highest outline corner z + `heightM`. `heightM` is the back (uphill) wall height, set by the
+   operator from the cloud or stereo (GT-18: top 7.875 m).
+9. `ADD_DORMER` `GABLE` (D-258): payload field `ridgeRiseM`, required for `GABLE` when `heightM` is given (schema
+   `if`/`then`). Walls as `FLAT` (top at the highest outline corner z + `heightM`); the ridge runs along the roof face's
+   fall line through the outline centroid, `ridgeRiseM` above the wall top; each gable slope reaches the wall top at
+   the outline corner farthest from the ridge on its side. A non-convex `GABLE` outline -> `INVALID_GEOMETRY` [A].
+10. Refusal codes (D-259, §10.1 r6):
+    - unknown `roofFaceId` or `installationId` -> `INVALID_PAYLOAD` naming the id (as D-228);
+    - face not a `RoofSurface` of a `Building` / `BuildingPart` body, or id not a `BuildingInstallation` ->
+      `INVALID_PAYLOAD`;
+    - outline or box not inside the roof face, a point off its plane beyond `planarTolM`, a self-crossing outline, a
+      top not above the base -> `INVALID_GEOMETRY`;
+    - sizing from `measurementId` -> `INVALID_MEASUREMENT` until the measurement layout (Q-28) is defined (row 3D-100).
 
 **Accept:**
 - Accept: GT-17, GT-18 (§13).
@@ -881,7 +1045,8 @@ and export rules (3D-ADR-0002 C2, D-51). Built as its own container image (D-33)
 - Requests and replies are the `contracts/model3d/` messages: commands (PREVIEW / COMMIT), command status by `commandId`
   (v0.3 §9.2: `GET /api/commands/{commandId}`), model read by version (v0.2 D.1), heatmap and export requests. Wire
   binding (HTTPS + JSON baseline) is fixed by 3D-23 with the 3D-08 numbers (3D-ADR-0002 A.4).
-- Ports: storage (versions, journal, baseline, drafts, results; 3D-03, interim file/S3, D-35), points (box query; 3D-22),
+- Ports: storage (versions, journal, baseline, drafts, results; 3D-03, interim file/S3, D-35), points (box query; 3D-22;
+  read through a dataset descriptor `{ port, horizontalCrs }` per opened dataset, D-196, §9 rule 8),
   external validator (3D-12, Q-10), clock/ids, auth.
 
 **Rules.**
@@ -1035,7 +1200,7 @@ Count: 29 tests (GT-I1..GT-I4, GT-01..GT-25); per module: `import` 3, `export` 1
 Final ids assigned at merge (D-38, D-71). Each is recorded in DECISIONS.md. Owner answers of
 2026-11-21 (dialog): D-68 (GT-13 -> 3D-23), D-69 (CP lease only, no own lock), D-70 (imported vertices
 explicit until edited). Owner answers of 2026-11-23 (dialog, 3D-06): D-76 (refusal codes), D-77 (severities). Owner answers of 2026-11-23 (dialog, 3D-22): D-130, D-131 (Q-24 narrowed),
-D-132 (Q-18 narrowed), D-135, D-136.
+D-132 (Q-18 narrowed), D-135, D-136. Owner answers of 2026-11-25 (dialog, 3D-20): D-256..D-259, D-261 (Q-38 closed).
 
 | Id | Question | Used in |
 |---|---|---|
@@ -1062,11 +1227,11 @@ Contract open questions of 3D-06 (D-75; source and wording:
 | Q-31 | Names of `affectedMetrics`; how a patch carries model-level changes (`state`, `frame`) | 3D-09 / 3D-12 |
 | Q-32 | How the CityJSON CityObject of `IMPORT_BUILDING` maps to `buildingId` (CP assignment unit) | 3D-10 / 3D-43 |
 | Q-33 | `INSERT_ROOF_BREAK` with a ridge constraint instead of a new plane | 3D-15 |
-| Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | 3D-15 |
-| Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-15 |
+| Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | 3D-104 (D-305) |
+| Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-104 (D-305) |
 | Q-36 | `HEAL_HOLE` "allowed corrections" (read as `maxDisplacementM`) | 3D-17 |
 | Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | 3D-19 |
-| Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
+| Q-38 | **Closed by D-256** (D-256..D-258; §10.11 r7..r9). Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
 | Q-39 | Whether the command carries `leaseRef` / `leaseEpoch` (§11 rule 11) or the service takes them from the session | 3D-23 |
 
 Existing questions this spec depends on: Q-03 (CP extension content, 3D-43), Q-10 (val3dity binding, 3D-12). Q-01
