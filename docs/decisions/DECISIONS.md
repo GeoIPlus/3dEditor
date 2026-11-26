@@ -382,6 +382,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-366 | Row 3D-110 (kernel handler, server, ports; MVP critical path) set `ready` by the owner and started in a fresh session (session_01RNYuqGbVqbWtGTf3ZLpZXW, wp/3d-110-kernel-handler); WP sessions must not delete their branch before the coordinator confirms the merge (3D-105 branch was deleted first, D-365) | Owner, chat with the coordinator, 2026-11-26 |
 | D-367 | 3D-120: interim refusal now - until 3D-115 exists, an operation that changes the support plane of a roof face carrying an `OVERHANG` strip is refused with the model unchanged; 3D-115 later replaces the refusal by a rebuild. Where the check lives (generic pipeline post-check or per operation) is asked in the 3D-118/3D-120 session. Supersedes an earlier "wait for 3D-115" answer relayed from WP session 3D-19 | Owner, dialog in WP session 3D-19 and chat with the coordinator, 2026-11-26 |
 | D-368 | Row 3D-116 (F-53 geometric metrics) set `ready` by the owner (chat in WP session 3D-19) and started in a fresh session (session_01RNYuqFijt1dWVmijVtc519, wp/3d-116-metrics); not on the MVP path (D-266) | Owner, WP session 3D-19, 2026-11-26 |
+| D-369 | Row 3D-117 (validator: overhang end caps and the minimum face area; closes GT-14) set `ready` by the owner (chat in WP session 3D-19); the coordinator starts it after the 3D-118/3D-120 merge (both touch overhang handling, D-367), from a base that contains it | Owner, WP session 3D-19, 2026-11-26 |
 
 ## Open questions
 
