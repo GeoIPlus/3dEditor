@@ -24,8 +24,8 @@ Updated: 2026-11-26
 | Done | 71 / 107 |
 | Review | 1 |
 | In progress | 2 |
-| Ready | 8 |
-| Proposed (waiting for the owner to set `ready`) | 24 |
+| Ready | 9 |
+| Proposed (waiting for the owner to set `ready`) | 23 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 71/107 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
@@ -129,7 +129,7 @@ flowchart TB
     D107["💡 📐 3D-107 ADR: shared plane"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
     D125["💡 ⚙️ 3D-125 Dormers follow roof"]
-    D124_1["💡 ⚙️ 3D-124.1 Overhang width at B"]
+    D124_1["▶️ ⚙️ 3D-124.1 Overhang width at B"]
     D130["💡 ⚙️ 3D-130 Metric change detection"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
@@ -394,7 +394,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-126 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-389) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | done (D-426; merged into base, no PR; D-417..D-425) |
 | 3D-115 | Parametric geometry dependency management: ADR 3D-ADR-0010 (parent / dependent links, detach - solve - rebuild in the pipeline; split D-386) | here | docs/decisions/adr | 15, 17, 18, 19 | G4 | S | spec | done (D-388; ADR 3D-ADR-0010; merged into base, no PR; D-383..D-387) |
 | 3D-124 | Overhang rebuild after a parent change: detach - solve - rebuild in the pipeline, replacing the D-367 refusal (D-384, D-385) | here | geo-model3d/ops | 115, 114, 117, 19, 120 | G4 | M | kernel | review (owner accepted, D-3D124-5; local, PR not requested; wp/3d-124-overhang-rebuild; D-3D124-1..4) |
-| 3D-124.1 | Overhang width in plan at both outer corners on an eave that is horizontal only within `zAlignTolM` (D-336) | here | geo-model3d/ops | 124, 19 | G4 | S | kernel | proposed |
+| 3D-124.1 | Overhang width in plan at both outer corners on an eave that is horizontal only within `zAlignTolM` (D-336) | here | geo-model3d/ops | 124, 19 | G4 | S | kernel | ready (D-3D124-6) |
 | 3D-125 | Dormers follow their roof face; explicit `components` record in the model contract (D-383) | here | geo-model3d/ops, contracts/model3d | 124, 20 | G4 | M | kernel | proposed |
 | 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | done (D-416; merged into base, no PR; D-412..D-415) |
 | 3D-130 | Automatic metric change detection: `patch.affectedMetrics` from a before / after `computeMetrics` comparison (PREVIEW, COMMIT, inverse patch, Undo / Redo; D-415, Q-31) | here | geo-model3d/ops, geo-model3d/brep, contracts | 116 | G4 | M | kernel | proposed |

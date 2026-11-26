@@ -447,6 +447,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D124-3 | 3D-124 constraint check after the rebuild (D-384): constraints naming dependent overhang entities sit out the solve; afterwards every hard constraint is compiled against the positions the constraint step used (after the operation, before the solve; a detached vertex at its input position) and checked with all planes fixed -> `CONSTRAINT_CONFLICT` | Agent, 3D-124 (implementation of D-384); confirmed by the owner, chat, 2026-11-26 |
 | D-3D124-4 | Finding of 3D-124: `addOverhang` puts the soffit at oA's height, so on an eave horizontal only within `zAlignTolM` the width in plan at oB differs (1.1e-4 m on GT-20 after FIT_PLANE); 3D-124 accepts the existing construction (test: rebuild equals SET_OVERHANG, width tolerance 2e-4 m) and the rule goes to row 3D-124.1 | Owner, dialog, 2026-11-26 (3D-124) |
 | D-3D124-5 | 3D-124 accepted by the owner (chat, 2026-11-26); D-3D124-3 confirmed; branch wp/3d-124-overhang-rebuild handed to the coordinator for the merge | Owner, chat, 2026-11-26 (3D-124) |
+| D-3D124-6 | Row 3D-124.1 (overhang width at both outer corners on a near-horizontal eave) set `ready` by the owner; to be started by the coordinator in a fresh session after the 3D-124 merge | Owner, chat, 2026-11-26 (3D-124) |
 
 ## Open questions
 
