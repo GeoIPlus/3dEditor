@@ -348,6 +348,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-332 | GT-26..GT-33 are kept as a table in spec §10.6 (3D-105 acceptance), not in §13; §13 stays at 29 rows and the fixture tool is unchanged; 3D-105 moves them into §13 together with their fixtures (coordinator found `npm run check` failing: 37 §13 ids, 29 fixture directories; owner chose variant b, confirmed in the WP dialog over an earlier answer a) | Owner, dialog and coordinator chat, 2026-11-26 (3D-104) |
 | D-333 | 3D-104 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-322..D-332, Q-47, rows 3D-112, 3D-113; the eight golden cases of spec §10.6 got the reserved ids GT-26..GT-33 (they move to §13 with their fixtures in 3D-105, D-332). A first handover (323c8fd) failed `npm run check` (fixtures test counts spec §13 rows) and was not merged | Owner, WP session 3D-104, 2026-11-26 |
 | D-334 | Row 3D-109 (command API, MVP critical path) set `ready` by the owner (dialog in WP session 3D-23); started in a fresh session (session_01RNYuqJEU6hEdD6MzLCbh24, wp/3d-109-command-api) from base 0ae4f91 | Owner, WP session 3D-23, 2026-11-26 |
+| D-335 | Row 3D-105 set `ready` by the owner (dialog in WP session 3D-104; the owner deleted wp/3d-104-core-edits-spec); its dependency corrected from the provisional `15.1` to `104`; started in a fresh session (session_01RNYuqHck28YcVtDPF4HBHm, wp/3d-105-core-edits-ii) | Owner, WP session 3D-104, 2026-11-26 |
 
 ## Open questions
 
