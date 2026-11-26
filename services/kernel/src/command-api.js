@@ -60,7 +60,7 @@ export function createCommandApi(deps) {
   /**
    * A request body (stream, chunks or bytes): size limit before parsing (D-317), then `command`.
    * @param {Parameters<typeof readJsonBody>[0]} source @param {{ actorId: string }} actor
-   * @param {{ declaredLength?: number }} [options]
+   * @param {Parameters<typeof readJsonBody>[1]} [options] `declaredLength` (Content-Length); `parse` for an instrumented parser (bench, 3D-121)
    */
   async function commandBody(source, actor, options = {}) {
     let r;
