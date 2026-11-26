@@ -50,6 +50,8 @@ R1 + S1, with this protocol, implemented by `npm run bench` ([tools/bench/cli.mj
    cgroup CPU quota, memory, OS, Node and V8 versions, 1-minute load, commit. Results are stored as JSON next to the
    WP's verification note (3D-08: [docs/verification/3D-08/](../../verification/3D-08/), spike path; 3D-121:
    [docs/verification/3D-121.md](../../verification/3D-121.md), command API path).
+   3D-121 result (2026-11-26, this rig): sawtooth-199 p95 56.106 ms, worst run 56.859 ms, gate PASS; the 3D-08
+   spike figure p95 5.411 ms is history, not the shipped path.
 5. [P] Re-measure when the PREVIEW path changes materially: 3D-13 (solver), 3D-12 (validation), 3D-15 (MOVE_EDGE for
    real), and once on the production instance class when 3D-23 builds the image (Q-42).
 
