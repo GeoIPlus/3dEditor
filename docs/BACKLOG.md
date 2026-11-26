@@ -21,16 +21,16 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 54 / 84 |
+| Done | 54 / 87 |
 | Review | 1 |
-| In progress | 2 |
-| Ready | 6 |
-| Proposed (waiting for the owner to set `ready`) | 20 |
+| In progress | 3 |
+| Ready | 5 |
+| Proposed (waiting for the owner to set `ready`) | 23 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 54/84 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 54/87 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-19 Envelope ops; 3D-47 SC: 3D view port + host.
+**Running:** 3D-19 Envelope ops; 3D-23 Kernel service I: history, COMMIT; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -116,7 +116,10 @@ flowchart TB
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["💡 🔧 3D-79 Service image licence check"]
-    D23["▶️ 🖥️ 3D-23 Kernel service"]
+    D23["🚧 🖥️ 3D-23 Kernel service I: history, COMMIT"]
+    D23_1["💡 🖥️ 3D-23.1 Kernel service II: command API"]
+    D23_2["💡 🖥️ 3D-23.2 Kernel service III: handler, ports"]
+    D23_3["💡 🖥️ 3D-23.3 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D24["💡 ⚙️ 3D-24 QC and export rules"]
     D25["💡 🧪 3D-25 E2E on mock"]
@@ -143,7 +146,7 @@ flowchart TB
   D29 --> D61
   D29 --> D62
   D22 --> D63
-  D23 --> D63
+  D23_2 --> D63
   D60 --> D63
   D61 --> D63
   D62 --> D63
@@ -172,10 +175,10 @@ flowchart TB
   D08 --> D68
   D10 --> D68
   D15 --> D68
-  D23 --> D68
+  D23_2 --> D68
   D11 --> D74
   D12 --> D74
-  D23 --> D74
+  D23_2 --> D74
   D22 --> D69
   D32 --> D69
   D09 --> D81
@@ -191,7 +194,7 @@ flowchart TB
   D22 --> D72
   D10 --> D75
   D12 --> D75
-  D23 --> D79
+  D23_2 --> D79
   D67 --> D79
   D22 --> D80
   D05 --> D08
@@ -248,8 +251,11 @@ flowchart TB
   D18 --> D23
   D06 --> D23
   D03 --> D23
+  D23 --> D23_1
+  D23_1 --> D23_2
+  D23 --> D23_3
   D12 --> D24
-  D23 --> D24
+  D23_2 --> D24
   D24 --> D25
   D43 --> D25
   D50 --> D25
@@ -332,8 +338,11 @@ Throughput: 54.0 rows/week (7 d), 394 model min/week; waiting share 99 %   Accur
 | 3D-108 | Constraint ids in `topologyLineage.mapped` (`brep` transaction accepts them; replaces the `warnings` stopgap of D-306) | here | geo-model3d/brep, geo-model3d/ops | 15 | G3 | S | kernel | proposed |
 | 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | kernel | done (D-230; merged into base, no PR; D-226..D-229) |
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
-| 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, idempotent `commandId` + `expectedVersion` (GT-13, D-68), rate limit, error registry, command status, storage port with interim file/S3 adapter (D-35) | here | service | 03, 06, 18 | G5 | L | service | ready (D-310) |
-| 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23 | G5 | M | kernel | proposed |
+| 3D-23 | Kernel service I: `history` port + file adapter (3D-ADR-0003, append-only, `journal/{N+1}` create-if-absent), port contract suite, COMMIT path (idempotent `commandId` + `expectedVersion`, GT-13, D-68), command status; PREVIEW/API -> 3D-23.1, handler/ports -> 3D-23.2 (D-3D23-1) | here | service | 03, 06, 18 | G5 | M | service | in-progress (wp/3d-23-kernel-service) |
+| 3D-23.1 | Kernel service II: command API - PREVIEW store by `previewId` (expiry 10 min, D-3D23-2), COMMIT by `previewId`, PREVIEW rate limit 20/s (D-3D23-3), payload limit 1 MiB (D-3D23-4), error registry mapping, request/reply validation against `contracts/model3d/` | here | service | 23 | G5 | M | service | proposed |
+| 3D-23.2 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69), `datasets` port + file adapter (`progress.save`, delivered bytes), heatmap request (`INVALID_CRS`, 3D-69), bench gate on the service image (D-111, Q-42) | here | service | 23.1 | G5 | M | service | proposed |
+| 3D-23.3 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-3D23-6) | here | service | 23 | G5 | M | service | proposed |
+| 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23.2 | G5 | M | kernel | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
@@ -344,26 +353,26 @@ Throughput: 54.0 rows/week (7 d), 394 model min/week; waiting share 99 %   Accur
 | 3D-60 | crowdsource: 3D project type and CityJSON building dataset kind (Operaflow-conformant) | crowdsource | backend, streaming | 03, 29 | G5+ | L | mirror | proposed (D-35; under crowdsource's own process) |
 | 3D-61 | crowdsource: point clouds as COPC `stream` datasets (box reads by the client of the stream) | crowdsource | streaming | 29 | G5+ | M | mirror | proposed (D-35) |
 | 3D-62 | crowdsource: client-credentials (server-to-server) grant for supporting-application services | crowdsource | backend, auth | 29 | G5+ | M | mirror | proposed (D-35) |
-| 3D-63 | Swap 3DQM interim `datasets` adapters for crowdsource datasets; migrate stored input buildings (the `history` store stays own, D-82) | here | service, geo-model3d/cloud | 22, 23, 60, 61, 62 | G5+ | M | service | proposed (D-35) |
+| 3D-63 | Swap 3DQM interim `datasets` adapters for crowdsource datasets; migrate stored input buildings (the `history` store stays own, D-82) | here | service, geo-model3d/cloud | 22, 23.2, 60, 61, 62 | G5+ | M | service | proposed (D-35) |
 | 3D-64 | Spec update: apply D-76 (Q-20 refusal codes) and D-77 (Q-21 severities) to `docs/specs/3dqm-spec.md`; list contract questions Q-26..Q-39 | here | docs/specs | 04, 06 | G0 | S | spec | done (D-98; merged into base, no PR) |
 | 3D-32 | CRS support: server-only transform module, local metric frame (ENU) per building, ADR for the library; spec and schema update for geographic CRSs (D-92) | here | geo-model3d (frame), services/kernel, docs, contracts | 02, 06, 64 | G1 | M | kernel | done (D-127; merged into base, no PR; [3D-ADR-0007](decisions/adr/3D-ADR-0007-crs-transform.md); EPSG terms Q-43 open) |
 | 3D-33 | Inter-building validation (shared walls, overlaps between buildings), P1 (D-89) | here | geo-model3d/validate | 12 | P1 | M | kernel | proposed |
 | 3D-65 | Schema text: `FIT_TO_SHARED_EDGE` `maxDisplacementM` description cites D-76 instead of open Q-20 / "3D-06 proposes" | here | contracts | 06 | G0 | S | spec | done (D-107; merged into base, no PR) |
 | 3D-66 | Apply accepted 3D-08 ADRs to spec and AGENTS.md: spec §1.3, §5 r8, §10.4 r5, §11 r14; AGENTS.md §2 rule 8 cites 3D-ADR-0004 | here | docs | 08 | G0 | S | spec | done (D-143; merged into base, no PR) |
 | 3D-67 | Licence allow-list check in `check:arch`: kernel and service runtime dependencies permissive only (3D-ADR-0004 decision 3) | here | tools/check-arch | 05, 08 | G1 | S | tooling | done (D-182; merged into base, no PR) |
-| 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23 | G5 | M | tooling | proposed (D-112) |
+| 3D-68 | Latency bench beyond PREVIEW: COMMIT of a simple operation, import up to 500 faces, PREVIEW under concurrent requests (v0.3 §11) | here | tools/bench | 08, 10, 15, 23.2 | G5 | M | tooling | proposed (D-112) |
 | 3D-69 | Point cloud CRS vs. a geographic-CRS building: reproject points into the building metric frame on the server, or refuse a mismatch (D-126) | here | geo-model3d/cloud, services/kernel | 22, 32 | G4 | M | kernel | done (D-199; merged into base, no PR) |
 | 3D-70 | COPC-by-box points adapter: LAZ decoder `laz-perf` (Apache-2.0) behind the points port, with an ADR for the new runtime dependency (D-109, D-133) | here | services/kernel | 22, 67 | G4 | M | service | done (D-188; merged into base, no PR; [3D-ADR-0009](decisions/adr/3D-ADR-0009-copc-laz-decoder.md)) |
 | 3D-80 | `fitPlane` result independent of the input point order (same cloud through the LAS or COPC adapter gives the same `FIT_PLANE` result) | here | geo-model3d/cloud | 22 | G4 | S | kernel | done (D-203; merged into base, no PR) |
 | 3D-71 | `FIT_PLANE` command: apply the plane fit as a `PLANE` measurement or as a face's new `supportPlane` through PREVIEW/COMMIT (spec §10.12 r4, D-134) | here | geo-model3d/ops | 14, 22 | G4 | M | kernel | done (D-283; merged into base, no PR; D-280..D-282) |
 | 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | spec | done (D-176; merged into base, no PR) |
 | 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | tooling | done (D-210; merged into base, no PR) |
-| 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 23 | G5 | M | service | ready (D-155) |
+| 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 23.2 | G5 | M | service | ready (D-155) |
 | 3D-75 | Import state from `validateModel`: replace the interim `import/state.js` (D-157) | here | geo-model3d (index, import, validate) | 10, 12 | G1 | S | kernel | done (D-185; merged into base, no PR) |
 | 3D-76 | `check:docs`: DECISIONS.md table integrity - a `D-NN` / `Q-NN` row in "Open-question status updates" must have the status-row shape and name an existing id; a decision row outside "## Decisions" is a problem (D-167) | here | tools | 30, 05 | G0 | S | tooling | done (D-209; merged into base, no PR) |
 | 3D-77 | Spec §5 text for the solver decisions: per-kind constraint table (D-169) and D-170..D-172 | here | docs/specs | 13, 66 | G3 | S | spec | done (D-206; merged into base, no PR) |
 | 3D-78 | Single writer and provisional ids: push guard hook, `check:docs` provisional-id rule for rows and ADRs, generated BACKLOG overview, skills `merge-wp` / `wp-session` / `task-intake` and AGENTS.md §3/§6 updated (D-178..D-180) | here | tools, .claude, AGENTS.md | 30, 05 | G0 | M | tooling | done (D-202; merged into base, no PR) |
-| 3D-79 | Service image licence check: no GPL, LGPL or AGPL in the kernel service container image (3D-ADR-0004 decision 3, D-181) | here | service image, tools/check-arch | 23, 67 | G5 | M | tooling | proposed |
+| 3D-79 | Service image licence check: no GPL, LGPL or AGPL in the kernel service container image (3D-ADR-0004 decision 3, D-181) | here | service image, tools/check-arch | 23.2, 67 | G5 | M | tooling | proposed |
 | 3D-81 | Bug: public `worldToLocal` / `localToWorld` use a plain translation; wrong for geographic and north-first projected buildings (found by 3D-69) | here | geo-model3d (index) | 09, 32, 69 | G1 | S | kernel | done (D-205; merged into base, no PR) |
 | 3D-82 | Spec update for 3D-69: §4a cloud reprojection (`createCrsMapping`, `DATUM_MISMATCH` / `NO_PROJECTION`), §9 cloud CRS from the dataset descriptor (D-164, D-165, D-196..D-198) | here | docs/specs | 69, 72 | G4 | S | spec | done (D-279; merged into base, no PR) |
 | 3D-83 | 3D-ADR-0007 note: the CRS table also holds PROJ proj-strings of projected CRSs, verified against PROJ (D-198); needs owner approval (D-18) | here | docs/decisions/adr | 69 | G4 | S | spec | done (D-274; merged into base, no PR) |
@@ -839,6 +848,68 @@ Throughput: 54.0 rows/week (7 d), 394 model min/week; waiting share 99 %   Accur
   from the CP extension `dataset` member (3D-43) or from the CRS the user set when opening the dataset; it passes the
   descriptor to `readLocalPoints` (services/kernel/src/cloud-points.js). Accept line added: a heatmap request against
   a dataset whose `horizontalCrs` is on another datum returns `INVALID_CRS` (HTTP status per the error registry).
+
+### 3D-23 split (task-intake, D-3D23-1, 2026-11-26)
+- Source: WP session 3D-23, owner dialog 2026-11-26: the L row has three acceptance groups and is split into three M
+  rows. The 3D-23 Accept lines of "3D-09 .. 3D-24" (`createKernelHandler`, own server, contract validation, D-111
+  bench gate) and the "3D-23 note from 3D-69" move to 3D-23.2; the PREVIEW / rate / size / error-registry lines of
+  spec §11 to 3D-23.1. Rows that needed the handler (3D-24, 3D-63, 3D-68, 3D-74, 3D-79) now depend on 3D-23.2;
+  the mirror 3D-50 keeps `23` here (its row in geoviewer is authoritative; it needs 3D-23.2's handler).
+- 3D-23 (this row) Accept: `history` port (`putBaseline`, `commit`, `findCommand`, `recordRejection`, `readVersion` /
+  `head`, `readJournal`; 3D-ADR-0003 §3) and a file adapter (exclusive create, no delete or overwrite); one port
+  contract suite run against every adapter: two concurrent commits on version N -> exactly one succeeds, the other
+  `409 VERSION_CONFLICT`; repeat with the same `commandId` -> same result, one journal entry (GT-13); crash after the
+  journal write and before `cmd/` -> repeat still idempotent; `putBaseline` twice -> conflict; `check:arch` refuses
+  delete / unlink / rm in adapters. COMMIT path over `executeCommand` (incl. UNDO / REDO / RESTORE_BASELINE with the
+  journal, D-291..D-294; a `noChange` COMMIT writes no journal entry, D-301); command status by `commandId`
+  (`command-status`; unknown -> `404 NOT_FOUND`). Golden GT-13.
+- Re-estimate 2026-11-26: split; this row M service: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-23.1 Kernel service II: command API
+- Source: split of 3D-23 (D-3D23-1).
+- Goal: PREVIEW / COMMIT by `previewId` with the limits of spec §11 r5, r6 and §2.4, and the error registry on every
+  refusal.
+- Scope in: in-memory PREVIEW store (3D-ADR-0003 §3 `putPreview` / `takePreview`) with expiry 10 min from creation
+  (D-3D23-2) and a bound on stored previews; COMMIT with `previewId` applies exactly the stored result, an unknown or
+  expired one -> `404 NOT_FOUND`, a changed version -> `409`; PREVIEW rate limit 20/s per (user, building), sliding
+  one-second window, above it `429 RATE_LIMITED` (D-3D23-3); request body limit 1 MiB -> `413 PAYLOAD_TOO_LARGE`
+  before JSON parsing (D-3D23-4); mapping of kernel and adapter errors (`LasFormatError`, read failures) to the error
+  registry; every request and reply validated against `contracts/model3d/` (Ajv; runtime dependency of
+  `services/kernel` to be checked against the 3D-67 allow-list). Scope out: HTTP server, auth, datasets (3D-23.2).
+- Accept: spec §3 "PREVIEW then COMMIT with its `previewId` yields the same patch"; spec §11 "PREVIEW, a competing
+  COMMIT, then COMMIT of the first `previewId` -> `409`"; a contract test sends one invalid message per schema and
+  gets `400 INVALID_PAYLOAD`; expiry, 429 and 413 each by a test with an injected clock.
+- Decisions: D-3D23-2..D-3D23-4, D-68, D-85  Open: Q-26 (only the ephemeral namespace, not blocking)
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-23.2 Kernel service III: handler, server, ports
+- Source: split of 3D-23 (D-3D23-1); Accept lines from "3D-09 .. 3D-24" and "3D-23 note from 3D-69".
+- Goal: `services/kernel` exports `createKernelHandler(ports)` (plain Node, mountable by geoviewer, 3D-50) and its own
+  server for the image (D-33).
+- Scope in: handler and `server.js` (HTTPS + JSON wire binding, 3D-ADR-0002 A.4; `GET /api/commands/{commandId}`);
+  auth port (token -> user, roles of spec §11 r2) and CP lease check (D-69); `datasets` port + file adapter (input
+  CityJSON, `progress.save` whole-body `PUT` + `If-Match`, content-addressed delivered bytes; 3D-ADR-0003 §4 checks);
+  heatmap request through `PointsDataset { port, horizontalCrs }` (D-196); `npm run bench` gate re-run on the service
+  image (D-111). Scope out: QC / approve / export rules (3D-24).
+- Accept: spec §11 "stale `leaseEpoch` -> `403`, model unchanged"; "valid token with another user's `actorId` is
+  executed as the token's user"; a heatmap request against a dataset on another datum -> `INVALID_CRS`; delivered
+  address has no query string or credential, second write of the same digest is a no-op; `PUT` without a stored
+  entity tag is not sent, a `412` keeps the result; bench numbers and fingerprint recorded on the production class
+  (Q-42; a miss is an owner escalation, D-06).
+- Decisions: D-06, D-33, D-51, D-69, D-82..D-85, D-111, D-196..D-198  Open: Q-42, Q-40 (only if touched)
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-23.3 `history` S3 adapter
+- Source: WP session 3D-23, owner dialog 2026-11-26 (D-3D23-6): the S3 adapter of 3D-ADR-0003 needs a new runtime
+  dependency and depends on the deployment (ADR-OPS, D-33); 3D-23 ships the file adapter only.
+- Goal: the `history` port on S3 with the same guarantees as the file adapter.
+- Scope in: ADR for the S3 client (e.g. `@aws-sdk/client-s3`, licence per 3D-67), adapter (create-if-absent by
+  `If-None-Match: *`, `412` -> conflict), the 3D-23 port contract suite against an S3-compatible double that implements
+  conditional writes. Scope out: bucket policy, region, backup (ADR-OPS).
+- Accept: ADR accepted by the owner (D-18, D-109); the 3D-23 port contract suite passes unchanged against the adapter;
+  no delete / overwrite call in the adapter (`check:arch`).
+- Decisions: D-35, D-82, D-84, D-85, D-109, D-3D23-5, D-3D23-6  Open: none
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
 
 ### 3D-70 COPC-by-box points adapter (D-133)
 - Source: 3D-22 session 2026-11-23, owner dialog (D-133): COPC needs a LAZ decoder, a new runtime dependency.

@@ -324,6 +324,12 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-308 | Row 3D-104 (spec of `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE`) set `ready` by the owner; the coordinating session sets the status on the base after merging 3D-15 and starts it in a fresh session (D-178) | Owner, chat, 2026-11-26 (3D-15) |
 | D-309 | 3D-15 merged into the base by the coordinating session (D-178); provisional ids became D-297..D-308, its five intake rows became 3D-104..3D-108; row 3D-104 `ready` per D-308 | Owner, WP session 3D-15, 2026-11-26 |
 | D-310 | Rows 3D-103 (asked through WP session 3D-17) and 3D-23 (asked through WP session 3D-18, MVP critical path D-266) set `ready`; each starts in a fresh session on the base after the 3D-15, 3D-17 and 3D-18 merges | Owner, WP sessions 3D-17 and 3D-18, 2026-11-26 |
+| D-3D23-1 | Row 3D-23 (L) is split into three M rows: 3D-23 = `history` port + file adapter + port contract suite + COMMIT path (idempotency, `expectedVersion` 409, journal append) + command status + GT-13; 3D-23.1 = command API (PREVIEW store / `previewId`, rate limit, payload size, error registry, contract validation); 3D-23.2 = `createKernelHandler`, server, auth/lease, `datasets` port, heatmap request, D-111 bench gate. Dependents of the handler (3D-24, 3D-63, 3D-68, 3D-74, 3D-79) depend on 3D-23.2 | Owner, dialog, 2026-11-26 (3D-23) |
+| D-3D23-2 | Q-24: a PREVIEW result is kept 10 min from its creation (in process memory, 3D-ADR-0003 §3), with a bound on the number kept; an expired or unknown `previewId` -> `404 NOT_FOUND` | Owner, dialog, 2026-11-26 (3D-23) |
+| D-3D23-3 | Q-24: the server's PREVIEW rate limit is 20 requests/s per (authenticated user, building), sliding one-second window in process memory; above it `429 RATE_LIMITED` (client sends <= 10/s, v0.3 §3) | Owner, dialog, 2026-11-26 (3D-23) |
+| D-3D23-4 | Q-24: request bodies are limited to 1 MiB; above it `413 PAYLOAD_TOO_LARGE`, checked before JSON parsing | Owner, dialog, 2026-11-26 (3D-23) |
+| D-3D23-5 | 3D-ADR-0003 §2 amended: a full snapshot of every version (K = 1; the journal patch holds no model-level members, Q-31), written before the commit point under the write-once key `snapshot/{N}/{commandId}.json`; then create-if-absent `journal/{N}` stays the only commit point; `readVersion(N)` reads `journal/{N}`'s `commandId` and its snapshot (version 0 = `baseline.json`). No repair path; snapshots of lost commits stay as orphans (nothing deleted, D-84) | Owner, dialog, 2026-11-26 (3D-23) |
+| D-3D23-6 | 3D-23 ships the `history` file adapter only; the S3 adapter (new runtime dependency, ADR) is row 3D-23.3 and must pass the same port contract suite | Owner, dialog, 2026-11-26 (3D-23) |
 
 ## Open questions
 
@@ -424,3 +430,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-38 | 2026-11-25, owner (3D-20) | closed by D-256 | Chimney height at the downhill corner; FLAT `heightM` = back wall height over the full outline (D-257); GABLE gets `ridgeRiseM` (D-258) |
 | Q-28 | 2026-11-26, owner (3D-71) | narrowed, open | `PLANE` layout closed by D-280 (POINT by D-215); `LINE` stays open |
 | Q-36 | 2026-11-25, owner (3D-17) | closed by D-284 | Omitted `maxDisplacementM` = project `planarTolM`; closing over it refused with proposals |
+| Q-24 | 2026-11-26, owner (3D-23) | narrowed, open | PREVIEW expiry closed by D-3D23-2, PREVIEW rate limit by D-3D23-3, payload size by D-3D23-4; `measurementTolM` stays open |
