@@ -24,8 +24,8 @@ Updated: 2026-11-26
 | Done | 57 / 90 |
 | Review | 2 |
 | In progress | 2 |
-| Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 25 |
+| Ready | 4 |
+| Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 57/90 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
@@ -98,6 +98,7 @@ flowchart TB
     D45["🔍 🔗 3D-45 SC: pinned model3d schemas"]
   end
   subgraph ready["READY"]
+    D109_1["▶️ 🔧 3D-109.1 Bench gate on the real PREVIEW path"]
     D74["▶️ 🖥️ 3D-74 val3dity image + binding"]
     D47["🚧 🔗 3D-47 SC: 3D view port + host"]
     D48["▶️ 🔗 3D-48 SC: apps/3dqm host"]
@@ -121,7 +122,6 @@ flowchart TB
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["💡 🔧 3D-79 Service image licence check"]
     D110["💡 🖥️ 3D-110 Kernel service III: handler, ports"]
-    D109_1["💡 🔧 3D-109.1 Bench gate on the real PREVIEW path"]
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D24["💡 ⚙️ 3D-24 QC and export rules"]
@@ -347,7 +347,7 @@ Throughput: 57.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service I: `history` port + file adapter (3D-ADR-0003, append-only, `journal/{N+1}` create-if-absent), port contract suite, COMMIT path (idempotent `commandId` + `expectedVersion`, GT-13, D-68), command status; PREVIEW/API -> 3D-109, handler/ports -> 3D-110 (D-314) | here | service | 03, 06, 18 | G5 | M | service | done (D-321; merged into base, no PR; D-314..D-320) |
 | 3D-109 | Kernel service II: command API - PREVIEW store by `previewId` (expiry 10 min, D-315), COMMIT by `previewId`, PREVIEW rate limit 20/s (D-316), payload limit 1 MiB (D-317), error registry mapping, request/reply validation against `contracts/model3d/` | here | service | 23 | G5 | M | service | review (wp/3d-109-command-api; local, PR not requested; D-3D109-1..5) |
-| 3D-109.1 | Bench gate on the real PREVIEW path: `npm run bench` drives `MOVE_EDGE` through `createCommandApi` (3D-109) instead of the 3D-08 spike; spike removed; numbers re-recorded (D-3D109-6, D-3D109-7) | here | tools/bench, geo-model3d (spike removal) | 109, 15 | G5 | S | tooling | proposed |
+| 3D-109.1 | Bench gate on the real PREVIEW path: `npm run bench` drives `MOVE_EDGE` through `createCommandApi` (3D-109) instead of the 3D-08 spike; spike removed; numbers re-recorded (D-3D109-6, D-3D109-7) | here | tools/bench, geo-model3d (spike removal) | 109, 15 | G5 | S | tooling | ready (D-3D109-9) |
 | 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69), `datasets` port + file adapter (`progress.save`, delivered bytes), heatmap request (`INVALID_CRS`, 3D-69), bench gate on the service image (D-111, Q-42) | here | service | 23.1 | G5 | M | service | proposed |
 | 3D-111 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-319) | here | service | 23 | G5 | M | service | proposed |
 | 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 105 | G3 | L | spec | proposed |

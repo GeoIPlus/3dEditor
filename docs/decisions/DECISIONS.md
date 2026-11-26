@@ -355,6 +355,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D109-6 | Finding of 3D-109 (bench gate scene runs `MOVE_EDGE` through the 3D-08 spike) becomes a new S tooling row 3D-109.1; it does not block 3D-110 (critical path D-266 unchanged) | Owner, dialog, 2026-11-26 (3D-109 intake) |
 | D-3D109-7 | 3D-109.1 measures the gate scene through `createCommandApi` (the 3D-109 service path) and removes the 3D-08 `MOVE_EDGE` spike and its tests | Owner, dialog, 2026-11-26 (3D-109 intake) |
 | D-3D109-8 | 3D-109 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-109-command-api | Owner, chat, 2026-11-26 (3D-109) |
+| D-3D109-9 | Row 3D-109.1 (bench gate on the real PREVIEW path) set `ready` by the owner | Owner, chat, 2026-11-26 (3D-109) |
 
 ## Open questions
 
