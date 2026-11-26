@@ -24,8 +24,8 @@ Updated: 2026-11-26
 | Done | 59 / 97 |
 | Review | 1 |
 | In progress | 4 |
-| Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 29 |
+| Ready | 4 |
+| Proposed (waiting for the owner to set `ready`) | 28 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 59/97 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
@@ -128,7 +128,7 @@ flowchart TB
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["💡 🔧 3D-79 Service image licence check"]
     D110["💡 🖥️ 3D-110 Kernel service III: handler, ports"]
-    D121["💡 🔧 3D-121 Bench gate on the real PREVIEW path"]
+    D121["▶️ 🔧 3D-121 Bench gate on the real PREVIEW path"]
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D24["💡 ⚙️ 3D-24 QC and export rules"]
@@ -357,7 +357,7 @@ Throughput: 59.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-118 | Bug: a hard FIXED_POINT on a vertex with an EQUAL_Z target is met by turning the roof plane almost vertical (MATCH_ELEVATIONS commits `VALID_SOLID`) | here | geo-model3d/solve, validate | 13, 16 | G3 | S | kernel | in-progress (D-350; wp/3d-118-120-bugs) |
 | 3D-119 | Spec update for 3D-19: §10.10 overhang profile, SET_HEIGHT EAVE, rigid moves and measurements, refusal codes; §13 GT-14 note; §14 Q-18 narrowed, Q-37 closed (D-336..D-345) | here | docs/specs | 19 | G4 | S | spec | proposed |
 | 3D-120 | Bug: `ALIGN_RIDGE` and `MATCH_ELEVATIONS` on a slope with an overhang commit `VALID_SOLID` with the overhang strip left on the old plane (D-341) | here | geo-model3d/ops | 115 | G4 | S | kernel | in-progress (D-350; wp/3d-118-120-bugs) |
-| 3D-121 | Bench gate on the real PREVIEW path: `npm run bench` drives `MOVE_EDGE` through `createCommandApi` (3D-109) instead of the 3D-08 spike; spike removed; numbers re-recorded (D-356, D-357) | here | tools/bench, geo-model3d (spike removal) | 109, 15 | G5 | S | tooling | proposed |
+| 3D-121 | Bench gate on the real PREVIEW path: `npm run bench` drives `MOVE_EDGE` through `createCommandApi` (3D-109) instead of the 3D-08 spike; spike removed; numbers re-recorded (D-356, D-357) | here | tools/bench, geo-model3d (spike removal) | 109, 15 | G5 | S | tooling | ready (D-360) |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | done (D-263; merged into base, no PR; D-256..D-262) |
 | 3D-100 | Installation size from the cloud: `measurementId` of `ADD_CHIMNEY` / `ADD_DORMER` (v0.3 §6 F-36, F-37) | here | geo-model3d/ops | 20, 71 | G4 | M | kernel | proposed |
 | 3D-101 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-256..D-260) | here | docs/specs | 20 | G4 | S | spec | done (D-272; merged into base, no PR) |

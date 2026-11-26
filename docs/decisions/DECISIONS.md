@@ -373,6 +373,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-357 | 3D-121 measures the gate scene through `createCommandApi` (the 3D-109 service path) and removes the 3D-08 `MOVE_EDGE` spike and its tests | Owner, dialog, 2026-11-26 (3D-109 intake) |
 | D-358 | 3D-109 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-109-command-api | Owner, chat, 2026-11-26 (3D-109) |
 | D-359 | 3D-109 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-351..D-358, row 3D-121 | Owner, WP session 3D-109, 2026-11-26 |
+| D-360 | Row 3D-121 (bench gate on the real PREVIEW path) set `ready` by the owner | Owner, chat, 2026-11-26 (3D-109) |
 
 ## Open questions
 
