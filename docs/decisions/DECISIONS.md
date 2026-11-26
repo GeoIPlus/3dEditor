@@ -390,6 +390,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-374 | 3D-118 + 3D-120 accepted by the owner at `wp/3d-118-120-bugs@2c121e8` (check, golden, bench green); merge and final ids by the coordinating session (D-178) | Owner, dialog, 2026-11-26 (3D-118) |
 | D-375 | 3D-118 and 3D-120 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-370..D-374; D-372 implements D-367 | Owner, WP session 3D-118/3D-120, 2026-11-26 |
 | D-376 | Row 3D-114 set `ready` by the owner (chat in WP session 3D-19); 3D-114 (session_01RNYuqGw3pck2hciMrRxtCX, wp/3d-114-footprint-ops) and 3D-117 (D-369; session_01RNYuqH3YksLareDpQLNkR1, wp/3d-117-overhang-cap-area) started in fresh sessions after the 3D-118/3D-120 merge; 3D-114 Details gain D-346, D-367, D-372 and an `ALIGN_WALL` Accept line to be confirmed by the owner; its size M is to be re-estimated in its first turn | Owner, WP session 3D-19, 2026-11-26 |
+| D-377 | Row 3D-119 (spec update for 3D-19) set `ready` by the owner (chat in WP session 3D-19) and started in a fresh session (session_01RNYuqJH9LwvUdFdJkvfUgn, wp/3d-119-spec-envelope); its Details corrected: Q-18 closed, Decisions D-328, D-336..D-348, D-367, D-370..D-374 | Owner, WP session 3D-19, 2026-11-26 |
 
 ## Open questions
 
