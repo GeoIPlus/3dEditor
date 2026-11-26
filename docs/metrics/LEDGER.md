@@ -62,7 +62,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).
-| 2026-11-26 | 3D-23 | session_01RNYuqFLUgbVc5u5YcbhjUe | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | pending | no finished turn when written (one long first turn, worker restart inside it); coordinator reads it at merge |
+| 2026-11-26 | 3D-23 | session_01RNYuqFLUgbVc5u5YcbhjUe | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals, see checkpoint 3D-23; ~124k subagent tokens, cost inside session) | no finished turn when written (one long first turn, worker restart inside it); coordinator reads it at merge |
 
 ## Improvement proposals
 
@@ -87,3 +87,4 @@ From efficiency reviews (README §5). Status: `open`, `adopted (D-NN)`, `rejecte
 | 2026-11-25 | 3D-82 | session_01RNYuqH9vEa4Ux65WLUxsPu | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals, see checkpoint 3D-82; ~106k subagent tokens, cost inside session) | no finished turn when written (first turn cut by a worker restart); coordinator reads it at merge |
 | 2026-11-26 | 3D-82, session_01RNYuqH9vEa4Ux65WLUxsPu | P1-P3 in .agent/checkpoints/3D-82.md: a `tools/wp-close` script (row status, mermaid node, line wrap, ledger line); the handoff lists only "do not touch" sections, never restates scope; review reads events through a usage filter instead of raw `list_events` (overlaps 3D-86/3D-88/3D-89 proposals) | see checkpoint | open (batch with the overlapping proposals) |
 | 2026-11-26 | 3D-71, session_01RNYuqFfd7PWPVauTxGedzj | P1-P3 in .agent/checkpoints/3D-71.md (efficiency review; overlaps the open finish-step / --fix / usage-filter proposals) | see checkpoint | open (batch with the overlapping proposals) |
+| 2026-11-26 | 3D-23, session_01RNYuqFLUgbVc5u5YcbhjUe | P1-P3 in .agent/checkpoints/3D-23.md: implementation in a fresh session after a split; batched closing (`--fix` before commit, no result lookup in a first turn); cost from assistant-event usage (overlaps the open finish-step / --fix / usage-filter proposals) | see checkpoint | open (batch with the overlapping proposals) |
