@@ -361,6 +361,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D19-10 | Q-3D19-1 (attached measurements of `TRANSLATE_BUILDING` / `ROTATE_BUILDING`): every `LOCAL` measurement of the model is attached and is moved once by the same isometry (ids, provenance and metadata kept); `WORLD` measurements never change (also not by the inverse patch) and the journal warning "WORLD-frame measurements remain unchanged after the rigid building transformation" names them; no schema change. Measurement constraints are kept; a hard constraint that cannot be verified after the move (needs a missing transform, or a constraint kind still TBD) is not taken as satisfied -> refusal; a zero move is a no-op commit | Owner, dialog, 2026-11-26 (3D-19) |
 | D-3D19-11 | `ALIGN_WALL` (spec §10.10 r4) moves to row 3D-19.1 with `RESIZE_ROOF` and `REGULARIZE_FOOTPRINT` (it changes the footprint like them) | Owner, dialog, 2026-11-26 (3D-19) |
 | D-3D19-12 | 3D-19 goes to `review` now with GT-14 pending: `SET_OVERHANG` counts as fully accepted only when GT-14 passes with the standard profile after 3D-19.4 (D-3D19-8) | Owner, dialog, 2026-11-26 (3D-19) |
+| D-3D19-13 | 3D-19 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-19-envelope-ops; `SET_OVERHANG` full acceptance still tied to GT-14 after 3D-19.4 (D-3D19-12) | Owner, chat, 2026-11-26 (3D-19) |
 
 ## Open questions
 
