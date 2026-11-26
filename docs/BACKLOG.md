@@ -99,6 +99,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D114["🔍 ⚙️ 3D-114 Resize roof, align wall"]
     D45["🔍 🔗 3D-45 SC: pinned model3d schemas"]
   end
   subgraph ready["READY"]
@@ -119,7 +120,6 @@ flowchart TB
     D106["💡 ⚙️ 3D-106 ROTATE_FACE"]
     D107["💡 📐 3D-107 ADR: shared plane"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
-    D114["🔍 ⚙️ 3D-114 Resize roof, align wall"]
     D114_1["💡 ⚙️ 3D-114.1 Regularize footprint"]
     D115["💡 ⚙️ 3D-115 Parametric dependencies"]
     D116["🚧 ⚙️ 3D-116 F-53 metrics"]
