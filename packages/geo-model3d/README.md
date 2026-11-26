@@ -124,9 +124,17 @@ from validation. Refusals: empty stack / already baseline `INVALID_PAYLOAD`; top
 Pipeline (`pipeline.js`, spec §3 r1-r6; the op context carries `actorId` and the optional `planeFit`, 3D-71): kernel envelope checks -> `brep.transact` (isolated copy): operation module
 builds the candidate in plane terms -> constraint step (`constraints.js`: hard constraint on a removed entity ->
 `CONSTRAINT_CONFLICT`, soft one dropped, D-213; model constraints compiled and solved for the operation's
-`movableFaceIds` / conditions, re-checked at the result) -> overhang guard (`overhang-guard.js`, 3D-120, D-372:
-until 3D-115 a strip RoofSurface + OVERHANG that was coplanar with its parent roof face and is no longer within
-`planarTolM` of it -> `INVALID_TOPOLOGY`, model unchanged) -> `runChecks` COMMIT_VALIDATION with full solid, shell
+`movableFaceIds` / conditions, re-checked at the result) -> overhang rebuild (`dependents.js`, 3D-124, D-384,
+3D-ADR-0010 B1: a payload naming a dependent overhang entity -> `INVALID_PAYLOAD` except `SET_OVERHANG` / `SET_HEIGHT`,
+D-385, checked before the transaction; every well-formed overhang is taken off before the operation, the plain eave
+DERIVED, and re-added after the constraint step through `addOverhang` with the same ids and the input width in plan
+measured from the (new) wall; eave half-edge, its vertices, wall and end walls must keep their ids, else
+`INVALID_TOPOLOGY`; `addOverhang` refusals stand; rebuild noise <= `numericEpsilon` snapped to the input; constraints
+naming dependent entities sit out the solve, then every hard constraint is checked with all planes fixed ->
+`CONSTRAINT_CONFLICT`; operations in `SELF_REBUILD` of the registry - SET_OVERHANG, SET_HEIGHT, ALIGN_WALL,
+RESIZE_ROOF, REGULARIZE_FOOTPRINT - are not detached) -> overhang guard (`overhang-guard.js`, 3D-120, D-372, D-373:
+last check for what the rebuild does not cover - a strip that was coplanar with its parent roof face and is no longer
+within `planarTolM` of it -> `INVALID_TOPOLOGY`, model unchanged) -> `runChecks` COMMIT_VALIDATION with full solid, shell
 `isClosed` and `state` set (VALID_SOLID only for that target without ERROR, else DRAFT_SOLID [A]) - the same in
 PREVIEW and COMMIT, so both give one patch -> commit gate: ERROR issues new against the input version through the
 lineage refuse a VALID_SOLID target `INVALID_GEOMETRY` (v0.2 C.0 GEOMETRY_INVALID; spec §8 r7); the input version is

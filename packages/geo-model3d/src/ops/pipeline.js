@@ -11,7 +11,8 @@ import { contractError } from './errors.js';
 import { freshIds } from './ids.js';
 import { constraintStep } from './constraints.js';
 import { overhangGuard } from './overhang-guard.js';
-import { OPERATIONS, OPERATION_KINDS } from './registry.js';
+import { dependentPayload, detachOverhangs, holdConstraints, rebuildOverhangs } from './dependents.js';
+import { OPERATIONS, OPERATION_KINDS, OVERHANG_OWNERS, SELF_REBUILD } from './registry.js';
 
 /** @typedef {import('../brep/types.js').BuildingModel} BuildingModel */
 /** @typedef {import('./errors.js').ContractError} ContractError */
@@ -78,6 +79,8 @@ export function runPipeline(model, command, opts) {
   if (command.buildingId !== model.buildingId) return reject(contractError('NOT_FOUND', [command.buildingId]));
   if (command.expectedVersion !== model.version) return reject(contractError('VERSION_CONFLICT', []));
   if (target !== 'VALID_SOLID' && target !== 'DRAFT_SOLID') return reject(contractError('INVALID_PAYLOAD', [], 'targetState'));
+  const named = dependentPayload(model, command, OVERHANG_OWNERS); // D-385
+  if (named) return reject(named.refusal);
 
   /** @type {OpContext} */
   const ctx = { tol, ids: opts.ids ?? freshIds(model), frame: command.coordinateFrame, heightToLocal: opts.heightToLocal, pointToLocal: opts.pointToLocal,
@@ -88,14 +91,22 @@ export function runPipeline(model, command, opts) {
   let raw = [];
   let noChange = false;
   const tx = transact(model, (draft) => {
+    // 3D-124 (D-384): overhangs come off before the operation and back on after the solve, unless it owns them
+    const detached = SELF_REBUILD.has(command.operation) ? [] : detachOverhangs(draft, tol.numericEpsilon);
     const r = op.run(draft, command.payload, ctx);
     if (!r.ok) return /** @type {any} */ (r);
     noChange = r.noChange === true;
     warnings.push(...(r.warnings ?? []));
+    const held = holdConstraints(draft, detached);
     const c = constraintStep(draft, r, tol);
     if (!c.ok) return /** @type {any} */ (c);
     warnings.push(...c.warnings);
-    const dependent = overhangGuard(model, draft, tol); // 3D-120, until 3D-115
+    if (detached.length > 0) {
+      const rebuilt = rebuildOverhangs(model, draft, detached, held, ctx);
+      if (!rebuilt.ok) return /** @type {any} */ (rebuilt);
+    }
+    // 3D-120 (D-373): whatever the rebuild does not cover (self-rebuilding operations) is still refused
+    const dependent = overhangGuard(model, draft, tol);
     if (dependent) return /** @type {any} */ (dependent);
     // the same checks in PREVIEW and COMMIT so that both give the same patch (shell closure and state are in it)
     raw = runChecks(draft, { mode: 'COMMIT_VALIDATION', tolerances: tol, fullSolid: true });
