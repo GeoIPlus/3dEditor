@@ -3,8 +3,12 @@
 import { describe, expect, it } from 'vitest';
 import { canonicalJson } from '@geoiplus/geo-model3d';
 import { applyPatch } from '../../src/brep/index.js';
+import { OPERATIONS, OPERATION_KINDS } from '../../src/ops/index.js';
 import { deepFreeze } from '../brep/helpers.js';
 import { run, command, gableModel, replaceRoof, withFootprint, maxPlaneDistance, PROFILE } from './helpers.js';
+
+/** A contract kind no row has registered yet, picked at run time (operation rows land in parallel). */
+const UNREGISTERED = [...OPERATION_KINDS].filter((k) => !(k in OPERATIONS)).sort()[0];
 
 const GABLE = { template: 'GABLE', ridgeAxis: 'LOCAL_X', eaveZ: 5, ridgeZ: 8, symmetric: true };
 /** @type {[string, any][]} */
@@ -72,7 +76,7 @@ describe('refusals leave the model untouched (spec §3 r2, Accept 1; §10.1 Acce
     ['stale version', m, (x) => command(x, 'REPLACE_ROOF', { footprintId: 'fp-1', ...GABLE }, { expectedVersion: 7 }), 'VERSION_CONFLICT', 'CONFLICT'],
     ['other building', m, (x) => command(x, 'REPLACE_ROOF', { footprintId: 'fp-1', ...GABLE }, { buildingId: 'b-x' }), 'NOT_FOUND', 'REJECTED'],
     ['unknown operation', m, (x) => command(x, 'NO_SUCH_OP', {}), 'INVALID_PAYLOAD', 'REJECTED'],
-    ['not yet implemented kind', m, (x) => command(x, 'UNDO', {}), 'INTERNAL', 'REJECTED'],
+    ...(UNREGISTERED ? [/** @type {[string, () => any, (model: any) => any, string, string]} */ (['not yet implemented kind', m, (x) => command(x, UNREGISTERED, {}), 'INTERNAL', 'REJECTED'])] : []),
     ['unknown footprint', m, (x) => command(x, 'REPLACE_ROOF', { footprintId: 'fp-x', ...GABLE }), 'INVALID_PAYLOAD', 'REJECTED'],
     ['L footprint gable', () => deepFreeze(withFootprint([[0, 0], [10, 0], [10, 4], [4, 4], [4, 8], [0, 8]])), (x) => command(x, 'REPLACE_ROOF', { footprintId: 'fp-1', ...GABLE }), 'UNSUPPORTED_FOOTPRINT', 'REJECTED'],
     ['ridge below eave', m, (x) => command(x, 'REPLACE_ROOF', { footprintId: 'fp-1', ...GABLE, ridgeZ: 5 }), 'INVALID_GEOMETRY', 'REJECTED'],
