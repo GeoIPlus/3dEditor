@@ -324,6 +324,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-308 | Row 3D-104 (spec of `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE`) set `ready` by the owner; the coordinating session sets the status on the base after merging 3D-15 and starts it in a fresh session (D-178) | Owner, chat, 2026-11-26 (3D-15) |
 | D-309 | 3D-15 merged into the base by the coordinating session (D-178); provisional ids became D-297..D-308, its five intake rows became 3D-104..3D-108; row 3D-104 `ready` per D-308 | Owner, WP session 3D-15, 2026-11-26 |
 | D-310 | Rows 3D-103 (asked through WP session 3D-17) and 3D-23 (asked through WP session 3D-18, MVP critical path D-266) set `ready`; each starts in a fresh session on the base after the 3D-15, 3D-17 and 3D-18 merges | Owner, WP sessions 3D-17 and 3D-18, 2026-11-26 |
+| D-311 | Started in fresh sessions from base 12ff6fb: 3D-23 (session_01RNYuqFLUgbVc5u5YcbhjUe, wp/3d-23-kernel-service), 3D-103 (session_01RNYuqHL2wwwM67eByZVGDo, wp/3d-103-on-plane-fixed), 3D-104 (session_01RNYuqGooksLmaavm5pUkFc, wp/3d-104-core-edits-spec) | Coordinating session, 2026-11-26 |
 
 ## Open questions
 
