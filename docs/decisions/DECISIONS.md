@@ -363,6 +363,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-347 | 3D-19 goes to `review` now with GT-14 pending: `SET_OVERHANG` counts as fully accepted only when GT-14 passes with the standard profile after 3D-117 (D-343) | Owner, dialog, 2026-11-26 (3D-19) |
 | D-348 | 3D-19 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-19-envelope-ops; `SET_OVERHANG` full acceptance still tied to GT-14 after 3D-117 (D-347) | Owner, chat, 2026-11-26 (3D-19) |
 | D-349 | 3D-19 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-336..D-348, Q-48, rows 3D-114..3D-120; GT-14 stays `it.fails` until 3D-117 (D-343, D-347) | Owner, WP session 3D-19, 2026-11-26 |
+| D-350 | Rows 3D-118 and 3D-120 (bugs found in 3D-19) set `ready` and run in one fresh session (session_01RNYuqJ29wVvaSJdeLrCLiJ, wp/3d-118-120-bugs); dependency cells left provisional by the 3D-19 and 3D-23 merges corrected (19.2 -> 115, 23.1 -> 109, 23.2 -> 110) | Owner, chat with the coordinator, 2026-11-26 |
 
 ## Open questions
 
