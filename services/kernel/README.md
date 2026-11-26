@@ -1,13 +1,14 @@
 # services/kernel
 
 - Status: implemented in part - points port and LAS-whole adapter (3D-22), COPC-by-box adapter (3D-70); `history` port,
-  memory and file store, COMMIT path, command status (3D-23); command API: 3D-109; handler, server, auth, `datasets`:
-  3D-110; S3 store: 3D-111
+  memory and file store, COMMIT path, command status (3D-23); command API: PREVIEW store, COMMIT by `previewId`, rate
+  and size limits, error mapping, contract validation (3D-109); handler, server, auth, `datasets`: 3D-110; S3 store: 3D-111
 - Protection: P4 (server-only host of the kernel; never in a browser bundle)
-- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
+- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
 - Source/donor: new; LAS layout from the ASPRS LAS Specification 1.4 R15 (2019); COPC layout from the COPC 1.0
   specification (copcio/copcio.github.io @a6336f7)
-- Runtime dependencies: `laz-perf` 0.0.7 (Apache-2.0, WASM; LAZ chunk decoder only), [3D-ADR-0009](../../docs/decisions/adr/3D-ADR-0009-copc-laz-decoder.md)
+- Runtime dependencies: `laz-perf` 0.0.7 (Apache-2.0, WASM; LAZ chunk decoder only), [3D-ADR-0009](../../docs/decisions/adr/3D-ADR-0009-copc-laz-decoder.md);
+  `ajv` 8.18.0 + `ajv-formats` 3.0.1 (MIT; contract validation, D-351)
 
 ## Purpose
 Host of `geo-model3d` (3D-ADR-0002 C2, D-51): all I/O and ports live here, the kernel stays pure. 3D-22 adds the
@@ -24,9 +25,19 @@ No `index.js` yet (the handler `createKernelHandler(ports)` is 3D-110). Modules:
 - `src/adapters/memory-store.js` - `createMemoryStore()`; `src/adapters/file-store.js` - `createFileStore({ root,
   settleMs? })`: exclusive create (`wx`), `get` re-reads a file another writer is still filling for up to `settleMs`.
 - `src/commit.js` - `createCommitService({ history, toleranceProfile, clock, newOperationId?, pointsFor? })` ->
-  `{ commit(command, { actorId }), status(projectId, commandId) }`; replies `{ httpStatus, body }` with a contract
-  `command-result`, `command-status` or `error` body.
-- `src/errors.js` - `HTTP_STATUS` (spec §2.4), `errorKey`, `errorReply(code, entityIds?, message?)`.
+  `{ commit(command, { actorId }, lookup?), status(projectId, commandId), execute(model, command), history }`;
+  replies `{ httpStatus, body }` with a contract `command-result`, `command-status` or `error` body.
+- `src/command-api.js` (3D-109) - `createCommandApi({ ...commit deps, now, newPreviewId?, contracts? })` ->
+  `previewOf(result, baseVersion, previewId)`;
+  `{ command(message, { actorId }), commandBody(source, { actorId }, { declaredLength? }), status(projectId, commandId),
+  request(schemaName, message), previewCount() }`: the entry 3D-110's handler calls; every reply contract-validated.
+- `src/contracts.js` - `createContractValidator({ dir? })` -> `{ names, check, request, command, reply }` over every
+  `contracts/model3d/*.schema.json` (Ajv 2020, strict, formats; `CONTRACTS_DIR`, which the image must ship).
+- `src/preview-store.js` - `createPreviewStore({ now, ttlMs?, perKey?, total?, newId? })`: `nextId`, `put`, `get`,
+  `delete`, `size` (3D-ADR-0003 `putPreview` / `takePreview`). `src/rate-limit.js` - `createRateLimiter({ now })`
+  `.admit(actorId, projectId, buildingId)`. `src/body.js` - `readJsonBody(source, { limit?, declaredLength? })`.
+- `src/errors.js` - `HTTP_STATUS` (spec §2.4), `errorKey`, `errorReply(code, entityIds?, message?)`,
+  `failureReply(err)` (D-353).
 - `src/ports/points.js` - `PointsPort { queryBox(box, { signal }) -> Promise<Float64Array> }`: points in an inclusive
   world box of the dataset CRS, x y z interleaved, full source precision (spec §9 r7); `isPointsPort`, `inBox`.
 - `src/adapters/las-points.js` - `createLasPointsAdapter({ path, read? })`: reads one uncompressed LAS 1.0-1.4 file
@@ -65,7 +76,21 @@ No `index.js` yet (the handler `createKernelHandler(ports)` is 3D-110). Modules:
   (SC 3D-43) or from the CRS the user set when opening it (D-165, D-196); adapters never read the file's CRS records.
   Another horizontal CRS than the building's is reprojected by the kernel (D-164), on the same datum only (D-197);
   the dataset shares the building's vertical CRS (D-93).
-- Mapping `LasFormatError` and read failures to the error registry is 3D-109's - `TBD`.
+- PREVIEW (3D-109): request validated (envelope, then the payload schema of its `operation`) -> rate 20/s per (user,
+  building), sliding 1 s window, refused requests not counted (D-316) -> head -> `executeCommand` once on the head
+  version in phase COMMIT: the stored outcome, and the reply derived from it by `previewOf` (D-355; `previewId` =
+  UUID, Q-26). Nothing persisted;
+  a refused PREVIEW stores nothing. Store: 10 min from creation (D-315), 20 per (user, building) and 2000 in all,
+  oldest evicted (D-352); one instance only (3D-ADR-0003 §3).
+- COMMIT with `previewId`: stored reply of `commandId` first (a repeat works after the preview is consumed) -> preview
+  of another user / project / building, expired or evicted -> `404 NOT_FOUND`; other `operation`, `payload`,
+  `targetState` or `coordinateFrame` -> `400 INVALID_PAYLOAD` (D-354; neither is stored) -> `expectedVersion` or the
+  preview's version != head -> `409` (stored) -> the stored outcome is committed with the COMMIT's `commandId` and input;
+  the kernel does not run again (spec §3 r3). The journal `timestamp` is the commit's; the validation report the
+  preview's. The preview is dropped once a COMMIT decided on it.
+- Body: bytes counted while reading, above 1 MiB (or a larger `Content-Length`) -> `413` before `JSON.parse` (D-317);
+  not JSON -> `400`. Thrown failures: `LasFormatError` -> `500 INTERNAL`, read failure (Node system error code, abort,
+  timeout) -> `503 UNAVAILABLE`, other -> `500` (D-353); an invalid reply is replaced by `500 INTERNAL`.
 - LAS whole: the whole file is held in memory (interim). COPC: only header, pages and meeting chunks are read.
 - Node cubes: root = info VLR centre +/- halfsize (spec text); below it EPT key naming [A] (copclib 2.6.3 derives
   cubes from the LAS header bounds instead; this reader follows the spec).
@@ -91,5 +116,8 @@ selection, the committed measurement equals the LOCAL fit; other operations and 
 race), key encoding, file settle. `test/commit.test.js`: journal entry with operationId and authenticated actor,
 UNDO / REDO / RESTORE_BASELINE through the service, refusal and noChange write nothing, stale version before an
 operation the kernel lacks, concurrent commits (file store) and concurrent repeat, status DONE / IN_PROGRESS / 404;
-every reply validated with Ajv. `test/gt-13.golden.test.js`: GT-13 on both stores (`npm run golden`).
+every reply validated with Ajv. `test/command-api.test.js` (3D-109): PREVIEW -> COMMIT same patch without a second
+kernel run, derived PREVIEW == kernel PREVIEW (edit, noChange, refusal, UNDO), competing COMMIT -> 409, D-354, expiry and eviction on an injected clock. `test/command-limits.test.js`:
+one invalid message per schema -> 400, invalid reply -> 500, 429 on a sliding window, 413 before parsing, failure
+mapping. `test/gt-13.golden.test.js`: GT-13 on both stores (`npm run golden`).
 Golden GT-20 / GT-21 run on the kernel functions (`packages/geo-model3d/test/golden/`).

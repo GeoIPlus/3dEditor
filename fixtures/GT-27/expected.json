@@ -1,0 +1,23 @@
+{
+  "gt": "GT-27",
+  "source": {
+    "document": "docs/specs/3dqm-spec.md",
+    "section": "§13",
+    "input": "GT-26 input, `keepPoint` (5; 4.25; 8.1875) on the flap",
+    "expected": "`INVALID_TOPOLOGY` (the removed eave part shares edges with the wall); version unchanged"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "refusal": "INVALID_TOPOLOGY",
+    "versionUnchanged": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`TRIM_FACE`)",
+    "row": "3D-105"
+  }
+}

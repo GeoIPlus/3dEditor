@@ -13,6 +13,21 @@
     "topologyLineage": { "$ref": "urn:geoiplus:schema:model3d-topology-lineage:v1" },
     "validation": { "$ref": "urn:geoiplus:schema:model3d-validation-report:v1" },
     "warnings": { "type": "array", "items": { "type": "string" } },
+    "candidates": {
+      "type": "array",
+      "description": "REMOVE_DETAILS discovery only (PREVIEW with empty confirmedRemoveIds): always present there, absent otherwise; ordered by areaM2 then faceId, no duplicate faceId (D-325; spec §10.6 r5.2). Added by 3D-105 (D-331).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+          "areaM2": { "type": "number", "minimum": 0 },
+          "removable": { "type": "boolean" },
+          "reason": { "enum": [null, "INVALID_GEOMETRY", "INVALID_TOPOLOGY", "CONSTRAINT_CONFLICT"], "description": "null, or the spec §2.4 domain code the removal of this face alone would get." }
+        },
+        "required": ["faceId", "areaM2", "removable", "reason"],
+        "additionalProperties": false
+      }
+    },
     "error": { "$ref": "urn:geoiplus:schema:model3d-error:v1" }
   },
   "required": ["commandId", "status", "modelVersion", "validation", "warnings"],
@@ -20,7 +35,7 @@
   "$comment": "[A] Status coupling below is this schema's reading of v0.2 D.2 / v0.3 §3: PREVIEW carries previewId, patch and lineage; COMMITTED carries patch and lineage; REJECTED and CONFLICT carry error and no patch.",
   "allOf": [
     { "if": { "properties": { "status": { "const": "PREVIEW" } } }, "then": { "required": ["previewId", "patch", "topologyLineage"], "not": { "required": ["error"] } } },
-    { "if": { "properties": { "status": { "const": "COMMITTED" } } }, "then": { "required": ["patch", "topologyLineage"], "not": { "required": ["error"] } } },
-    { "if": { "properties": { "status": { "enum": ["REJECTED", "CONFLICT"] } } }, "then": { "required": ["error"], "not": { "anyOf": [{ "required": ["patch"] }, { "required": ["topologyLineage"] }] } } }
+    { "if": { "properties": { "status": { "const": "COMMITTED" } } }, "then": { "required": ["patch", "topologyLineage"], "not": { "anyOf": [{ "required": ["error"] }, { "required": ["candidates"] }] } } },
+    { "if": { "properties": { "status": { "enum": ["REJECTED", "CONFLICT"] } } }, "then": { "required": ["error"], "not": { "anyOf": [{ "required": ["patch"] }, { "required": ["topologyLineage"] }, { "required": ["candidates"] }] } } }
   ]
 }

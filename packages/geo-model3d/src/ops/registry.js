@@ -22,6 +22,8 @@ import { alignJunction } from './align-junction.js';
 import { translateBuilding, rotateBuilding } from './rigid-move.js';
 import { setHeight } from './set-height.js';
 import { setOverhang } from './set-overhang.js';
+import { trimFace } from './trim-face.js';
+import { extendFace } from './extend-face.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -63,4 +65,6 @@ export const OPERATIONS = {
   ROTATE_BUILDING: { run: rotateBuilding },
   SET_HEIGHT: { run: setHeight },
   SET_OVERHANG: { run: setOverhang },
+  TRIM_FACE: { run: trimFace }, // 3D-105
+  EXTEND_FACE: { run: extendFace }, // 3D-105
 };

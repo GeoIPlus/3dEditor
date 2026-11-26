@@ -50,6 +50,10 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 - `schemaVersion` of model and command is `"1"` and equals the `$id` major `v1` [P]. A breaking change bumps both.
 - Ajv: strict mode except `strictRequired` (it rejects the standard `if`/`then` `required` idiom).
 
+- Changes inside `v1` before the first release, approved per D-18 (precedent `insert-roof-break`, 3D-15): 3D-105 (D-331)
+  replaced `trim-face.trimLine` by `cuttingFaceId` (D-322) and `extend-face.targetLine` by `targetFaceId` (D-324), added
+  `remove-details.maxAreaM2` (D-326) and `maxDisplacementM` (D-330), and the optional `command-result.candidates` (D-325).
+
 ### Proposals accepted by the owner (D-75)
 
 | # | Proposal | Where |
@@ -113,8 +117,8 @@ spec §2.4 table; lineage members; every example judged as labelled. The spec ta
 | Q-31 | Names of `affectedMetrics`; how a patch carries model-level changes (`state`, `frame`) | 3D-09 / 3D-12 |
 | Q-32 | How the CityJSON CityObject of `IMPORT_BUILDING` maps to `buildingId` (CP assignment unit) | 3D-10 / 3D-43 |
 | Q-33 | `INSERT_ROOF_BREAK` with a ridge constraint instead of a new plane | 3D-15 |
-| Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | 3D-15 |
-| Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-15 |
+| Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | closed by D-325: optional `command-result.candidates` on a discovery PREVIEW (3D-105) |
+| Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | closed by D-323 (`keepPoint`; `cuttingFaceId` replaces `trimLine`, D-322) |
 | Q-36 | `HEAL_HOLE` "allowed corrections" (read as `maxDisplacementM`) | 3D-17 |
 | Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | 3D-19 |
 | Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | closed by D-256..D-258 (3D-20) |

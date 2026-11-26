@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const V03 = 'docs/source/fullSpecsV0.3.md';
-const SPEC = 'docs/specs/3dqm-spec.md';
+export const SPEC = 'docs/specs/3dqm-spec.md';
 
 /** @param {string} rel @param {string} heading @param {string} end */
 function section(rel, heading, end) {
@@ -38,14 +38,18 @@ export function readV03() {
   return { rows, preamble, checks };
 }
 
-/** @returns {Map<string, { module: string, row: string }>} GT id -> module and BACKLOG row (spec §13) */
+/**
+ * GT id -> module and BACKLOG row (spec §13), plus its input and expected cells (the source of a case that v0.3 §12
+ * does not have, 3D-105).
+ * @returns {Map<string, { module: string, row: string, input: string, expected: string }>}
+ */
 export function readSpec13() {
   const sec = section(SPEC, '## 13. Golden tests', '\n---');
-  /** @type {Map<string, { module: string, row: string }>} */
+  /** @type {Map<string, { module: string, row: string, input: string, expected: string }>} */
   const out = new Map();
   for (const l of sec.split('\n').filter((x) => /^\| GT-/.test(x))) {
     const c = cells(l);
-    out.set(c[0], { module: c[3], row: c[4] });
+    out.set(c[0], { module: c[3], row: c[4], input: c[1], expected: c[2] });
   }
   return out;
 }

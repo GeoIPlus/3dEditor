@@ -7,14 +7,25 @@
   "properties": {
     "confirmedRemoveIds": {
       "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
-      "description": "Entities the operator confirmed for removal; empty on the PREVIEW that lists candidates [A]."
+      "description": "Faces the operator confirmed for removal; empty = discovery PREVIEW (candidate list, no change) or a valid empty COMMIT (D-325)."
     },
     "keepIds": {
       "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityIdList",
       "description": "Candidates the operator keeps."
+    },
+    "maxAreaM2": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Candidate threshold: faces with 3D area < maxAreaM2. Omitted -> the profile's minFaceAreaM2; a value below minFaceAreaM2 is refused INVALID_PAYLOAD by the kernel (D-326)."
+    },
+    "maxDisplacementM": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/NonNegativeLength",
+      "description": "Largest admissible distance of a removed-face vertex to the vertex it collapses into. Omitted -> the project's planarTolM (D-330, as D-284)."
     }
   },
-  "required": ["confirmedRemoveIds"],
+  "required": [
+    "confirmedRemoveIds"
+  ],
   "additionalProperties": false,
-  "$comment": "[P] Field names. How the candidate list reaches the client: TBD (Q-34, 3D-15)."
+  "$comment": "[P] Field names. Candidate list: optional `command-result.candidates` on a discovery PREVIEW (D-325). `maxAreaM2`, `maxDisplacementM` added by 3D-105 (D-326, D-330; approved D-331)."
 }

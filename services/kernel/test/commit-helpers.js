@@ -51,3 +51,19 @@ export const command = (model, commandId, operation, payload, over = {}) => ({
   schemaVersion: '1', commandId, projectId: model.projectId, buildingId: model.buildingId, actorId: 'usr-operator',
   operation, phase: 'COMMIT', expectedVersion: model.version, payload, coordinateFrame: 'LOCAL', targetState: 'VALID_SOLID', ...over,
 });
+
+/**
+ * A command API (3D-109) over a fresh store holding `model`, with an injected millisecond clock (`clock.t`).
+ * @param {any} model @param {Partial<import('../src/command-api.js').CommandApiDeps>} [over]
+ */
+export async function apiWith(model, over = {}) {
+  const { createCommandApi } = await import('../src/command-api.js');
+  const history = createHistory(createMemoryStore());
+  await history.putBaseline(model.projectId, model.buildingId, model);
+  const clock = { t: 0 };
+  let n = 0;
+  let pv = 0;
+  const api = createCommandApi({ history, toleranceProfile: () => PROFILE, clock: () => '2026-11-26T00:00:00Z',
+    newOperationId: () => `op-${++n}`, now: () => clock.t, newPreviewId: () => `pv-${++pv}`, ...over });
+  return { api, history, clock };
+}
