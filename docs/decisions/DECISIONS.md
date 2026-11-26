@@ -403,6 +403,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-387 | [3D-ADR-0010](adr/3D-ADR-0010-dependent-geometry.md) accepted by the owner at `wp/3d-115-dependencies@4ba7223` (D-18); 3D-115 (ADR only, D-386) to review; code in 3D-124 after the 3D-114 and 3D-117 merges (D-378) | Owner, dialog, 2026-11-26 (3D-115) |
 | D-388 | 3D-115 accepted (done: ADR only); merged into the base by the coordinating session (D-178); provisional ids became D-383..D-387, 3D-ADR-0010, rows 3D-124 (overhang rebuild; code after the 3D-114 merge, 3D-117 is merged) and 3D-125 (dormers + `components` contract proposal) | Owner, WP session 3D-115, 2026-11-26 |
 | D-3D00E-1 | MVP client path estimates accepted as est0 of 3D-41, 3D-43, 3D-50, 3D-24, 3D-25 ($36.6 / p80 $47.9 with k, SC WP-28 excluded; BACKLOG "MVP client path forecast"). 3D-50 size: re-sized to L or split through `task-intake`, not in this WP | Owner, dialog, 2026-11-26 |
+| D-3D00E-2 | 3D-50 split into two M mirror rows: 3D-50 keeps "consume" (`@geoiplus/*` dependencies, registry token in GV CI and Docker build, P4 canary scan of the client build; stays `ready` under D-381); new row 3D-00.1 "geoviewer runs 3DQM" (workplace mount, kernel route with `createKernelHandler`, file storage port; depends on 3D-50, 3D-110, 3D-43; `proposed`); 3D-25 depends on 3D-00.1 instead of 3D-50 | Owner, dialog, 2026-11-26 |
 
 ## Open questions
 
