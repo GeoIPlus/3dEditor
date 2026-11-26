@@ -21,20 +21,21 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 70 / 106 |
+| Done | 71 / 106 |
 | Review | 0 |
-| In progress | 3 |
+| In progress | 2 |
 | Ready | 8 |
 | Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 70/106 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 71/106 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-126 Regularize footprint; 3D-128 datasets port + file adapter; 3D-47 SC: 3D view port + host.
+**Running:** 3D-128 datasets port + file adapter; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D126["✅ ⚙️ 3D-126 Regularize footprint"]
     D116["✅ ⚙️ 3D-116 F-53 metrics"]
     D110["✅ 🖥️ 3D-110 Kernel service III: handler, ports"]
     D121["✅ 🔧 3D-121 Bench gate on the real PREVIEW path"]
@@ -126,7 +127,6 @@ flowchart TB
     D106["💡 ⚙️ 3D-106 ROTATE_FACE"]
     D107["💡 📐 3D-107 ADR: shared plane"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
-    D126["🚧 ⚙️ 3D-126 Regularize footprint"]
     D124["💡 ⚙️ 3D-124 Overhang rebuild"]
     D125["💡 ⚙️ 3D-125 Dormers follow roof"]
     D130["💡 ⚙️ 3D-130 Metric change detection"]
@@ -348,9 +348,9 @@ Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script
 
 ```
 Forecast 2026-11-26 (ledger n=43 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=5, S kernel n=5, S spec n=8; baseline d7c472d 2026-11-19)
-Known remaining: $263 / $330 over 36 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $282 / $354
-Throughput: 70.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
+Known remaining: $255 / $321 over 35 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $273 / $344
+Throughput: 71.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
 ```
 
 MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
@@ -388,7 +388,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | done (D-296; merged into base, no PR; D-291..D-295) |
 | 3D-19 | Envelope: `TRANSLATE_BUILDING`, `ROTATE_BUILDING`, `SET_HEIGHT`, `SET_OVERHANG` (split D-340, D-346) | here | geo-model3d/ops | 14 | G4 | L | kernel | done (D-349; merged into base, no PR; D-336..D-348; GT-14 pending 3D-117, D-347) |
 | 3D-114 | `RESIZE_ROOF` (lower envelope, D-339) and `ALIGN_WALL` (D-346); `REGULARIZE_FOOTPRINT` split to 3D-126 (D-389) | here | geo-model3d/ops | 19 | G4 | M | kernel | done (D-394; merged into base, no PR; D-389..D-393) |
-| 3D-126 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-389) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | in-progress (D-395; wp/3d-114-1-regularize-footprint) |
+| 3D-126 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-389) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | done (D-426; merged into base, no PR; D-417..D-425) |
 | 3D-115 | Parametric geometry dependency management: ADR 3D-ADR-0010 (parent / dependent links, detach - solve - rebuild in the pipeline; split D-386) | here | docs/decisions/adr | 15, 17, 18, 19 | G4 | S | spec | done (D-388; ADR 3D-ADR-0010; merged into base, no PR; D-383..D-387) |
 | 3D-124 | Overhang rebuild after a parent change: detach - solve - rebuild in the pipeline, replacing the D-367 refusal (D-384, D-385) | here | geo-model3d/ops | 115, 114, 117, 19, 120 | G4 | M | kernel | proposed |
 | 3D-125 | Dormers follow their roof face; explicit `components` record in the model contract (D-383) | here | geo-model3d/ops, contracts/model3d | 124, 20 | G4 | M | kernel | proposed |
@@ -999,9 +999,28 @@ accuracy ratio 1.30 is n=1 and not applied.
   deformation limits, the change report and acceptance lines; then the code on the `executeCommand` pipeline, walls as
   the vertical planes of the new footprint edges, roof planes kept (D-08). Scope out: new contract fields without the
   owner (D-18).
-- Accept: the acceptance lines agreed in the dialog (recorded as decisions before the code); PREVIEW == COMMIT, refusal
-  leaves the model unchanged, inverse patch, UNDO / REDO; D-372 respected; `npm run check`, golden pass.
-- Decisions: D-08, D-13, D-340, D-389  Open: the algorithm (owner dialog in its own session)
+- Algorithm (owner dialog 2026-11-26, D-417..D-423): straighten chains within `footprintAngleTolDeg` into the longest
+  wall (plane and id kept); optional orthogonalize onto the 0 / 90 deg grid of the longest outer wall; angle limit only,
+  shift and area reported; degenerate courtyards removed only with `allowCourtyardRemoval`; report in `warnings` +
+  lineage; overhangs rebuilt, refused when their wall is merged away; steps untouched.
+- Accept (owner-approved D-424):
+  RF-01 FLAT, 3 deg kink -> merged into the longer wall, roof plane kept, `VALID_SOLID`, lineage merged -> survivor;
+  RF-02 GABLE, kink on an eave wall -> roof planes unchanged;
+  RF-03 chain 4 / 4 deg merged; an edge 6 deg from the reference wall breaks the chain;
+  RF-04 all turns > 5 deg -> no-op, version kept;
+  RF-05 `orthogonalize` 88 / 92 deg corners -> exactly 90, the longest wall unchanged; `false` -> corners kept;
+  RF-06 `orthogonalize` with a 120 deg corner -> those walls untouched;
+  RF-07 courtyard with a kink, removal `false` -> regularized and kept;
+  RF-08 degenerate courtyard: `false` -> `INVALID_GEOMETRY`, model unchanged; `true` -> removed, holes closed;
+  RF-09 overhang on a changed wall rebuilt at the same width; on a merged-away wall -> `INVALID_TOPOLOGY`;
+  RF-10 kept roof planes no longer meet in one point, or a face turns over -> `INVALID_TOPOLOGY`;
+  RF-11 self-intersecting result or an edge < `minEdgeLengthM` -> `INVALID_GEOMETRY`;
+  RF-12 hard constraint on a deleted wall -> `CONSTRAINT_CONFLICT` (D-213);
+  RF-13 report: `warnings` as D-421;
+  RF-14 unknown `footprintId` -> `INVALID_PAYLOAD`; body not unique -> `INVALID_TOPOLOGY` (D-218);
+  RF-15 PREVIEW == COMMIT, refusal leaves the model unchanged, inverse patch, UNDO / REDO, D-372 respected.
+- Accept (all): `npm run check`, golden, bench pass; files <= 300 lines.
+- Decisions: D-08, D-13, D-340, D-389, D-417..D-425  Open: none
 - Estimate: $7.72 (p80 $8.96), ~13 min model time; basis: M kernel n=6
 
 ### 3D-115 Parametric geometry dependency management

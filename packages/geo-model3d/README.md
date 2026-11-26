@@ -235,7 +235,7 @@ WallSurface + OVERHANG end caps in the gable planes; width carried by the soffit
 same width no-op, 0 removes, a new width keeps every id; unsupported junction -> INVALID_TOPOLOGY, D-344).
 Limitations: the eave vertices under an overhang have two independent planes and are EXPLICIT (spec §4 r3), so
 operations of other rows do not rebuild an overhang (3D-115); GT-14 caps are below `minFaceAreaM2` and pass as verified caps (3D-117, D-343);
-RESIZE_ROOF, ALIGN_WALL: 3D-114 (below); REGULARIZE_FOOTPRINT: 3D-126.
+RESIZE_ROOF, ALIGN_WALL: 3D-114 (below); REGULARIZE_FOOTPRINT: 3D-126 (below).
 
 **3D-114** (spec §10.10 r2, r4; D-339, D-346, D-389..D-392): `lower-envelope.js` (lower-envelope test of the roof
 planes - no valley edge, no plane below a roof vertex -, strictly convex outline, cells of the lower envelope over the
@@ -256,6 +256,15 @@ the same width with the same ids; a roof face turned over or a junction the kept
 | `volume.js` | signed divergence volume about a local point; outer > 0, void < 0, finite, else null (no `Math.abs`) |
 | `status.js` | volume proof: blocking codes (open, non-manifold, orientation, self-intersection, non-planar, junction, overlap, CRS) -> N/A; `DEGENERATE_FACE` / `_EDGE` safe only if every edge > `numericEpsilon` and area / longest edge > `numericEpsilon` (D-413); FINAL needs VALID_SOLID / APPROVED and no VALID-column ERROR on the body |
 | `overhang.js` | OVERHANG groups by shared edges; one simple loop (reasons `OPEN`, `BRANCH`, `MULTIPLE_LOOPS`, `ZERO_EDGE`, `NOT_IN_WALL_PLANE`, `SELF_INTERSECTION`, `PROTRUDES`, `ORIENTATION`, `EMPTY`, `OVERLAP`; internal, tests only) in a bordering wall plane within `numericEpsilon`; volume about the loop centroid (the fan closure adds 0); groups proven disjoint by a separating wall or face plane |
+
+**3D-126** (spec §10.10 r3; v0.2 F-39; D-417..D-424): `regularize-plan.js` (pure 2D plan: per ring, chains of walls
+within `footprintAngleTolDeg` of their longest wall merge into it, plane and id kept; optional orthogonalisation onto
+the 0 / 90 deg grid of the longest outer wall about each edge's midpoint; degenerate rings; vertex shift and area
+change), `regularize-courtyard.js` (degenerate courtyard removed with `allowCourtyardRemoval` when its hole lies in one
+ground and one roof face, else INVALID_TOPOLOGY), `regularize-footprint.js` (REGULARIZE_FOOTPRINT: wall planes set, roof
+planes kept, vertices re-derived, merged walls joined by the MERGE_FACES mechanism with the lineage composed over
+successive dissolves; footprint record follows; overhangs rebuilt, refused on a merged-away wall; change report in
+`warnings`). No distance limit (D-419); small steps are not touched (D-423).
 
 ## Internal modules
 ### solve (3D-13)

@@ -26,6 +26,7 @@ import { trimFace } from './trim-face.js';
 import { extendFace } from './extend-face.js';
 import { resizeRoof } from './resize-roof.js';
 import { alignWall } from './align-wall.js';
+import { regularizeFootprint } from './regularize-footprint.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -71,4 +72,5 @@ export const OPERATIONS = {
   EXTEND_FACE: { run: extendFace }, // 3D-105
   RESIZE_ROOF: { run: resizeRoof }, // 3D-114
   ALIGN_WALL: { run: alignWall }, // 3D-114
+  REGULARIZE_FOOTPRINT: { run: regularizeFootprint }, // 3D-126
 };
