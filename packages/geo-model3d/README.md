@@ -227,7 +227,17 @@ WallSurface + OVERHANG end caps in the gable planes; width carried by the soffit
 same width no-op, 0 removes, a new width keeps every id; unsupported junction -> INVALID_TOPOLOGY, D-344).
 Limitations: the eave vertices under an overhang have two independent planes and are EXPLICIT (spec §4 r3), so
 operations of other rows do not rebuild an overhang (3D-115); GT-14 caps are below `minFaceAreaM2` and pass as verified caps (3D-117, D-343);
-RESIZE_ROOF, REGULARIZE_FOOTPRINT: 3D-114; ALIGN_WALL: not assigned (owner).
+RESIZE_ROOF, ALIGN_WALL: 3D-114 (below); REGULARIZE_FOOTPRINT: 3D-126.
+
+**3D-114** (spec §10.10 r2, r4; D-339, D-346, D-389..D-392): `lower-envelope.js` (lower-envelope test of the roof
+planes - no valley edge, no plane below a roof vertex -, strictly convex outline, cells of the lower envelope over the
+outline by half-plane clipping, shared corners merged), `resize-roof.js` (RESIZE_ROOF: roof planes kept; V1 = roofs
+that are their lower envelope, else INVALID_TOPOLOGY, also with an installation; `moveWallFootprint` true: footprint :=
+outline, envelope rebuilt by `envelope.js` with the roof face ids kept, an overhang removed first; false: footprint kept,
+the outline must be the footprint offset edge by edge, each outward offset is a D-336 overhang of a structural eave,
+otherwise INVALID_TOPOLOGY, D-344), `align-wall.js` (ALIGN_WALL: only the wall plane changes, vertices re-derived, roof
+planes kept, eave height recomputed; footprint record follows; an overhang on the wall or its end wall is rebuilt at
+the same width with the same ids; a roof face turned over or a junction the kept planes no longer meet -> INVALID_TOPOLOGY).
 
 ## Internal modules
 ### solve (3D-13)
