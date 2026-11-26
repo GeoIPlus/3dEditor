@@ -21,16 +21,16 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 50 / 78 |
-| Review | 1 |
-| In progress | 6 |
+| Done | 50 / 79 |
+| Review | 2 |
+| In progress | 5 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 17 |
+| Proposed (waiting for the owner to set `ready`) | 18 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 50/78 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 50/79 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-18 History; 3D-19 Envelope ops; 3D-71 FIT_PLANE command; 3D-47 SC: 3D view port + host.
+**Running:** 3D-15 Core edits; 3D-18 History; 3D-19 Envelope ops; 3D-71 FIT_PLANE command; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -87,6 +87,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D17["🔍 ⚙️ 3D-17 Repair ops"]
     D45["🔍 🔗 3D-45 SC: pinned model3d schemas"]
   end
   subgraph ready["READY"]
@@ -101,7 +102,7 @@ flowchart TB
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D15["🚧 ⚙️ 3D-15 Core edits"]
-    D17["🚧 ⚙️ 3D-17 Repair ops"]
+    D17_1["💡 ⚙️ 3D-17.1 ON_PLANE fixed plane"]
     D18["🚧 ⚙️ 3D-18 History"]
     D19["🚧 ⚙️ 3D-19 Envelope ops"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
@@ -222,6 +223,8 @@ flowchart TB
   D13 --> D16
   D12 --> D17
   D13 --> D17
+  D13 --> D17_1
+  D17 --> D17_1
   D09 --> D18
   D16 --> D18
   D14 --> D19
@@ -304,7 +307,8 @@ Throughput: 50.0 rows/week (7 d), 362 model min/week; waiting share 99 %   Accur
 | 3D-14 | `REPLACE_ROOF` R-01..R-04, `REBUILD_ENVELOPE` | here | geo-model3d/ops | 12, 13 | G2 | L | kernel | done (D-219; merged into base, no PR; D-212..D-218) |
 | 3D-15 | Core edits: `MOVE_VERTEX`, `MOVE_EDGE`, `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | here | geo-model3d/ops | 13 | G3 | L | kernel | in-progress (D-220; wp/3d-15-core-edits) |
 | 3D-16 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | here | geo-model3d/ops | 13 | G3 | M | kernel | done (D-235; merged into base, no PR; D-231..D-234) |
-| 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | kernel | in-progress (D-220; wp/3d-17-repair) |
+| 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | kernel | review (local, PR not requested; wp/3d-17-repair) |
+| 3D-17.1 | `solve`: `ON_PLANE` with one face and a plane target = fixed face plane; enables the GT-19 "Fixed" variant | here | geo-model3d/solve | 13, 17 | G4 | S | kernel | proposed |
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | in-progress (D-267; wp/3d-18-history) |
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | kernel | in-progress (D-267; wp/3d-19-envelope-ops) |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | done (D-263; merged into base, no PR; D-256..D-262) |
@@ -934,3 +938,16 @@ Throughput: 50.0 rows/week (7 d), 362 model min/week; waiting share 99 %   Accur
   updates" fails; a status row naming an unknown id fails; the current DECISIONS.md passes;
   `node --test tools/check-docs.test.mjs` and `npm run check` pass.
 - Decisions: D-38, D-167  Open: -
+
+### 3D-17.1 `ON_PLANE` with a face and a plane target (fixed plane)
+- Source: 3D-17 session 2026-11-26; owner dialog (D-3D17-6). GT-19 "Fixed" (fixtures/GT-19/input.model.fixed.json, 3D-07)
+  writes hard `ON_PLANE` with `entityIds: [face]` and a `Plane` target; `solve/compile.js` accepts only
+  `[vertex, face]` (D-169) and drops it with `ENTITIES_DO_NOT_MATCH_KIND`, so ALIGN_JUNCTION commits instead of refusing.
+- Goal: a hard `ON_PLANE` `[face]` + `Plane` target fixes that face's support plane (planes primary, D-08).
+- Scope in: compile reading (residual of normal and offset against the target, tolerance per D-170), solve module card
+  table row (D-169 amended), unit tests; turn the GT-19 `it.todo` into the assertion "refusal listing the conflicting
+  faces". Scope out: other constraint kinds; contract change (the schema already allows the target).
+- Accept: GT-19 fixed variant -> `CONSTRAINT_CONFLICT` whose `entityIds` contain `f-roof-e`, model unchanged; existing
+  ON_PLANE `[vertex, face]` tests unchanged; `npm run check` passes.
+- Decisions: D-169, D-170, D-3D17-4, D-3D17-5, D-3D17-6  Open: -
+- Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (Size-only class, as 3D-89; S kernel count not checked)
