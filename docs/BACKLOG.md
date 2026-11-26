@@ -21,14 +21,14 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 67 / 102 |
+| Done | 67 / 103 |
 | Review | 0 |
 | In progress | 4 |
 | Ready | 7 |
-| Proposed (waiting for the owner to set `ready`) | 23 |
+| Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 67/102 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 67/103 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-126 Regularize footprint; 3D-116 F-53 metrics; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
 
@@ -145,7 +145,8 @@ flowchart TB
     D42["💡 🔗 3D-42 3DQM tools"]
     D43["▶️ 🔗 3D-43 plans/3dqm"]
     D44["💡 🔗 3D-44 3DQM UI panels"]
-    D50["▶️ 🔗 3D-50 geoviewer host adapter"]
+    D50["▶️ 🔗 3D-50 geoviewer consumes 3DQM packages"]
+    D127["💡 🔗 3D-127 geoviewer runs 3DQM"]
     D60["💡 🔗 3D-60 crowdsource 3D project + CityJSON"]
     D61["💡 🔗 3D-61 crowdsource COPC stream"]
     D62["💡 🔗 3D-62 crowdsource server grant"]
@@ -297,7 +298,10 @@ flowchart TB
   D110 --> D24
   D24 --> D25
   D43 --> D25
-  D50 --> D25
+  D127 --> D25
+  D50 --> D127
+  D110 --> D127
+  D43 --> D127
   D10 --> D26
   D11 --> D26
   D06 --> D40
@@ -336,8 +340,8 @@ Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script
 
 ```
 Forecast 2026-11-26 (ledger n=43 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=5, S kernel n=5, S spec n=8; baseline d7c472d 2026-11-19)
-Known remaining: $256 / $321 over 35 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $275 / $344
+Known remaining: $263 / $330 over 36 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $282 / $354
 Throughput: 67.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
 ```
 
@@ -397,7 +401,7 @@ Throughput: 67.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 123 | G3 | L | spec | proposed |
 | 3D-113 | `STRAIGHTEN_FACE` `ALIGN_SELECTED_EDGES` extensions: leading edge chosen by the operator, `BEST_FIT_LINE` mode | here | docs/specs, geo-model3d/ops | 122 | G3 | S | spec | proposed |
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110 | G5 | M | kernel | proposed |
-| 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | tests | proposed |
+| 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | spec | done (D-36; merged into base, no PR) |
@@ -445,7 +449,8 @@ Throughput: 67.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | mirror | in-progress (D-61; SC wp/70-3d-view-host, wp/71-3d-camera-controls; started in a fresh cloud session; UI per brandbook, D-40) |
 | 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | mirror | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared (76) | tools, CI | 27 | G0 | S | mirror | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
-| 3D-50 | geoviewer host adapter: add `@geoiplus/*` dependencies (none today), mount workplace, kernel route on server (mounts `createKernelHandler`, 3D-ADR-0002), file storage port for tests, P4 canary scan of the client build | geoviewer | host | 23, 43 | G5 | M | mirror | ready (D-381; waits for 3D-43) |
+| 3D-50 | geoviewer consumes 3DQM packages: `@geoiplus/*` dependencies (none today) with the registry token in CI and Docker build, P4 canary scan of the client build (split D-397: mount and kernel route -> 3D-127) | geoviewer | host, CI | 23, 43 | G5 | M | mirror | ready (D-381; waits for 3D-43) |
+| 3D-127 | geoviewer runs 3DQM: mount workplace (`3dqm.production`, `3dqm.qa`), kernel route on server (mounts `createKernelHandler`, 3D-ADR-0002), file storage port for tests (split of 3D-50, D-397) | geoviewer | host | 50, 110, 43 | G5 | M | mirror | proposed |
 | 3D-51 | geoviewer `scene3d` adapter implementing the 3D view port (entity-id pick, model3d drawing in GV) | geoviewer | scene3d | 47, 50 | G5 | M | mirror | ready (D-61; waits for 3D-47, 3D-50; D-54; UI per brandbook, D-40) |
 
 ## Details
@@ -520,8 +525,18 @@ Throughput: 67.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 - Every operation: atomic commit, PREVIEW before COMMIT, hard-constraint conflict -> refusal without partial change,
   lineage in the result, "commit adds no new errors for the current state" (v0.3 §6).
 
+### 3D-24 QC and export rules
+- Accept: see "3D-09 .. 3D-24" (GT-22, GT-24; GT-23 belongs to 3D-25). Needs 3D-110 (`createKernelHandler`, auth port).
+- Estimate: $7.72 (p80 $8.96), ~12 min model time; basis: M kernel n=6; wall: 1-2 h agent (+ owner dialogs; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): M fits (five rules, two golden tests, one module pair) [A].
+
 ### 3D-25 E2E
 - Accept: the v0.3 G5 E2E chain on the CP/DP mock in both workplaces; GT-23 (building outside assignment -> 403).
+- Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M tests n=1 < 5); wall: 1-3 h agent (new `e2e`
+  harness over SC plans and the GV host) (+ owner dialogs; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): M holds while "both workplaces" means `3dqm.production` and `3dqm.qa` (D-09)
+  and the chain is driven through plans and the kernel API, not through UI rows 3D-40/3D-42/3D-44 [A]; if the owner
+  wants it through the UI or through both hosts (GV and `apps/3dqm`, 3D-48), propose L via intake.
 
 ### 3D-26 Real-data import
 - Accept: import + export round-trip of the owner's roofer and TerraSolid samples; tolerance profile adjustments
@@ -837,6 +852,37 @@ Throughput: 67.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 - Accept: the 3D-47 port contract test passes against the GV adapter; picking returns entity ids for model3d objects.
 - Decisions: D-07, D-54  Open: -
 
+### 3D-41 Remote kernel port (mirror; SC row authoritative)
+- Accept: see "3D-40 .. 3D-50 Mirrors" (3D-01, 3D-02 changes).
+- Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M mirror n=0 < 5); wall: 1-3 h agent incl. PR/CI in the other repository (+ owner dialogs and PR merge there; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): M fits only with SC WP-28 (factory, registry, plan v2) already on SC main;
+  WP-28 itself is not in this figure (D-381).
+
+### 3D-50 geoviewer consumes 3DQM packages (mirror; GV row authoritative)
+- Accept: see "3D-40 .. 3D-50 Mirrors" (3D-27, 3D-01 changes).
+- Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M mirror n=0 < 5); wall: 1-3 h agent incl. PR/CI in the other repository (+ owner dialogs and PR merge there; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): five acceptance groups were too many for M (D-396); split below.
+- Split 2026-11-26 (task-intake, `change-wp` + `external`, owner dialog, D-397): 3D-50 keeps "consume":
+  `@geoiplus/*` dependencies with the registry token in GV CI and Docker build; P4 canary scan of GV `client/dist`
+  (+ `.map`), a planted marker fails it (3D-27 change). Mount, kernel route and file storage port move to 3D-127.
+  Text for the GV row (authoritative there): "Accept: GV CI and Docker build install `@geoiplus/*` with the registry
+  token; the canary scan of `client/dist` and `.map` runs in GV CI and a planted marker fails it."
+- Re-estimate 2026-11-26: split; scope smaller, class unchanged: $6.63 (p80 $8.96); basis: M n=16 (M mirror n=0 < 5)
+
+### 3D-127 geoviewer runs 3DQM (mirror; GV row authoritative)
+- Source: split of 3D-50 (owner dialog 2026-11-26, D-397).
+- Goal: GV hosts the 3DQM workplaces and the kernel service in one process for the E2E (3D-25).
+- Scope in: mount the workplace from `plans/3dqm` (`3dqm.production`, `3dqm.qa`; D-09); server route that mounts
+  `createKernelHandler` from `services/kernel` (3D-ADR-0002; how GV obtains it, pinned SHA or tarball, is the GV row's
+  choice, 3D-02 change); file storage port for tests; the dataset descriptor `{ port, horizontalCrs }` filled from the
+  CP extension `dataset` member (D-196, "3D-43 note from 3D-69"). Scope out: packages, CI token and canary (3D-50);
+  `scene3d` adapter (3D-51); UI rows 3D-40/3D-42/3D-44.
+- Accept: a request through the GV route reaches `createKernelHandler` and its reply validates against
+  `contracts/model3d/`; both workplaces mount from a CP document on the mock; the file storage port passes the 3D-110
+  `datasets` port tests; the 3D-50 canary scan still passes on the build with the route.
+- Decisions: D-09, D-51, D-52, D-196, D-397  Open: -
+- Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M mirror n=0 < 5); wall: 1-3 h agent incl. PR/CI in the other repository (+ owner dialogs and PR merge there; M span p50 16 h, p80 32 h)
+
 ### 3D-64 Spec update: apply D-76 and D-77
 - Source: owner message 2026-11-23, found at the 3D-06 merge (checkpoint 3D-06 handoff). 3D-04 is `done`, so this is a new row.
 - Goal: the maintained spec states the refusal codes and severities the owner decided in 3D-06 instead of `TBD`.
@@ -1079,6 +1125,12 @@ Throughput: 67.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
   host fills the service's dataset descriptor `{ port, horizontalCrs }` from it (D-165, D-196). Text for the SC row
   (authoritative there): "Accept: the extension schema's point-cloud `dataset` entry has a required `horizontalCrs`;
   an example document validates."
+
+### 3D-43 `plans/3dqm` (mirror; SC row authoritative)
+- Accept: see "3D-40 .. 3D-50 Mirrors" (3D-27, 3D-02 changes) and "3D-43 note from 3D-69".
+- Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M mirror n=0 < 5); wall: 1-3 h agent incl. PR/CI in the other repository (+ owner dialogs and PR merge there; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): M fits (two plans, one extension schema with an example document), given
+  SC WP-21 and WP-28 on SC main.
 
 ### 3D-23 note from 3D-69 (change-wp, 2026-11-24)
 - The handler builds one `PointsDataset { port, horizontalCrs }` per opened point dataset (D-196): `horizontalCrs`
