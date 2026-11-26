@@ -338,6 +338,15 @@ ETC: TBD (g not measured before 2026-12-03); known x k = $275 / $344
 Throughput: 66.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
 ```
 
+MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-25 plus
+3D-24 = $34.2 p50 / $44.8 p80 (sum of row estimates), x k 1.07 = **$36.6 / $47.9**; with 3D-50 as L (proposed)
+$42.4 / $53.2. Critical path wall time, SC WP-28 slice already on SC main: four serial sessions, 4-10 h of agent work;
+with owner dialogs and PR merges in SC/GV at the observed M span (p50 16 h, p80 32 h per row) ~2.7-5.3 days.
+3D-24 runs in parallel after 3D-110 (in progress) and is not critical if it ends before 3D-50. Not included: SC WP-28
+(L in SC, estimated in SC; its time is added before 3D-41), 3D-110 remainder, 3D-47. Assumptions [A]: one session per
+row, no split; mirror rows cost like M (no mirror data at M; S mirror n=2 median $5.53 vs S $3.05 suggests a premium);
+accuracy ratio 1.30 is n=1 and not applied.
+
 ## Work-package status
 
 | WP | Title | Repo | Modules | Depends on | Gate | Size | Type | Status |
@@ -516,8 +525,18 @@ Throughput: 66.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 - Every operation: atomic commit, PREVIEW before COMMIT, hard-constraint conflict -> refusal without partial change,
   lineage in the result, "commit adds no new errors for the current state" (v0.3 §6).
 
+### 3D-24 QC and export rules
+- Accept: see "3D-09 .. 3D-24" (GT-22, GT-24; GT-23 belongs to 3D-25). Needs 3D-110 (`createKernelHandler`, auth port).
+- Estimate: $7.72 (p80 $8.96), ~12 min model time; basis: M kernel n=6; wall: 1-2 h agent (+ owner dialogs; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): M fits (five rules, two golden tests, one module pair) [A].
+
 ### 3D-25 E2E
 - Accept: the v0.3 G5 E2E chain on the CP/DP mock in both workplaces; GT-23 (building outside assignment -> 403).
+- Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M tests n=1 < 5); wall: 1-3 h agent (new `e2e`
+  harness over SC plans and the GV host) (+ owner dialogs; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): M holds while "both workplaces" means `3dqm.production` and `3dqm.qa` (D-09)
+  and the chain is driven through plans and the kernel API, not through UI rows 3D-40/3D-42/3D-44 [A]; if the owner
+  wants it through the UI or through both hosts (GV and `apps/3dqm`, 3D-48), propose L via intake.
 
 ### 3D-26 Real-data import
 - Accept: import + export round-trip of the owner's roofer and TerraSolid samples; tolerance profile adjustments
@@ -833,6 +852,21 @@ Throughput: 66.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 - Accept: the 3D-47 port contract test passes against the GV adapter; picking returns entity ids for model3d objects.
 - Decisions: D-07, D-54  Open: -
 
+### 3D-41 Remote kernel port (mirror; SC row authoritative)
+- Accept: see "3D-40 .. 3D-50 Mirrors" (3D-01, 3D-02 changes).
+- Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M mirror n=0 < 5); wall: 1-3 h agent incl. PR/CI in the other repository (+ owner dialogs and PR merge there; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): M fits only with SC WP-28 (factory, registry, plan v2) already on SC main;
+  WP-28 itself is not in this figure (D-381).
+
+### 3D-50 geoviewer host adapter (mirror; GV row authoritative)
+- Accept: see "3D-40 .. 3D-50 Mirrors" (3D-27, 3D-01, 3D-02 changes) and "3D-23 split" (needs 3D-110's handler).
+- Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M mirror n=0 < 5); wall: 1-3 h agent incl. PR/CI in the other repository (+ owner dialogs and PR merge there; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): proposed L or a split (not changed here). Five acceptance groups in a
+  repository that consumes no `@geoiplus/*` package today: registry token in CI and Docker build, workplace mount,
+  kernel route with `createKernelHandler` (packaging choice: pinned SHA or tarball), file storage port, P4 canary
+  scan of `client/dist` with a planted marker. 3D-23 (three groups) was split for the same reason (D-314). As L:
+  $12.03 (p80 $13.85); basis: L n=8.
+
 ### 3D-64 Spec update: apply D-76 and D-77
 - Source: owner message 2026-11-23, found at the 3D-06 merge (checkpoint 3D-06 handoff). 3D-04 is `done`, so this is a new row.
 - Goal: the maintained spec states the refusal codes and severities the owner decided in 3D-06 instead of `TBD`.
@@ -1045,6 +1079,12 @@ Throughput: 66.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
   host fills the service's dataset descriptor `{ port, horizontalCrs }` from it (D-165, D-196). Text for the SC row
   (authoritative there): "Accept: the extension schema's point-cloud `dataset` entry has a required `horizontalCrs`;
   an example document validates."
+
+### 3D-43 `plans/3dqm` (mirror; SC row authoritative)
+- Accept: see "3D-40 .. 3D-50 Mirrors" (3D-27, 3D-02 changes) and "3D-43 note from 3D-69".
+- Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M mirror n=0 < 5); wall: 1-3 h agent incl. PR/CI in the other repository (+ owner dialogs and PR merge there; M span p50 16 h, p80 32 h)
+- Size check 2026-11-26 (MVP estimates): M fits (two plans, one extension schema with an example document), given
+  SC WP-21 and WP-28 on SC main.
 
 ### 3D-23 note from 3D-69 (change-wp, 2026-11-24)
 - The handler builds one `PointsDataset { port, horizontalCrs }` per opened point dataset (D-196): `horizontalCrs`
