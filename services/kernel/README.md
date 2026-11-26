@@ -2,9 +2,10 @@
 
 - Status: implemented in part - points port and LAS-whole adapter (3D-22), COPC-by-box adapter (3D-70); `history` port,
   memory and file store, COMMIT path, command status (3D-23); command API: PREVIEW store, COMMIT by `previewId`, rate
-  and size limits, error mapping, contract validation (3D-109); handler, server, auth, `datasets`: 3D-110; S3 store: 3D-111
+  and size limits, error mapping, contract validation (3D-109); handler, HTTPS server, auth / lease, heatmap request
+  (3D-110); `datasets` port: 3D-128; S3 store: 3D-111
 - Protection: P4 (server-only host of the kernel; never in a browser bundle)
-- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
+- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API), 3D-110 (handler, server, auth)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
 - Source/donor: new; LAS layout from the ASPRS LAS Specification 1.4 R15 (2019); COPC layout from the COPC 1.0
   specification (copcio/copcio.github.io @a6336f7)
 - Runtime dependencies: `laz-perf` 0.0.7 (Apache-2.0, WASM; LAZ chunk decoder only), [3D-ADR-0009](../../docs/decisions/adr/3D-ADR-0009-copc-laz-decoder.md);
@@ -15,7 +16,24 @@ Host of `geo-model3d` (3D-ADR-0002 C2, D-51): all I/O and ports live here, the k
 points port (box query) with the interim "LAS whole" adapter (D-35, D-133).
 
 ## Public API
-No `index.js` yet (the handler `createKernelHandler(ports)` is 3D-110). Modules:
+No `index.js` yet; a host imports `src/handler.js` (GV test host, 3D-50) and the image `src/server.js`. Modules:
+- `src/handler.js` (3D-110) - `createKernelHandler({ history, auth, leases, toleranceProfile, clock, now,
+  pointsDataset?, newOperationId?, newPreviewId?, contracts? })` -> `(request) => Promise<reply>`; request
+  `{ method, url, headers, body }` (body: stream, chunks, bytes or string), reply `{ status, headers, body }` (JSON
+  string, `cache-control: no-store`). Routes (`src/routes.js`, D-404): `POST /api/projects/{p}/commands`
+  (PREVIEW / COMMIT), `GET /api/projects/{p}/commands/{commandId}` (status), `POST /api/projects/{p}/heatmap`
+  (`heatmap-request` -> `heatmap-result`), `GET /api/projects/{p}/buildings/{b}/model?version=N` (v0.2 D.1; head when
+  no version). Any other route or method -> `404`.
+- `src/server.js` - `createKernelServer({ handler, tls: { key, cert } })`: Node `https` (3D-ADR-0002 A.4), no
+  framework; `nodeListener(handler)` for a host's own server. TLS material comes from the deployment (ADR-OPS).
+- `src/ports/auth.js` - `AuthPort { authenticate(token) -> { actorId, roles } | undefined }`, `LeasesPort
+  { current(projectId, buildingId) -> { leaseRef, leaseEpoch, holderId } | undefined }`, `ROLES` (`3dqm.production`,
+  `3dqm.qa`), `LEASE_HEADER` (`X-3DQM-Lease: <leaseRef>;<leaseEpoch>`, D-403), `parseLeaseHeader`.
+- `src/adapters/static-auth.js` - `createStaticAuth(tokens)`, `createMemoryLeases()`: dev, tests, GV test host. The CP
+  token and lease adapters are later rows (Operaflow group A, 3D-25; grant 3D-62).
+- `src/access.js` - `bearerToken`, `authenticate` (401), `requireRole` (403), `checkLease` (403), `ACTIONS`.
+- `src/heatmap.js` - `heatmap({ history, toleranceProfile, pointsDataset }, projectId, request)`: the named version,
+  points of the LOCAL selection through the building's dataset, kernel `deviationStats`.
 - `src/ports/history.js` - `ObjectStore { create(key, value) -> boolean, get(key), list(prefix) }` (append-only:
   create-if-absent is the only write), `HistoryPort` (3D-ADR-0003 §3: `putBaseline`, `readBaseline`, `head`,
   `readVersion`, `readJournal`, `commit`, `findCommand`, `recordResult` = ADR `recordRejection`), `keys` (layout of
@@ -29,15 +47,16 @@ No `index.js` yet (the handler `createKernelHandler(ports)` is 3D-110). Modules:
   replies `{ httpStatus, body }` with a contract `command-result`, `command-status` or `error` body.
 - `src/command-api.js` (3D-109) - `createCommandApi({ ...commit deps, now, newPreviewId?, contracts? })` ->
   `previewOf(result, baseVersion, previewId)`;
-  `{ command(message, { actorId }), commandBody(source, { actorId }, { declaredLength? }), status(projectId, commandId),
+  `{ command(message, { actorId }, { authorize? }), commandBody(source, { actorId }, { declaredLength?, authorize? }),
+  status(projectId, commandId),
   request(schemaName, message), previewCount() }`: the entry 3D-110's handler calls; every reply contract-validated.
 - `src/contracts.js` - `createContractValidator({ dir? })` -> `{ names, check, request, command, reply }` over every
   `contracts/model3d/*.schema.json` (Ajv 2020, strict, formats; `CONTRACTS_DIR`, which the image must ship).
 - `src/preview-store.js` - `createPreviewStore({ now, ttlMs?, perKey?, total?, newId? })`: `nextId`, `put`, `get`,
   `delete`, `size` (3D-ADR-0003 `putPreview` / `takePreview`). `src/rate-limit.js` - `createRateLimiter({ now })`
   `.admit(actorId, projectId, buildingId)`. `src/body.js` - `readJsonBody(source, { limit?, declaredLength? })`.
-- `src/errors.js` - `HTTP_STATUS` (spec §2.4), `errorKey`, `errorReply(code, entityIds?, message?)`,
-  `failureReply(err)` (D-353).
+- `src/errors.js` - `HTTP_STATUS` (spec §2.4), `errorKey`, `errorReply(code, entityIds?, message?, details?)`,
+  `failureReply(err)` (D-353; a kernel `CrsError` -> `422 INVALID_CRS` with `details.crsReason`, D-406).
 - `src/ports/points.js` - `PointsPort { queryBox(box, { signal }) -> Promise<Float64Array> }`: points in an inclusive
   world box of the dataset CRS, x y z interleaved, full source precision (spec §9 r7); `isPointsPort`, `inBox`.
 - `src/adapters/las-points.js` - `createLasPointsAdapter({ path, read? })`: reads one uncompressed LAS 1.0-1.4 file
@@ -91,6 +110,17 @@ No `index.js` yet (the handler `createKernelHandler(ports)` is 3D-110). Modules:
 - Body: bytes counted while reading, above 1 MiB (or a larger `Content-Length`) -> `413` before `JSON.parse` (D-317);
   not JSON -> `400`. Thrown failures: `LasFormatError` -> `500 INTERNAL`, read failure (Node system error code, abort,
   timeout) -> `503 UNAVAILABLE`, other -> `500` (D-353); an invalid reply is replaced by `500 INTERNAL`.
+- Handler order (3D-110): route -> bearer token (`401 UNAUTHENTICATED`, before the body is read) -> role (spec §11 r2:
+  commands need `3dqm.production`; status, heatmap and model read `3dqm.production` or `3dqm.qa`; else `403`) -> body
+  (413 / 400) -> contract -> for a command: body `projectId` = path (`400`), then the lease (`403`) -> command API.
+  The envelope's `actorId` is replaced by the token's user (spec §11 r1).
+- Lease (D-69, D-403): the `X-3DQM-Lease` header must name the building's current `leaseRef` and `leaseEpoch` and
+  the user must be its holder; missing or malformed header, no current lease, stale epoch or another holder -> `403
+  FORBIDDEN` before anything is read or run (PREVIEW and COMMIT; a repeat of a stored COMMIT too). Nothing is stored.
+- Not yet enforced here: building outside the signed assignment (spec §11 r1, GT-23, 3D-25); QC / approve / export
+  roles (3D-24). The status route answers any `commandId` of the project to a user with a role.
+- Heatmap: changes nothing, needs no lease; no dataset opened for the building or unknown version -> `404`; dataset CRS
+  on another datum (D-197) or without a projection (D-198) -> `422 INVALID_CRS` (also for FIT_PLANE points).
 - LAS whole: the whole file is held in memory (interim). COPC: only header, pages and meeting chunks are read.
 - Node cubes: root = info VLR centre +/- halfsize (spec text); below it EPT key naming [A] (copclib 2.6.3 derives
   cubes from the LAS header bounds instead; this reader follows the spec).
@@ -120,4 +150,11 @@ every reply validated with Ajv. `test/command-api.test.js` (3D-109): PREVIEW -> 
 kernel run, derived PREVIEW == kernel PREVIEW (edit, noChange, refusal, UNDO), competing COMMIT -> 409, D-354, expiry and eviction on an injected clock. `test/command-limits.test.js`:
 one invalid message per schema -> 400, invalid reply -> 500, 429 on a sliding window, 413 before parsing, failure
 mapping. `test/gt-13.golden.test.js`: GT-13 on both stores (`npm run golden`).
+`test/handler.test.js` (3D-110): stale `leaseEpoch` -> 403 with head and journal unchanged (PREVIEW and COMMIT),
+other lease failures, spoofed `actorId` committed as the token's user, 401 before the body is read, roles, routes,
+model read, 413, PREVIEW -> COMMIT through the handler. `test/heatmap.test.js`: heatmap equal to the kernel on the
+LOCAL points, another datum -> `422 INVALID_CRS` `DATUM_MISMATCH` (heatmap and FIT_PLANE, nothing committed), 404 /
+400 / 401. `test/server.test.js`: COMMIT and status over a real TLS socket (openssl certificate made at test time),
+401 / 413 on a body above 1 MiB, no start without TLS material. Bench through the handler: `npm run bench:handler`
+(`tools/bench/handler.mjs`).
 Golden GT-20 / GT-21 run on the kernel functions (`packages/geo-model3d/test/golden/`).

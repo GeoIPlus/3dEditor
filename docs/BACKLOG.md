@@ -21,20 +21,21 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 68 / 103 |
+| Done | 69 / 105 |
 | Review | 0 |
-| In progress | 4 |
-| Ready | 6 |
+| In progress | 3 |
+| Ready | 8 |
 | Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 68/103 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 69/105 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-126 Regularize footprint; 3D-116 F-53 metrics; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
+**Running:** 3D-126 Regularize footprint; 3D-116 F-53 metrics; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D110["✅ 🖥️ 3D-110 Kernel service III: handler, ports"]
     D121["✅ 🔧 3D-121 Bench gate on the real PREVIEW path"]
     D114["✅ ⚙️ 3D-114 Resize roof, align wall"]
     D115["✅ 📐 3D-115 Parametric dependencies: ADR"]
@@ -133,7 +134,7 @@ flowchart TB
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["💡 🔧 3D-79 Service image licence check"]
-    D110["🚧 🖥️ 3D-110 Kernel service III: handler, ports"]
+    D128["▶️ 🖥️ 3D-128 datasets port + file adapter"]
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D24["💡 ⚙️ 3D-24 QC and export rules"]
@@ -144,6 +145,7 @@ flowchart TB
     D41["▶️ 🔗 3D-41 Remote kernel port"]
     D42["💡 🔗 3D-42 3DQM tools"]
     D43["▶️ 🔗 3D-43 plans/3dqm"]
+    D129["▶️ 🔗 3D-129 SC: INVALID_CRS schema"]
     D44["💡 🔗 3D-44 3DQM UI panels"]
     D50["▶️ 🔗 3D-50 geoviewer consumes 3DQM packages"]
     D127["💡 🔗 3D-127 geoviewer runs 3DQM"]
@@ -296,6 +298,10 @@ flowchart TB
   D23 --> D111
   D12 --> D24
   D110 --> D24
+  D109 --> D128
+  D128 --> D24
+  D110 --> D129
+  D45 --> D129
   D24 --> D25
   D43 --> D25
   D127 --> D25
@@ -340,9 +346,9 @@ Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script
 
 ```
 Forecast 2026-11-26 (ledger n=43 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=5, S kernel n=5, S spec n=8; baseline d7c472d 2026-11-19)
-Known remaining: $260 / $325 over 35 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $278 / $349
-Throughput: 68.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
+Known remaining: $263 / $330 over 36 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $282 / $354
+Throughput: 69.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
 ```
 
 MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
@@ -406,11 +412,12 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service I: `history` port + file adapter (3D-ADR-0003, append-only, `journal/{N+1}` create-if-absent), port contract suite, COMMIT path (idempotent `commandId` + `expectedVersion`, GT-13, D-68), command status; PREVIEW/API -> 3D-109, handler/ports -> 3D-110 (D-314) | here | service | 03, 06, 18 | G5 | M | service | done (D-321; merged into base, no PR; D-314..D-320) |
 | 3D-109 | Kernel service II: command API - PREVIEW store by `previewId` (expiry 10 min, D-315), COMMIT by `previewId`, PREVIEW rate limit 20/s (D-316), payload limit 1 MiB (D-317), error registry mapping, request/reply validation against `contracts/model3d/` | here | service | 23 | G5 | M | service | done (D-359; merged into base, no PR; D-351..D-358) |
-| 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69), `datasets` port + file adapter (`progress.save`, delivered bytes), heatmap request (`INVALID_CRS`, 3D-69), bench gate on the service image (D-111, Q-42) | here | service | 109 | G5 | M | service | in-progress (D-366; wp/3d-110-kernel-handler) |
+| 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69, Q-39 by header), command status route, heatmap request (`INVALID_CRS`, 3D-69), bench gate through the handler (D-111, Q-42 interim); `datasets` -> 3D-128 (D-402) | here | service | 109 | G5 | M | service | done (D-408; merged into base, no PR; D-402..D-407) |
+| 3D-128 | `datasets` port + file adapter: input CityJSON read with entity tag, `progress.save` whole-body `PUT` + `If-Match`, content-addressed delivered bytes (3D-ADR-0003 §4; split from 3D-110, D-402) | here | service | 109 | G5 | M | service | ready (D-409) |
 | 3D-111 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-319) | here | service | 23 | G5 | M | service | proposed |
 | 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 123 | G3 | L | spec | proposed |
 | 3D-113 | `STRAIGHTEN_FACE` `ALIGN_SELECTED_EDGES` extensions: leading edge chosen by the operator, `BEST_FIT_LINE` mode | here | docs/specs, geo-model3d/ops | 122 | G3 | S | spec | proposed |
-| 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110 | G5 | M | kernel | proposed |
+| 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110, 128 | G5 | M | kernel | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
@@ -456,6 +463,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-80, WP-81 | G5 | M | mirror | ready (D-381; waits for 3D-41, SC WP-80, WP-81) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | mirror | proposed (UI per brandbook, D-40) |
 | 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared (78) | contracts | 06, 27 | G3 | S | mirror | done (D-380; SC row 78, PR #68 merged) |
+| 3D-129 | SC: re-vendor the `model3d` error schema with `INVALID_CRS` (422, `details.crsReason`; D-406) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 110, 45 | G5 | S | mirror | ready (D-409) |
 | 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | mirror | in-progress (D-61; SC wp/70-3d-view-host, wp/71-3d-camera-controls; started in a fresh cloud session; UI per brandbook, D-40) |
 | 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | mirror | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared (76) | tools, CI | 27 | G0 | S | mirror | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
@@ -1215,6 +1223,41 @@ accuracy ratio 1.30 is n=1 and not applied.
   (Q-42; a miss is an owner escalation, D-06).
 - Decisions: D-06, D-33, D-51, D-69, D-82..D-85, D-111, D-196..D-198  Open: Q-42, Q-40 (only if touched)
 - Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+- Change 2026-11-26 (WP session 3D-110, owner dialog, D-402..D-405): the `datasets` port, its file adapter and the
+  Accept lines "delivered address ..." and "`PUT` without a stored entity tag ..." move to 3D-128. Lease from the
+  request header `X-3DQM-Lease` (Q-39 closed, D-403); command status at
+  `GET /api/projects/{projectId}/commands/{commandId}` (D-404); the bench gate runs through the handler on the
+  cloud agent container with its fingerprint, the production-class re-measure stays Q-42 (D-405).
+- Re-estimate 2026-11-26: scope reduced by the split; M service $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-128 `datasets` port + file adapter
+- Source: split of 3D-110 (owner dialog in WP session 3D-110, 2026-11-26, D-402).
+- Goal: the `datasets` port of 3D-ADR-0003 §1 with a file adapter standing in for the DP datasets (D-35, D-82).
+- Scope in: port (read input CityJSON with its entity tag; `progress.save` whole-body `PUT` + `If-Match`; put / read
+  delivered bytes under a content-addressed key); file adapter; port contract suite that 3D-63's CS adapter will run.
+  Scope out: export gate and the export action (3D-24); CS adapters (3D-60, 3D-63); the S3 store (3D-111).
+- Accept (3D-ADR-0003 Checks): a delivered byte address contains no query string or credential, and a second write of
+  the same digest is a no-op; a `PUT` to `progress.save` without a stored entity tag is not sent (operator told); a `412`
+  leaves the result kept (Operaflow suite `progress/` cases as fixtures, 3D-01 §9.3); no adapter method deletes or
+  overwrites (`check:arch`).
+- Decisions: D-35, D-82..D-85, D-402  Open: none
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-129 SC: re-vendor the `model3d` error schema with `INVALID_CRS`
+- Source: WP session 3D-110, owner chat 2026-11-26 (accepting 3D-110): D-406 added the error code `INVALID_CRS`
+  inside `v1`; the SC vendored copy (3D-45) must follow, or the SC `model3d-kernel` adapter refuses the 422 reply as an
+  invalid message (3D-ADR-0002 A1: both sides validate against the same pinned schemas).
+- Goal: SC holds the same `error.schema.json` (and `examples/error.json`) as this repository's base after 3D-110.
+- Scope in: copy the two files into `contracts/vendor/3deditor/`, update `provenance.json` (source commit, hashes); a
+  user text for `model3d.error.invalidCrs` if SC keeps message keys. Scope out: any client behaviour beyond showing
+  the refusal; other schema changes.
+- Accept: the SC hash check passes against the 3DQM base commit that holds 3D-110; an `INVALID_CRS` 422 reply with
+  `details.crsReason: DATUM_MISMATCH` validates in the SC adapter's contract test.
+- Text of the row to add in SC (`GeoIPlus/shared_compnents`, its BACKLOG; the SC row is authoritative, D-25):
+  "3DQM mirror: re-vendor `model3d` `error.schema.json` + `examples/error.json` from 3dEditor (adds `INVALID_CRS`,
+  422, `details.crsReason`; 3D-110, D-406); refresh `provenance.json`; adapter contract test with the 422 reply."
+- Decisions: D-25, D-406  Open: none
+- Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S mirror count not checked)
 
 ### 3D-111 `history` S3 adapter
 - Source: WP session 3D-23, owner dialog 2026-11-26 (D-319): the S3 adapter of 3D-ADR-0003 needs a new runtime

@@ -186,6 +186,7 @@ CP assignment lease applies [D] (D-69; amends D-13 for this field). The profile 
 | 409 | `VERSION_CONFLICT` | The version changed |
 | 413 | `PAYLOAD_TOO_LARGE` | Limit exceeded (limit `TBD`, Q-24) |
 | 422 | `UNDERCONSTRAINED_GEOMETRY`, `CONSTRAINT_CONFLICT`, `INVALID_TOPOLOGY`, `INVALID_GEOMETRY`, `INVALID_MEASUREMENT`, `UNSUPPORTED_FOOTPRINT` | Domain refusals |
+| 422 | `INVALID_CRS` | The point cloud's CRS cannot be mapped to the building's (`details.crsReason`; §9 r7, r8; D-406) |
 | 429 | `RATE_LIMITED` | PREVIEW rate exceeded (server limit `TBD`, Q-24) |
 | 500 / 503 | `INTERNAL`, `UNAVAILABLE` | Failure; model unchanged |
 
