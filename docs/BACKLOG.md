@@ -22,15 +22,15 @@ Updated: 2026-11-26
 | Progress | Rows |
 |---|---:|
 | Done | 58 / 96 |
-| Review | 1 |
-| In progress | 5 |
+| Review | 3 |
+| In progress | 3 |
 | Ready | 3 |
 | Proposed (waiting for the owner to set `ready`) | 28 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 58/96 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-118 Bug: EQUAL_Z vs FIXED_POINT; 3D-120 Bug: overhang left behind; 3D-105 Core edits II; 3D-109 Kernel service II: command API; 3D-47 SC: 3D view port + host.
+**Running:** 3D-105 Core edits II; 3D-109 Kernel service II: command API; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -96,6 +96,8 @@ flowchart TB
   end
   subgraph review["REVIEW"]
     D45["🔍 🔗 3D-45 SC: pinned model3d schemas"]
+    D118["🔍 ⚙️ 3D-118 Bug: EQUAL_Z vs FIXED_POINT"]
+    D120["🔍 ⚙️ 3D-120 Bug: overhang left behind"]
   end
   subgraph ready["READY"]
     D74["▶️ 🖥️ 3D-74 val3dity image + binding"]
@@ -118,9 +120,7 @@ flowchart TB
     D115["💡 ⚙️ 3D-115 Parametric dependencies"]
     D116["💡 ⚙️ 3D-116 F-53 metrics"]
     D117["💡 ⚙️ 3D-117 Validator: overhang end caps"]
-    D118["🚧 ⚙️ 3D-118 Bug: EQUAL_Z vs FIXED_POINT"]
     D119["💡 📐 3D-119 Spec: 3D-19 envelope"]
-    D120["🚧 ⚙️ 3D-120 Bug: overhang left behind"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
   end
@@ -351,9 +351,9 @@ Throughput: 58.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-115 | Parametric geometry dependency management: parent / dependent surfaces (overhangs, soffits, dormers), rebuild after a parent edit in the pipeline (D-341) | here | geo-model3d/ops, docs/decisions/adr | 15, 17, 18, 19 | G4 | L | kernel | proposed |
 | 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | proposed |
 | 3D-117 | Validator: minimum face area of dependent overhang end caps measured with their coplanar end wall; degeneracy and minimum-area policy separated (D-343; unblocks GT-14) | here | geo-model3d/validate | 12, 19 | G4 | S | kernel | proposed |
-| 3D-118 | Bug: a hard FIXED_POINT on a vertex with an EQUAL_Z target is met by turning the roof plane almost vertical (MATCH_ELEVATIONS commits `VALID_SOLID`) | here | geo-model3d/solve, validate | 13, 16 | G3 | S | kernel | in-progress (D-350; wp/3d-118-120-bugs) |
+| 3D-118 | Bug: a hard FIXED_POINT on a vertex with an EQUAL_Z target is met by turning the roof plane almost vertical (MATCH_ELEVATIONS commits `VALID_SOLID`) | here | geo-model3d/solve, validate | 13, 16 | G3 | S | kernel | review (D-350; wp/3d-118-120-bugs, local, PR not requested) |
 | 3D-119 | Spec update for 3D-19: §10.10 overhang profile, SET_HEIGHT EAVE, rigid moves and measurements, refusal codes; §13 GT-14 note; §14 Q-18 narrowed, Q-37 closed (D-336..D-345) | here | docs/specs | 19 | G4 | S | spec | proposed |
-| 3D-120 | Bug: `ALIGN_RIDGE` and `MATCH_ELEVATIONS` on a slope with an overhang commit `VALID_SOLID` with the overhang strip left on the old plane (D-341) | here | geo-model3d/ops | 19.2 | G4 | S | kernel | in-progress (D-350; wp/3d-118-120-bugs) |
+| 3D-120 | Bug: `ALIGN_RIDGE` and `MATCH_ELEVATIONS` on a slope with an overhang commit `VALID_SOLID` with the overhang strip left on the old plane (D-341) | here | geo-model3d/ops | 19.2 | G4 | S | kernel | review (D-350; wp/3d-118-120-bugs, local, PR not requested) |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | done (D-263; merged into base, no PR; D-256..D-262) |
 | 3D-100 | Installation size from the cloud: `measurementId` of `ADD_CHIMNEY` / `ADD_DORMER` (v0.3 §6 F-36, F-37) | here | geo-model3d/ops | 20, 71 | G4 | M | kernel | proposed |
 | 3D-101 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-256..D-260) | here | docs/specs | 20 | G4 | S | spec | done (D-272; merged into base, no PR) |
@@ -910,7 +910,7 @@ Throughput: 58.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 - Scope in: the rule that rejects it (solver objective, a role / slope admissibility check, or a validation issue),
   chosen with the owner; a test reproducing the case above. Scope out: other operations' semantics.
 - Accept: the case above -> `CONSTRAINT_CONFLICT`, model unchanged; GT-07, GT-09 and the 3D-16 tests still pass.
-- Decisions: D-110, D-169..D-172, D-231  Open: which rule (owner)
+- Decisions: D-110, D-169..D-172, D-231, D-3D118-2  Open: none (rule chosen: FIXED_POINT re-checked on the derived vertex)
 - Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
 
 ### 3D-119 Spec update for 3D-19
@@ -933,7 +933,7 @@ Throughput: 58.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 - Scope in: the fix through 3D-115 (rebuild), or until then a refusal of such edits; a test per operation of 3D-15,
   3D-16, 3D-17, 3D-105 that changes a roof plane. Scope out: the dependency mechanism itself (3D-115).
 - Accept: both cases above either keep the strip coplanar with its slope at the same width or are refused, model unchanged.
-- Decisions: D-336, D-341  Open: refuse-until-3D-115 or wait (owner)
+- Decisions: D-336, D-341, D-3D118-3  Open: none (refuse until 3D-115, pipeline guard)
 - Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
 
 ### 3D-100 Installation size from the cloud

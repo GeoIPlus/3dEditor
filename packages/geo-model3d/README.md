@@ -115,7 +115,9 @@ from validation. Refusals: empty stack / already baseline `INVALID_PAYLOAD`; top
 Pipeline (`pipeline.js`, spec §3 r1-r6; the op context carries `actorId` and the optional `planeFit`, 3D-71): kernel envelope checks -> `brep.transact` (isolated copy): operation module
 builds the candidate in plane terms -> constraint step (`constraints.js`: hard constraint on a removed entity ->
 `CONSTRAINT_CONFLICT`, soft one dropped, D-213; model constraints compiled and solved for the operation's
-`movableFaceIds` / conditions, re-checked at the result) -> `runChecks` COMMIT_VALIDATION with full solid, shell
+`movableFaceIds` / conditions, re-checked at the result) -> overhang guard (`overhang-guard.js`, 3D-120, D-3D118-3:
+until 3D-115 a strip RoofSurface + OVERHANG that was coplanar with its parent roof face and is no longer within
+`planarTolM` of it -> `INVALID_TOPOLOGY`, model unchanged) -> `runChecks` COMMIT_VALIDATION with full solid, shell
 `isClosed` and `state` set (VALID_SOLID only for that target without ERROR, else DRAFT_SOLID [A]) - the same in
 PREVIEW and COMMIT, so both give one patch -> commit gate: ERROR issues new against the input version through the
 lineage refuse a VALID_SOLID target `INVALID_GEOMETRY` (v0.2 C.0 GEOMETRY_INVALID; spec §8 r7); the input version is
@@ -246,7 +248,7 @@ Constraint kinds (D-169, amended by D-289; tolerance of the hard check D-170; [S
 
 | Kind | entityIds | target | Condition on the movable planes | Hard tolerance |
 |---|---|---|---|---|
-| FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point | `planarTolM` |
+| FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point; a DERIVED vertex is also re-checked at its derived position (check only, not a solver term; D-3D118-2, 3D-118) | `planarTolM` |
 | ON_PLANE [S] | [vertex, face] | V3 optional | the target point, else the derived vertex, lies on the face plane | `planarTolM` |
 | ON_PLANE [D-289] | [face] | Plane (required) | fixed face plane: unit normal equals the target's (scaled to unit, oriented like the stored face normal, D-312) and offset equals its `d` | normal `numericEpsilon`, offset `planarTolM` |
 | FIXED_LINE / FIXED_EAVE / FIXED_RIDGE [S] | [half-edge] | - | both incident planes contain the edge's current line; EAVE / RIDGE need that `edgeRole` | `planarTolM` |

@@ -26,6 +26,7 @@ import { cross, dot, norm } from '../brep/vec.js';
  * @property {number} tol hard check: Euclidean norm of the residual <= tol (D-170); 0 and unused for soft terms
  * @property {string[]} faces faces whose planes the residual reads
  * @property {{ faceId: string, point: P3 } | undefined} linear stage-1 form "fixed point on this plane"
+ * @property {boolean} [checkOnly] hard re-check only (spec §5 r4): not a solver term, read at the result (D-3D118-2)
  * @property {(ctx: EvalContext) => number[]} residual
  */
 
@@ -81,6 +82,12 @@ export function builders(model) {
     pointOnPlane: (t, faceId, p, tol) =>
       make({ ...tag(t, [face(faceId)]), tol, faces: [faceId], linear: { faceId, point: p },
         residual: (ctx) => { const pl = ctx.plane(faceId); return [dot(pl.normal, p) + pl.d]; } }),
+    /** The derived vertex sits at a fixed point (hard FIXED_POINT re-check on the vertex, D-3D118-2; 3D-118): a check
+     * only - the per-plane conditions above are the solver terms, this catches a solution where they hold but the planes
+     * are near-parallel and the vertex slides away. @param {Tag} t @param {string} vId @param {P3} p @param {number} tol */
+    vertexAt: (t, vId, p, tol) =>
+      make({ ...tag(t, [vId]), tol, faces: facesOf(vId), checkOnly: true,
+        residual: (ctx) => at(ctx.vertex(vId), (q) => [q[0] - p[0], q[1] - p[1], q[2] - p[2]], 3) }),
     /** The face plane equals a fixed plane (ON_PLANE [face] + Plane target, D-289): residual on the unit normal (angular,
      * tol `numericEpsilon`) or on the offset (plane distance once the normals agree, tol `planarTolM`), D-170.
      * @param {Tag} t @param {string} faceId @param {Plane} target unit normal @param {'NORMAL' | 'OFFSET'} part @param {number} tol */
