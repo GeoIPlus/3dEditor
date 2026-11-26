@@ -21,14 +21,14 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 57 / 89 |
+| Done | 57 / 91 |
 | Review | 1 |
 | In progress | 4 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 23 |
+| Proposed (waiting for the owner to set `ready`) | 25 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 57/89 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 57/91 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-19 Envelope ops; 3D-105 Core edits II; 3D-109 Kernel service II: command API; 3D-47 SC: 3D view port + host.
 
@@ -108,6 +108,8 @@ flowchart TB
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D105["🚧 ⚙️ 3D-105 Core edits II"]
+    D105_1["💡 ⚙️ 3D-105.1 STRAIGHTEN_FACE"]
+    D105_2["💡 ⚙️ 3D-105.2 REMOVE_DETAILS"]
     D112["💡 📐 3D-112 REMOVE_DETAILS advanced"]
     D113["💡 📐 3D-113 ALIGN edges extensions"]
     D106["💡 ⚙️ 3D-106 ROTATE_FACE"]
@@ -208,8 +210,10 @@ flowchart TB
   D17 --> D103
   D15 --> D104
   D104 --> D105
-  D105 --> D112
-  D105 --> D113
+  D105 --> D105_1
+  D105 --> D105_2
+  D105_2 --> D112
+  D105_1 --> D113
   D15 --> D106
   D15 --> D107
   D15 --> D108
@@ -336,7 +340,9 @@ Throughput: 57.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-102 | Agent-eval scenarios use a reserved row id range (e.g. 3D-9xx) that the real backlog never reaches, instead of 3D-90..3D-98 (D-264) | here | docs/agent-evals, tools/agent-evals | 28, 87 | G0 | S | tests | done (D-277; merged into base, no PR) |
 | 3D-103 | `solve`: `ON_PLANE` with one face and a plane target = fixed face plane; enables the GT-19 "Fixed" variant | here | geo-model3d/solve | 13, 17 | G4 | S | kernel | done (D-313; merged into base, no PR; D-312) |
 | 3D-104 | Spec: `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` in plane terms (spec §10.6, §10.1 r7), owner-approved, with golden cases | here | docs/specs | 15 | G3 | M | spec | done (D-333; merged into base, no PR; D-322..D-332) |
-| 3D-105 | `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` on the pipeline | here | geo-model3d/ops | 104 | G3 | L | kernel | in-progress (D-335; wp/3d-105-core-edits-ii) |
+| 3D-105 | `TRIM_FACE`, `EXTEND_FACE` on the pipeline; approved schema changes of D-331 (`REMOVE_DETAILS`, `STRAIGHTEN_FACE` split to 3D-105.2, 3D-105.1, D-3D105-1) | here | geo-model3d/ops | 104 | G3 | M | kernel | in-progress (D-335; wp/3d-105-core-edits-ii) |
+| 3D-105.1 | `STRAIGHTEN_FACE` `REMOVE_COLLINEAR_VERTICES`, `ALIGN_SELECTED_EDGES` on the pipeline | here | geo-model3d/ops | 105 | G3 | M | kernel | proposed |
+| 3D-105.2 | `REMOVE_DETAILS` discovery and removal on the pipeline | here | geo-model3d/ops | 105 | G3 | M | kernel | proposed |
 | 3D-106 | `ROTATE_FACE`: rotate a support plane about a fixed ridge or eave (contract kind + spec + op) | here | contracts, docs/specs, geo-model3d/ops | 15 | G3 | M | kernel | proposed |
 | 3D-107 | ADR: shared logical plane of several faces (face vs plane identity, plane fork, constraint scope; P15-03) | here | docs/decisions | 15 | G3 | M | spec | proposed |
 | 3D-108 | Constraint ids in `topologyLineage.mapped` (`brep` transaction accepts them; replaces the `warnings` stopgap of D-306) | here | geo-model3d/brep, geo-model3d/ops | 15 | G3 | S | kernel | proposed |
@@ -346,8 +352,8 @@ Throughput: 57.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-109 | Kernel service II: command API - PREVIEW store by `previewId` (expiry 10 min, D-315), COMMIT by `previewId`, PREVIEW rate limit 20/s (D-316), payload limit 1 MiB (D-317), error registry mapping, request/reply validation against `contracts/model3d/` | here | service | 23 | G5 | M | service | in-progress (D-334; wp/3d-109-command-api) |
 | 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69), `datasets` port + file adapter (`progress.save`, delivered bytes), heatmap request (`INVALID_CRS`, 3D-69), bench gate on the service image (D-111, Q-42) | here | service | 23.1 | G5 | M | service | proposed |
 | 3D-111 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-319) | here | service | 23 | G5 | M | service | proposed |
-| 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 105 | G3 | L | spec | proposed |
-| 3D-113 | `STRAIGHTEN_FACE` `ALIGN_SELECTED_EDGES` extensions: leading edge chosen by the operator, `BEST_FIT_LINE` mode | here | docs/specs, geo-model3d/ops | 105 | G3 | S | spec | proposed |
+| 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 105.2 | G3 | L | spec | proposed |
+| 3D-113 | `STRAIGHTEN_FACE` `ALIGN_SELECTED_EDGES` extensions: leading edge chosen by the operator, `BEST_FIT_LINE` mode | here | docs/specs, geo-model3d/ops | 105.1 | G3 | S | spec | proposed |
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 23.2 | G5 | M | kernel | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 50 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
@@ -684,13 +690,31 @@ Throughput: 57.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 - Decisions: D-08, D-76, D-298, D-304. Open: Q-18, Q-34, Q-35.
 
 ### 3D-105 Core edits II on the pipeline
-- Source: WP 3D-15, owner decisions 2026-11-25/26 (dialog; D-305, D-306).
-- Goal: the four operations on the 3D-14 pipeline per 3D-104 (spec §10.6 r5..r8).
-- Accept: GT-26..GT-33 (spec §10.6 table; moved into §13 with their fixtures here, D-332); the owner's test lists RD-01..RD-18, RD-T01..RD-T24, SF-COL-01..SF-COL-14,
-  SAE-01..SAE-20 (D-325..D-329); spec §10.1 Accept lines per operation. Schema changes approved (D-331):
-  `trim-face` (`cuttingFaceId`), `extend-face` (`targetFaceId`), `remove-details` (`maxAreaM2`, `maxDisplacementM`),
-  `command-result.candidates`.
-- Decisions: D-322..D-331.
+- Source: WP 3D-15, owner decisions 2026-11-25/26 (dialog; D-305, D-306); split in the WP session 2026-11-26 (D-3D105-1).
+- Goal: `TRIM_FACE` and `EXTEND_FACE` on the 3D-14 pipeline per 3D-104 (spec §10.6 r7, r8), with all schema changes D-331 approved.
+- Scope in: schema changes `trim-face` (`cuttingFaceId`), `extend-face` (`targetFaceId`), `remove-details` (`maxAreaM2`,
+  `maxDisplacementM`), `command-result.candidates`; ops TRIM_FACE, EXTEND_FACE; GT-26..GT-29 moved into spec §13 with
+  their fixtures (D-332). Scope out: `STRAIGHTEN_FACE` (3D-105.1), `REMOVE_DETAILS` (3D-105.2).
+- Accept: GT-26..GT-29 (§13, with fixtures); spec §10.1 Accept lines for TRIM/EXTEND; the four schemas validate their
+  examples; `npm run check`, `npm run golden` pass.
+- Decisions: D-322..D-324, D-331, D-332, D-3D105-1.
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (latest M figure, as 3D-110; M kernel class not separated)
+
+### 3D-105.1 `STRAIGHTEN_FACE` on the pipeline
+- Source: split of 3D-105 in the WP session, owner dialog 2026-11-26 (D-3D105-1).
+- Goal: `REMOVE_COLLINEAR_VERTICES` and `ALIGN_SELECTED_EDGES` per spec §10.6 r6.
+- Accept: GT-30, GT-31 moved into spec §13 with their fixtures (D-332); the owner's test lists SF-COL-01..SF-COL-14 and
+  SAE-01..SAE-20 (D-328, D-329; text recorded per D-3D105-2).
+- Decisions: D-328, D-329, D-301, D-3D105-1, D-3D105-2.
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (latest M figure, as 3D-110; M kernel class not separated)
+
+### 3D-105.2 `REMOVE_DETAILS` on the pipeline
+- Source: split of 3D-105 in the WP session, owner dialog 2026-11-26 (D-3D105-1).
+- Goal: discovery (`candidates`) and confirmed removal per spec §10.6 r5, using the schema fields added by 3D-105.
+- Accept: GT-32, GT-33 moved into spec §13 with their fixtures (D-332); the owner's test lists RD-01..RD-18 and
+  RD-T01..RD-T24 (D-325, D-327; text recorded per D-3D105-2).
+- Decisions: D-325..D-327, D-330, D-3D105-1, D-3D105-2.
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (latest M figure, as 3D-110; M kernel class not separated)
 
 ### 3D-106 `ROTATE_FACE`
 - Source: WP 3D-15, owner decisions 2026-11-25/26 (dialog; D-305, D-306).
