@@ -1,4 +1,4 @@
-// ops (3D-114.1): remove a degenerate courtyard for REGULARIZE_FOOTPRINT with `allowCourtyardRemoval` (D-3D1141-4).
+// ops (3D-126): remove a degenerate courtyard for REGULARIZE_FOOTPRINT with `allowCourtyardRemoval` (D-3D126-4).
 // V1: the courtyard's walls border only each other, one ground face (the courtyard is one of its holes) and one roof
 // face (the courtyard is one of its holes); otherwise INVALID_TOPOLOGY. The walls, their half-edges and vertices and the
 // two hole loops are deleted, so the ground and the roof face close over the courtyard (their planes are unchanged).
@@ -13,7 +13,7 @@ import { refuse } from './errors.js';
  */
 export function removeCourtyard(d, groundId, walls) {
   const W = new Set(walls);
-  const why = 'courtyard hole is not in one ground face and one roof face (D-3D1141-4)';
+  const why = 'courtyard hole is not in one ground face and one roof face (D-3D126-4)';
   const wallHes = walls.flatMap((f) => [d.faces[f].outerLoopId, ...d.faces[f].innerLoopIds].flatMap((s) => loopEdges(d, s)));
   /** @type {string[]} */
   const across = [];

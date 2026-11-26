@@ -1,4 +1,4 @@
-// 3D-114.1 REGULARIZE_FOOTPRINT (spec §10.10 r3; v0.2 F-39; D-3D1141-1..8): straightening, chains, no-op,
+// 3D-126 REGULARIZE_FOOTPRINT (spec §10.10 r3; v0.2 F-39; D-3D126-1..8): straightening, chains, no-op,
 // orthogonalisation, courtyards kept, the change report (RF-01..RF-07, RF-13). Expected numbers are analytic.
 import { describe, expect, it } from 'vitest';
 import { built, regularize, walls, wallAt } from './regularize-footprint.helpers.js';
@@ -21,7 +21,7 @@ const roofPlanes = (/** @type {any} */ m) => Object.values(m.faces).filter((f) =
 const num = (w, label) => Number(new RegExp(`${label} (-?[0-9.]+)`).exec(w.join('\n'))?.[1]);
 const KINK = [[0, 0], [7, 0], [10, 0.157], [10, 8], [0, 8]];
 
-describe('REGULARIZE_FOOTPRINT straightening (D-3D1141-1)', () => {
+describe('REGULARIZE_FOOTPRINT straightening (D-3D126-1)', () => {
   it('RF-01 FLAT, 3 deg kink: merged into the longer wall (plane kept), roof plane kept, lineage merged -> survivor', () => {
     const m = built(KINK);
     const long = wallAt(m, [3, 0], [0, -1]), piece = wallAt(m, [8.5, 0.0785], [0.05, -1]);
@@ -69,7 +69,7 @@ describe('REGULARIZE_FOOTPRINT straightening (D-3D1141-1)', () => {
   });
 });
 
-describe('REGULARIZE_FOOTPRINT orthogonalize (D-3D1141-2)', () => {
+describe('REGULARIZE_FOOTPRINT orthogonalize (D-3D126-2)', () => {
   const QUAD = [[0, 0], [10, 0], [10.28, 8], [0, 8]];
   it('RF-05 88 / 92 deg corners -> exactly 90 deg about the midpoint, the longest wall unchanged; false keeps them', () => {
     const m = built(QUAD);
@@ -96,7 +96,7 @@ describe('REGULARIZE_FOOTPRINT orthogonalize (D-3D1141-2)', () => {
   });
 });
 
-describe('REGULARIZE_FOOTPRINT courtyards and report (D-3D1141-4, -5)', () => {
+describe('REGULARIZE_FOOTPRINT courtyards and report (D-3D126-4, -5)', () => {
   it('RF-07 a courtyard with a kink is regularized and kept (allowCourtyardRemoval false)', () => {
     const m = built([[0, 0], [20, 0], [20, 20], [0, 20]], undefined, [[[8, 8], [8, 12], [12, 12], [12, 8.05], [11, 8]]]);
     const r = ok(regularize(m));

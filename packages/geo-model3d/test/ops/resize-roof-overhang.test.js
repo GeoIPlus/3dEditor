@@ -1,4 +1,4 @@
-// 3D-114 RESIZE_ROOF and overhangs (D-339, D-336; RR-07..RR-09, D-3D114-2). GT-14-sized end caps need the
+// 3D-114 RESIZE_ROOF and overhangs (D-339, D-336; RR-07..RR-09, D-390). GT-14-sized end caps need the
 // SMALL_FACES profile until 3D-117 (D-343).
 import { describe, expect, it } from 'vitest';
 import { exec, gable, sound, sameGeometry, SMALL_FACES } from './envelope.helpers.js';

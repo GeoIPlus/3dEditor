@@ -1,9 +1,9 @@
-// ops (3D-114): ALIGN_WALL (spec §10.10 r4; v0.2 F-40; D-346, D-3D114-4). Planes are primary (D-08): only the wall's
+// ops (3D-114): ALIGN_WALL (spec §10.10 r4; v0.2 F-40; D-346, D-392). Planes are primary (D-08): only the wall's
 // support plane changes, to the vertical plane through `referenceLine` (outward side kept); roof planes are kept and
 // every vertex on the wall is re-derived, so the adjoining roof and ground follow and the eave height is recomputed.
 // The footprint record follows the wall's base vertices. An overhang whose wall or end wall is this wall is taken off
 // first and rebuilt at the same width in plan with the same ids (as SET_HEIGHT EAVE, D-338).
-// Refusals (D-3D114-4): not a building wall or a degenerate line -> INVALID_PAYLOAD; self-intersecting footprint, a
+// Refusals (D-392): not a building wall or a degenerate line -> INVALID_PAYLOAD; self-intersecting footprint, a
 // footprint edge < minEdgeLengthM or a wall / ground face turned over -> INVALID_GEOMETRY; a roof face turned over or a
 // junction the kept planes no longer meet in one point (roof topology change) -> INVALID_TOPOLOGY. Hard constraints
 // are checked by the pipeline's constraint step (CONSTRAINT_CONFLICT).
@@ -74,15 +74,15 @@ export function alignWall(draft, payload, ctx) {
   face.supportPlane = plane;
   const res = rederive(draft, [face.id], tol);
   if (res.junctions.length > 0) {
-    return refuse('INVALID_TOPOLOGY', [face.id, ...res.junctions.flatMap((j) => j.entityIds)], 'the kept planes no longer meet in one point: roof topology would change (D-3D114-4)');
+    return refuse('INVALID_TOPOLOGY', [face.id, ...res.junctions.flatMap((j) => j.entityIds)], 'the kept planes no longer meet in one point: roof topology would change (D-392)');
   }
-  if (res.offPlane.length > 0) return refuse('INVALID_TOPOLOGY', [face.id, ...res.offPlane.map((o) => o.vertexId)], 'a vertex is no longer on its planes (D-3D114-4)');
+  if (res.offPlane.length > 0) return refuse('INVALID_TOPOLOGY', [face.id, ...res.offPlane.map((o) => o.vertexId)], 'a vertex is no longer on its planes (D-392)');
   for (const f of [...touched].sort()) {
     const after = normalOf(draft, index, f);
     const was = before[f];
     if (after[0] * was[0] + after[1] * was[1] + after[2] * was[2] > 0) continue;
     const roof = draft.faces[f].surfaceKind === 'RoofSurface';
-    return refuse(roof ? 'INVALID_TOPOLOGY' : 'INVALID_GEOMETRY', [face.id, f], `face ${f} would turn over (D-3D114-4)`);
+    return refuse(roof ? 'INVALID_TOPOLOGY' : 'INVALID_GEOMETRY', [face.id, f], `face ${f} would turn over (D-392)`);
   }
 
   // footprint record: the wall's base corners move

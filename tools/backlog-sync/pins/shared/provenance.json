@@ -1,11 +1,11 @@
 {
   "repository": "GeoIPlus/shared_compnents",
-  "revision": "9d0f7d6d534bd35f919740670318cc0a35f9038e",
+  "revision": "d035c4a0e5884924f23e9e5102a737c7650b484e",
   "files": [
     {
       "file": "BACKLOG.snapshot",
       "donorPath": "docs/BACKLOG.md",
-      "sha256": "26ad7b1e89f8e8faf7ec1788a47ed53646cb046e10852bb21588aeb2daab552f"
+      "sha256": "67f10877a3b0200f4c361523d68141a437bdb8773a2647d30ece8eae0f51e498"
     }
   ]
 }

@@ -1,11 +1,11 @@
-// ops (3D-114.1): REGULARIZE_FOOTPRINT (spec §10.10 r3; v0.2 F-39; D-3D1141-1..8). Planes are primary (D-08): the
+// ops (3D-126): REGULARIZE_FOOTPRINT (spec §10.10 r3; v0.2 F-39; D-3D126-1..8). Planes are primary (D-08): the
 // plan (regularize-plan.js) chooses for each ring which walls merge into which reference wall and which vertical planes
 // the surviving walls get; here the planes are set, roof planes are kept, vertices re-derived, the merged walls are
 // joined by the MERGE_FACES mechanism (their corner vertices dissolve), the footprint record follows.
 // Refusals: degenerate outer ring, kept degenerate courtyard, self-intersecting footprint, short edge or a wall /
 // ground face turned over -> INVALID_GEOMETRY; kept roof planes no longer meeting in one point, a roof face turned
 // over, a merged-away wall with an overhang, a courtyard not removable in V1 -> INVALID_TOPOLOGY; a hard constraint
-// on a merged-away wall -> CONSTRAINT_CONFLICT (D-213). Change report in `warnings` (D-3D1141-5).
+// on a merged-away wall -> CONSTRAINT_CONFLICT (D-213). Change report in `warnings` (D-3D126-5).
 import { buildIndex, faceRings, rederive, derivePoint, cross } from '../brep/index.js';
 import { resolveFootprint, footprintError } from './footprint.js';
 import { findOverhang, removeOverhang, addOverhang } from './overhang.js';
@@ -41,14 +41,14 @@ export function regularizeFootprint(draft, payload, ctx) {
   const rings = ringEdges(draft, groundId, tol.numericEpsilon);
   if (!rings) return refuse('INVALID_TOPOLOGY', [fpId, groundId], 'a ground edge does not border a vertical WallSurface');
 
-  // the plan (D-3D1141-1, -2, -4)
+  // the plan (D-3D126-1, -2, -4)
   const groups = rings.map((r) => straighten(r, tol.footprintAngleTolDeg));
   if (p.orthogonalize) orthogonalize(groups, tol.footprintAngleTolDeg);
   const plans = rings.map((r, i) => evaluate(r, groups[i], tol, i === 0));
   if (plans[0].degenerate) return refuse('INVALID_GEOMETRY', [fpId], `outer ring: ${plans[0].degenerate}`);
   const drop = plans.map((pl, i) => i > 0 && !!pl.degenerate);
   for (let i = 1; i < plans.length; i++) {
-    if (drop[i] && !p.allowCourtyardRemoval) return refuse('INVALID_GEOMETRY', [fpId, ...ringWalls(rings[i])], `courtyard: ${plans[i].degenerate} (D-3D1141-4)`);
+    if (drop[i] && !p.allowCourtyardRemoval) return refuse('INVALID_GEOMETRY', [fpId, ...ringWalls(rings[i])], `courtyard: ${plans[i].degenerate} (D-3D126-4)`);
   }
   const live = groups.flatMap((g, i) => (drop[i] ? [] : g));
   const plane3 = (/** @type {{ n: P2, d: number }} */ l) => ({ normal: /** @type {[number, number, number]} */ ([l.n[0], l.n[1], 0]), d: l.d });
@@ -66,7 +66,7 @@ export function regularizeFootprint(draft, payload, ctx) {
   const hard = Object.values(draft.constraints).filter((c) => c.hard && c.entityIds.some((/** @type {string} */ e) => into.has(e))).map((c) => c.id).sort();
   if (hard.length > 0) return refuse('CONSTRAINT_CONFLICT', hard, 'hard constraint on a wall the regularisation merges away (D-213)');
 
-  // overhangs (D-3D1141-6): rebuilt on a changed wall, refused on a merged-away or removed wall
+  // overhangs (D-3D126-6): rebuilt on a changed wall, refused on a merged-away or removed wall
   const rebuild = [];
   for (const h of Object.values(draft.halfEdges)) {
     const t = h.twinId ? draft.halfEdges[h.twinId] : undefined;
@@ -76,7 +76,7 @@ export function regularizeFootprint(draft, payload, ctx) {
     if (!f.ok) return f;
     if (!f.found) continue;
     const on = [f.found.wall, f.found.gA, f.found.gB];
-    if (on.some((w) => into.has(w) || courtyardWalls.has(w))) return refuse('INVALID_TOPOLOGY', [h.id, ...on.filter((w) => into.has(w) || courtyardWalls.has(w))], 'an overhang hangs on a wall that is merged away (D-3D1141-6)');
+    if (on.some((w) => into.has(w) || courtyardWalls.has(w))) return refuse('INVALID_TOPOLOGY', [h.id, ...on.filter((w) => into.has(w) || courtyardWalls.has(w))], 'an overhang hangs on a wall that is merged away (D-3D126-6)');
     if (on.some((w) => changed.has(w))) rebuild.push({ h: h.id, f: f.found });
   }
   rebuild.sort((x, y) => (x.h < y.h ? -1 : 1));
@@ -92,7 +92,7 @@ export function regularizeFootprint(draft, payload, ctx) {
     c.removed.forEach((x) => removed.add(x));
   }
 
-  // planes: survivors get their new plane, merged-away walls the survivor's (D-3D1141-1)
+  // planes: survivors get their new plane, merged-away walls the survivor's (D-3D126-1)
   const index0 = buildIndex(draft);
   const touched = new Set(Object.values(draft.vertices).filter((v) => v.definingFaceIds.some((/** @type {string} */ f) => changed.has(f))).flatMap((v) => v.definingFaceIds));
   const before = Object.fromEntries([...touched].map((f) => [f, newell(draft, index0, f)]));
@@ -211,7 +211,7 @@ function compose(d, mapped) {
 /** @param {RingEdge[]} r */
 const ringWalls = (r) => [...new Set(r.map((e) => e.wall))].sort();
 
-/** The change report (D-3D1141-5). @returns {string[]} */
+/** The change report (D-3D126-5). @returns {string[]} */
 function report(/** @type {any} */ d, /** @type {RingEdge[][]} */ rings, /** @type {any[]} */ plans, /** @type {any[]} */ moved, /** @type {boolean[]} */ drop, /** @type {Map<string, P2>} */ old) {
   const gone = [...old.keys()].filter((v) => !d.vertices[v]).sort();
   const out = [`${TAG}: removed vertices [${gone.join(', ')}]`];

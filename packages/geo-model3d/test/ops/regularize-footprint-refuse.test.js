@@ -1,4 +1,4 @@
-// 3D-114.1 REGULARIZE_FOOTPRINT: courtyard removal, overhangs and refusals (RF-08..RF-12, RF-14; D-3D1141-4, -6,
+// 3D-126 REGULARIZE_FOOTPRINT: courtyard removal, overhangs and refusals (RF-08..RF-12, RF-14; D-3D126-4, -6,
 // D-213, D-218). A refusal leaves the model object unchanged.
 import { describe, expect, it } from 'vitest';
 import { built, regularize, walls, wallAt } from './regularize-footprint.helpers.js';
@@ -24,7 +24,7 @@ const ok = (out, tol) => {
 const SQUARE = [[0, 0], [20, 0], [20, 20], [0, 20]];
 const TINY = [[10, 10], [10, 10.3], [10.3, 10.3], [10.3, 10]];
 
-describe('REGULARIZE_FOOTPRINT courtyard removal (D-3D1141-4)', () => {
+describe('REGULARIZE_FOOTPRINT courtyard removal (D-3D126-4)', () => {
   it('RF-08 degenerate courtyard (0.09 m2): false -> INVALID_GEOMETRY; true -> removed, ground and roof closed', () => {
     const m = built(SQUARE, undefined, [TINY], SMALL_FACES);
     const court = walls(m).filter((w) => Math.abs(w.supportPlane.d) > 9 && Math.abs(w.supportPlane.d) < 11).map((w) => w.id);
@@ -41,7 +41,7 @@ describe('REGULARIZE_FOOTPRINT courtyard removal (D-3D1141-4)', () => {
   });
 });
 
-describe('REGULARIZE_FOOTPRINT overhangs (D-3D1141-6)', () => {
+describe('REGULARIZE_FOOTPRINT overhangs (D-3D126-6)', () => {
   it('RF-09 overhang on a changed end wall is rebuilt at the same width; on a merged-away end wall -> INVALID_TOPOLOGY', () => {
     const oh = ok(exec(gable(), 'SET_OVERHANG', { eaveEdgeIds: ['he-f-roof-s-0', 'he-f-roof-n-0'], overhangM: 0.5 }, SMALL_FACES), SMALL_FACES.toleranceProfile);
     const tilt = ok(exec(oh, 'ALIGN_WALL', { faceId: 'f-wall-e', referenceLine: [[10, 0], [10.28, 8]] }, SMALL_FACES), SMALL_FACES.toleranceProfile);

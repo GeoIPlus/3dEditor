@@ -1,4 +1,4 @@
-// 3D-114.1 REGULARIZE_FOOTPRINT (RF-15): PREVIEW == COMMIT, the inverse patch, a refusal leaves the model unchanged,
+// 3D-126 REGULARIZE_FOOTPRINT (RF-15): PREVIEW == COMMIT, the inverse patch, a refusal leaves the model unchanged,
 // UNDO / REDO through the real commands (pattern of footprint-ops-history.test.js), D-372 (roof planes with an
 // overhang are never changed, so the pipeline guard does not fire).
 import { describe, expect, it } from 'vitest';

@@ -1,4 +1,4 @@
-// 3D-114 RESIZE_ROOF refusals (RR-10..RR-14, D-3D114-2, D-3D114-3, D-344, D-213): the model is returned unchanged.
+// 3D-114 RESIZE_ROOF refusals (RR-10..RR-14, D-390, D-391, D-344, D-213): the model is returned unchanged.
 import { describe, expect, it } from 'vitest';
 import { exec, gable, hip } from './envelope.helpers.js';
 import { readFixture, deepFreeze } from '../brep/helpers.js';
@@ -47,11 +47,11 @@ describe('RESIZE_ROOF refusals, model unchanged', () => {
     refused(gable(), 'box', true, 'INVALID_PAYLOAD');
   });
 
-  it('RR-12 a valley roof (not its lower envelope) -> INVALID_TOPOLOGY naming the valley faces (D-3D114-3)', () => {
+  it('RR-12 a valley roof (not its lower envelope) -> INVALID_TOPOLOGY naming the valley faces (D-391)', () => {
     for (const mv of [true, false]) expect(refused(butterfly(), RECT, mv, 'INVALID_TOPOLOGY').entityIds).toEqual(['f-roof-n', 'f-roof-s']);
   });
 
-  it('RR-13 a roof with a chimney or a dormer -> INVALID_TOPOLOGY naming the installation (D-3D114-3)', () => {
+  it('RR-13 a roof with a chimney or a dormer -> INVALID_TOPOLOGY naming the installation (D-391)', () => {
     for (const gt of ['GT-17', 'GT-18']) {
       const m = after(gt);
       const inst = Object.values(m.semantics).filter((s) => s.kind === 'BuildingInstallation').map((s) => s.id);

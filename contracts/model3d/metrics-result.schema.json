@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-metrics-result:v1",
+  "title": "MetricsResult",
+  "description": "Geometric metrics of the main building of one model version (v0.2 F-53; D-412..D-414). Geometric only: no cadastral, tax or normative values (v0.2 §16.5). BuildingInstallation bodies are excluded. Areas in m2, volumes in m3, local frame, not rounded.",
+  "$comment": "Owner-approved member names and volumeStatus enum (D-412, D-413, D-18). The nine metric members are also the affectedMetrics names (D-415).",
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "const": "1" },
+    "buildingId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "state": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/ModelState" },
+    "basis": { "const": "GEOMETRIC" },
+    "units": {
+      "type": "object",
+      "properties": { "area": { "const": "m2" }, "volume": { "const": "m3" } },
+      "required": ["area", "volume"],
+      "additionalProperties": false
+    },
+    "footprintAreaM2": { "description": "Area of the union of the XY projections of the GroundSurface faces, holes kept.", "type": "number", "minimum": 0 },
+    "roofPlanAreaM2": { "description": "Area of the union of the XY projections of all RoofSurface faces, OVERHANG included; overlaps counted once.", "type": "number", "minimum": 0 },
+    "roofSurfaceAreaM2": { "description": "Sum of the 3D areas of all RoofSurface faces, OVERHANG included.", "type": "number", "minimum": 0 },
+    "overhangRoofAreaM2": { "description": "Sum of the 3D areas of RoofSurface faces tagged OVERHANG.", "type": "number", "minimum": 0 },
+    "soffitAreaM2": { "description": "Sum of the 3D areas of OuterCeilingSurface faces tagged OVERHANG (end caps excluded).", "type": "number", "minimum": 0 },
+    "mainVolumeM3": { "description": "Volume without overhangs; null when the volume or its split is not proven.", "type": ["number", "null"], "minimum": 0 },
+    "overhangVolumeM3": { "description": "Volume of the overhangs (D-414); 0 without overhangs; null when the volume or its split is not proven.", "type": ["number", "null"], "minimum": 0 },
+    "geometricSolidVolumeM3": { "description": "Total volume of the main building's solids, overhangs included; null when not proven.", "type": ["number", "null"], "minimum": 0 },
+    "volumeStatus": {
+      "description": "FINAL: VALID_SOLID / APPROVED and no volume-blocking error; PROVISIONAL: DRAFT_SOLID with a proven volume, never a final building volume; NOT_AVAILABLE: the total volume is not proven (D-413).",
+      "enum": ["FINAL", "PROVISIONAL", "NOT_AVAILABLE"]
+    }
+  },
+  "required": ["schemaVersion", "buildingId", "modelVersion", "state", "basis", "units", "footprintAreaM2", "roofPlanAreaM2", "roofSurfaceAreaM2", "overhangRoofAreaM2", "soffitAreaM2", "mainVolumeM3", "overhangVolumeM3", "geometricSolidVolumeM3", "volumeStatus"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "volumeStatus": { "const": "NOT_AVAILABLE" } } },
+      "then": { "properties": { "mainVolumeM3": { "type": "null" }, "overhangVolumeM3": { "type": "null" }, "geometricSolidVolumeM3": { "type": "null" } } },
+      "else": { "properties": { "geometricSolidVolumeM3": { "type": "number" } } }
+    },
+    {
+      "description": "The split is given for both parts or for none (D-413 partial availability).",
+      "oneOf": [
+        { "properties": { "mainVolumeM3": { "type": "number" }, "overhangVolumeM3": { "type": "number" } } },
+        { "properties": { "mainVolumeM3": { "type": "null" }, "overhangVolumeM3": { "type": "null" } } }
+      ]
+    }
+  ]
+}

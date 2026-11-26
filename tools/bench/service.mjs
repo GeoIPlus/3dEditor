@@ -1,72 +1,99 @@
-// Emulated kernel service path for the PREVIEW latency bench (3D-08, 3D-ADR-0006). Measured span = "server PREVIEW,
-// network excluded" (v0.3 §11): request body string in -> reply string out. Storage I/O is excluded too: the version is
-// held as its serialised JSON string and parsed per request (a stateless service with a warm byte cache) [A].
-// The real service is 3D-23; this file is bench tooling, not service code.
+// Kernel service path of the PREVIEW latency bench (3D-ADR-0006; 3D-121, D-357): every request goes through the
+// command API that ships (services/kernel/src/command-api.js, 3D-109) - body size limit and JSON parse, contract
+// validation, rate limit, head and version read from the history port, the kernel once in phase COMMIT (D-355), the
+// PREVIEW store, reply validation - over an in-memory history that holds every scene model as its baseline. Measured
+// span = "server PREVIEW, network excluded" (v0.3 §11): request body bytes in -> reply string out. Storage I/O is the
+// memory store's (values kept as JSON text, parsed on every read); the HTTP binding and auth are 3D-110.
 import { performance } from 'node:perf_hooks';
-import { previewMoveEdge } from '../../packages/geo-model3d/spike/move-edge/index.js';
-import { executeCommand } from '../../packages/geo-model3d/src/index.js';
-import { createAjv } from '../../contracts/model3d/test/load.mjs';
+import { createCommandApi } from '../../services/kernel/src/command-api.js';
+import { createContractValidator } from '../../services/kernel/src/contracts.js';
+import { createHistory } from '../../services/kernel/src/history.js';
+import { createMemoryStore } from '../../services/kernel/src/adapters/memory-store.js';
 
-/** Tolerance profile defaults (spec §2.3, D-13), the fields the spike uses. */
-export const TOL = { planarTolM: 0.02, topologySnapTolM: 0.01, minEdgeLengthM: 0.05, minFaceAreaM2: 0.1 };
-/** The whole tolerance profile (spec §2.3, D-13) for `executeCommand` (3D-14). */
+/** The whole tolerance profile (spec §2.3, D-13). */
 export const PROFILE = {
-  numericEpsilon: 1e-9, ...TOL, zAlignTolM: 0.01, coplanarTolDeg: 1, footprintAngleTolDeg: 5, flatRoofTolDeg: 1,
-  screenSnapPx: 10, heatmapBufferM: 1, planeFitMinPoints: 30, planeFitMinInlierRatio: 0.6, exportRoundDecimals: 3,
+  numericEpsilon: 1e-9, planarTolM: 0.02, topologySnapTolM: 0.01, minEdgeLengthM: 0.05, minFaceAreaM2: 0.1,
+  zAlignTolM: 0.01, coplanarTolDeg: 1, footprintAngleTolDeg: 5, flatRoofTolDeg: 1, screenSnapPx: 10,
+  heatmapBufferM: 1, planeFitMinPoints: 30, planeFitMinInlierRatio: 0.6, exportRoundDecimals: 3,
 };
 
-export const STAGES = /** @type {const} */ (['parse', 'validateCommand', 'loadModel', 'kernel', 'validateReply', 'serialize']);
+/**
+ * Stages the API lets the bench time from outside: `parse` (body -> JSON), `validateCommand` / `validateReply`
+ * (contract checks), `loadModel` (history store reads: baseline, journal list, version), `serialize` (reply ->
+ * string). `kernelAndApi` is the rest of the request: `executeCommand` (imported by commit.js, not injectable), rate
+ * limit, PREVIEW store and the API's own logic.
+ */
+export const STAGES = /** @type {const} */ (['parse', 'validateCommand', 'loadModel', 'kernelAndApi', 'validateReply', 'serialize']);
+
+/** The authenticated user of every bench request (the scenes' `actorId`). */
+export const ACTOR = { actorId: 'usr-operator' };
+
+/** Injected clock step per request: a 10 Hz drag, inside the D-316 rate limit (20/s per user and building). */
+export const STEP_MS = 100;
+
+/** @param {Record<string, number> | undefined} acc @param {string} name @param {number} ms */
+const add = (acc, name, ms) => { if (acc) acc[name] = (acc[name] ?? 0) + ms; };
 
 /**
- * @param {{ models: any[], cold?: boolean }} o `cold` (default true): parse the stored version string per request
- * @returns {{ handle: (body: string, stages?: Record<string, number>) => string, previews: Map<string, any> }}
+ * @template {any[]} A @template R
+ * @param {(...a: A) => R} fn @param {string} name @param {{ acc?: Record<string, number> }} cur
+ * @returns {(...a: A) => R}
  */
-export function createPreviewService({ models, cold = true }) {
-  const ajv = createAjv();
-  const validateCommand = /** @type {import('ajv').ValidateFunction} */ (ajv.getSchema('urn:geoiplus:schema:model3d-command:v1'));
-  const validateResult = /** @type {import('ajv').ValidateFunction} */ (ajv.getSchema('urn:geoiplus:schema:model3d-command-result:v1'));
-  /** @type {Map<string, { version: number, json: string, model: any }>} */
-  const store = new Map(models.map((m) => [m.buildingId, { version: m.version, json: JSON.stringify(m), model: m }]));
-  /** @type {Map<string, any>} */
-  const previews = new Map();
-  let seq = 0;
-  const NOW = '2026-11-23T00:00:00Z'; // injected clock; fixed so replies are deterministic
-
-  /** @param {string} body @param {Record<string, number>} [stages] accumulates ms per stage */
-  function handle(body, stages) {
-    let t = performance.now();
-    const lap = (/** @type {string} */ name) => {
-      const n = performance.now();
-      if (stages) stages[name] = (stages[name] ?? 0) + (n - t);
-      t = n;
-    };
-    const cmd = JSON.parse(body);
-    lap('parse');
-    if (!validateCommand(cmd)) return JSON.stringify(fail(cmd, 'INVALID_PAYLOAD', 400));
-    lap('validateCommand');
-    const stored = store.get(cmd.buildingId);
-    if (!stored) return JSON.stringify(fail(cmd, 'NOT_FOUND', 404));
-    if (stored.version !== cmd.expectedVersion) return JSON.stringify(fail(cmd, 'VERSION_CONFLICT', 409));
-    const model = cold ? JSON.parse(stored.json) : stored.model;
-    lap('loadModel');
-    const previewId = `prev-${++seq}`;
-    // MOVE_EDGE is still the 3D-08 spike until 3D-15; every other kind goes through executeCommand (3D-14)
-    const result = cmd.operation === 'MOVE_EDGE'
-      ? previewMoveEdge(model, cmd, TOL, { now: NOW, previewId })
-      : executeCommand(model, cmd, { toleranceProfile: PROFILE, clock: () => NOW, previewId }).result;
-    lap('kernel');
-    if (!validateResult(result)) throw new Error(`reply invalid: ${JSON.stringify(validateResult.errors?.slice(0, 3))}`);
-    lap('validateReply');
-    if (result.status === 'PREVIEW') previews.set(previewId, result); // COMMIT applies exactly this (v0.3 §3)
-    if (previews.size > 1000) previews.delete(/** @type {string} */ (previews.keys().next().value));
-    const out = JSON.stringify(result);
-    lap('serialize');
-    return out;
-  }
-  return { handle, previews };
+function timed(fn, name, cur) {
+  return (...a) => {
+    const t = performance.now();
+    try {
+      return fn(...a);
+    } finally {
+      add(cur.acc, name, performance.now() - t);
+    }
+  };
 }
 
-/** @param {any} cmd @param {string} code @param {number} httpStatus */
-function fail(cmd, code, httpStatus) {
-  return { commandId: cmd?.commandId ?? 'unknown', status: 'REJECTED', modelVersion: cmd?.expectedVersion ?? 0, warnings: [], error: { code, httpStatus } };
+/**
+ * @param {{ models: any[] }} o the scene models; each becomes the baseline (version 1) of its building
+ * @returns {Promise<{ handle: (body: string, stages?: Record<string, number>) => Promise<string>, api: ReturnType<typeof createCommandApi> }>}
+ */
+export async function createPreviewService({ models }) {
+  /** @type {{ acc?: Record<string, number> }} where the current request's stage times go */
+  const cur = {};
+  const raw = createMemoryStore();
+  /** @type {import('../../services/kernel/src/ports/history.js').ObjectStore} */
+  const store = {
+    create: raw.create,
+    get: async (k) => { const t = performance.now(); try { return await raw.get(k); } finally { add(cur.acc, 'loadModel', performance.now() - t); } },
+    list: async (k) => { const t = performance.now(); try { return await raw.list(k); } finally { add(cur.acc, 'loadModel', performance.now() - t); } },
+  };
+  const history = createHistory(store);
+  for (const m of models) await history.putBaseline(m.projectId, m.buildingId, m);
+  const c = createContractValidator();
+  const contracts = { ...c, command: timed(c.command, 'validateCommand', cur), reply: timed(c.reply, 'validateReply', cur) };
+  let clock = 0;
+  let seq = 0;
+  const api = createCommandApi({
+    history, contracts, toleranceProfile: () => PROFILE,
+    clock: () => '2026-11-23T00:00:00Z',  // fixed RFC 3339 time: replies are deterministic
+    now: () => clock, newPreviewId: () => `pv-${++seq}`,  // ids injected: replies are deterministic
+  });
+  const parse = timed(JSON.parse, 'parse', cur);
+
+  /** @param {string} body @param {Record<string, number>} [stages] accumulates ms per stage */
+  async function handle(body, stages) {
+    clock += STEP_MS;
+    cur.acc = stages ? {} : undefined;
+    const t0 = performance.now();
+    const r = await api.commandBody(Buffer.from(body, 'utf8'), ACTOR, { parse });
+    const t1 = performance.now();
+    const out = JSON.stringify(r.body);
+    const t2 = performance.now();
+    if (stages && cur.acc) {
+      const known = Object.values(cur.acc).reduce((a, b) => a + b, 0);
+      for (const [k, v] of Object.entries(cur.acc)) add(stages, k, v);
+      add(stages, 'kernelAndApi', t1 - t0 - known);
+      add(stages, 'serialize', t2 - t1);
+    }
+    cur.acc = undefined;
+    return out;
+  }
+  return { handle, api };
 }

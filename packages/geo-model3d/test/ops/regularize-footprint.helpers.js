@@ -1,4 +1,4 @@
-// Test helpers for 3D-114.1 REGULARIZE_FOOTPRINT: models built by REPLACE_ROOF over a given footprint, the command,
+// Test helpers for 3D-126 REGULARIZE_FOOTPRINT: models built by REPLACE_ROOF over a given footprint, the command,
 // and lookups by geometry (wall ids of a built envelope are not fixed by these tests).
 import { expect } from 'vitest';
 import { withFootprint, run, command, PROFILE } from './helpers.js';

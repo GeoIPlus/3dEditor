@@ -26,7 +26,7 @@ describe('schema files', () => {
 
   it('cover every row of the spec §2 schema list (row 5 as one file per OperationKind)', () => {
     const names = tableRows(specSection('## 2. ')).map((r) => /`([a-z0-9-]+)/.exec(r[1])?.[1]);
-    expect(names.length).toBe(17);
+    expect(names.length).toBe(18);
     for (const n of names) {
       if (n === 'command-payload-') continue;
       expect(schemas.has(/** @type {string} */ (n)), String(n)).toBe(true);
@@ -86,7 +86,7 @@ describe('error registry (spec §2.4)', () => {
   }
 
   it('enumerates exactly the codes of the spec', () => {
-    expect(expected.size).toBe(15);
+    expect(expected.size).toBe(16);
     expect([...schemas.get('error').$defs.ErrorCode.enum].sort()).toEqual([...expected.keys()].sort());
   });
 

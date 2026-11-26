@@ -1,4 +1,4 @@
-// 3D-114 ALIGN_WALL (spec §10.10 r4; v0.2 F-40; D-346, D-3D114-4): the wall plane goes to the vertical plane through
+// 3D-114 ALIGN_WALL (spec §10.10 r4; v0.2 F-40; D-346, D-392): the wall plane goes to the vertical plane through
 // referenceLine, roof planes are kept, the roof and ground follow, the footprint record is updated. Expected numbers
 // are analytic (integrals of the roof height over the plan), computed here.
 import { describe, expect, it } from 'vitest';
@@ -66,7 +66,7 @@ describe('ALIGN_WALL', () => {
     expect(out.model).toBe(g);
   });
 
-  it('refusals leave the model unchanged (D-3D114-4)', () => {
+  it('refusals leave the model unchanged (D-392)', () => {
     const g = gable();
     refused(g, align(g, 'f-ground', [[0, 5], [10, 5]]), 'INVALID_PAYLOAD');
     refused(g, align(g, 'f-roof-s', [[0, 5], [10, 5]]), 'INVALID_PAYLOAD');

@@ -72,5 +72,5 @@ export const OPERATIONS = {
   EXTEND_FACE: { run: extendFace }, // 3D-105
   RESIZE_ROOF: { run: resizeRoof }, // 3D-114
   ALIGN_WALL: { run: alignWall }, // 3D-114
-  REGULARIZE_FOOTPRINT: { run: regularizeFootprint }, // 3D-114.1
+  REGULARIZE_FOOTPRINT: { run: regularizeFootprint }, // 3D-126
 };

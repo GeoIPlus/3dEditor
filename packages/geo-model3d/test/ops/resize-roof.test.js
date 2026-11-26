@@ -1,4 +1,4 @@
-// 3D-114 RESIZE_ROOF with moveWallFootprint true (D-339; RR-01..RR-06, D-3D114-2): footprint := outline, roof planes
+// 3D-114 RESIZE_ROOF with moveWallFootprint true (D-339; RR-01..RR-06, D-390): footprint := outline, roof planes
 // kept, walls and ground rebuilt. Expected numbers are analytic (prism + roof formulas), computed here.
 import { describe, expect, it } from 'vitest';
 import { exec, gable, hip, sound } from './envelope.helpers.js';

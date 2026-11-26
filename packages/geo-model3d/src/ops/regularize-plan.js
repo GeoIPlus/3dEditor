@@ -1,12 +1,12 @@
-// ops (3D-114.1): the plan of REGULARIZE_FOOTPRINT in plan view (spec §10.10 r3; v0.2 F-39). Pure 2D: it decides
+// ops (3D-126): the plan of REGULARIZE_FOOTPRINT in plan view (spec §10.10 r3; v0.2 F-39). Pure 2D: it decides
 // which walls merge and which new vertical planes the surviving walls get; the B-rep is changed by the caller.
 // Planes are primary (D-08): a wall is the 2D line n . x + d = 0 of its vertical support plane (n outward, unit).
-// D-3D1141-1: per ring, a chain of consecutive walls whose directions all lie within `footprintAngleTolDeg` of the
+// D-3D126-1: per ring, a chain of consecutive walls whose directions all lie within `footprintAngleTolDeg` of the
 // chain's reference wall (the longest; tie: smallest face id) merges into the reference wall, whose plane is kept.
-// D-3D1141-2: `orthogonalize` turns every wall within the tolerance of the 0 / 90 deg grid of the longest outer wall
+// D-3D126-2: `orthogonalize` turns every wall within the tolerance of the 0 / 90 deg grid of the longest outer wall
 // exactly onto the grid, about the midpoint of its edge; walls made consecutive and parallel merge again.
-// D-3D1141-4: a ring with fewer than 3 walls, area < minFaceAreaM2, an edge < minEdgeLengthM or a parallel corner is
-// degenerate. D-3D1141-3 / -5: the largest vertex shift and the area change are reported.
+// D-3D126-4: a ring with fewer than 3 walls, area < minFaceAreaM2, an edge < minEdgeLengthM or a parallel corner is
+// degenerate. D-3D126-3 / -5: the largest vertex shift and the area change are reported.
 import { signedArea2 } from './geom2.js';
 
 /** @typedef {import('./geom2.js').P2} P2 */
@@ -30,7 +30,7 @@ const angDeg = (/** @type {P2} */ u, /** @type {P2} */ v) => Math.atan2(u[0] * v
 const byId = (/** @type {string} */ x, /** @type {string} */ y) => (x < y ? -1 : x > y ? 1 : 0);
 
 /**
- * Straighten one ring (D-3D1141-1).
+ * Straighten one ring (D-3D126-1).
  * @param {RingEdge[]} edges in ring order (outer CCW, courtyards CW) @param {number} tolDeg
  * @returns {Group[]}
  */
@@ -75,7 +75,7 @@ export function corners(groups) {
   return out;
 }
 
-/** Merge consecutive groups with the same direction into the longer one (D-3D1141-2). @param {Group[]} groups */
+/** Merge consecutive groups with the same direction into the longer one (D-3D126-2). @param {Group[]} groups */
 function remergeParallel(groups) {
   let again = true;
   while (again && groups.length > 1) {
@@ -99,7 +99,7 @@ function remergeParallel(groups) {
 const edgeLen = (poly, k) => (poly.length < 2 ? 0 : Math.hypot(poly[(k + 1) % poly.length][0] - poly[k][0], poly[(k + 1) % poly.length][1] - poly[k][1]));
 
 /**
- * Orthogonalise all rings onto the grid of the longest outer wall (D-3D1141-2). Mutates the groups.
+ * Orthogonalise all rings onto the grid of the longest outer wall (D-3D126-2). Mutates the groups.
  * @param {Group[][]} rings outer first @param {number} tolDeg
  */
 export function orthogonalize(rings, tolDeg) {

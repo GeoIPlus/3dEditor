@@ -1,7 +1,7 @@
 // ops (3D-114): RESIZE_ROOF (spec §10.10 r2; v0.2 F-29; D-339). The roof is the lower envelope of its own planes
 // (D-08: planes kept, never re-fitted), clipped to the convex `roofOutline`. V1 = roofs that are their lower envelope
 // (FLAT, SHED, GABLE, HIP, PYRAMID by geometry); a valley, an installation (dormer, chimney) or a roof face that gives
-// no z(x, y) -> INVALID_TOPOLOGY (D-3D114-3), model unchanged.
+// no z(x, y) -> INVALID_TOPOLOGY (D-391), model unchanged.
 // moveWallFootprint true: footprint := outline, walls and ground rebuilt under the new roof cells (buildEnvelope, as
 // REBUILD_ENVELOPE; roof face ids kept, D-212); an existing overhang is removed first (RR-09).
 // moveWallFootprint false: footprint and walls kept; the outline must be the footprint offset edge by edge, and every
@@ -40,15 +40,15 @@ export function resizeRoof(draft, payload, ctx) {
   if (!outline.ok) return refuse(outline.reason === 'roofOutline' ? 'INVALID_PAYLOAD' : 'INVALID_GEOMETRY', outline.reason === 'roofOutline' ? [] : [body.footprintId], outline.reason);
 
   const installations = Object.values(draft.semantics).filter((s) => s.kind === 'BuildingInstallation' && s.parentId === body.ownerId).map((s) => s.id);
-  if (installations.length > 0) return refuse('INVALID_TOPOLOGY', installations.sort(), 'an installation joins the roof; not a lower-envelope roof (D-339, D-3D114-3)');
+  if (installations.length > 0) return refuse('INVALID_TOPOLOGY', installations.sort(), 'an installation joins the roof; not a lower-envelope roof (D-339, D-391)');
   const shellFaces = /** @type {string[]} */ (draft.shells[body.shellId].faceIds);
   const roofIds = shellFaces.filter((f) => draft.faces[f].surfaceKind === 'RoofSurface' && !draft.faces[f].tags.includes(OVERHANG)).sort();
   const other = shellFaces.filter((f) => !['RoofSurface', 'WallSurface', 'GroundSurface'].includes(draft.faces[f].surfaceKind) && !draft.faces[f].tags.includes(OVERHANG));
-  if (roofIds.length === 0 || other.length > 0) return refuse('INVALID_TOPOLOGY', [body.footprintId, ...other], 'body is not walls, ground and one roof (D-3D114-3)');
+  if (roofIds.length === 0 || other.length > 0) return refuse('INVALID_TOPOLOGY', [body.footprintId, ...other], 'body is not walls, ground and one roof (D-391)');
   const steep = roofIds.filter((f) => !(draft.faces[f].supportPlane.normal[2] > tol.numericEpsilon));
-  if (steep.length > 0) return refuse('INVALID_TOPOLOGY', steep, 'roof face gives no z(x, y) (D-3D114-3)');
+  if (steep.length > 0) return refuse('INVALID_TOPOLOGY', steep, 'roof face gives no z(x, y) (D-391)');
   const valley = notLowerEnvelope(draft, roofIds, tol);
-  if (valley.length > 0) return refuse('INVALID_TOPOLOGY', valley, 'the roof is not the lower envelope of its planes, e.g. a valley (D-339, D-3D114-3)');
+  if (valley.length > 0) return refuse('INVALID_TOPOLOGY', valley, 'the roof is not the lower envelope of its planes, e.g. a valley (D-339, D-391)');
 
   const res = p.moveWallFootprint
     ? withWalls(draft, body, roofIds, outline.ring, ctx)
