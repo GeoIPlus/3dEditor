@@ -677,7 +677,7 @@ Throughput: 54.0 rows/week (7 d), 394 model min/week; waiting share 99 %   Accur
 ### 3D-105 Core edits II on the pipeline
 - Source: WP 3D-15, owner decisions 2026-11-25/26 (dialog; D-305, D-306).
 - Goal: the four operations on the 3D-14 pipeline per 3D-104 (spec §10.6 r5..r8).
-- Accept: GT-3D104-1..GT-3D104-8 (spec §13); the owner's test lists RD-01..RD-18, RD-T01..RD-T24, SF-COL-01..SF-COL-14,
+- Accept: GT-3D104-1..GT-3D104-8 (spec §10.6 table; moved into §13 with their fixtures here, D-3D104-11); the owner's test lists RD-01..RD-18, RD-T01..RD-T24, SF-COL-01..SF-COL-14,
   SAE-01..SAE-20 (D-3D104-4..D-3D104-8); spec §10.1 Accept lines per operation. Schema changes approved (D-3D104-10):
   `trim-face` (`cuttingFaceId`), `extend-face` (`targetFaceId`), `remove-details` (`maxAreaM2`, `maxDisplacementM`),
   `command-result.candidates`.
