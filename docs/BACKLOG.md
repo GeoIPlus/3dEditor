@@ -23,14 +23,14 @@ Updated: 2026-11-26
 |---|---:|
 | Done | 54 / 84 |
 | Review | 1 |
-| In progress | 2 |
-| Ready | 6 |
+| In progress | 3 |
+| Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 20 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 54/84 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-19 Envelope ops; 3D-47 SC: 3D view port + host.
+**Running:** 3D-19 Envelope ops; 3D-104 Spec: core edits II; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -105,7 +105,7 @@ flowchart TB
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D103["▶️ ⚙️ 3D-103 ON_PLANE fixed plane"]
-    D104["▶️ 📐 3D-104 Spec: core edits II"]
+    D104["🚧 📐 3D-104 Spec: core edits II"]
     D105["💡 ⚙️ 3D-105 Core edits II"]
     D106["💡 ⚙️ 3D-106 ROTATE_FACE"]
     D107["💡 📐 3D-107 ADR: shared plane"]
@@ -325,7 +325,7 @@ Throughput: 54.0 rows/week (7 d), 394 model min/week; waiting share 99 %   Accur
 | 3D-101 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-256..D-260) | here | docs/specs | 20 | G4 | S | spec | done (D-272; merged into base, no PR) |
 | 3D-102 | Agent-eval scenarios use a reserved row id range (e.g. 3D-9xx) that the real backlog never reaches, instead of 3D-90..3D-98 (D-264) | here | docs/agent-evals, tools/agent-evals | 28, 87 | G0 | S | tests | done (D-277; merged into base, no PR) |
 | 3D-103 | `solve`: `ON_PLANE` with one face and a plane target = fixed face plane; enables the GT-19 "Fixed" variant | here | geo-model3d/solve | 13, 17 | G4 | S | kernel | ready (D-310) |
-| 3D-104 | Spec: `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` in plane terms (spec §10.6, §10.1 r7), owner-approved, with golden cases | here | docs/specs | 15 | G3 | M | spec | ready (D-308) |
+| 3D-104 | Spec: `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` in plane terms (spec §10.6, §10.1 r7), owner-approved, with golden cases | here | docs/specs | 15 | G3 | M | spec | in-progress (wp/3d-104-core-edits-spec) |
 | 3D-105 | `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` on the pipeline | here | geo-model3d/ops | 15.1 | G3 | L | kernel | proposed |
 | 3D-106 | `ROTATE_FACE`: rotate a support plane about a fixed ridge or eave (contract kind + spec + op) | here | contracts, docs/specs, geo-model3d/ops | 15 | G3 | M | kernel | proposed |
 | 3D-107 | ADR: shared logical plane of several faces (face vs plane identity, plane fork, constraint scope; P15-03) | here | docs/decisions | 15 | G3 | M | spec | proposed |
