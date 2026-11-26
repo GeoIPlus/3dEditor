@@ -51,6 +51,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 | 2026-11-24 | 3D-81 | session_01RNYuqF4ErqsAPBJaEC8dzq | wp | 2.32 | 17.6 | 126.8 | 4781.9 | 3.2 | 3.05 | claude-opus-5-5 | final | - | newest result event 2026-11-24T16:31:10Z; backfill 3D-86 |
 | 2026-11-25 | 3D-86 | session_01RNYuqHnuDRZzVutCfR9HFd | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals; cost inside session) | no finished turn when written (first turn); coordinator reads it at merge |
 | 2026-11-25 | 3D-89 | session_01RNYuqJtpgwUr65orM4dzJp | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals, see checkpoint 3D-89; ~105k subagent tokens, cost inside session) | no finished turn when written (first turn); coordinator reads it at merge |
+| 2026-11-26 | 3D-18 | session_01RNYuqGxiYZi2wfiNykmaH8 | wp | ? | ? | ? | ? | ? | 8.6 | claude-opus-5-5 | interim | - | no result event yet (turns cut by a worker restart; 3 pages read); coordinator re-reads at merge |
 
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).

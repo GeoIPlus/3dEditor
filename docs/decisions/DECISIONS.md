@@ -281,6 +281,10 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-265 | 3D-102 (eval scenario rows in a reserved id range) set `ready` and started in a fresh session | Owner, chat, 2026-11-25 |
 | D-266 | MVP of 3DQM = E2E 3D-25 (import -> edit -> validate -> approve -> export -> re-import on the CP/DP mock) with the operations already done plus 3D-15 and 3D-17. Critical path: server 3D-18 -> 3D-23 -> 3D-24; client 3D-45 -> 3D-41 -> 3D-43 -> 3D-50; 3D-47 (SC). Not required for MVP: 3D-19, 3D-71, 3D-100, 3D-33 (P1), crowdsource rows 3D-60..3D-63 (interim store, D-35) | Owner, dialog, 2026-11-25 |
 | D-267 | 3D-18, 3D-45, 3D-82, 3D-83, 3D-101, 3D-19 and 3D-71 set `ready` and started in parallel fresh sessions (3D-19, 3D-71 by owner choice beside the MVP path) | Owner, dialog, 2026-11-25 |
+| D-3D18-1 | `UNDO`, `REDO`, `RESTORE_BASELINE` pass no commit gate ("no new errors", spec §3 r4): the target content is restored exactly (v0.2 F.9); `state` comes from validation for the command's `targetState` (VALID_SOLID if no ERROR, else DRAFT_SOLID; APPROVED is left as by any edit) | Owner, dialog, 2026-11-26 (3D-18) |
+| D-3D18-2 | Spec §10.9 r5 (D-69) in the kernel: the service passes the authenticated `actorId`; the kernel replays the journal into undo / redo stacks and refuses `FORBIDDEN` (403) when the stack top was committed by another actor; nothing is skipped (stack order). No contract change | Owner, dialog, 2026-11-26 (3D-18) |
+| D-3D18-3 | `UNDO` with nothing to undo, `REDO` with nothing to redo, `RESTORE_BASELINE` on a model equal to the baseline -> `INVALID_PAYLOAD` (400), no new version (as D-229) | Owner, dialog, 2026-11-26 (3D-18) |
+| D-3D18-4 | `RESTORE_BASELINE` is a normal history entry: it can be undone and it clears the redo stack | Owner, dialog, 2026-11-26 (3D-18) |
 
 ## Open questions
 
