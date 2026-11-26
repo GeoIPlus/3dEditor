@@ -2,6 +2,10 @@
 // 3D-15..3D-21 and 3D-71 add their modules here; a kind without a module is refused INTERNAL by the pipeline.
 import { replaceRoof } from './replace-roof.js';
 import { rebuildEnvelope } from './rebuild-envelope.js';
+import { fitToSharedEdge } from './fit-to-shared-edge.js';
+import { removeFace } from './remove-face.js';
+import { healHole } from './heal-hole.js';
+import { alignJunction } from './align-junction.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -19,4 +23,8 @@ export const OPERATION_KINDS = new Set([
 export const OPERATIONS = {
   REPLACE_ROOF: { run: replaceRoof },
   REBUILD_ENVELOPE: { run: rebuildEnvelope },
+  FIT_TO_SHARED_EDGE: { run: fitToSharedEdge },
+  REMOVE_FACE: { run: removeFace },
+  HEAL_HOLE: { run: healHole },
+  ALIGN_JUNCTION: { run: alignJunction },
 };
