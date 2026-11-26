@@ -79,7 +79,7 @@ export function solveConstraints(input, tol) {
  */
 function attempt(model, movable, conds, keep, weights, context, eps, forceStage2) {
   const mov = new Set(movable);
-  const stage1Only = !forceStage2 && conds.every((c) => c.hard && c.linear);
+  const stage1Only = !forceStage2 && conds.every((c) => c.hard && (c.linear || c.checkOnly));
   /** @type {Record<string, Plane>} */
   const start = {};
   /** @type {string[]} */
@@ -95,11 +95,12 @@ function attempt(model, movable, conds, keep, weights, context, eps, forceStage2
   }
   if (stage1Only) return { planes: start, free, solver: { stage: 1, iterations: 1, converged: true, cost } };
   // Planes no condition reads stay exactly as they are (spec §5 r7: no hidden jumps).
-  const touched = movable.filter((f) => conds.some((c) => c.faces.includes(f)));
+  const terms = conds.filter((c) => !c.checkOnly);
+  const touched = movable.filter((f) => terms.some((c) => c.faces.includes(f)));
   if (touched.length === 0) return { planes: start, free: [], solver: { stage: 2, iterations: 0, converged: true, cost: 0 } };
   const r = solveCoupled({
     movable: touched.map((f) => ({ faceId: f, plane: start[f], keep: keep[f], keepWeight: weights[f] ?? 1 })),
-    conditions: conds.filter((c) => c.faces.some((f) => mov.has(f))),
+    conditions: terms.filter((c) => c.faces.some((f) => mov.has(f))),
     context: (planes) => context({ ...start, ...planes }),
     eps,
   });

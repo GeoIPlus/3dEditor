@@ -10,6 +10,7 @@ import { runChecks, toIssues, buildReport, newErrors, VALIDATOR_VERSION } from '
 import { contractError } from './errors.js';
 import { freshIds } from './ids.js';
 import { constraintStep } from './constraints.js';
+import { overhangGuard } from './overhang-guard.js';
 import { OPERATIONS, OPERATION_KINDS } from './registry.js';
 
 /** @typedef {import('../brep/types.js').BuildingModel} BuildingModel */
@@ -94,6 +95,8 @@ export function runPipeline(model, command, opts) {
     const c = constraintStep(draft, r, tol);
     if (!c.ok) return /** @type {any} */ (c);
     warnings.push(...c.warnings);
+    const dependent = overhangGuard(model, draft, tol); // 3D-120, until 3D-115
+    if (dependent) return /** @type {any} */ (dependent);
     // the same checks in PREVIEW and COMMIT so that both give the same patch (shell closure and state are in it)
     raw = runChecks(draft, { mode: 'COMMIT_VALIDATION', tolerances: tol, fullSolid: true });
     const open = new Set(raw.filter((i) => i.code === 'SHELL_NOT_CLOSED').flatMap((i) => i.entityIds));
