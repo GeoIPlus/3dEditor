@@ -62,6 +62,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).
+| 2026-11-26 | 3D-23 | session_01RNYuqFLUgbVc5u5YcbhjUe | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | pending | no finished turn when written (one long first turn, worker restart inside it); coordinator reads it at merge |
 
 ## Improvement proposals
 

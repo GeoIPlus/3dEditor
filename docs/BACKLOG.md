@@ -22,15 +22,15 @@ Updated: 2026-11-26
 | Progress | Rows |
 |---|---:|
 | Done | 54 / 87 |
-| Review | 1 |
-| In progress | 3 |
+| Review | 2 |
+| In progress | 2 |
 | Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 23 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 54/87 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-19 Envelope ops; 3D-23 Kernel service I: history, COMMIT; 3D-47 SC: 3D view port + host.
+**Running:** 3D-19 Envelope ops; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -116,7 +116,7 @@ flowchart TB
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["💡 🔧 3D-79 Service image licence check"]
-    D23["🚧 🖥️ 3D-23 Kernel service I: history, COMMIT"]
+    D23["🔍 🖥️ 3D-23 Kernel service I: history, COMMIT"]
     D23_1["💡 🖥️ 3D-23.1 Kernel service II: command API"]
     D23_2["💡 🖥️ 3D-23.2 Kernel service III: handler, ports"]
     D23_3["💡 🖥️ 3D-23.3 history S3 adapter"]
@@ -338,7 +338,7 @@ Throughput: 54.0 rows/week (7 d), 394 model min/week; waiting share 99 %   Accur
 | 3D-108 | Constraint ids in `topologyLineage.mapped` (`brep` transaction accepts them; replaces the `warnings` stopgap of D-306) | here | geo-model3d/brep, geo-model3d/ops | 15 | G3 | S | kernel | proposed |
 | 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | kernel | done (D-230; merged into base, no PR; D-226..D-229) |
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
-| 3D-23 | Kernel service I: `history` port + file adapter (3D-ADR-0003, append-only, `journal/{N+1}` create-if-absent), port contract suite, COMMIT path (idempotent `commandId` + `expectedVersion`, GT-13, D-68), command status; PREVIEW/API -> 3D-23.1, handler/ports -> 3D-23.2 (D-3D23-1) | here | service | 03, 06, 18 | G5 | M | service | in-progress (wp/3d-23-kernel-service) |
+| 3D-23 | Kernel service I: `history` port + file adapter (3D-ADR-0003, append-only, `journal/{N+1}` create-if-absent), port contract suite, COMMIT path (idempotent `commandId` + `expectedVersion`, GT-13, D-68), command status; PREVIEW/API -> 3D-23.1, handler/ports -> 3D-23.2 (D-3D23-1) | here | service | 03, 06, 18 | G5 | M | service | review (wp/3d-23-kernel-service; local, PR not requested) |
 | 3D-23.1 | Kernel service II: command API - PREVIEW store by `previewId` (expiry 10 min, D-3D23-2), COMMIT by `previewId`, PREVIEW rate limit 20/s (D-3D23-3), payload limit 1 MiB (D-3D23-4), error registry mapping, request/reply validation against `contracts/model3d/` | here | service | 23 | G5 | M | service | proposed |
 | 3D-23.2 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69), `datasets` port + file adapter (`progress.save`, delivered bytes), heatmap request (`INVALID_CRS`, 3D-69), bench gate on the service image (D-111, Q-42) | here | service | 23.1 | G5 | M | service | proposed |
 | 3D-23.3 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-3D23-6) | here | service | 23 | G5 | M | service | proposed |
