@@ -291,6 +291,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-275 | Agent-eval scenario rows use the reserved id range 3D-900..3D-999; the former ids map 3D-9N -> 3D-90N (3D-90..3D-98 -> 3D-900..3D-908, branches `wp/3d-90N-*`, checkpoints `.agent/checkpoints/3D-90N.md`). Real rows never take an id in the range. `addRow` (tools/agent-evals/scenario.mjs) refuses an id outside the range or equal to a real row; a test checks every setup.mjs id against docs/BACKLOG.md. Rubric check ids (e.g. `no-92-code`) are kept so recorded results stay comparable | Owner, dialog, 2026-11-25 (3D-102) |
 | D-276 | Real row ids 3D-90..3D-99 stay skipped after the move (D-264 kept): recorded eval results of 2026-11-20 and 2026-11-25 still name 3D-90..3D-98, so the next real id continues at 3D-103 | Owner, dialog, 2026-11-25 (3D-102) |
 | D-277 | 3D-102 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-275, D-276; eval scenario rows now live in 3D-900..3D-999, real ids keep skipping 3D-90..3D-99 | Owner, WP session 3D-102, 2026-11-26 |
+| D-278 | 3D-82 edits spec §3 (`cloudToLocal`, `localBoxToCloud`) and §11 (points port through the dataset descriptor) besides §4a and §9, as the row's scope says; the handoff limit "only §4a and §9" guarded 3D-101's §10.11 and §14, which stay untouched | Owner, dialog, 2026-11-26 (3D-82) |
+| D-279 | 3D-82 accepted (done); merged into the base by the coordinating session (D-178); provisional id became D-278 | Owner, WP session 3D-82, 2026-11-26 |
 
 ## Open questions
 

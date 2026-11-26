@@ -17,24 +17,25 @@ method and session data in [docs/metrics/](metrics/README.md) (D-236).
 
 ## Progress overview
 
-Updated: 2026-11-25
+Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 49 / 78 |
+| Done | 50 / 78 |
 | Review | 1 |
-| In progress | 7 |
+| In progress | 6 |
 | Ready | 3 |
 | Proposed (waiting for the owner to set `ready`) | 17 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 49/78 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 50/78 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-18 History; 3D-19 Envelope ops; 3D-71 FIT_PLANE command; 3D-82 Spec: 3D-69 cloud CRS (provisional); 3D-47 SC: 3D view port + host.
+**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-18 History; 3D-19 Envelope ops; 3D-71 FIT_PLANE command; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D82["✅ 📐 3D-82 Spec: 3D-69 cloud CRS (provisional)"]
     D102["✅ 🧪 3D-102 Eval rows in a reserved id range"]
     D83["✅ 📐 3D-83 ADR-0007 note: projections"]
     D101["✅ 📐 3D-101 Spec: 3D-20 installations"]
@@ -99,7 +100,6 @@ flowchart TB
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
-    D82["🚧 📐 3D-82 Spec: 3D-69 cloud CRS (provisional)"]
     D15["🚧 ⚙️ 3D-15 Core edits"]
     D17["🚧 ⚙️ 3D-17 Repair ops"]
     D18["🚧 ⚙️ 3D-18 History"]
@@ -277,10 +277,10 @@ flowchart TB
 Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script ([method §4](metrics/README.md#4-forecast-etc-and-tuning)).
 
 ```
-Forecast 2026-11-25 (ledger n=40 WPs, classes with n>=5: L kernel n=5, M kernel n=5, M tooling n=5, S spec n=8; baseline d7c472d 2026-11-19)
-Known remaining: $237 / $285 over 29 rows   Overhead k=1.08   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $256 / $308
-Throughput: 57.2 rows/week (6 d), 422 model min/week; waiting share 99 %   Accuracy: TBD (no finished WP with est0 and actual)
+Forecast 2026-11-26 (ledger n=40 WPs, classes with n>=5: L kernel n=5, M kernel n=5, M tooling n=5, S spec n=8; baseline d7c472d 2026-11-19)
+Known remaining: $234 / $281 over 28 rows   Overhead k=1.08   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $253 / $303
+Throughput: 50.0 rows/week (7 d), 362 model min/week; waiting share 99 %   Accuracy: TBD (no finished WP with est0 and actual)
 ```
 
 ## Work-package status
@@ -346,7 +346,7 @@ Throughput: 57.2 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
 | 3D-78 | Single writer and provisional ids: push guard hook, `check:docs` provisional-id rule for rows and ADRs, generated BACKLOG overview, skills `merge-wp` / `wp-session` / `task-intake` and AGENTS.md §3/§6 updated (D-178..D-180) | here | tools, .claude, AGENTS.md | 30, 05 | G0 | M | tooling | done (D-202; merged into base, no PR) |
 | 3D-79 | Service image licence check: no GPL, LGPL or AGPL in the kernel service container image (3D-ADR-0004 decision 3, D-181) | here | service image, tools/check-arch | 23, 67 | G5 | M | tooling | proposed |
 | 3D-81 | Bug: public `worldToLocal` / `localToWorld` use a plain translation; wrong for geographic and north-first projected buildings (found by 3D-69) | here | geo-model3d (index) | 09, 32, 69 | G1 | S | kernel | done (D-205; merged into base, no PR) |
-| 3D-82 | Spec update for 3D-69: §4a cloud reprojection (`createCrsMapping`, `DATUM_MISMATCH` / `NO_PROJECTION`), §9 cloud CRS from the dataset descriptor (D-164, D-165, D-196..D-198) | here | docs/specs | 69, 72 | G4 | S | spec | in-progress (D-267; wp/3d-82-spec-cloud-crs) |
+| 3D-82 | Spec update for 3D-69: §4a cloud reprojection (`createCrsMapping`, `DATUM_MISMATCH` / `NO_PROJECTION`), §9 cloud CRS from the dataset descriptor (D-164, D-165, D-196..D-198) | here | docs/specs | 69, 72 | G4 | S | spec | done (D-279; merged into base, no PR) |
 | 3D-83 | 3D-ADR-0007 note: the CRS table also holds PROJ proj-strings of projected CRSs, verified against PROJ (D-198); needs owner approval (D-18) | here | docs/decisions/adr | 69 | G4 | S | spec | done (D-274; merged into base, no PR) |
 | 3D-84 | BACKLOG graph icons: status and work-type icon per WP node, generated by `check-docs --fix` (D-208) | here | tools, docs | 73, 76 | G0 | M | tooling | done (D-224; merged into base, no PR) |
 | 3D-85 | Session cost ledger, per-row estimates, backlog forecast (ETC) and independent efficiency review: rules in AGENTS.md §7.7/§7.9 and the skills (D-236..D-240) | here | AGENTS.md, .claude/skills, docs/metrics, docs/templates | 00 | G0 | S | tooling | done (D-244; merged into base, no PR) |
