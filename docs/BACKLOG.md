@@ -21,16 +21,16 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 62 / 99 |
+| Done | 62 / 100 |
 | Review | 1 |
 | In progress | 5 |
 | Ready | 4 |
-| Proposed (waiting for the owner to set `ready`) | 26 |
+| Proposed (waiting for the owner to set `ready`) | 27 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 62/99 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 62/100 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-114 Resize roof, regularize footprint; 3D-116 F-53 metrics; 3D-117 Validator: overhang end caps; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
+**Running:** 3D-114 Resize roof, align wall; 3D-116 F-53 metrics; 3D-117 Validator: overhang end caps; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -119,7 +119,8 @@ flowchart TB
     D106["💡 ⚙️ 3D-106 ROTATE_FACE"]
     D107["💡 📐 3D-107 ADR: shared plane"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
-    D114["🚧 ⚙️ 3D-114 Resize roof, regularize footprint"]
+    D114["🚧 ⚙️ 3D-114 Resize roof, align wall"]
+    D114_1["💡 ⚙️ 3D-114.1 Regularize footprint"]
     D115["💡 ⚙️ 3D-115 Parametric dependencies"]
     D116["🚧 ⚙️ 3D-116 F-53 metrics"]
     D117["🚧 ⚙️ 3D-117 Validator: overhang end caps"]
@@ -260,6 +261,8 @@ flowchart TB
   D12 --> D20
   D13 --> D20
   D19 --> D114
+  D19 --> D114_1
+  D114 --> D114_1
   D15 --> D115
   D17 --> D115
   D18 --> D115
@@ -354,7 +357,8 @@ Throughput: 62.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | kernel | done (D-290; merged into base, no PR; D-284..D-289) |
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | done (D-296; merged into base, no PR; D-291..D-295) |
 | 3D-19 | Envelope: `TRANSLATE_BUILDING`, `ROTATE_BUILDING`, `SET_HEIGHT`, `SET_OVERHANG` (split D-340, D-346) | here | geo-model3d/ops | 14 | G4 | L | kernel | done (D-349; merged into base, no PR; D-336..D-348; GT-14 pending 3D-117, D-347) |
-| 3D-114 | `RESIZE_ROOF` (lower envelope, D-339), `REGULARIZE_FOOTPRINT` (algorithm to be stated first, D-340), `ALIGN_WALL` (D-346) | here | geo-model3d/ops | 19 | G4 | M | kernel | in-progress (D-376; wp/3d-114-footprint-ops) |
+| 3D-114 | `RESIZE_ROOF` (lower envelope, D-339) and `ALIGN_WALL` (D-346); `REGULARIZE_FOOTPRINT` split to 3D-114.1 (D-3D114-1) | here | geo-model3d/ops | 19 | G4 | M | kernel | in-progress (D-376; wp/3d-114-footprint-ops) |
+| 3D-114.1 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-3D114-1) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | proposed |
 | 3D-115 | Parametric geometry dependency management: parent / dependent surfaces (overhangs, soffits, dormers), rebuild after a parent edit in the pipeline (D-341) | here | geo-model3d/ops, docs/decisions/adr | 15, 17, 18, 19 | G4 | L | kernel | proposed |
 | 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | in-progress (D-368; wp/3d-116-metrics) |
 | 3D-117 | Validator: minimum face area of dependent overhang end caps measured with their coplanar end wall; degeneracy and minimum-area policy separated (D-343; unblocks GT-14) | here | geo-model3d/validate | 12, 19 | G4 | S | kernel | in-progress (D-376; wp/3d-117-overhang-cap-area) |
@@ -875,23 +879,53 @@ Throughput: 62.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
   refusal reasons and the descriptor; `npm run check` passes.
 - Decisions: D-92, D-93, D-164, D-165, D-196..D-198  Open: -
 
-### 3D-114 RESIZE_ROOF, REGULARIZE_FOOTPRINT, ALIGN_WALL
-- Source: owner, chat, 2026-11-26 (3D-19 split, D-340); `ALIGN_WALL` added by D-346.
-- Goal: the footprint-and-extent operations of spec §10.10 r2, r3, r4 split off 3D-19.
-- `ALIGN_WALL` (r4): wall plane to the vertical plane through `referenceLine`, adjoining roof and floor re-derived,
-  footprint record updated; with an overhang on that wall or its end walls the caps / soffit follow (overhang.js).
+### 3D-114 RESIZE_ROOF, ALIGN_WALL
+- Source: owner, chat, 2026-11-26 (3D-19 split, D-340); `ALIGN_WALL` added by D-346; `REGULARIZE_FOOTPRINT` split off to
+  3D-114.1 by the owner (D-3D114-1).
+- Goal: the roof-extent and wall-alignment operations of spec §10.10 r2, r4 split off 3D-19.
 - Scope in: `RESIZE_ROOF` as D-339 (lower envelope of the roof planes clipped to `roofOutline`; FLAT, SHED, GABLE,
-  HIP, PYRAMID by geometry; convex outlines; `moveWallFootprint` both ways; tests RR-01..RR-15). `REGULARIZE_FOOTPRINT`:
-  first a stated algorithm (straightening within `footprintAngleTolDeg`, noise vertices, courtyards, optional
-  orthogonalisation), footprint change rules, admissible deformation limits and acceptance criteria, agreed with the
-  owner; then the code. Scope out: roofs that are not their lower envelope (valleys), dormers, corner rules of overhangs.
-- Accept: RR-01..RR-15 pass; the lower-envelope precondition refuses a valley roof without change; `REGULARIZE_FOOTPRINT`
-  acceptance lines are written and owner-approved before its code; `npm run check`, golden pass.
-- Accept (`ALIGN_WALL`, to be confirmed by the owner): the wall plane lies on the vertical plane through `referenceLine`;
-  adjoining roof and floor are re-derived; the footprint record is updated; an overhang on that wall or its end walls
-  follows; PREVIEW == COMMIT, refusal leaves the model unchanged, UNDO / REDO restore it.
-- Decisions: D-336, D-339, D-340, D-346, D-367, D-372, D-212..D-218  Open: none for `RESIZE_ROOF`; `REGULARIZE_FOOTPRINT` algorithm (to ask)
+  HIP, PYRAMID by geometry; convex outlines; `moveWallFootprint` both ways; out-of-V1 roofs refused `INVALID_TOPOLOGY`,
+  D-3D114-3). `ALIGN_WALL` (r4): wall plane to the vertical plane through `referenceLine`, roof planes kept, vertices
+  re-derived, eave height recomputed (D-3D114-4); footprint record updated; an overhang on that wall keeps its width in
+  plan, caps / soffit follow. Scope out: `REGULARIZE_FOOTPRINT` (3D-114.1), roofs that are not their lower envelope
+  (valleys), dormers, corner rules of overhangs.
+- Accept (`RESIZE_ROOF`, owner-approved D-3D114-2; `true` / `false` = `moveWallFootprint`):
+  RR-01 FLAT, true, larger outline: footprint = outline, roof plane kept, `VALID_SOLID`;
+  RR-02 SHED, true, larger; RR-03 GABLE, true, longer along the ridge: planes (normal, d) kept, ridge longer;
+  RR-04 GABLE, true, narrower across the ridge: eaves higher up the slopes; RR-05 HIP, true, larger;
+  RR-06 PYRAMID, true, larger;
+  RR-07 GABLE, false, outline = footprint + 0.5 m at both eaves == two `SET_OVERHANG` 0.5 m (same faces and numbers, D-336);
+  RR-08 false, existing 0.5 m overhang: outline at 0.8 m widens it, outline = footprint removes it;
+  RR-09 true on a roof with an overhang: the overhang faces are removed, footprint = outline;
+  RR-10 false, outline beyond a gable end or a hip corner -> `INVALID_TOPOLOGY` (D-344), model unchanged;
+  RR-11 outline non-convex, self-intersecting, or (false) not covering the footprint -> `INVALID_GEOMETRY`, model unchanged;
+  RR-12 valley roof (lower envelope differs from the current roof) -> `INVALID_TOPOLOGY`, model unchanged;
+  RR-13 roof with a dormer or chimney -> `INVALID_TOPOLOGY`, model unchanged;
+  RR-14 hard constraint on a removed entity -> `CONSTRAINT_CONFLICT` (D-213);
+  RR-15 PREVIEW == COMMIT, inverse patch, UNDO / REDO; outline equal to the current one -> no-op.
+- Accept (`ALIGN_WALL`, owner-approved D-3D114-4): the wall plane lies on the vertical plane through `referenceLine`;
+  roof planes unchanged, adjoining roof and floor re-derived, eave height recomputed; the footprint record is updated;
+  an overhang on that wall or its end walls follows at the same width in plan; refusals: not a `WallSurface` or a
+  degenerate line -> `INVALID_PAYLOAD`; self-intersecting footprint or an edge < `minEdgeLengthM` -> `INVALID_GEOMETRY`;
+  roof topology change -> `INVALID_TOPOLOGY`; hard constraint -> `CONSTRAINT_CONFLICT`; PREVIEW == COMMIT, refusal
+  leaves the model unchanged, UNDO / REDO restore it.
+- Accept (both): D-372 respected; `npm run check`, golden, bench pass; files <= 300 lines.
+- Decisions: D-08, D-13, D-212..D-218, D-336, D-337, D-339, D-344, D-346, D-367, D-372, D-3D114-1..4  Open: none
 - Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
+- Re-estimate 2026-11-26: $7.72 (p80 $8.96), ~13 min model time; basis: M kernel n=6 (scope narrowed by D-3D114-1)
+
+### 3D-114.1 REGULARIZE_FOOTPRINT
+- Source: 3D-114 session 2026-11-26, owner dialog (D-3D114-1); D-340.
+- Goal: `REGULARIZE_FOOTPRINT` (spec §10.10 r3; v0.2 F-39) with an algorithm agreed with the owner before any code.
+- Scope in: first, in a dialog with the owner: the algorithm (straightening within `footprintAngleTolDeg`, noise
+  vertices, courtyards kept unless `allowCourtyardRemoval`, optional `orthogonalize`), footprint change rules, admissible
+  deformation limits, the change report and acceptance lines; then the code on the `executeCommand` pipeline, walls as
+  the vertical planes of the new footprint edges, roof planes kept (D-08). Scope out: new contract fields without the
+  owner (D-18).
+- Accept: the acceptance lines agreed in the dialog (recorded as decisions before the code); PREVIEW == COMMIT, refusal
+  leaves the model unchanged, inverse patch, UNDO / REDO; D-372 respected; `npm run check`, golden pass.
+- Decisions: D-08, D-13, D-340, D-3D114-1  Open: the algorithm (owner dialog in its own session)
+- Estimate: $7.72 (p80 $8.96), ~13 min model time; basis: M kernel n=6
 
 ### 3D-115 Parametric geometry dependency management
 - Source: owner, chat, 2026-11-26 (D-341); found in 3D-19: an overhang strip is a dependent face, but operations of
