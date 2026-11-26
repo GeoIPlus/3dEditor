@@ -25,7 +25,7 @@ export function offsetFace(draft, payload, ctx) {
     if (fixed.length === 0) return refuse('INVALID_PAYLOAD', [f.id], `${payload.fixedMode} does not apply: the face has no ${role} edge`);
     if (s !== 0) return refuse('CONSTRAINT_CONFLICT', [f.id, ...fixed], `${payload.fixedMode}: a parallel offset moves every edge of the plane`);
   }
-  if (s === 0) return { ok: true, noop: true };
+  if (s === 0) return { ok: true, noChange: true };
   const plane = { normal: [...f.supportPlane.normal], d: f.supportPlane.d - s };
   return { ok: true, movableFaceIds: [f.id], conditions: pinPlane(draft, f.id, /** @type {any} */ (plane), 'OFFSET_FACE:plane', ctx.tol.planarTolM) };
 }

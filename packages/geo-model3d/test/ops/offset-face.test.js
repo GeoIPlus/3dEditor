@@ -42,5 +42,19 @@ describe('OFFSET_FACE', () => {
     expect(out.model.vertices).toEqual(g.vertices);
   });
 
-  it.todo('zero offset: version unchanged, no journal entry (owner decision 04) - needs the pipeline change asked in D-3D15-9');
+  it('zero offset: COMMITTED, version unchanged, no journal entry, input model returned (owner decision 04)', () => {
+    const g = gable();
+    const out = exec(g, 'OFFSET_FACE', { faceId: 'f-roof-s', offsetM: 0, fixedMode: 'NONE' });
+    expect(out.result.status).toBe('COMMITTED');
+    expect(out.result.modelVersion).toBe(g.version);
+    expect(out.journal).toBeUndefined();
+    expect(out.model).toBe(g);
+  });
+
+  it('a tiny non-zero offset is not treated as zero (owner decision 04: no tolerance)', () => {
+    const g = gable();
+    const out = exec(g, 'OFFSET_FACE', { faceId: 'f-roof-s', offsetM: 1e-6, fixedMode: 'NONE' });
+    expect(out.result.modelVersion).toBe(g.version + 1);
+    expect(out.journal).toBeDefined();
+  });
 });

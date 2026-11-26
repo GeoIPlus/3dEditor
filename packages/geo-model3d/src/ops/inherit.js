@@ -111,3 +111,10 @@ export function inheritOnMerge(draft, rebind) {
   if (rejected.length > 0) return refuse('CONSTRAINT_CONFLICT', rejected, 'hard relation between faces that the merge makes one (D-3D15-2)');
   return { ok: true, lineage };
 }
+
+/**
+ * Constraint lineage as result warnings until the contract lineage can carry constraint ids (D-3D15-9: `brep`
+ * accepts only face, half-edge and vertex ids in `topologyLineage.mapped`). One line per old constraint id.
+ * @param {Record<string, string[]>} lineage
+ */
+export const lineageWarnings = (lineage) => Object.keys(lineage).sort().map((k) => `constraint lineage: ${k} -> ${lineage[k].join(', ')}`);

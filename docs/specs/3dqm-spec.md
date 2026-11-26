@@ -582,7 +582,7 @@ semantic inputs listed per operation below; their schema names are 3D-06's.
 | `IMPORT_BUILDING` | 3D-10 | §6 | - |
 | `REPLACE_ROOF`, `REBUILD_ENVELOPE` | 3D-14 | v0.2 C.1-C.4, §11.4 | R-01..R-04 |
 | `MOVE_VERTEX`, `MOVE_EDGE` | 3D-15 | §10.4 (C.11 restated) | movable incident faces |
-| `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | 3D-15 | v0.2 F-31, C.5, C.6, C.10, §13.5 | `MERGE_COPLANAR`, `MERGE_REFIT`; `REMOVE_COLLINEAR_VERTICES`, `ALIGN_SELECTED_EDGES` |
+| `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES` (3D-15); `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` (3D-15.1, D-3D15-9) | 3D-15 | v0.2 F-31, C.5, C.6, C.10, §13.5 | `MERGE_COPLANAR`, `MERGE_REFIT`; `REMOVE_COLLINEAR_VERTICES`, `ALIGN_SELECTED_EDGES` |
 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | 3D-16 | v0.2 C.7, F-34 | `KEEP_EAVES` / `KEEP_RIDGE` / `KEEP_PLANES` / `FIT_MEASUREMENTS` |
 | `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | 3D-17 | v0.2 C.14, §10.5 (C.8 restated), C.9 | `COPY_NEIGHBOR_PLANE`, `FIT_MEASUREMENTS`, `FILL_PLANAR`; `KEEP_PRIMARY_PLANE`, `REFIT_SELECTED_PLANES` |
 | `UNDO`, `REDO`, `RESTORE_BASELINE` | 3D-18 | v0.2 §13.6 | empty payload for `UNDO` / `REDO` |
@@ -730,6 +730,12 @@ intersection line (`TRIM_FACE`); face + new boundary within its plane (`EXTEND_F
    Q-18.
 7. `TRIM_FACE` removes part of a face along an actual intersection line; `EXTEND_FACE` moves a boundary within the face's
    support plane; both check the resulting topology (v0.2 §13.5).
+8. Decided in 3D-15 (provisional ids, D-38): `INSERT_ROOF_BREAK` payload `newPlane` + required `movingSidePoint`, the
+   part holding it gets `newPlane`, the other keeps plane and face id (D-3D15-1); constraint policy on split / merge
+   (D-3D15-2); split ids (D-3D15-3); `OFFSET_FACE` fixedMode interlock, `INVALID_PAYLOAD` when the mode does not apply
+   (D-3D15-4), offset 0 a valid empty operation without a new version (D-3D15-5); cut domain and codes (D-3D15-6);
+   `MERGE_FACES` survivor, dissolve, REFIT (D-3D15-7); refusal codes (D-3D15-8). `REMOVE_DETAILS`, `STRAIGHTEN_FACE`,
+   `TRIM_FACE`, `EXTEND_FACE` move to row 3D-15.1, rule 7 of §10.1 applies to them (D-3D15-9).
 
 **Accept:**
 - Accept: GT-08 (§13).

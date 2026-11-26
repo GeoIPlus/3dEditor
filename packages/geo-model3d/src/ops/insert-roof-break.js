@@ -6,7 +6,7 @@
 import { dot, scale, sub } from '../brep/index.js';
 import { refuse } from './errors.js';
 import { cutFace } from './face-cut.js';
-import { inheritOnSplit } from './inherit.js';
+import { inheritOnSplit, lineageWarnings } from './inherit.js';
 import { pinPlane, unitPlane } from './plane-pin.js';
 import { isV3 } from './split-face.js';
 import { assignRoles } from './topology.js';
@@ -32,7 +32,7 @@ export function insertRoofBreak(draft, payload, ctx) {
     if (!(Math.abs(dot(plane.normal, q) + plane.d) <= tol.planarTolM)) return refuse('INVALID_GEOMETRY', [f.id], 'break line is not on newPlane');
   }
   if (!(Math.abs(dot(old.normal, m) + old.d) <= tol.planarTolM)) return refuse('INVALID_GEOMETRY', [f.id], 'movingSidePoint is not on the face');
-  const cut = cutFace(draft, f.id, line, tol, ctx.ids, (_first, side) => {
+  const cut = cutFace(draft, f.id, /** @type {any} */ (line), tol, ctx.ids, (_first, side) => {
     const t = side(m);
     if (!(Math.abs(t) > tol.topologySnapTolM)) return refuse('INVALID_GEOMETRY', [f.id], 'movingSidePoint is on the break line');
     return t > 0 ? -1 : 1; // the face id stays with the fixed part
@@ -45,7 +45,7 @@ export function insertRoofBreak(draft, payload, ctx) {
   const inh = inheritOnSplit(draft, { faceId: f.id, newFaceId: cut.newFaceId, splitEdges: cut.splitEdges, planeMoves: true }, ctx.ids);
   if (!inh.ok) return inh;
   return {
-    ok: true, mapped: cut.mapped, constraintLineage: inh.lineage, movableFaceIds: [cut.newFaceId],
+    ok: true, mapped: cut.mapped, warnings: lineageWarnings(inh.lineage), movableFaceIds: [cut.newFaceId],
     conditions: pinPlane(draft, cut.newFaceId, plane, 'INSERT_ROOF_BREAK:newPlane', tol.planarTolM),
   };
 }

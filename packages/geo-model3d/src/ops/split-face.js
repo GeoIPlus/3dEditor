@@ -3,7 +3,7 @@
 // outer half-edge keeps the face id; lineage face -> [face, new]. Constraints follow the policy table (inherit.js).
 import { refuse } from './errors.js';
 import { cutFace } from './face-cut.js';
-import { inheritOnSplit } from './inherit.js';
+import { inheritOnSplit, lineageWarnings } from './inherit.js';
 
 /** @param {any} p @returns {p is [number, number, number]} */
 export const isV3 = (p) => Array.isArray(p) && p.length === 3 && p.every(Number.isFinite);
@@ -19,5 +19,5 @@ export function splitFace(draft, payload, ctx) {
   if (!cut.ok) return cut;
   const inh = inheritOnSplit(draft, { faceId: f.id, newFaceId: cut.newFaceId, splitEdges: cut.splitEdges, planeMoves: false }, ctx.ids);
   if (!inh.ok) return inh;
-  return { ok: true, mapped: cut.mapped, constraintLineage: inh.lineage };
+  return { ok: true, mapped: cut.mapped, warnings: lineageWarnings(inh.lineage) };
 }

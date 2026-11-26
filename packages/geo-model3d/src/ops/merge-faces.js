@@ -10,7 +10,7 @@ import { cross, dot, norm } from '../brep/index.js';
 import { builders } from '../solve/index.js';
 import { refuse } from './errors.js';
 import { linkLoop, loopEdges } from './face-cut.js';
-import { inheritOnMerge } from './inherit.js';
+import { inheritOnMerge, lineageWarnings } from './inherit.js';
 
 /** @typedef {import('../brep/types.js').BuildingModel} BuildingModel */
 
@@ -30,12 +30,14 @@ function newell(m, hes) {
 /** @type {import('./registry.js').Operation['run']} */
 export function mergeFaces(draft, payload, ctx) {
   const tol = ctx.tol;
+  /** @type {string[]} */
   const faceIds = payload?.faceIds;
   if (!Array.isArray(faceIds) || faceIds.length < 2 || new Set(faceIds).size !== faceIds.length) return refuse('INVALID_PAYLOAD', [], 'faceIds');
   const unknown = faceIds.filter((f) => !draft.faces[f]);
   if (unknown.length > 0) return refuse('INVALID_PAYLOAD', unknown, 'unknown faceIds');
   if (payload.mode !== 'MERGE_COPLANAR' && payload.mode !== 'MERGE_REFIT') return refuse('INVALID_PAYLOAD', [], 'mode');
   const survivor = faceIds[0];
+  /** @type {Set<string>} */
   const S = new Set(faceIds);
   const kinds = new Set(faceIds.map((f) => draft.faces[f].surfaceKind));
   const surfaceKind = payload.surfaceKind ?? (kinds.size === 1 ? [...kinds][0] : null);
@@ -103,28 +105,28 @@ export function mergeFaces(draft, payload, ctx) {
   /** @type {Map<string, string>} */
   const rebind = new Map(faceIds.filter((f) => f !== survivor).map((f) => [f, survivor]));
   for (const f of faceIds) if (f !== survivor) delete draft.faces[f];
-  for (const c of [...Object.values(draft.shells), ...Object.values(draft.roofComponents)]) c.faceIds = c.faceIds.filter((f) => f === survivor || !S.has(f));
+  for (const c of [...Object.values(draft.shells), ...Object.values(draft.roofComponents)]) c.faceIds = c.faceIds.filter((/** @type {string} */ f) => f === survivor || !S.has(f));
   for (const h of internal) delete draft.halfEdges[h];
   for (const v of inner) delete draft.vertices[v];
   for (const v of Object.values(draft.vertices)) {
-    if (v.definingFaceIds.some((f) => S.has(f))) v.definingFaceIds = [...new Set(v.definingFaceIds.map((f) => (S.has(f) ? survivor : f)))];
+    if (v.definingFaceIds.some((/** @type {string} */ f) => S.has(f))) v.definingFaceIds = [...new Set(v.definingFaceIds.map((/** @type {string} */ f) => (S.has(f) ? survivor : f)))];
   }
   const dissolved = dissolve(draft, survivor, joints, mapped, rebind, tol.planarTolM);
 
   const inh = inheritOnMerge(draft, rebind);
   if (!inh.ok) return inh;
   const removed = new Set([...internal, ...inner, ...dissolved]);
-  if (payload.mode === 'MERGE_COPLANAR') return { ok: true, mapped, removed, constraintLineage: inh.lineage };
+  if (payload.mode === 'MERGE_COPLANAR') return { ok: true, mapped, removed, warnings: lineageWarnings(inh.lineage) };
   const movable = payload.movableFaceIds;
-  if (!Array.isArray(movable) || movable.some((f) => typeof f !== 'string' || !(draft.faces[f] || S.has(f)))) return refuse('INVALID_PAYLOAD', [], 'movableFaceIds');
-  const movableFaceIds = [...new Set(movable.map((f) => (S.has(f) ? survivor : f)))].sort();
+  if (!Array.isArray(movable) || movable.some((/** @type {any} */ f) => typeof f !== 'string' || !(draft.faces[f] || S.has(f)))) return refuse('INVALID_PAYLOAD', [], 'movableFaceIds');
+  const movableFaceIds = [...new Set(movable.map((/** @type {string} */ f) => (S.has(f) ? survivor : f)))].sort();
   // the merged plane is fitted to its vertices: one soft point-on-plane term of weight 1 per vertex at its position
   // before the merge (the weighted refit of v0.2 C.6 with equal weights, as O1); without a term `solve` keeps the plane
   const b = builders(draft);
   const verts = [...new Set(Object.values(draft.halfEdges).filter((h) => h.faceId === survivor).map((h) => h.startVertexId))].sort();
   const conditions = !movableFaceIds.includes(survivor) ? [] : verts.map((v) =>
     b.pointOnPlane({ id: 'MERGE_REFIT:fit', kind: 'MERGE_REFIT', hard: false, weight: 1, entityIds: [survivor, v] }, survivor, draft.vertices[v].p, 0));
-  return { ok: true, mapped, removed, constraintLineage: inh.lineage, movableFaceIds, conditions };
+  return { ok: true, mapped, removed, warnings: lineageWarnings(inh.lineage), movableFaceIds, conditions };
 }
 
 /**

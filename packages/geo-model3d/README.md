@@ -122,6 +122,29 @@ the accepted payload (four slopes required); only the axis tie gives UNDERCONSTR
 Lineage (D-212): kept ids are not in `mapped`; old roof faces map to all new roof faces; new half-edges and
 vertices without a predecessor are only in the patch `added` (the owner's reading of spec §10.1 Accept 3).
 
+## Core edits (3D-15)
+Operations on the pipeline (spec §10.4, §10.6; D-3D15-1..10), one entry each in `ops/registry.js`:
+
+| File | Kind | Plane terms |
+|---|---|---|
+| `move.js` | `MOVE_VERTEX`, `MOVE_EDGE` | target points as hard point-on-plane conditions on movable incident planes; fixed incident planes checked (`CONSTRAINT_CONFLICT`); a hard FIXED_POINT on the moved vertex checked directly (GT-10); O1 for free degrees; only an explicit vertex (fewer than three planes) takes the target as position |
+| `offset-face.js` | `OFFSET_FACE` | `d_new = d - offsetM`, pinned by three hard points (`plane-pin.js`); fixedMode interlock (D-3D15-4); offset 0 -> `noChange` (D-3D15-5) |
+| `face-cut.js`, `split-face.js` | `SPLIT_FACE` | cut topology (D-3D15-3, D-3D15-6), both parts on the same plane, no vertex moved |
+| `insert-roof-break.js` | `INSERT_ROOF_BREAK` | same cut; the part holding `movingSidePoint` gets `newPlane` (pinned), neighbours re-derived (D-3D15-1) |
+| `merge-faces.js` | `MERGE_FACES` | union loops, joint vertices dissolved, COPLANAR / REFIT (D-3D15-7) |
+| `inherit.js` | - | constraint policy table on split / merge (D-3D15-2); lineage in `warnings` (D-3D15-10) |
+
+Constraint policy (D-3D15-2): split - plane kinds COPY_TO_CHILDREN (PRESERVE_ORIGINAL on a roof break), edge kinds
+copied to the new fragment of a crossed edge (FIXED_LINE / FIXED_EAVE / FIXED_RIDGE: TRANSFORM_PARAMETERS, the copy
+fixes the fragment's points), vertex kinds PRESERVE_ORIGINAL, TBD / unknown kinds REJECT_IF_UNSUPPORTED; merge -
+REBIND_TO_CHILD, duplicates and trivial self relations dropped, hard PERPENDICULAR of one face refused. No kind uses
+REBIND_TO_CHILD on a split: no constraint kind names a sub-region of a face.
+
+Limitations (first version, D-3D15-6): a cut must cross the outer ring exactly twice and no hole; constraint lineage is
+text in `warnings`, not in `topologyLineage` (D-3D15-10); after `INSERT_ROOF_BREAK` only the chord's edge role is
+recomputed (other roles kept); `FIXED_POINT` without `target` and the FIXED_* edge kinds fix the positions the model
+holds before the operation (compile reads the draft before the solve).
+
 ## Internal modules
 ### solve (3D-13)
 
