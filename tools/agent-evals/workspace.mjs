@@ -1,9 +1,10 @@
 // Throwaway start state for one eval run (3D-28): a local clone of the ref under test, a local bare
 // `origin` so pushes are harmless and observable, an optional per-task setup, and the end-state snapshot.
 import { execFileSync } from 'node:child_process';
-import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { checkDocs } from '../check-docs.mjs';
 
 /**
  * @param {string} cwd
@@ -25,6 +26,29 @@ export const BASE_BRANCH = 'claude/keen-pascal-u7z2gk';
 
 /** Paths removed from the clone before the run. */
 export const HIDDEN = ['docs/agent-evals', 'tools/agent-evals', '.agent/checkpoints/3D-28.md'];
+export const STUB_TEXT = '# Not available\n\nThis file is not part of this checkout.\n';
+
+/**
+ * Remove the hidden paths, then put a neutral stub where a document links into them, so `check:docs` stays green
+ * in the start state (BACKLOG and DECISIONS link to eval results). Stubs carry no eval content.
+ * @param {string} work
+ * @returns {string[]} stub paths, relative to `work`
+ */
+export function hide(work) {
+  for (const p of HIDDEN) rmSync(join(work, p), { recursive: true, force: true });
+  const stubs = new Set();
+  for (const problem of checkDocs(work, { allowProvisional: true })) {
+    const m = /^(.+?):\d+: broken link (.+)$/.exec(problem);
+    if (!m) continue;
+    const abs = resolve(work, dirname(m[1]), m[2].replace(/[#?].*$/, ''));
+    const rel = relative(work, abs);
+    if (!HIDDEN.some((h) => rel === h || rel.startsWith(`${h}/`))) continue;
+    mkdirSync(dirname(abs), { recursive: true });
+    writeFileSync(abs, STUB_TEXT);
+    stubs.add(rel);
+  }
+  return [...stubs];
+}
 
 /**
  * @typedef {{dir: string, work: string, remote: string, startSha: string, branch: string, startRefs: Map<string,string>}} Workspace
@@ -53,7 +77,7 @@ export async function prepare(o) {
   if (existsSync(nm)) symlinkSync(nm, join(work, 'node_modules'));
   appendFileSync(join(work, '.git', 'info', 'exclude'), '\nnode_modules\n');
   // The agent must not see the tasks, rubrics or runner it is graded by.
-  for (const p of HIDDEN) rmSync(join(work, p), { recursive: true, force: true });
+  hide(work);
   const setupFile = join(o.taskDir, 'setup.mjs');
   if (existsSync(setupFile)) {
     const mod = await import(pathToFileURL(setupFile).href);

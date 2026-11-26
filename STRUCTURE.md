@@ -31,8 +31,8 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
   src/import/                                            CityJSON -> canonical model, RTG roles, baseline, report (3D-10); state + issues from validate via index.js (3D-75)
   src/export/                                            canonical model -> CityJSON, opaque data from the input (3D-11)
   src/solve/                                            constraint solver, conflict sets, free degrees (3D-13, 3D-ADR-0005)
-  src/ops/                                               command pipeline (executeCommand), REPLACE_ROOF, REBUILD_ENVELOPE (3D-14); one module per OperationKind (3D-15..3D-21)
-  test/brep/ test/cloud/ test/validate/ test/import/ test/solve/ test/export/ test/ops/ test/golden/   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22; GT-I1..GT-I3: 3D-10; GT-I4: 3D-11; GT-01..GT-05: 3D-14; world-local: 3D-81)
+  src/ops/                                               command pipeline (executeCommand), REPLACE_ROOF, REBUILD_ENVELOPE (3D-14); MOVE_VERTEX, MOVE_EDGE, OFFSET_FACE, SPLIT_FACE, INSERT_ROOF_BREAK, MERGE_FACES + face cut and constraint inheritance (3D-15); ALIGN_RIDGE, ALIGN_EAVE, MATCH_ELEVATIONS (3D-16); ADD_CHIMNEY, ADD_DORMER, REMOVE_INSTALLATION + installation shell (3D-20); one module per OperationKind (3D-15..3D-21)
+  test/brep/ test/cloud/ test/validate/ test/import/ test/solve/ test/export/ test/ops/ test/golden/   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22; GT-I1..GT-I3: 3D-10; GT-I4: 3D-11; GT-01..GT-05: 3D-14; GT-08, GT-10: 3D-15; GT-07, GT-09: 3D-16; GT-17, GT-18: 3D-20; world-local: 3D-81)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
   src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007); cloud CRS mapping, box (3D-69)
 services/kernel/       (3D-22, 3D-23) host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003
@@ -48,6 +48,7 @@ tools/check-docs-run.mjs             `npm run check:docs`: strict on every branc
 tools/check-docs-{md,ids,overview}.mjs  check-docs parts: markdown helpers, id rules (D-179), generated overview (D-180) (3D-78)
 tools/check-docs-decisions.mjs       check-docs DECISIONS.md tables: id tables, status-row shape and ids, rows outside the tables (D-167) (3D-76)
 tools/base-branch.mjs                base branch name and coordinator marker (D-178) (3D-78)
+tools/budget{,-parse,-calc}.mjs      backlog forecast: ledger + BACKLOG -> "Budget and forecast" block, `--fix` (D-236) (3D-86)
 tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09)
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json (row id rule per source), pins/<repo>/ snapshots + provenance (3D-05; first pin pins/shared, 3D-73)
 tools/bench/                         `npm run bench`: server PREVIEW latency bench, scenes, rig fingerprint, spike tests (3D-08, 3D-ADR-0006); `solve-cost.mjs` (3D-13)

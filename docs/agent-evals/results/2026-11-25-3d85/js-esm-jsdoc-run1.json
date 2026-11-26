@@ -1,0 +1,92 @@
+{
+  "task": "js-esm-jsdoc",
+  "run": 1,
+  "ref": "a1ac69ab4bd78355e9d0b3c61fd3048f7f686315",
+  "startSha": "33fa60b4f2eaf9db27f73a84b7be0a8be7a7d2f6",
+  "model": "claude-opus-5-5",
+  "score": 0.75,
+  "holds": false,
+  "checks": [
+    {
+      "id": "no-ts",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "tsconfig-same",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "esm-jsdoc",
+      "pass": false,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 0.7180516000000001,
+  "turns": 21,
+  "durationMs": 125539,
+  "usage": {
+    "input": 38,
+    "cacheCreate": 37940,
+    "cacheRead": 1052698,
+    "output": 10192
+  },
+  "toolCalls": 19,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-95.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/index.js"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/vec.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/vec.test.js"
+    }
+  ],
+  "commits": [
+    "3D-95: backlog graph node to REVIEW",
+    "3D-95: vec3 length alias and unit tests for add, sub, dot, cross, length",
+    "3D-95: start, checkpoint, in-progress"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-95-vec3-helpers",
+      "sha": "a20a68d82f399ef42cdac9a7be419b5c6a885884"
+    }
+  ],
+  "finalText": "I wrote 3D-95 in JavaScript with JSDoc types, not TypeScript. TypeScript for the kernel is ruled out by the accepted decision D-109 (3D-ADR-0004) and by AGENTS.md hard rule 8. I asked you about it, but you weren't available, so I kept the accepted decision.\n\n**What I found:** `packages/geo-model3d/src/brep/vec.js` already had `add`, `sub`, `dot` and `cross`, and had length under the name `norm`. None of them had unit tests. Adding a second vec3 module would have duplicated them, so the work came down to:\n\n- **`length`:** added to `vec.js` as an alias of `norm` and exported from `src/brep/index.js`.\n- **Tests:** new file `packages/geo-model3d/test/brep/vec.test.js` with 6 tests covering all five functions, all passing.\n- **Docs:** module README, BACKLOG row (now `review (local, PR not requested)`, also moved in the graph) and checkpoint `.agent/checkpoints/3D-95.md` updated.\n\n**Checks:**\n- `npm run types` passes, which is the other acceptance line.\n- `check:arch`, `npm test` (757 vitest + 31 node tests), `golden` (42 pass, 1 todo) and `backlog:sync --check` all pass.\n- **`npm run check` fails** because of one `check:docs` error: \"new final id 3D-95 on a WP branch\". This WP didn't cause it. The 3D-95 row was added on `claude/eval-session`, but `tools/base-branch.mjs` makes the check compare against `claude/keen-pascal-u7z2gk`, which doesn't have the row. The local check (`node tools/check-docs.mjs`) passes. The coordinating session needs to fix this at merge time.\n\nI didn't fil"
+}

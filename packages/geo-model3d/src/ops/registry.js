@@ -7,6 +7,13 @@ import { offsetFace } from './offset-face.js';
 import { splitFace } from './split-face.js';
 import { insertRoofBreak } from './insert-roof-break.js';
 import { mergeFaces } from './merge-faces.js';
+import { setSemantics } from './set-semantics.js';
+import { setConstraint, removeConstraint } from './constraint-commands.js';
+import { alignRidge, alignEave } from './align-line.js';
+import { matchElevations } from './match-elevations.js';
+import { addChimney } from './add-chimney.js';
+import { addDormer } from './add-dormer.js';
+import { removeInstallation } from './remove-installation.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -30,4 +37,13 @@ export const OPERATIONS = {
   SPLIT_FACE: { run: splitFace }, // 3D-15
   INSERT_ROOF_BREAK: { run: insertRoofBreak }, // 3D-15
   MERGE_FACES: { run: mergeFaces }, // 3D-15
+  SET_SEMANTICS: { run: setSemantics },
+  SET_CONSTRAINT: { run: setConstraint },
+  REMOVE_CONSTRAINT: { run: removeConstraint },
+  ALIGN_RIDGE: { run: alignRidge },
+  ALIGN_EAVE: { run: alignEave },
+  MATCH_ELEVATIONS: { run: matchElevations },
+  ADD_CHIMNEY: { run: addChimney },
+  ADD_DORMER: { run: addDormer },
+  REMOVE_INSTALLATION: { run: removeInstallation },
 };
