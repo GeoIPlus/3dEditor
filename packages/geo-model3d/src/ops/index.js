@@ -2,6 +2,7 @@
 // (spec §3). Imports brep, solve, validate only (3D-ADR-0002 C1 rule 2). `index.js` of the package exposes
 // `executeCommand` (D-119) on top of `runPipeline`.
 export { runPipeline } from './pipeline.js';
+export { runHistory, historyStacks, HISTORY_KINDS } from './history.js';
 export { OPERATIONS, OPERATION_KINDS } from './registry.js';
 export { contractError, HTTP_STATUS } from './errors.js';
 export { freshIds } from './ids.js';

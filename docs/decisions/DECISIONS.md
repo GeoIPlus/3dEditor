@@ -304,6 +304,12 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-288 | Amends D-287: the majority of an `ALIGN_JUNCTION` node is the set of its planes that pass through the vertex's current position within `planarTolM` (with four planes every three meet somewhere, so "largest set meeting in one point" does not single out the outlier); the rest of D-287 stands (fixed planes in the set, spread <= `topologySnapTolM`, else the least-squares fallback). GT-19: only the east slope moves | Owner, dialog, 2026-11-26 (3D-17) |
 | D-289 | GT-19 "Fixed" variant: `solve` gets the reading hard `ON_PLANE` `[face]` + `Plane` target = fixed face plane (amends D-169) through intake row 3D-103; 3D-17 hands over with that golden assertion as `todo` | Owner, dialog, 2026-11-26 (3D-17) |
 | D-290 | 3D-17 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-284..D-289, row 3D-103; Q-36 closed by D-284. The WP branch carried committed conflict markers in STRUCTURE.md and DECISIONS.md from its base merge; resolved at this merge from the base side plus the 3D-17 content | Owner, WP session 3D-17, 2026-11-26 |
+| D-291 | `UNDO`, `REDO`, `RESTORE_BASELINE` pass no commit gate ("no new errors", spec §3 r4): the target content is restored exactly (v0.2 F.9); `state` comes from validation for the command's `targetState` (VALID_SOLID if no ERROR, else DRAFT_SOLID; APPROVED is left as by any edit) | Owner, dialog, 2026-11-26 (3D-18) |
+| D-292 | Spec §10.9 r5 (D-69) in the kernel: the service passes the authenticated `actorId`; the kernel replays the journal into undo / redo stacks and refuses `FORBIDDEN` (403) when the stack top was committed by another actor; nothing is skipped (stack order). No contract change | Owner, dialog, 2026-11-26 (3D-18) |
+| D-293 | `UNDO` with nothing to undo, `REDO` with nothing to redo, `RESTORE_BASELINE` on a model equal to the baseline -> `INVALID_PAYLOAD` (400), no new version (as D-229) | Owner, dialog, 2026-11-26 (3D-18) |
+| D-294 | `RESTORE_BASELINE` is a normal history entry: it can be undone and it clears the redo stack | Owner, dialog, 2026-11-26 (3D-18) |
+| D-295 | 3D-18 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-18-history | Owner, chat, 2026-11-26 (3D-18) |
+| D-296 | 3D-18 merged into the base by the coordinating session (D-178); provisional ids became D-291..D-295 | Owner, WP session 3D-18, 2026-11-26 |
 
 ## Open questions
 

@@ -1,6 +1,6 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21), `FIT_PLANE` command (3D-71), repair `REMOVE_FACE` / `HEAL_HOLE` / `FIT_TO_SHARED_EDGE` / `ALIGN_JUNCTION` (3D-17); other operations follow their rows (3D-15..3D-21, 3D-71)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21), `FIT_PLANE` command (3D-71), `UNDO` / `REDO` / `RESTORE_BASELINE` (3D-18), repair `REMOVE_FACE` / `HEAL_HOLE` / `FIT_TO_SHARED_EDGE` / `ALIGN_JUNCTION` (3D-17); other operations follow their rows (3D-15..3D-21, 3D-71)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
@@ -62,6 +62,9 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   `REPLACE_ROOF`, `REBUILD_ENVELOPE`; see `ops` below. `points` (3D-71): for `FIT_PLANE` the points the service read
   for the payload `selection` (Float64Array, x y z, LOCAL; services/kernel `commandPoints`); `index.js` gives the op a
   `planeFit(selection)` closure over `cloud.fitPlane`, so `ops` does not import `cloud` (module DAG unchanged).
+  History kinds `UNDO`, `REDO`, `RESTORE_BASELINE` (3D-18) take
+  `options.history = { journal, baseline?, actorId }`: the building's journal entries oldest first (with `actorId`), the
+  immutable baseline, the authenticated actor; see `ops` history below.
 
 ## Modules (`src/`, DAG of 3D-ADR-0002 C1 rule 2, enforced by `check:arch`)
 `brep` (3D-09) is the leaf every other module imports. Its surface (`src/brep/index.js`), for kernel modules only:
@@ -96,7 +99,18 @@ same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 ru
 
 ## `ops` (3D-14; spec §3, §10; imports `brep`, `solve`, `validate`)
 Surface `src/ops/index.js`: `runPipeline` (wrapped by `executeCommand`), `OPERATIONS` / `OPERATION_KINDS` (registry; rows
-3D-15..3D-21, 3D-71 add `{ run(draft, payload, ctx) }` entries), `contractError`, `freshIds`.
+3D-15..3D-21, 3D-71 add `{ run(draft, payload, ctx) }` entries), `contractError`, `freshIds`, `runHistory` /
+`historyStacks` / `HISTORY_KINDS` (3D-18).
+
+History (`history.js`, 3D-18, spec §10.9; D-291..D-294): not a registry entry - `executeCommand` dispatches the three kinds
+to `runHistory`, because they need the journal and baseline and pass no commit gate. Same envelope checks and output
+shape as the pipeline; payload must be `{}`. `historyStacks(journal)` replays: an edit (incl. `RESTORE_BASELINE`) pushes
+and clears redo, `UNDO` moves the top to redo, `REDO` back; a journal that does not replay or end at the model version
+-> `INTERNAL` (service fault). UNDO applies the top entry's `inversePatch` (original ids), REDO its `forwardPatch`,
+RESTORE_BASELINE the baseline (entities and model-level members); each a new version; `state` and shell `isClosed`
+from validation. Refusals: empty stack / already baseline `INVALID_PAYLOAD`; top of another actor `FORBIDDEN` (with its
+`commandId`). Idempotency on `commandId` is the service's (3D-23, D-68). Limitation: model-level members other than
+`state` are not restored by UNDO / REDO, a patch cannot carry them (Q-31).
 
 Pipeline (`pipeline.js`, spec §3 r1-r6; the op context carries `actorId` and the optional `planeFit`, 3D-71): kernel envelope checks -> `brep.transact` (isolated copy): operation module
 builds the candidate in plane terms -> constraint step (`constraints.js`: hard constraint on a removed entity ->
@@ -284,6 +298,10 @@ run spread ~0.1 ms).
   covers Face / HalfEdge / Vtx; model-level changes (`state`, `frame`) are reported beside the patch (Q-31).
 
 ## Tests and golden tests
+- `test/ops/history.test.js`, `test/golden/gt-12.golden.test.js` (3D-18): GT-12 Undo 520 m3 with every entity equal
+  to the input version, Redo 540 m3, versions 1 -> 4; RESTORE_BASELINE after GT-07 equal to the baseline, version + 1,
+  undoable, clears redo; stack order, redo cleared by an edit, foreign stack top FORBIDDEN, empty stack and
+  already-baseline INVALID_PAYLOAD, PREVIEW = COMMIT patch, deterministic output, UNDO into DRAFT_SOLID without gate.
 - `test/brep/` (geometry, model, transaction; 3D-09): every golden input sound, on its planes, byte-identical
   `save -> load -> save`; broken copies reported; patches and lineage valid against the contracts (Ajv).
 - `test/validate/` (3D-12): every code x {DRAFT_SOLID, VALID_SOLID} (Accept 1), lineage "new" via real transactions

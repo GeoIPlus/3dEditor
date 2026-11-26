@@ -8,7 +8,7 @@ import { importCityObject } from './import/index.js';
 import { createCrsMapping, createMetricFrame, mappedBoxBounds } from './crs/index.js';
 import { exportModel } from './export/index.js';
 import { runChecks, toIssues } from './validate/index.js';
-import { runPipeline } from './ops/index.js';
+import { runPipeline, runHistory, HISTORY_KINDS } from './ops/index.js';
 import { fitPlane as fitCloudPlane } from './cloud/index.js';
 
 export { P4_CANARY } from './canary.js';
@@ -148,17 +148,20 @@ export const exportBuilding = (input) => exportModel(input);
  * given version. Pure and synchronous: the service checks authorisation and idempotency, stores versions, journal
  * and PREVIEW results (3D-23). Output: contract `command-result`; on COMMIT also the new model and the journal-entry
  * data. A refusal returns the input model object unchanged (spec §3 r2). Heights of a WORLD command and WORLD point
- * measurements are mapped through the building frame as import builds it (D-215, D-217).
+ * measurements are mapped through the building frame as import builds it (D-215, D-217). `UNDO`, `REDO`,
+ * `RESTORE_BASELINE` (3D-18, spec §10.9) take `options.history`: the building's journal entries oldest first, the
+ * baseline and the authenticated `actorId` (D-291..D-294).
  * @param {import('./brep/types.js').BuildingModel} model contract `building-model`, the current version
  * @param {any} command contract `command`
  * `FIT_PLANE` (3D-71): `options.points` are the points the service read for the payload `selection` (Float64Array,
  * x y z interleaved, LOCAL frame; `readLocalPoints` of services/kernel); the fit runs on them with the profile.
- * @param {Omit<import('./ops/pipeline.js').PipelineOptions, 'heightToLocal' | 'pointToLocal' | 'planeFit'> & { points?: Float64Array }} options
- *   `toleranceProfile`, `clock`, optional `ids`, `previewId`, `previousIssues`, `points`
+ * @param {Omit<import('./ops/pipeline.js').PipelineOptions, 'heightToLocal' | 'pointToLocal' | 'planeFit'> & { points?: Float64Array, history?: import('./ops/history.js').HistoryInput }} options
+ *   `toleranceProfile`, `clock`, optional `ids`, `previewId`, `previousIssues`, `points`, `history`
  * @returns {{ result: any, model: import('./brep/types.js').BuildingModel, journal?: any, modelLevel?: string[] }}
  */
 export function executeCommand(model, command, options) {
-  const { points, ...rest } = options;
+  if (HISTORY_KINDS.has(command.operation)) return runHistory(model, command, options);
+  const { points, history, ...rest } = options;
   /** @type {((p: V3) => V3) | null} */
   let toLocal = null;
   const local = (/** @type {V3} */ p) => {

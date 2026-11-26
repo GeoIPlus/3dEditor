@@ -21,20 +21,21 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 52 / 79 |
+| Done | 53 / 79 |
 | Review | 1 |
-| In progress | 4 |
+| In progress | 3 |
 | Ready | 3 |
 | Proposed (waiting for the owner to set `ready`) | 18 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 52/79 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 53/79 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-15 Core edits; 3D-18 History; 3D-19 Envelope ops; 3D-47 SC: 3D view port + host.
+**Running:** 3D-15 Core edits; 3D-19 Envelope ops; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D18["✅ ⚙️ 3D-18 History"]
     D17["✅ ⚙️ 3D-17 Repair ops"]
     D71["✅ ⚙️ 3D-71 FIT_PLANE command"]
     D82["✅ 📐 3D-82 Spec: 3D-69 cloud CRS (provisional)"]
@@ -104,7 +105,6 @@ flowchart TB
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D103["💡 ⚙️ 3D-103 ON_PLANE fixed plane"]
     D15["🚧 ⚙️ 3D-15 Core edits"]
-    D18["🚧 ⚙️ 3D-18 History"]
     D19["🚧 ⚙️ 3D-19 Envelope ops"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
@@ -280,10 +280,10 @@ flowchart TB
 Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script ([method §4](metrics/README.md#4-forecast-etc-and-tuning)).
 
 ```
-Forecast 2026-11-26 (ledger n=40 WPs, classes with n>=5: L kernel n=5, M kernel n=5, M tooling n=5, S spec n=8; baseline d7c472d 2026-11-19)
-Known remaining: $216 / $262 over 27 rows   Overhead k=1.08   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $233 / $283
-Throughput: 52.0 rows/week (7 d), 362 model min/week; waiting share 99 %   Accuracy: TBD (no finished WP with est0 and actual)
+Forecast 2026-11-26 (ledger n=41 WPs, classes with n>=5: L kernel n=5, M kernel n=6, M tooling n=5, S spec n=8; baseline d7c472d 2026-11-19)
+Known remaining: $202 / $250 over 26 rows   Overhead k=1.08   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $218 / $269
+Throughput: 53.0 rows/week (7 d), 370 model min/week; waiting share 99 %   Accuracy: TBD (no finished WP with est0 and actual)
 ```
 
 ## Work-package status
@@ -308,7 +308,7 @@ Throughput: 52.0 rows/week (7 d), 362 model min/week; waiting share 99 %   Accur
 | 3D-15 | Core edits: `MOVE_VERTEX`, `MOVE_EDGE`, `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | here | geo-model3d/ops | 13 | G3 | L | kernel | in-progress (D-220; wp/3d-15-core-edits) |
 | 3D-16 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | here | geo-model3d/ops | 13 | G3 | M | kernel | done (D-235; merged into base, no PR; D-231..D-234) |
 | 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | kernel | done (D-290; merged into base, no PR; D-284..D-289) |
-| 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | in-progress (D-267; wp/3d-18-history) |
+| 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | done (D-296; merged into base, no PR; D-291..D-295) |
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | kernel | in-progress (D-267; wp/3d-19-envelope-ops) |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | done (D-263; merged into base, no PR; D-256..D-262) |
 | 3D-100 | Installation size from the cloud: `measurementId` of `ADD_CHIMNEY` / `ADD_DORMER` (v0.3 §6 F-36, F-37) | here | geo-model3d/ops | 20, 71 | G4 | M | kernel | proposed |
