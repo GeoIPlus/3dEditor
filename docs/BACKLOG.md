@@ -23,14 +23,14 @@ Updated: 2026-11-26
 |---|---:|
 | Done | 67 / 102 |
 | Review | 0 |
-| In progress | 3 |
+| In progress | 4 |
 | Ready | 7 |
-| Proposed (waiting for the owner to set `ready`) | 24 |
+| Proposed (waiting for the owner to set `ready`) | 23 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 67/102 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-116 F-53 metrics; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
+**Running:** 3D-126 Regularize footprint; 3D-116 F-53 metrics; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -123,7 +123,7 @@ flowchart TB
     D106["💡 ⚙️ 3D-106 ROTATE_FACE"]
     D107["💡 📐 3D-107 ADR: shared plane"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
-    D126["💡 ⚙️ 3D-126 Regularize footprint"]
+    D126["🚧 ⚙️ 3D-126 Regularize footprint"]
     D124["💡 ⚙️ 3D-124 Overhang rebuild"]
     D125["💡 ⚙️ 3D-125 Dormers follow roof"]
     D116["🚧 ⚙️ 3D-116 F-53 metrics"]
@@ -366,7 +366,7 @@ Throughput: 67.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | done (D-296; merged into base, no PR; D-291..D-295) |
 | 3D-19 | Envelope: `TRANSLATE_BUILDING`, `ROTATE_BUILDING`, `SET_HEIGHT`, `SET_OVERHANG` (split D-340, D-346) | here | geo-model3d/ops | 14 | G4 | L | kernel | done (D-349; merged into base, no PR; D-336..D-348; GT-14 pending 3D-117, D-347) |
 | 3D-114 | `RESIZE_ROOF` (lower envelope, D-339) and `ALIGN_WALL` (D-346); `REGULARIZE_FOOTPRINT` split to 3D-126 (D-389) | here | geo-model3d/ops | 19 | G4 | M | kernel | done (D-394; merged into base, no PR; D-389..D-393) |
-| 3D-126 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-389) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | proposed |
+| 3D-126 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-389) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | in-progress (D-395; wp/3d-114-1-regularize-footprint) |
 | 3D-115 | Parametric geometry dependency management: ADR 3D-ADR-0010 (parent / dependent links, detach - solve - rebuild in the pipeline; split D-386) | here | docs/decisions/adr | 15, 17, 18, 19 | G4 | S | spec | done (D-388; ADR 3D-ADR-0010; merged into base, no PR; D-383..D-387) |
 | 3D-124 | Overhang rebuild after a parent change: detach - solve - rebuild in the pipeline, replacing the D-367 refusal (D-384, D-385) | here | geo-model3d/ops | 115, 114, 117, 19, 120 | G4 | M | kernel | proposed |
 | 3D-125 | Dormers follow their roof face; explicit `components` record in the model contract (D-383) | here | geo-model3d/ops, contracts/model3d | 124, 20 | G4 | M | kernel | proposed |
