@@ -16,6 +16,8 @@ export { validateModel } from './validate/index.js';
 // Point cloud (3D-22, spec §9; names D-119): `fitPlane(points, selection, profile)`, `deviationStats(model, points,
 // request, profile)`; points are a Float64Array, x y z interleaved, LOCAL frame. Both return `{ result }` or `{ error }`.
 export { fitPlane, deviationStats } from './cloud/index.js';
+/** F-53 geometric metrics, contract `metrics-result`, read-only (3D-116, D-3D116-1). */
+export { computeMetrics } from './metrics/index.js';
 
 /** @typedef {import('./brep/frame.js').CoordinateFrame} CoordinateFrame */
 /** @typedef {[number, number, number]} V3 */
