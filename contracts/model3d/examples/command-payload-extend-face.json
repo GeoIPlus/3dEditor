@@ -1,6 +1,37 @@
 {
-  "valid": [{ "faceId": "f-1", "edgeId": "he-1", "targetLine": [[0, -0.5, 4.6], [10, -0.5, 4.6]] }],
+  "valid": [
+    {
+      "faceId": "f-roof-1",
+      "edgeId": "he-1",
+      "targetFaceId": "f-roof-2"
+    }
+  ],
   "invalid": [
-    { "why": "missing boundary edge", "instance": { "faceId": "f-1", "targetLine": [[0, -0.5, 4.6], [10, -0.5, 4.6]] } }
+    {
+      "why": "missing boundary edge",
+      "instance": {
+        "faceId": "f-roof-1",
+        "targetFaceId": "f-roof-2"
+      }
+    },
+    {
+      "why": "free target line replaced by targetFaceId (D-324)",
+      "instance": {
+        "faceId": "f-roof-1",
+        "edgeId": "he-1",
+        "targetLine": [
+          [
+            0,
+            4,
+            8
+          ],
+          [
+            10,
+            4,
+            8
+          ]
+        ]
+      }
+    }
   ]
 }

@@ -1,6 +1,45 @@
 {
-  "valid": [{ "faceId": "f-1", "trimLine": [[0, 2, 6.5], [10, 2, 6.5]], "keepPoint": [5, 1, 5.75] }],
+  "valid": [
+    {
+      "faceId": "f-roof-1",
+      "cuttingFaceId": "f-roof-2",
+      "keepPoint": [
+        5,
+        2,
+        6.5
+      ]
+    }
+  ],
   "invalid": [
-    { "why": "which part stays is missing", "instance": { "faceId": "f-1", "trimLine": [[0, 2, 6.5], [10, 2, 6.5]] } }
+    {
+      "why": "which part stays is missing",
+      "instance": {
+        "faceId": "f-roof-1",
+        "cuttingFaceId": "f-roof-2"
+      }
+    },
+    {
+      "why": "free trim line replaced by cuttingFaceId (D-322)",
+      "instance": {
+        "faceId": "f-roof-1",
+        "trimLine": [
+          [
+            0,
+            4,
+            8
+          ],
+          [
+            10,
+            4,
+            8
+          ]
+        ],
+        "keepPoint": [
+          5,
+          2,
+          6.5
+        ]
+      }
+    }
   ]
 }
