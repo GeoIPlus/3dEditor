@@ -20,7 +20,7 @@ export function metricsOf(model, profile = PROFILE) {
 export const EAVE = { s: 'he-f-roof-s-0', n: 'he-f-roof-n-0' };
 
 /**
- * Commit SET_OVERHANG as DRAFT_SOLID (VALID_SOLID needs 3D-117, D-343) and return the new model.
+ * Commit SET_OVERHANG as DRAFT_SOLID (keeps the PROVISIONAL cases independent of the validator) and return the new model.
  * @param {any} model @param {string[]} eaves @param {number} width
  */
 export function withOverhang(model, eaves, width) {

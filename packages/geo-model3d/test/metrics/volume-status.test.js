@@ -27,14 +27,13 @@ describe('FINAL and PROVISIONAL (VOL-01..VOL-05, VOL-12, VOL-14, VOL-20)', () =>
   it('VOL-02: APPROVED without issues -> FINAL', () => expect(status(withState(gableModel(), 'APPROVED'))).toBe('FINAL'));
   it('VOL-03: DRAFT_SOLID with a proven closed shell -> PROVISIONAL', () => expect(status(withState(gableModel(), 'DRAFT_SOLID'))).toBe('PROVISIONAL'));
 
-  it('VOL-04: GT-14 before 3D-117 -> DRAFT_SOLID, PROVISIONAL, 521.875 m3', () => {
+  it('VOL-04: GT-14 committed as DRAFT_SOLID -> PROVISIONAL, 521.875 m3 (the pre-3D-117 state)', () => {
     const r = metricsOf(envelopeRun('GT-14', { targetState: 'DRAFT_SOLID' }).commit.model);
     expect([r.state, r.volumeStatus]).toEqual(['DRAFT_SOLID', 'PROVISIONAL']);
     expect(r.geometricSolidVolumeM3).toBeCloseTo(521.875, 9);
   });
 
-  // BLOCKED_BY_VALIDATOR_DEPENDENCY 3D-117 (D-343), like CAP-01: turns red - to be switched to `it` - once 3D-117 is merged.
-  it.fails('VOL-05: GT-14 after 3D-117 -> VALID_SOLID, FINAL, 521.875 m3', () => {
+  it('VOL-05: GT-14 after 3D-117 -> VALID_SOLID, FINAL, 521.875 m3', () => {
     const r = metricsOf(envelopeRun('GT-14').commit.model);
     expect([r.state, r.volumeStatus]).toEqual(['VALID_SOLID', 'FINAL']);
     expect(r.geometricSolidVolumeM3).toBeCloseTo(521.875, 9);
@@ -111,8 +110,10 @@ describe('contract and read-only (VOL-16..VOL-19)', () => {
     expect([m.state, m.version]).toEqual(['DRAFT_SOLID', 2]);
   });
 
-  it('VOL-19: a stale VALID_SOLID label never gives FINAL (GT-14 relabelled -> PROVISIONAL; open shell -> N/A)', () => {
-    expect(status(withState(gt14(), 'VALID_SOLID'))).toBe('PROVISIONAL');
+  it('VOL-19: a stale VALID_SOLID label never gives FINAL (errors on the body -> PROVISIONAL; open shell -> N/A)', () => {
+    const tiny = withBody({ y0: [20, 0, 0], y1: [20.2, 0, 0], y2: [20, 0.2, 0], y3: [20, 0, 0.2] }); // DEGENERATE_FACE by policy
+    expect(withState(tiny, 'VALID_SOLID').state).toBe('VALID_SOLID');
+    expect(status(withState(tiny, 'VALID_SOLID'))).toBe('PROVISIONAL');
     const open = golden('GT-03');
     open.halfEdges['he-f-roof-s-2'].twinId = null; open.halfEdges['he-f-roof-n-2'].twinId = null;
     expect(status(withState(open, 'VALID_SOLID'))).toBe('NOT_AVAILABLE');

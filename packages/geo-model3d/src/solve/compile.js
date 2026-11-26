@@ -101,7 +101,10 @@ function kindConditions(model, b, c, tol) {
     case 'FIXED_POINT': {
       const v = model.vertices[ids[0]];
       const p = /** @type {P3} */ (Array.isArray(c.target) ? c.target : v.p);
-      return v.definingFaceIds.map((f) => b.pointOnPlane(t, f, p, tol.planarTolM));
+      const onPlanes = v.definingFaceIds.map((f) => b.pointOnPlane(t, f, p, tol.planarTolM));
+      // a DERIVED vertex is also checked where its planes put it (D-371); an EXPLICIT one (D-70, spec §4 r3) has
+      // no derived position
+      return v.positionMode === 'DERIVED' ? [...onPlanes, b.vertexAt(t, ids[0], p, tol.planarTolM)] : onPlanes;
     }
     case 'ON_PLANE':
       if (ids.length === 1) {

@@ -1,6 +1,6 @@
 // F-53 metrics through the public API on the golden cases (3D-116; v0.3 §12; spec §13; D-336, D-3D116-1..3): the
 // roof area and volume of `computeMetrics` equal the fixture's expected values and the test helpers' independent
-// computation (Newell, divergence theorem); GT-14 reproduces the D-336 reference as a PROVISIONAL result until 3D-117.
+// computation (Newell, divergence theorem); GT-14 reproduces the D-336 reference as FINAL (VALID_SOLID since 3D-117).
 import { describe, expect, it } from 'vitest';
 import { goldenRun as replaceRoofRun } from './replace-roof.golden.helpers.js';
 import { goldenRun as alignRun } from './align.golden.helpers.js';
@@ -29,10 +29,10 @@ describe('computeMetrics on the golden cases', () => {
     });
   }
 
-  it('GT-14 (DRAFT_SOLID until 3D-117): 80 / 90 / 112.5 / 12.5 / 10 m2, 520 / 1.875 / 521.875 m3, PROVISIONAL', () => {
-    const r = envelopeRun('GT-14', { targetState: 'DRAFT_SOLID' }), tol = r.expected.tolerance;
+  it('GT-14 (VALID_SOLID, 3D-117): 80 / 90 / 112.5 / 12.5 / 10 m2, 520 / 1.875 / 521.875 m3, FINAL', () => {
+    const r = envelopeRun('GT-14'), tol = r.expected.tolerance;
     const m = metricsOf(r.commit.model);
-    expect([m.state, m.volumeStatus]).toEqual(['DRAFT_SOLID', 'PROVISIONAL']);
+    expect([m.state, m.volumeStatus]).toEqual(['VALID_SOLID', 'FINAL']);
     const want = { footprintAreaM2: 80, roofPlanAreaM2: 90, roofSurfaceAreaM2: 112.5, overhangRoofAreaM2: 12.5, soffitAreaM2: 10,
       mainVolumeM3: 520, overhangVolumeM3: 1.875, geometricSolidVolumeM3: 521.875 };
     for (const [k, v] of Object.entries(want)) expect(Math.abs(m[k] - v), k).toBeLessThanOrEqual(k.endsWith('M3') ? tol.volumeM3 : tol.areaM2);

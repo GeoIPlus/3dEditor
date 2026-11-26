@@ -5,7 +5,8 @@
 - WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
   `robust-predicates` not adopted (D-118, D-150)
-- Spike: `spike/move-edge/` (3D-08), throwaway, not exported; see its [card](spike/move-edge/README.md)
+- Spike: the 3D-08 `spike/move-edge/` was removed by 3D-121 (D-357); `npm run bench` measures `executeCommand` through the
+  kernel service command API (3D-ADR-0006)
 - Third-party runtime code: `proj4` 2.23.0 (MIT; deps `mgrs` 1.0.0 MIT, `wkt-parser` 1.9.0 MIT), used by
   `src/crs/` only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0007-crs-transform.md), accepted D-125); `src/crs/epsg-table.json`
   generated from PROJ 9.8.1 `proj.db` (EPSG v12.029; EPSG terms of use: Q-43) and, since 3D-69, PROJ's proj-strings of the
@@ -93,7 +94,8 @@ Surface `src/validate/index.js` for kernel modules (`ops` uses `runChecks` and `
 | `codes.js` | one table code -> severity in DRAFT_SOLID / VALID_SOLID (spec §8 rule 4, D-77) + scope [A]; `DRAFT_SURFACE` -> draft column, `APPROVED` -> valid column (D-153) |
 | `modes.js` | `runChecks`: FAST_PREVIEW = local checks of the affected faces + one ring of neighbours [A]; COMMIT_VALIDATION = whole-model invariants, shell closure / orientation, self-intersection of the affected volume, everything with `fullSolid`; FINAL = full COMMIT + external port |
 | `structure.js` | open boundary (a one-face edge shorter than `minEdgeLengthM` is left to `DEGENERATE_EDGE`, D-156), non-manifold edge / vertex (fans), shell closure and connectivity; brep structural kinds -> codes [A] |
-| `geometry.js` | degenerate edge / face (`minEdgeLengthM`, `minFaceAreaM2`), non-planar face (`planarTolM`), ring orientation vs support-plane normal, shell orientation by signed volume, junctions |
+| `geometry.js` | degenerate edge / face (`minEdgeLengthM`, `minFaceAreaM2`; a verified overhang end cap is measured with its end wall, `caps.js`), non-planar face (`planarTolM`), ring orientation vs support-plane normal, shell orientation by signed volume, junctions |
+| `caps.js` | verified overhang end cap (3D-117, D-343): ten conditions C1..C10 (WallSurface + OVERHANG triangle, non-degenerate, manifold, neighbours end wall / strip / soffit, strip-soffit edge at the apex, vertical, coplanar with the end wall, no self-intersection or overlap, cap + wall area >= `minFaceAreaM2`); never on the tag alone, never throws |
 | `intersect.js`, `polygon.js` | ring self-intersection (x-sweep), face pairs piercing / overlapping in one shell; tolerance predicates only (D-150) |
 | `overlap.js` | `SOLID_OVERLAP` between bodies of one building (crossing faces, vertex deeper than `planarTolM`, centroid; winding number); never between buildings (D-89) |
 | `lineage.js` | "new" issues: an old issue's ids mapped through `topology-lineage` meet the new issue's ids -> not new [A]; `newErrors` = commit gate of spec §8 rule 7 |
@@ -122,7 +124,9 @@ from validation. Refusals: empty stack / already baseline `INVALID_PAYLOAD`; top
 Pipeline (`pipeline.js`, spec §3 r1-r6; the op context carries `actorId` and the optional `planeFit`, 3D-71): kernel envelope checks -> `brep.transact` (isolated copy): operation module
 builds the candidate in plane terms -> constraint step (`constraints.js`: hard constraint on a removed entity ->
 `CONSTRAINT_CONFLICT`, soft one dropped, D-213; model constraints compiled and solved for the operation's
-`movableFaceIds` / conditions, re-checked at the result) -> `runChecks` COMMIT_VALIDATION with full solid, shell
+`movableFaceIds` / conditions, re-checked at the result) -> overhang guard (`overhang-guard.js`, 3D-120, D-372:
+until 3D-115 a strip RoofSurface + OVERHANG that was coplanar with its parent roof face and is no longer within
+`planarTolM` of it -> `INVALID_TOPOLOGY`, model unchanged) -> `runChecks` COMMIT_VALIDATION with full solid, shell
 `isClosed` and `state` set (VALID_SOLID only for that target without ERROR, else DRAFT_SOLID [A]) - the same in
 PREVIEW and COMMIT, so both give one patch -> commit gate: ERROR issues new against the input version through the
 lineage refuse a VALID_SOLID target `INVALID_GEOMETRY` (v0.2 C.0 GEOMETRY_INVALID; spec §8 r7); the input version is
@@ -230,8 +234,18 @@ the slope solved, the overhang rebuilt at the same width with the same ids), `ov
 WallSurface + OVERHANG end caps in the gable planes; width carried by the soffit height and recovered from geometry;
 same width no-op, 0 removes, a new width keeps every id; unsupported junction -> INVALID_TOPOLOGY, D-344).
 Limitations: the eave vertices under an overhang have two independent planes and are EXPLICIT (spec §4 r3), so
-operations of other rows do not rebuild an overhang (3D-115); GT-14 caps are below `minFaceAreaM2` (3D-117);
-RESIZE_ROOF, REGULARIZE_FOOTPRINT: 3D-114; ALIGN_WALL: not assigned (owner).
+operations of other rows do not rebuild an overhang (3D-115); GT-14 caps are below `minFaceAreaM2` and pass as verified caps (3D-117, D-343);
+RESIZE_ROOF, ALIGN_WALL: 3D-114 (below); REGULARIZE_FOOTPRINT: 3D-126.
+
+**3D-114** (spec §10.10 r2, r4; D-339, D-346, D-389..D-392): `lower-envelope.js` (lower-envelope test of the roof
+planes - no valley edge, no plane below a roof vertex -, strictly convex outline, cells of the lower envelope over the
+outline by half-plane clipping, shared corners merged), `resize-roof.js` (RESIZE_ROOF: roof planes kept; V1 = roofs
+that are their lower envelope, else INVALID_TOPOLOGY, also with an installation; `moveWallFootprint` true: footprint :=
+outline, envelope rebuilt by `envelope.js` with the roof face ids kept, an overhang removed first; false: footprint kept,
+the outline must be the footprint offset edge by edge, each outward offset is a D-336 overhang of a structural eave,
+otherwise INVALID_TOPOLOGY, D-344), `align-wall.js` (ALIGN_WALL: only the wall plane changes, vertices re-derived, roof
+planes kept, eave height recomputed; footprint record follows; an overhang on the wall or its end wall is rebuilt at
+the same width with the same ids; a roof face turned over or a junction the kept planes no longer meet -> INVALID_TOPOLOGY).
 
 ## `metrics` (3D-116; v0.2 F-53, §16.5; imports `brep`, `validate`)
 | File | Contents |
@@ -270,7 +284,7 @@ Constraint kinds (D-169, amended by D-289; tolerance of the hard check D-170; [S
 
 | Kind | entityIds | target | Condition on the movable planes | Hard tolerance |
 |---|---|---|---|---|
-| FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point | `planarTolM` |
+| FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point; a DERIVED vertex is also re-checked at its derived position (check only, not a solver term; D-371, 3D-118) | `planarTolM` |
 | ON_PLANE [S] | [vertex, face] | V3 optional | the target point, else the derived vertex, lies on the face plane | `planarTolM` |
 | ON_PLANE [D-289] | [face] | Plane (required) | fixed face plane: unit normal equals the target's (scaled to unit, oriented like the stored face normal, D-312) and offset equals its `d` | normal `numericEpsilon`, offset `planarTolM` |
 | FIXED_LINE / FIXED_EAVE / FIXED_RIDGE [S] | [half-edge] | - | both incident planes contain the edge's current line; EAVE / RIDGE need that `edgeRole` | `planarTolM` |

@@ -187,6 +187,7 @@ CP assignment lease applies [D] (D-69; amends D-13 for this field). The profile 
 | 409 | `VERSION_CONFLICT` | The version changed |
 | 413 | `PAYLOAD_TOO_LARGE` | Limit exceeded (limit `TBD`, Q-24) |
 | 422 | `UNDERCONSTRAINED_GEOMETRY`, `CONSTRAINT_CONFLICT`, `INVALID_TOPOLOGY`, `INVALID_GEOMETRY`, `INVALID_MEASUREMENT`, `UNSUPPORTED_FOOTPRINT` | Domain refusals |
+| 422 | `INVALID_CRS` | The point cloud's CRS cannot be mapped to the building's (`details.crsReason`; §9 r7, r8; D-406) |
 | 429 | `RATE_LIMITED` | PREVIEW rate exceeded (server limit `TBD`, Q-24) |
 | 500 / 503 | `INTERNAL`, `UNAVAILABLE` | Failure; model unchanged |
 
@@ -374,7 +375,7 @@ the owner; same table as the [solve module card](../../packages/geo-model3d/READ
 
 | Kind | entityIds | target | Condition on the movable planes | Hard tolerance |
 |---|---|---|---|---|
-| FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point | `planarTolM` |
+| FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point; a DERIVED vertex is also re-checked at its derived position (check only, not a solver term; D-371, 3D-118) | `planarTolM` |
 | ON_PLANE [S] | [vertex, face] | V3 optional | the target point, else the derived vertex, lies on the face plane | `planarTolM` |
 | FIXED_LINE / FIXED_EAVE / FIXED_RIDGE [S] | [half-edge] | - | both incident planes contain the edge's current line; EAVE / RIDGE need that `edgeRole` | `planarTolM` |
 | EQUAL_Z [S] | [vertex, vertex, ...] or [vertex...] + number | number optional | derived z equal to the first vertex's (or to the number) | `zAlignTolM` |
@@ -897,7 +898,11 @@ constraints (v0.2 F-34).
 2. Never fit `L_new` and two points of a fixed opposite edge into one SVD plane and call planarity and Fixed satisfied
    (v0.2 C.7).
 3. `MATCH_ELEVATIONS`: an `EQUAL_Z` hard constraint (within `zAlignTolM`) on the derived vertices, solved for the movable
-   planes; Fixed/planarity conflict -> `CONSTRAINT_CONFLICT` (v0.2 F-34). Which planes are movable: Q-18.
+   planes; Fixed/planarity conflict -> `CONSTRAINT_CONFLICT` (v0.2 F-34). Movable planes (Q-18 closed by D-231): the
+   non-vertical roof faces that define the selected vertices; walls, ground and faces with a hard constraint stay
+   fixed; no solution -> `CONSTRAINT_CONFLICT`; the footprint never changes. A vertex with a hard `FIXED_POINT` and a
+   different `EQUAL_Z` target -> `CONSTRAINT_CONFLICT`, since the fixed point is also checked on the derived vertex
+   (§5 table, D-371).
 
 **Accept:**
 - Accept: GT-07, GT-09 (§13).
@@ -951,11 +956,42 @@ edges + overhang (`SET_OVERHANG`); new extent + `moveWallFootprint` (`RESIZE_ROO
 removal) (`REGULARIZE_FOOTPRINT`); wall + reference line (`ALIGN_WALL`); `BASE` or `EAVE` + selected eave + value
 (`SET_HEIGHT`); vector (`TRANSLATE_BUILDING`); angle (`ROTATE_BUILDING`).
 
+**Row split (D-340, D-346).** Row 3D-19 builds rules 1, 5, 6, 7 (`SET_OVERHANG`, `SET_HEIGHT`, `TRANSLATE_BUILDING`,
+`ROTATE_BUILDING`). Rules 2, 3, 4 (`RESIZE_ROOF`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`) belong to row 3D-114; the
+extent of `RESIZE_ROOF` is decided by D-339 (Q-37 closed) and is stated in rule 2 by that row.
+
 **Rules.**
 1. `SET_OVERHANG`: overhang in horizontal projection, metres; walls and footprint unchanged; roof planes are extended
    within their own support planes (`normal`, `d` unchanged) to the new eave line; the overhang part is tagged `OVERHANG`;
    a soffit is created only where the geometric profile needs it, never replaced by vertical `WallSurface`s
-   (v0.3 §6; v0.2 C.13, F-30). How the overhang closes the solid: Q-18.
+   (v0.3 §6; v0.2 C.13, F-30). Input: `eaveEdgeIds` (distinct; each the main-roof half-edge of a structural eave, edge
+   role `EAVE`, on a `RoofSurface` without `OVERHANG`) and `overhangM` (finite, `>= 0`); else `INVALID_PAYLOAD`. How
+   the overhang closes the solid (Q-18 closed by D-336, D-337):
+   1. Profile (D-336): the roof face keeps its plane and is split at the wall line; the outer strip is a `RoofSurface`
+      tagged `OVERHANG` in the roof's plane; a horizontal soffit (`OuterCeilingSurface` tagged `OVERHANG`) at the Z of
+      the outer edge closes it from below. The shell stays closed and manifold; the result is `VALID_SOLID` when the
+      input was and every check passes. The ground footprint is kept; wall support planes, normals, semantics and ids
+      are kept, wall polygon boundaries may change ("walls unchanged" means support planes unchanged); hard constraints
+      hold.
+   2. End caps (D-337): each vertical triangle that closes the overhang wedge at an eave end is its own face (own id,
+      `WallSurface` tagged `OVERHANG`, support plane equal to its end wall's), never merged into the end wall. The end
+      wall keeps id, plane and area; its boundary edges may be split by collinear vertices to avoid T-junctions. Export
+      writes `WallSurface` (Q-25 stays open).
+   3. Width (D-336, D-337): `overhangM` is the absolute width in plan, measured from the wall plane. The same width
+      again adds no faces; `0` removes strip, soffit and caps; another width rebuilds them with the same ids, without
+      duplicates. An existing overhang is found through topology and the `OVERHANG` tag and its width is recovered from
+      the geometry; `OVERHANG` faces that do not form the profile of 1.1 are refused with `INVALID_TOPOLOGY` (D-341).
+   4. Junctions (D-336, D-344): V1 supports an eave whose two ends each meet exactly one vertical end wall. A hip, a
+      valley or an eave end that does not meet exactly one end wall -> `INVALID_TOPOLOGY`; the whole command is
+      refused, model unchanged. A profile that cannot be built (eave not horizontal, roof not descending outward over
+      the eave, soffit at or below the next wall vertex) -> `INVALID_GEOMETRY` (code as D-214) [A].
+   5. Eave vertices under an overhang lie on two independent planes only (roof = strip, D-336; end wall = cap, D-337);
+      they are stored `EXPLICIT` under §4 rule 3 and become `DERIVED` again when the overhang is removed.
+   6. Dependent geometry (D-341, D-367, D-372, D-373): until row 3D-115 rebuilds dependent geometry, a command that
+      changes the support plane of a roof face carrying an `OVERHANG` strip is refused with `INVALID_TOPOLOGY`, model
+      unchanged. The check is one generic pipeline post-check after the solve, so it covers every plane-changing
+      operation of 3D-15, 3D-16, 3D-17 and 3D-105; `SET_OVERHANG` and `SET_HEIGHT EAVE` rebuild the overhang themselves
+      and pass. Full compatibility of overhangs with other rows' operations is not claimed before 3D-115 (D-341).
 2. `RESIZE_ROOF`: new roof extent; `moveWallFootprint` states explicitly whether walls follow; roof intersections and
    closure are restored; not identical to `SET_OVERHANG` (v0.2 F-29).
 3. `REGULARIZE_FOOTPRINT`: straighten within `footprintAngleTolDeg`, remove noise vertices; courtyards kept unless the
@@ -964,14 +1000,41 @@ removal) (`REGULARIZE_FOOTPRINT`); wall + reference line (`ALIGN_WALL`); `BASE` 
 4. `ALIGN_WALL`: the wall plane is set to the vertical plane through the reference line; adjoining roof and floor are
    rebuilt (v0.2 F-40; v0.3 §6).
 5. `SET_HEIGHT`: `BASE` (the ground plane moves to the new Z) or `EAVE` (the selected eave only, not the whole building);
-   volume and areas recomputed (v0.3 §6; v0.2 F-41). For `EAVE`, which roof planes change: Q-18.
+   volume and areas recomputed (v0.3 §6; v0.2 F-41). Input: `kind`, `z`, `eaveEdgeId` for `EAVE`. The building has
+   exactly one footprint, else `INVALID_TOPOLOGY` (D-218). Both kinds are hard `EQUAL_Z` targets solved for the planes
+   they declare movable; faces with a hard constraint stay fixed and a conflict is `CONSTRAINT_CONFLICT` (as D-231).
+   1. `BASE`: the ground faces of the building move to `z`; walls follow by re-derivation; a base at or above a wall
+      top or roof vertex -> `INVALID_GEOMETRY` (D-214) [A].
+   2. `EAVE` (Q-18 closed by D-338): the eave is the structural eave (roof plane ∩ wall plane), not the overhang's
+      outer edge (`eaveEdgeId` as an `eaveEdgeIds` entry of rule 1). Only the roof face of that eave moves (D-231,
+      D-110): its eave vertices keep XY and reach `z`, its other vertices (ridge) stay, else `CONSTRAINT_CONFLICT`. The
+      opposite slope, wall and ground planes keep their planes; neighbour boundaries are re-derived. An existing
+      overhang of that slope is rebuilt at the same width in plan with the same ids; one that cannot be rebuilt refuses
+      the whole command. An eave at or below the base -> `INVALID_GEOMETRY` (as D-214) [A]. Reference (D-338): GT-03,
+      south eave 5 -> 5.5: north eave 5, ridge 8, south slope 32.005383 deg, north 36.869898 deg, ground 80 m2, roof
+      97.169906 m2, volume 530 m3; with a 0.5 m overhang the outer edge is at Z 5.1875.
 6. `TRANSLATE_BUILDING`: rigid shift of all planes (`d` changes); fixed points and attached measurements move with the
-   building; a warning is written to the journal (v0.3 §6).
+   building; a warning is written to the journal (v0.3 §6). Input: `vector`. Measurements and constraints (Q-48 closed
+   by D-345):
+   1. Every `LOCAL` measurement of the model is attached and is moved once by the same isometry (ids, provenance and
+      metadata kept). `WORLD` measurements never change, also not by the inverse patch; the journal warning
+      "WORLD-frame measurements remain unchanged after the rigid building transformation" names them. No schema change.
+   2. Constraints are kept; fixed points and constraint targets (`FIXED_POINT` / `ON_PLANE` points, planes, `EQUAL_Z`
+      heights) move with the building, except a target tied to a `WORLD` measurement, which stays with that
+      measurement (D-345). A hard constraint that cannot be verified after the move (it needs a missing transform, or
+      its kind is still `TBD`, §5) is not taken as satisfied -> `CONSTRAINT_CONFLICT` (§5 rule 2), model unchanged.
+   3. A zero move is a no-op commit (D-345). No topology change: no id is added or removed.
 7. `ROTATE_BUILDING`: rotation about the vertical axis through the footprint centroid; same rule as 6 (v0.3 §6).
+   Input: `angleDeg`. The centroid is the area centroid of the building's own footprint (outer ring minus courtyards);
+   a footprint that is not unique -> `INVALID_TOPOLOGY` (D-218); rule 6.1..6.3 apply (D-345).
 
 **Accept:**
-- Accept: GT-14, GT-15, GT-16 (§13).
+- Accept: GT-14, GT-15, GT-16 (§13). GT-14 is pending row 3D-117: `SET_OVERHANG` counts as fully accepted only when
+  GT-14 passes with the standard profile after 3D-117 (D-343, D-347); 3D-19 is done with that one line open (D-348).
 - Accept: `ROTATE_BUILDING` by 90 deg keeps volume and areas and writes the journal warning.
+- Accept: `SET_HEIGHT EAVE` reproduces the D-338 reference values of rule 5.2.
+- Accept: a rigid move keeps `WORLD` measurements, moves `LOCAL` ones once and refuses an unverifiable hard constraint
+  (D-345).
 
 ### 10.11 Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION` (3D-20)
 
@@ -1196,11 +1259,14 @@ Details, with GT-13 moved from 3D-18 to 3D-23 (D-68).
 | GT-29 | GT-03 -> `EXTEND_FACE` S1, eave edge (shared with the south wall), `targetFaceId` S2 | `INVALID_TOPOLOGY`; version unchanged | `ops` (`EXTEND_FACE`) | 3D-105 |
 
 Reference checks (v0.3 §12): GT-04 roof volume 3·8·(2·10 + 2)/6 = 88; GT-07 slope rise 3.5 / run 4, volume
-400 + 10·8·3.5/2 = 540; GT-14 slope length 5 + 0.5·5/4 = 5.625; GT-21 0.10·cos(arctan 0.75) = 0.080.
+400 + 10·8·3.5/2 = 540; GT-14 slope length 5 + 0.5·5/4 = 5.625 (D-336 split: ground 80, roof plan 90, roof 112.5 of which overhang 12.5, soffit
+10 m2, edge Z 4.625, main volume 520, overhang 1.875, total 521.875 m3); GT-21 0.10·cos(arctan 0.75) = 0.080.
 
 Count: 33 tests (GT-I1..GT-I4, GT-01..GT-29); per module: `import` 3, `export` 1, `brep` 1, `cloud` 2, `ops` 22,
 `services/kernel` 4. GT-26..GT-29 come from spec §10.6 (3D-104, D-331), not v0.3 §12; their fixtures take this table as
-the source (3D-105, D-332).
+the source (3D-105, D-332). GT-14 is pending row 3D-117: its end caps (0.5 x 0.375 / 2 = 0.09375 m2) are below
+`minFaceAreaM2` 0.1 until the validator measures a verified overhang end cap together with its coplanar end wall; the
+caps stay separate faces and the expected values stay unchanged (D-343, D-347).
 
 ---
 
@@ -1209,12 +1275,13 @@ the source (3D-105, D-332).
 Final ids assigned at merge (D-38, D-71). Each is recorded in DECISIONS.md. Owner answers of
 2026-11-21 (dialog): D-68 (GT-13 -> 3D-23), D-69 (CP lease only, no own lock), D-70 (imported vertices
 explicit until edited). Owner answers of 2026-11-23 (dialog, 3D-06): D-76 (refusal codes), D-77 (severities). Owner answers of 2026-11-23 (dialog, 3D-22): D-130, D-131 (Q-24 narrowed),
-D-132 (Q-18 narrowed), D-135, D-136. Owner answers of 2026-11-25 (dialog, 3D-20): D-256..D-259, D-261 (Q-38 closed).
+D-132 (Q-18 narrowed), D-135, D-136. Owner answers of 2026-11-25 (dialog, 3D-20): D-256..D-259, D-261 (Q-38 closed). Owner answers of 2026-11-26
+(3D-19): D-336..D-339, D-345 (Q-18, Q-37, Q-48 closed).
 
 | Id | Question | Used in |
 |---|---|---|
 | Q-17 | **Closed by D-110** ([3D-ADR-0005](../decisions/adr/3D-ADR-0005-solver-approach.md) O1: keep the face's other vertices). Objective that fixes the remaining degrees of freedom of a movable plane (e.g. minimal displacement of its other derived vertices); the sources name only soft `MINIMIZE_DISPLACEMENT` | §5 r8, §10.4 r5, §10.5 r4, §10.7 r3, §10.8 r3 |
-| Q-18 | Operations given only as intent: movable planes of `MATCH_ELEVATIONS` and `SET_HEIGHT EAVE`; solid closure of `SET_OVERHANG` (soffit or not); collinearity tolerance of `STRAIGHTEN_FACE`. **Narrowed by D-132**: how the `FIT_PLANE` selection reaches the server (§10.12 r4) | §10.1 r7, §10.6 r6, §10.7 r3, §10.10 r1, r5 |
+| Q-18 | **Closed by D-336..D-338 with D-328, D-231 and D-132** (§10.10 r1, r5; §10.7 r3; §10.6 r6; §10.12 r4). Operations given only as intent: movable planes of `MATCH_ELEVATIONS` and `SET_HEIGHT EAVE`; solid closure of `SET_OVERHANG` (soffit or not); collinearity tolerance of `STRAIGHTEN_FACE`; how the `FIT_PLANE` selection reaches the server | §10.1 r7, §10.6 r6, §10.7 r3, §10.10 r1, r5 |
 | Q-19 | **Closed by D-70** (keep explicit until edit). Import: are vertex positions replaced by plane intersections (moves up to `planarTolM`, changes an unedited round trip of real data) or kept explicit until the first edit; how a `NON_PLANAR_FACE` keeps its vertices under the vertex-plane invariant | §6 r16 |
 | Q-20 | **Closed by D-76** (codes in §10.3 r6, §10.5 r5, §10.6 r2, §10.8 r2; no default maximum displacement). Refusal codes the sources leave open: `FIT_TO_SHARED_EDGE` over the displacement limit / no unique pairing; `HEAL_HOLE` mode impossible (GT-11); `SPLIT_FACE` errors; R-01 errors; and the default maximum displacement of `FIT_TO_SHARED_EDGE` | §2.4, §10.1 r6, §10.3 r6, §10.5, §10.6 r2 |
 | Q-21 | **Closed by D-77** (table of §8 r4). Severity by state of `SOLID_OVERLAP`, `UNDERCONSTRAINED_GEOMETRY`, `INVALID_MEASUREMENT`, `EXPORT_SCHEMA_ERROR`, `PRECISION_LOSS` | §8 r4 |
@@ -1222,6 +1289,7 @@ D-132 (Q-18 narrowed), D-135, D-136. Owner answers of 2026-11-25 (dialog, 3D-20)
 | Q-23 | **Closed by D-68** (GT-13 -> 3D-23). GT-13 (idempotency, `expectedVersion`) needs the service's store, but BACKLOG puts it on 3D-18 (module `geo-model3d`, no dependency on 3D-23) | §11, §13 |
 | Q-24 | Numbers without a source: server PREVIEW rate limit, payload size limit, PREVIEW expiry, `measurementTolM`. **Narrowed by D-130** (RANSAC parameters, §9 r3) and **D-131** (heatmap threshold required, no default, §9 r6) | §2.3, §2.4, §11 r5, r6 |
 | Q-25 | CityJSON mapping of `OVERHANG` faces on export | §7 r6 |
+| Q-48 | **Closed by D-345** (§10.10 r6, r7). `TRANSLATE_BUILDING` / `ROTATE_BUILDING`: which measurements are "attached" (v0.3 §6) and what happens with `WORLD`-frame ones | §10.10 r6, r7 |
 
 Contract open questions of 3D-06 (D-75; source and wording:
 [contracts/model3d](../../contracts/model3d/README.md#open-questions-provisional-ids-d-38)):
@@ -1239,7 +1307,7 @@ Contract open questions of 3D-06 (D-75; source and wording:
 | Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | 3D-104 (D-305) |
 | Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-104 (D-305) |
 | Q-36 | `HEAL_HOLE` "allowed corrections" (read as `maxDisplacementM`) | 3D-17 |
-| Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | 3D-19 |
+| Q-37 | **Closed by D-339** (lower envelope of the roof planes clipped to `roofOutline`; §10.10 r2 is stated by row 3D-114, D-340). Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | 3D-19 |
 | Q-38 | **Closed by D-256** (D-256..D-258; §10.11 r7..r9). Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
 | Q-39 | Whether the command carries `leaseRef` / `leaseEpoch` (§11 rule 11) or the service takes them from the session | 3D-23 |
 

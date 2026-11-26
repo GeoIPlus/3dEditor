@@ -7,7 +7,7 @@ import { LasFormatError } from './adapters/las-format.js';
 export const HTTP_STATUS = Object.freeze(/** @type {Record<string, number>} */ ({
   INVALID_PAYLOAD: 400, UNAUTHENTICATED: 401, FORBIDDEN: 403, NOT_FOUND: 404, VERSION_CONFLICT: 409,
   PAYLOAD_TOO_LARGE: 413, UNDERCONSTRAINED_GEOMETRY: 422, CONSTRAINT_CONFLICT: 422, INVALID_TOPOLOGY: 422,
-  INVALID_GEOMETRY: 422, INVALID_MEASUREMENT: 422, UNSUPPORTED_FOOTPRINT: 422, RATE_LIMITED: 429, INTERNAL: 500,
+  INVALID_GEOMETRY: 422, INVALID_MEASUREMENT: 422, UNSUPPORTED_FOOTPRINT: 422, INVALID_CRS: 422, RATE_LIMITED: 429, INTERNAL: 500,
   UNAVAILABLE: 503,
 }));
 
@@ -18,15 +18,17 @@ export const errorKey = (code) => `model3d.error.${code.toLowerCase().replace(/_
  * @param {string} code registry code
  * @param {string[]} [entityIds]
  * @param {string} [message] diagnostic text, not UI text
+ * @param {Record<string, unknown>} [details] contract `error.details`
  * @returns {{ httpStatus: number, body: any }} body: contract `error`
  */
-export function errorReply(code, entityIds = [], message) {
+export function errorReply(code, entityIds = [], message, details) {
   const httpStatus = HTTP_STATUS[code];
   if (!httpStatus) throw new Error(`errors: unknown code ${code}`);
   /** @type {any} */
   const body = { code, httpStatus, messageKey: errorKey(code) };
   if (message) body.message = message;
   if (entityIds.length > 0) body.entityIds = [...new Set(entityIds)];
+  if (details) body.details = details;
   return { httpStatus, body };
 }
 
@@ -40,14 +42,20 @@ const READ_ABORTS = new Set(['AbortError', 'TimeoutError']);
 const isReadFailure = (err) => READ_ABORTS.has(err?.name)
   || (typeof err?.code === 'string' && /^E[A-Z0-9]+$/.test(err.code) && (err.syscall !== undefined || err.errno !== undefined));
 
+/** A kernel `CrsError` (crs/registry.js; not exported by the package): `code` INVALID_CRS, `details.reason`. @param {any} e */
+const isCrsError = (e) => e?.name === 'CrsError' && e.code === 'INVALID_CRS' && typeof e.details?.reason === 'string';
+
 /**
- * Registry reply of a thrown failure (D-353): `LasFormatError` (corrupt or unsupported point file) -> `500 INTERNAL`,
+ * Registry reply of a thrown failure (D-353): a kernel `CrsError` (the cloud's CRS cannot be mapped to the building's,
+ * D-197, D-198) -> `422 INVALID_CRS` with `details.crsReason` (D-406); `LasFormatError` (corrupt or unsupported
+ * point file) -> `500 INTERNAL`,
  * a read failure -> `503 UNAVAILABLE`, anything else -> `500 INTERNAL`. The message is diagnostic, not UI text.
  * @param {unknown} err
  * @returns {{ httpStatus: number, body: any }}
  */
 export function failureReply(err) {
   const e = /** @type {any} */ (err);
+  if (isCrsError(e)) return errorReply('INVALID_CRS', [], e.message, { crsReason: e.details.reason });
   if (e instanceof LasFormatError) return errorReply('INTERNAL', [], `point file: ${e.message}`);
   if (isReadFailure(e)) return errorReply('UNAVAILABLE', [], `read failed: ${e.code ?? e.name}`);
   return errorReply('INTERNAL', [], 'unexpected failure');

@@ -1,8 +1,7 @@
 // GT-14 (v0.3 §12; spec §13; row 3D-19): SET_OVERHANG 0.5 m on both eaves of the GT-03 gable (D-336, D-337).
-// BLOCKED_BY_VALIDATOR_DEPENDENCY 3D-117 (D-343): each end cap is 0.5 x 0.375 / 2 = 0.09375 m2, below
-// `minFaceAreaM2` 0.1 (D-13), so with the standard profile the commit to VALID_SOLID is refused (DEGENERATE_FACE on
-// the four caps only). The geometry is checked here through a DRAFT_SOLID commit; the VALID_SOLID case is `it.fails`
-// and turns red - to be switched to `it` - once 3D-117 is merged. Expected values are not changed.
+// Each end cap is 0.5 x 0.375 / 2 = 0.09375 m2, below `minFaceAreaM2` 0.1 (D-13); since 3D-117 (D-343) a verified
+// end cap is measured together with its coplanar end wall, so the commit reaches VALID_SOLID with the standard profile
+// (CAP-01). The geometry is checked through a DRAFT_SOLID commit as before. Expected values are not changed.
 import { describe, expect, it } from 'vitest';
 import { envelopeRun } from './envelope.golden.helpers.js';
 import { faceArea, volume, metrics, maxPlaneDistance } from '../ops/helpers.js';
@@ -49,15 +48,16 @@ describe('GT-14 SET_OVERHANG', () => {
     }
   });
 
-  it('blocked state: the only errors are DEGENERATE_FACE on the four end caps (3D-117)', () => {
+  it('no ERROR issue: the four end caps stay own faces and are not DEGENERATE_FACE (3D-117, D-337, D-343)', () => {
     const errors = r.commit.result.validation.issues.filter((/** @type {any} */ i) => i.severity === 'ERROR');
-    expect(errors.map((/** @type {any} */ i) => i.code)).toEqual(['DEGENERATE_FACE', 'DEGENERATE_FACE', 'DEGENERATE_FACE', 'DEGENERATE_FACE']);
-    expect(errors.flatMap((/** @type {any} */ i) => i.entityIds).sort()).toEqual(kind(m, 'WallSurface', true).sort());
+    expect(errors).toEqual([]);
+    expect(kind(m, 'WallSurface', true)).toHaveLength(4);
   });
 
-  it.fails('CAP-01: commits VALID_SOLID with the standard profile (BLOCKED_BY_VALIDATOR_DEPENDENCY 3D-117)', () => {
+  it('CAP-01: commits VALID_SOLID with the standard profile (3D-117, D-343)', () => {
     const v = envelopeRun('GT-14');
     expect(v.commit.result.status).toBe('COMMITTED');
     expect(v.commit.model.state).toBe('VALID_SOLID');
+    expect(v.commit.result.validation.issues.filter((/** @type {any} */ i) => i.severity === 'ERROR')).toEqual([]);
   });
 });

@@ -14,7 +14,7 @@
   §10.4 rule 5, §10.5 rule 4, §10.7 rule 3, §10.8 rule 3).
 - [V] Example (spec §10.4): MOVE_EDGE of the GT-03 south eave with the south roof face movable. The target line gives
   two hard "point on plane" conditions; a plane has three degrees of freedom; one rotation about the line stays free.
-- [V] 3D-08 spike ([packages/geo-model3d/spike/move-edge](../../../packages/geo-model3d/spike/move-edge/)): the plane
+- [V] 3D-08 spike (`packages/geo-model3d/spike/move-edge/`, (removed by 3D-121, D-357; in git history up to `9ca0afc`)): the plane
   solve below costs 0.08 ms per MOVE_EDGE on the 199-face scene, of 2.3 ms kernel time; the checks cost 1.7 ms
   ([verification note](../../verification/3D-08.md)).
 
@@ -48,7 +48,7 @@ closes. Operation rows that name the objective (§10.5 rule 4, §10.7 rule 3, §
 
 ## Checks
 
-- Spike tests ([tools/bench/spike.test.mjs](../../../tools/bench/spike.test.mjs)): GT-03 eave raised with the ridge kept
+- Spike tests (`tools/bench/spike.test.mjs`, (removed by 3D-121, D-357; in git history up to `9ca0afc`)): GT-03 eave raised with the ridge kept
   (<= 1e-9 m); every updated vertex equals the intersection of its defining planes; a skewed target line against
   `FIXED_POINT` ridge vertices -> `CONSTRAINT_CONFLICT` naming the face and both vertices; kept points on the target
   line -> `UNDERCONSTRAINED`.

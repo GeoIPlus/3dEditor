@@ -110,8 +110,7 @@ describe('small faces, persistence, lifecycle (OVM-28..OVM-30)', () => {
   it('OVM-29: save -> load -> computeMetrics keeps the volumes', () => {
     expect(metricsOf(loadModel(saveModel(gt14())))).toEqual(metricsOf(gt14()));
   });
-  // BLOCKED_BY_VALIDATOR_DEPENDENCY 3D-117 (D-343): to be switched to `it` once 3D-117 is merged.
-  it.fails('OVM-30: GT-14 PROVISIONAL (DRAFT_SOLID) -> FINAL (VALID_SOLID) with the same numbers', () => {
+  it('OVM-30: GT-14 PROVISIONAL (DRAFT_SOLID) -> FINAL (VALID_SOLID) with the same numbers', () => {
     const d = metricsOf(envelopeRun('GT-14', { targetState: 'DRAFT_SOLID' }).commit.model);
     const v = metricsOf(envelopeRun('GT-14').commit.model);
     expect([d.volumeStatus, v.volumeStatus]).toEqual(['PROVISIONAL', 'FINAL']);

@@ -86,7 +86,7 @@ describe('error registry (spec §2.4)', () => {
   }
 
   it('enumerates exactly the codes of the spec', () => {
-    expect(expected.size).toBe(15);
+    expect(expected.size).toBe(16);
     expect([...schemas.get('error').$defs.ErrorCode.enum].sort()).toEqual([...expected.keys()].sort());
   });
 
