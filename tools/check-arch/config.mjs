@@ -43,6 +43,7 @@ export const CONFIG = {
       validate: ['brep'],
       cloud: ['brep'],
       ops: ['brep', 'solve', 'validate'],
+      metrics: ['brep', 'validate'],
     },
     /** C1 rule 1: Node built-ins for I/O, processes, timers, clock, environment. */
     ioModules: [/^(node:)?(fs|fs\/promises|net|http|https|http2|child_process|dgram|dns|tls|cluster|worker_threads|os|process|perf_hooks|timers|timers\/promises|readline|inspector|vm)$/],

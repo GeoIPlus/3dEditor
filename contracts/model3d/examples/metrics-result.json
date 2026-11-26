@@ -1,0 +1,205 @@
+{
+  "valid": [
+    {
+      "schemaVersion": "1",
+      "buildingId": "bld-gt-i1",
+      "modelVersion": 2,
+      "state": "DRAFT_SOLID",
+      "basis": "GEOMETRIC",
+      "units": {
+        "area": "m2",
+        "volume": "m3"
+      },
+      "footprintAreaM2": 80,
+      "roofPlanAreaM2": 90,
+      "roofSurfaceAreaM2": 112.5,
+      "overhangRoofAreaM2": 12.5,
+      "soffitAreaM2": 10,
+      "mainVolumeM3": 520,
+      "overhangVolumeM3": 1.875,
+      "geometricSolidVolumeM3": 521.875,
+      "volumeStatus": "PROVISIONAL"
+    },
+    {
+      "schemaVersion": "1",
+      "buildingId": "bld-gt-i1",
+      "modelVersion": 2,
+      "state": "DRAFT_SURFACE",
+      "basis": "GEOMETRIC",
+      "units": {
+        "area": "m2",
+        "volume": "m3"
+      },
+      "footprintAreaM2": 80,
+      "roofPlanAreaM2": 90,
+      "roofSurfaceAreaM2": 112.5,
+      "overhangRoofAreaM2": 12.5,
+      "soffitAreaM2": 10,
+      "mainVolumeM3": null,
+      "overhangVolumeM3": null,
+      "geometricSolidVolumeM3": null,
+      "volumeStatus": "NOT_AVAILABLE"
+    },
+    {
+      "schemaVersion": "1",
+      "buildingId": "bld-gt-i1",
+      "modelVersion": 2,
+      "state": "VALID_SOLID",
+      "basis": "GEOMETRIC",
+      "units": {
+        "area": "m2",
+        "volume": "m3"
+      },
+      "footprintAreaM2": 80,
+      "roofPlanAreaM2": 90,
+      "roofSurfaceAreaM2": 112.5,
+      "overhangRoofAreaM2": 12.5,
+      "soffitAreaM2": 10,
+      "mainVolumeM3": null,
+      "overhangVolumeM3": null,
+      "geometricSolidVolumeM3": 521.875,
+      "volumeStatus": "FINAL"
+    }
+  ],
+  "invalid": [
+    {
+      "why": "NOT_AVAILABLE with a volume",
+      "instance": {
+        "schemaVersion": "1",
+        "buildingId": "bld-gt-i1",
+        "modelVersion": 2,
+        "state": "DRAFT_SURFACE",
+        "basis": "GEOMETRIC",
+        "units": {
+          "area": "m2",
+          "volume": "m3"
+        },
+        "footprintAreaM2": 80,
+        "roofPlanAreaM2": 90,
+        "roofSurfaceAreaM2": 112.5,
+        "overhangRoofAreaM2": 12.5,
+        "soffitAreaM2": 10,
+        "mainVolumeM3": null,
+        "overhangVolumeM3": null,
+        "geometricSolidVolumeM3": 520,
+        "volumeStatus": "NOT_AVAILABLE"
+      }
+    },
+    {
+      "why": "FINAL without a total volume",
+      "instance": {
+        "schemaVersion": "1",
+        "buildingId": "bld-gt-i1",
+        "modelVersion": 2,
+        "state": "DRAFT_SOLID",
+        "basis": "GEOMETRIC",
+        "units": {
+          "area": "m2",
+          "volume": "m3"
+        },
+        "footprintAreaM2": 80,
+        "roofPlanAreaM2": 90,
+        "roofSurfaceAreaM2": 112.5,
+        "overhangRoofAreaM2": 12.5,
+        "soffitAreaM2": 10,
+        "mainVolumeM3": null,
+        "overhangVolumeM3": null,
+        "geometricSolidVolumeM3": null,
+        "volumeStatus": "FINAL"
+      }
+    },
+    {
+      "why": "split given for one part only",
+      "instance": {
+        "schemaVersion": "1",
+        "buildingId": "bld-gt-i1",
+        "modelVersion": 2,
+        "state": "DRAFT_SOLID",
+        "basis": "GEOMETRIC",
+        "units": {
+          "area": "m2",
+          "volume": "m3"
+        },
+        "footprintAreaM2": 80,
+        "roofPlanAreaM2": 90,
+        "roofSurfaceAreaM2": 112.5,
+        "overhangRoofAreaM2": 12.5,
+        "soffitAreaM2": 10,
+        "mainVolumeM3": 520,
+        "overhangVolumeM3": null,
+        "geometricSolidVolumeM3": 521.875,
+        "volumeStatus": "PROVISIONAL"
+      }
+    },
+    {
+      "why": "tax basis is not a geometric metric",
+      "instance": {
+        "schemaVersion": "1",
+        "buildingId": "bld-gt-i1",
+        "modelVersion": 2,
+        "state": "DRAFT_SOLID",
+        "basis": "TAX",
+        "units": {
+          "area": "m2",
+          "volume": "m3"
+        },
+        "footprintAreaM2": 80,
+        "roofPlanAreaM2": 90,
+        "roofSurfaceAreaM2": 112.5,
+        "overhangRoofAreaM2": 12.5,
+        "soffitAreaM2": 10,
+        "mainVolumeM3": 520,
+        "overhangVolumeM3": 1.875,
+        "geometricSolidVolumeM3": 521.875,
+        "volumeStatus": "PROVISIONAL"
+      }
+    },
+    {
+      "why": "negative area",
+      "instance": {
+        "schemaVersion": "1",
+        "buildingId": "bld-gt-i1",
+        "modelVersion": 2,
+        "state": "DRAFT_SOLID",
+        "basis": "GEOMETRIC",
+        "units": {
+          "area": "m2",
+          "volume": "m3"
+        },
+        "footprintAreaM2": 80,
+        "roofPlanAreaM2": 90,
+        "roofSurfaceAreaM2": 112.5,
+        "overhangRoofAreaM2": 12.5,
+        "soffitAreaM2": -1,
+        "mainVolumeM3": 520,
+        "overhangVolumeM3": 1.875,
+        "geometricSolidVolumeM3": 521.875,
+        "volumeStatus": "PROVISIONAL"
+      }
+    },
+    {
+      "why": "unknown member",
+      "instance": {
+        "schemaVersion": "1",
+        "buildingId": "bld-gt-i1",
+        "modelVersion": 2,
+        "state": "DRAFT_SOLID",
+        "basis": "GEOMETRIC",
+        "units": {
+          "area": "m2",
+          "volume": "m3"
+        },
+        "footprintAreaM2": 80,
+        "roofPlanAreaM2": 90,
+        "roofSurfaceAreaM2": 112.5,
+        "overhangRoofAreaM2": 12.5,
+        "soffitAreaM2": 10,
+        "mainVolumeM3": 520,
+        "overhangVolumeM3": 1.875,
+        "geometricSolidVolumeM3": 521.875,
+        "volumeStatus": "PROVISIONAL",
+        "eaveHeightM": 5
+      }
+    }
+  ]
+}

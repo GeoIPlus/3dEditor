@@ -21,20 +21,21 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 69 / 105 |
+| Done | 70 / 106 |
 | Review | 0 |
-| In progress | 4 |
+| In progress | 3 |
 | Ready | 8 |
-| Proposed (waiting for the owner to set `ready`) | 23 |
+| Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 69/105 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 70/106 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-126 Regularize footprint; 3D-116 F-53 metrics; 3D-128 datasets port + file adapter; 3D-47 SC: 3D view port + host.
+**Running:** 3D-126 Regularize footprint; 3D-128 datasets port + file adapter; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D116["✅ ⚙️ 3D-116 F-53 metrics"]
     D110["✅ 🖥️ 3D-110 Kernel service III: handler, ports"]
     D121["✅ 🔧 3D-121 Bench gate on the real PREVIEW path"]
     D114["✅ ⚙️ 3D-114 Resize roof, align wall"]
@@ -128,7 +129,7 @@ flowchart TB
     D126["🚧 ⚙️ 3D-126 Regularize footprint"]
     D124["💡 ⚙️ 3D-124 Overhang rebuild"]
     D125["💡 ⚙️ 3D-125 Dormers follow roof"]
-    D116["🚧 ⚙️ 3D-116 F-53 metrics"]
+    D130["💡 ⚙️ 3D-130 Metric change detection"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
   end
@@ -274,6 +275,7 @@ flowchart TB
   D19 --> D115
   D19 --> D116
   D19 --> D117
+  D116 --> D130
   D16 --> D118
   D19 --> D119
   D115 --> D120
@@ -348,7 +350,7 @@ Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script
 Forecast 2026-11-26 (ledger n=43 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=5, S kernel n=5, S spec n=8; baseline d7c472d 2026-11-19)
 Known remaining: $263 / $330 over 36 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
 ETC: TBD (g not measured before 2026-12-03); known x k = $282 / $354
-Throughput: 69.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
+Throughput: 70.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
 ```
 
 MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
@@ -390,7 +392,8 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-115 | Parametric geometry dependency management: ADR 3D-ADR-0010 (parent / dependent links, detach - solve - rebuild in the pipeline; split D-386) | here | docs/decisions/adr | 15, 17, 18, 19 | G4 | S | spec | done (D-388; ADR 3D-ADR-0010; merged into base, no PR; D-383..D-387) |
 | 3D-124 | Overhang rebuild after a parent change: detach - solve - rebuild in the pipeline, replacing the D-367 refusal (D-384, D-385) | here | geo-model3d/ops | 115, 114, 117, 19, 120 | G4 | M | kernel | proposed |
 | 3D-125 | Dormers follow their roof face; explicit `components` record in the model contract (D-383) | here | geo-model3d/ops, contracts/model3d | 124, 20 | G4 | M | kernel | proposed |
-| 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | in-progress (D-368; wp/3d-116-metrics) |
+| 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | done (D-416; merged into base, no PR; D-412..D-415) |
+| 3D-130 | Automatic metric change detection: `patch.affectedMetrics` from a before / after `computeMetrics` comparison (PREVIEW, COMMIT, inverse patch, Undo / Redo; D-415, Q-31) | here | geo-model3d/ops, geo-model3d/brep, contracts | 116 | G4 | M | kernel | proposed |
 | 3D-117 | Validator: minimum face area of dependent overhang end caps measured with their coplanar end wall; degeneracy and minimum-area policy separated (D-343; unblocks GT-14) | here | geo-model3d/validate | 12, 19 | G4 | S | kernel | done (D-379; merged into base, no PR) |
 | 3D-118 | Bug: a hard FIXED_POINT on a vertex with an EQUAL_Z target is met by turning the roof plane almost vertical (MATCH_ELEVATIONS commits `VALID_SOLID`) | here | geo-model3d/solve, validate | 13, 16 | G3 | S | kernel | done (D-375; merged into base, no PR; D-370..D-374) |
 | 3D-119 | Spec update for 3D-19: §10.10 overhang profile, SET_HEIGHT EAVE, rigid moves and measurements, refusal codes; §13 GT-14 note; §14 Q-18 narrowed, Q-37 closed (D-336..D-345) | here | docs/specs | 19 | G4 | S | spec | done (D-382; merged into base, no PR) |
@@ -1054,6 +1057,17 @@ accuracy ratio 1.30 is n=1 and not applied.
   `npm run check` passes.
 - Decisions: D-336, D-342  Open: Q-31
 - Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
+
+### 3D-130 Automatic metric change detection
+- Source: owner, dialog in WP session 3D-116, 2026-11-26 (D-415, Q-31).
+- Goal: patches carry the metric names whose values actually changed.
+- Scope in: before / after `computeMetrics` comparison with the same tolerance profile, deterministic order, no
+  duplicates, null != 0, status transitions; PREVIEW / COMMIT, inverse patch, Undo / Redo; `model-patch` enum of the
+  nine names (D-18); comparison tolerances for areas and volumes (owner, not `planarTolM`); failure handling;
+  benchmarks (GT-03, 199-face roof) before any caching. Scope out: new metrics.
+- Accept: AM-01..AM-30 (D-415); `npm run check` passes.
+- Decisions: D-415  Open: Q-31 (rest)
+- Estimate: TBD
 
 ### 3D-117 Validator: overhang end caps and the minimum face area
 - Source: 3D-19 session 2026-11-26, owner dialog (D-343): GT-14 end caps are 0.09375 m2 < `minFaceAreaM2` 0.1 (D-13),

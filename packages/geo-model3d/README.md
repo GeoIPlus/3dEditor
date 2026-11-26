@@ -38,6 +38,13 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   points only, not on their order (3D-80, D-187): the same cloud through the LAS or the COPC adapter fits the same.
 - `deviationStats(model, points, request, profile)` (3D-22) - contract `heatmap-request` -> `{ result: heatmap-result }`
   or `{ error }` (`INVALID_PAYLOAD`: unknown `faceIds`, missing threshold, bad selection).
+- `computeMetrics(model, { toleranceProfile })` (3D-116; v0.2 F-53; D-412..D-415) - contract `metrics-result`:
+  geometric metrics of the main building (solids not owned by a `BuildingInstallation` node): footprint and roof plan
+  as exact XY unions, roof / overhang roof / soffit 3D areas, total volume and its split into main and overhang
+  (boundary-loop closure of each OVERHANG group, D-414); `volumeStatus` FINAL / PROVISIONAL / NOT_AVAILABLE from a
+  fresh `runChecks` (D-413); never mutates the model; geometric only, not tax values (v0.2 §16.5). The nine
+  metric members are the `affectedMetrics` names; patches keep `[]` until 3D-130 (an empty list means "not
+  computed yet", not "unchanged").
 - `validateModel(model, { mode, targetState, tolerances, clock, affectedEntityIds?, fullSolid?, findings?,
   externalValidator? }) -> Promise<ValidationReport>` (3D-12, spec §8): contract `validation-report` out; see `validate` below.
 - `importBuilding({ cityjson, cityObjectId, toleranceProfile, projectId, buildingId?, toleranceProfileId?, ids?,
@@ -240,6 +247,16 @@ otherwise INVALID_TOPOLOGY, D-344), `align-wall.js` (ALIGN_WALL: only the wall p
 planes kept, eave height recomputed; footprint record follows; an overhang on the wall or its end wall is rebuilt at
 the same width with the same ids; a roof face turned over or a junction the kept planes no longer meet -> INVALID_TOPOLOGY).
 
+## `metrics` (3D-116; v0.2 F-53, §16.5; imports `brep`, `validate`)
+| File | Contents |
+|---|---|
+| `index.js` | `computeMetrics`, `METRIC_NAMES` (contract order = `affectedMetrics` names, D-415) |
+| `body.js` | main body by structure (semantic node -> solids -> shells; installations out, a shared face = unsupported); ring points relative to the body's min corner (MET-19) |
+| `area.js`, `union2d.js` | 3D face areas (Newell, holes subtracted); exact area of a union of polygons with holes (slab method: vertex and crossing x-coordinates, even-odd per polygon, midpoint rule exact per slab; O(E^2)) |
+| `volume.js` | signed divergence volume about a local point; outer > 0, void < 0, finite, else null (no `Math.abs`) |
+| `status.js` | volume proof: blocking codes (open, non-manifold, orientation, self-intersection, non-planar, junction, overlap, CRS) -> N/A; `DEGENERATE_FACE` / `_EDGE` safe only if every edge > `numericEpsilon` and area / longest edge > `numericEpsilon` (D-413); FINAL needs VALID_SOLID / APPROVED and no VALID-column ERROR on the body |
+| `overhang.js` | OVERHANG groups by shared edges; one simple loop (reasons `OPEN`, `BRANCH`, `MULTIPLE_LOOPS`, `ZERO_EDGE`, `NOT_IN_WALL_PLANE`, `SELF_INTERSECTION`, `PROTRUDES`, `ORIENTATION`, `EMPTY`, `OVERLAP`; internal, tests only) in a bordering wall plane within `numericEpsilon`; volume about the loop centroid (the fan closure adds 0); groups proven disjoint by a separating wall or face plane |
+
 ## Internal modules
 ### solve (3D-13)
 
@@ -355,6 +372,11 @@ run spread ~0.1 ms).
   covers Face / HalfEdge / Vtx; model-level changes (`state`, `frame`) are reported beside the patch (Q-31).
 
 ## Tests and golden tests
+- `test/metrics/` (3D-116): MET-01..MET-24 (`metrics.test.js`), VOL-01..VOL-20 (`volume-status.test.js`),
+  OVM-01..OVM-35 (`overhang.test.js`, `overhang-topology.test.js`), `unionArea` cases; every result checked against
+  `metrics-result` (Ajv); references from `test/ops/helpers.js` or analytic. VOL-05 and OVM-30 are `it.fails` until
+  3D-117 (GT-14 FINAL). `test/golden/metrics.golden.test.js`: GT-01..GT-04, GT-07, GT-15 roof area and volume equal
+  the fixture and the helpers (FINAL); GT-14 80 / 90 / 112.5 / 12.5 / 10 m2, 520 / 1.875 / 521.875 m3 PROVISIONAL.
 - `test/ops/history.test.js`, `test/golden/gt-12.golden.test.js` (3D-18): GT-12 Undo 520 m3 with every entity equal
   to the input version, Redo 540 m3, versions 1 -> 4; RESTORE_BASELINE after GT-07 equal to the baseline, version + 1,
   undoable, clears redo; stack order, redo cleared by an edit, foreign stack top FORBIDDEN, empty stack and

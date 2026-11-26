@@ -36,6 +36,7 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 | 15 | `heatmap-result` | per-face values + summary |
 | 16 | `export-report` | exported / skipped with reason |
 | (3D-22) | `heatmap-request` | building, model version, `PointSelection`, optional `faceIds`, required `thresholdM` (D-136; spec §2 row 17) |
+| 18 (3D-116) | `metrics-result` | F-53 geometric metrics, `volumeStatus`; owner-approved names (D-412, D-413); the nine metric members are the `affectedMetrics` names (D-415) |
 
 `examples/<name>.json` holds `{ "valid": [...], "invalid": [{ "why", "instance" }] }` (for `common`: per `$defs` entry).
 
@@ -115,7 +116,7 @@ spec §2.4 table; lineage members; every example judged as labelled. The spec ta
 | Q-28 | Per-kind layout of `Measurement3D.geometry.coordinates`, e.g. how a `PLANE` is written | 3D-22 |
 | Q-29 | Shape of the missing degrees of freedom in `UNDERCONSTRAINED_GEOMETRY` | 3D-13 (with Q-17) |
 | Q-30 | `needsRebind` of v0.2 B.6 in the lineage | 3D-09 |
-| Q-31 | Names of `affectedMetrics`; how a patch carries model-level changes (`state`, `frame`) | 3D-09 / 3D-12 |
+| Q-31 | Names of `affectedMetrics` (decided: the nine `metrics-result` members, D-415; population in 3D-130); how a patch carries model-level changes (`state`, `frame`) | 3D-09 / 3D-12, 3D-130 |
 | Q-32 | How the CityJSON CityObject of `IMPORT_BUILDING` maps to `buildingId` (CP assignment unit) | 3D-10 / 3D-43 |
 | Q-33 | `INSERT_ROOF_BREAK` with a ridge constraint instead of a new plane | 3D-15 |
 | Q-34 | How the `REMOVE_DETAILS` candidate list reaches the client | closed by D-325: optional `command-result.candidates` on a discovery PREVIEW (3D-105) |

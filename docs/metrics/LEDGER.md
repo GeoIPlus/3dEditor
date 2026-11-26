@@ -68,6 +68,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).
 | 2026-11-26 | 3D-115 | session_01RNYuqEtcBd4unsqJjFBuDq | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - (not due) | no `result` event before the finish (one owner turn); coordinator re-reads |
+| 2026-11-26 | 3D-116 | session_01RNYuqFijt1dWVmijVtc519 | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - (not due: calibration done, est0 TBD, 59th WP row) | only the first short turn has a `result` event (three pages of 100 events read back without the newer one; the work ran as one long turn with a worker restart); coordinator re-reads at merge |
 
 ## Improvement proposals
 
@@ -109,3 +110,4 @@ From efficiency reviews (README §5). Status: `open`, `adopted (D-NN)`, `rejecte
 | 2026-11-26 | 3D-118+3D-120, session_01RNYuqJ29wVvaSJdeLrCLiJ | P1-P3 in .agent/checkpoints/3D-118.md (efficiency review) | see checkpoint | open |
 | 2026-11-26 | 3D-114, session_01RNYuqGw3pck2hciMrRxtCX | P1-P3 in .agent/checkpoints/3D-114.md (efficiency review) | see checkpoint | open |
 | 2026-11-26 | 3D-110, session_01RNYuqGbVqbWtGTf3ZLpZXW | P1-P3 in .agent/checkpoints/3D-110.md (efficiency review) | see checkpoint | open |
+| 2026-11-26 | 3D-116, session_01RNYuqFijt1dWVmijVtc519 | P1-P3 in .agent/checkpoints/3D-116.md (efficiency review) | see checkpoint | open |
