@@ -358,7 +358,7 @@ Throughput: 62.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | done (D-296; merged into base, no PR; D-291..D-295) |
 | 3D-19 | Envelope: `TRANSLATE_BUILDING`, `ROTATE_BUILDING`, `SET_HEIGHT`, `SET_OVERHANG` (split D-340, D-346) | here | geo-model3d/ops | 14 | G4 | L | kernel | done (D-349; merged into base, no PR; D-336..D-348; GT-14 pending 3D-117, D-347) |
 | 3D-114 | `RESIZE_ROOF` (lower envelope, D-339) and `ALIGN_WALL` (D-346); `REGULARIZE_FOOTPRINT` split to 3D-114.1 (D-3D114-1) | here | geo-model3d/ops | 19 | G4 | M | kernel | review (owner accepted, D-3D114-5; local, PR not requested; wp/3d-114-footprint-ops; D-3D114-1..5) |
-| 3D-114.1 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-3D114-1) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | review (local, PR not requested; wp/3d-114-1-regularize-footprint; D-3D1141-1..8) |
+| 3D-114.1 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-3D114-1) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | review (owner accepted, D-3D1141-9; local, PR not requested; wp/3d-114-1-regularize-footprint; D-3D1141-1..9) |
 | 3D-115 | Parametric geometry dependency management: parent / dependent surfaces (overhangs, soffits, dormers), rebuild after a parent edit in the pipeline (D-341) | here | geo-model3d/ops, docs/decisions/adr | 15, 17, 18, 19 | G4 | L | kernel | proposed |
 | 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | in-progress (D-368; wp/3d-116-metrics) |
 | 3D-117 | Validator: minimum face area of dependent overhang end caps measured with their coplanar end wall; degeneracy and minimum-area policy separated (D-343; unblocks GT-14) | here | geo-model3d/validate | 12, 19 | G4 | S | kernel | in-progress (D-376; wp/3d-117-overhang-cap-area) |
@@ -943,7 +943,7 @@ Throughput: 62.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
   RF-14 unknown `footprintId` -> `INVALID_PAYLOAD`; body not unique -> `INVALID_TOPOLOGY` (D-218);
   RF-15 PREVIEW == COMMIT, refusal leaves the model unchanged, inverse patch, UNDO / REDO, D-372 respected.
 - Accept (all): `npm run check`, golden, bench pass; files <= 300 lines.
-- Decisions: D-08, D-13, D-340, D-3D114-1, D-3D1141-1..8  Open: none
+- Decisions: D-08, D-13, D-340, D-3D114-1, D-3D1141-1..9  Open: none
 - Estimate: $7.72 (p80 $8.96), ~13 min model time; basis: M kernel n=6
 
 ### 3D-115 Parametric geometry dependency management

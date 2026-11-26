@@ -404,6 +404,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D1141-6 | Overhang (D-336) on a changed wall or end wall: taken off and rebuilt at the same width in plan with the same ids (as ALIGN_WALL, D-3D114-4); a wall carrying an overhang (eave or end wall) that would be deleted by a merge -> `INVALID_TOPOLOGY`, model unchanged | Owner, dialog, 2026-11-26 (3D-114.1) |
 | D-3D1141-7 | Noise vertices are only the vertices inside a D-3D1141-1 chain (angle criterion); small steps (two 90 deg turns with a short offset) are not touched (no distance tolerance in the profile); a step rule would be a new row through intake | Owner, dialog, 2026-11-26 (3D-114.1) |
 | D-3D1141-8 | Acceptance tests RF-01..RF-15 of the 3D-114.1 Details entry (straightening, chains, no-op, orthogonalize, courtyards, overhang, refusals INVALID_TOPOLOGY / INVALID_GEOMETRY / CONSTRAINT_CONFLICT / INVALID_PAYLOAD, report, PREVIEW == COMMIT, UNDO / REDO, D-372) | Owner, dialog, 2026-11-26 (3D-114.1) |
+| D-3D1141-9 | 3D-114.1 accepted (owner, dialog) with three interpretations: a ground edge without a vertical WallSurface across it -> `INVALID_TOPOLOGY`; soft constraints on a merged-away wall are rebound to the surviving wall (MERGE_FACES inheritance, D-303), hard ones -> `CONSTRAINT_CONFLICT` (D-213); "removed vertices" in the report lists footprint (ground) vertices only | Owner, dialog, 2026-11-26 (3D-114.1) |
 
 ## Open questions
 
