@@ -352,6 +352,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D109-3 | Error registry mapping of adapter failures (spec §2.4): `LasFormatError` (corrupt or unsupported point file) -> `500 INTERNAL`; a read failure (I/O, e.g. `ENOENT`, `EIO`, timeout) -> `503 UNAVAILABLE`; any other unexpected error -> `500 INTERNAL`; the model is unchanged in every case | Owner, dialog, 2026-11-26 (3D-109) |
 | D-3D109-4 | COMMIT with a `previewId` of another user, project or building -> `404 NOT_FOUND` (invisible); same owner but a different `operation`, `payload`, `targetState` or `coordinateFrame` than the stored PREVIEW -> `400 INVALID_PAYLOAD`; nothing is applied in either case | Owner, dialog, 2026-11-26 (3D-109) |
 | D-3D109-5 | A PREVIEW runs the kernel once, in phase COMMIT, on the head version: that outcome is stored by `previewId` and the PREVIEW reply is derived from it (`status: PREVIEW`, base `modelVersion`, `previewId`, report on the base version with `isValidForTargetState: false`, as the kernel's own PREVIEW); a test keeps the derived reply equal to the kernel's PREVIEW. Measured on the 199-face bench scene (MOVE_EDGE through `executeCommand`, API path incl. contract validation): two runs p95 108 ms, one run p95 49 ms (target 150 ms, spec §11 r14) | Owner, dialog, 2026-11-26 (3D-109) |
+| D-3D109-6 | Finding of 3D-109 (bench gate scene runs `MOVE_EDGE` through the 3D-08 spike) becomes a new S tooling row 3D-109.1; it does not block 3D-110 (critical path D-266 unchanged) | Owner, dialog, 2026-11-26 (3D-109 intake) |
+| D-3D109-7 | 3D-109.1 measures the gate scene through `createCommandApi` (the 3D-109 service path) and removes the 3D-08 `MOVE_EDGE` spike and its tests | Owner, dialog, 2026-11-26 (3D-109 intake) |
+| D-3D109-8 | 3D-109 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-109-command-api | Owner, chat, 2026-11-26 (3D-109) |
 
 ## Open questions
 

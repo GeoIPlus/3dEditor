@@ -21,14 +21,14 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 57 / 89 |
+| Done | 57 / 90 |
 | Review | 2 |
 | In progress | 2 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 24 |
+| Proposed (waiting for the owner to set `ready`) | 25 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 57/89 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 57/90 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-19 Envelope ops; 3D-47 SC: 3D view port + host.
 
@@ -121,6 +121,7 @@ flowchart TB
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["💡 🔧 3D-79 Service image licence check"]
     D110["💡 🖥️ 3D-110 Kernel service III: handler, ports"]
+    D109_1["💡 🔧 3D-109.1 Bench gate on the real PREVIEW path"]
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D24["💡 ⚙️ 3D-24 QC and export rules"]
@@ -257,6 +258,8 @@ flowchart TB
   D03 --> D23
   D23 --> D109
   D109 --> D110
+  D109 --> D109_1
+  D15 --> D109_1
   D23 --> D111
   D12 --> D24
   D110 --> D24
@@ -344,6 +347,7 @@ Throughput: 57.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service I: `history` port + file adapter (3D-ADR-0003, append-only, `journal/{N+1}` create-if-absent), port contract suite, COMMIT path (idempotent `commandId` + `expectedVersion`, GT-13, D-68), command status; PREVIEW/API -> 3D-109, handler/ports -> 3D-110 (D-314) | here | service | 03, 06, 18 | G5 | M | service | done (D-321; merged into base, no PR; D-314..D-320) |
 | 3D-109 | Kernel service II: command API - PREVIEW store by `previewId` (expiry 10 min, D-315), COMMIT by `previewId`, PREVIEW rate limit 20/s (D-316), payload limit 1 MiB (D-317), error registry mapping, request/reply validation against `contracts/model3d/` | here | service | 23 | G5 | M | service | review (wp/3d-109-command-api; local, PR not requested; D-3D109-1..5) |
+| 3D-109.1 | Bench gate on the real PREVIEW path: `npm run bench` drives `MOVE_EDGE` through `createCommandApi` (3D-109) instead of the 3D-08 spike; spike removed; numbers re-recorded (D-3D109-6, D-3D109-7) | here | tools/bench, geo-model3d (spike removal) | 109, 15 | G5 | S | tooling | proposed |
 | 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69), `datasets` port + file adapter (`progress.save`, delivered bytes), heatmap request (`INVALID_CRS`, 3D-69), bench gate on the service image (D-111, Q-42) | here | service | 23.1 | G5 | M | service | proposed |
 | 3D-111 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-319) | here | service | 23 | G5 | M | service | proposed |
 | 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 105 | G3 | L | spec | proposed |
@@ -900,6 +904,24 @@ Throughput: 57.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
   gets `400 INVALID_PAYLOAD`; expiry, 429 and 413 each by a test with an injected clock.
 - Decisions: D-315..D-317, D-68, D-85  Open: Q-26 (only the ephemeral namespace, not blocking)
 - Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-109.1 Bench gate on the real PREVIEW path
+- Source: WP session 3D-109 (2026-11-26), finding; owner, dialog, D-3D109-6, D-3D109-7.
+- Goal: the D-111 gate measures the PREVIEW path that ships, not the 3D-08 spike.
+- Finding [V]: `tools/bench/service.mjs` sends `MOVE_EDGE` to `previewMoveEdge` (packages/geo-model3d/spike/move-edge),
+  every other kind to `executeCommand`; on sawtooth-199 the bench reports p95 5.04 ms, while `executeCommand` alone is
+  p95 49.8 ms and `createCommandApi` PREVIEW p95 49.3 ms (checkpoint 3D-109, Results; 1000 requests after 300 warm-up).
+- Scope in: `tools/bench` drives every scene through `createCommandApi` (services/kernel/src/command-api.js: contract
+  validation, PREVIEW store, kernel) with an in-memory `history` holding the scene model; stage timings kept where the
+  API allows; spike `packages/geo-model3d/spike/move-edge/`, `tools/bench/spike.test.mjs` and the spike references in
+  `tools/check-arch` tests removed (3D-08 numbers stay in its verification note); 3D-ADR-0006 / verification note get
+  the new numbers with the rig fingerprint. Scope out: service image and production class (3D-110, Q-42); COMMIT,
+  import and concurrency (3D-68).
+- Accept: `npm run bench` reports sawtooth-199 PREVIEW through `createCommandApi` with the D-111 protocol (300 warm-up,
+  5 x 1000) and the gate verdict (p95 <= 150 ms; a miss is an owner escalation, D-06); no file imports the spike;
+  `npm run check` passes.
+- Decisions: D-111, D-3D109-5..D-3D109-7  Open: Q-42 (not blocking). Does not block 3D-110 (D-3D109-6).
+- Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S tooling n=4 < 5)
 
 ### 3D-110 Kernel service III: handler, server, ports
 - Source: split of 3D-23 (D-314); Accept lines from "3D-09 .. 3D-24" and "3D-23 note from 3D-69".
