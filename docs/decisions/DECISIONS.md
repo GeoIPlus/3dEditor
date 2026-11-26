@@ -446,6 +446,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-430 | 3D-ADR-0003 §4 "no tag -> not saved" is refined by Operaflow@d2b679c `progress.md` `location-saved-by-put` / `location-no-entity-tag-not-saved`: a save to a `progress.save` `location` dataset uses `If-Match` with the strong tag of the read the results were made on (or of the own last save), `If-None-Match: *` where the dataset was not read or its read found none (404 / 410); only a read that found the dataset without a strong tag sends nothing (`NO_ENTITY_TAG`, operator told). Port `save(ref, bytes, { ifMatch } \| { ifNoneMatch: '*' })`, `saveResult` takes the read's `basis`. ADR text unchanged; this row is the reference | Owner, dialog, 2026-11-26 (3D-128) |
 | D-431 | 3D-128 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-128-datasets | Owner, dialog, 2026-11-26 (3D-128) |
 | D-432 | 3D-128 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-430, D-431 | Owner, WP session 3D-128, 2026-11-26 |
+| D-433 | Row 3D-24 (QC and export rules; MVP critical path, dependencies 3D-12, 3D-110, 3D-128 done) set `ready` by the owner and started in a fresh session on wp/3d-24-qc-export in the environment "3dEditor" | Owner, chat with the coordinator, 2026-11-26 |
 
 ## Open questions
 
