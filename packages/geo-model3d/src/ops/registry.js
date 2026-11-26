@@ -19,6 +19,9 @@ import { fitToSharedEdge } from './fit-to-shared-edge.js';
 import { removeFace } from './remove-face.js';
 import { healHole } from './heal-hole.js';
 import { alignJunction } from './align-junction.js';
+import { translateBuilding, rotateBuilding } from './rigid-move.js';
+import { setHeight } from './set-height.js';
+import { setOverhang } from './set-overhang.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -56,4 +59,8 @@ export const OPERATIONS = {
   REMOVE_FACE: { run: removeFace },
   HEAL_HOLE: { run: healHole },
   ALIGN_JUNCTION: { run: alignJunction },
+  TRANSLATE_BUILDING: { run: translateBuilding },
+  ROTATE_BUILDING: { run: rotateBuilding },
+  SET_HEIGHT: { run: setHeight },
+  SET_OVERHANG: { run: setOverhang },
 };
