@@ -442,6 +442,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-426 | 3D-126 (`REGULARIZE_FOOTPRINT`) accepted (done); merged into the base by the coordinating session (D-178); provisional ids D-417..D-425 became D-417..D-425 | Owner, WP session 3D-126, 2026-11-26 |
 | D-427 | At a merge the coordinator runs `npm run bench` (about 25 min since 3D-121) only when the WP changes `packages/geo-model3d/`, `services/kernel/` or `tools/bench/`; docs, spec, estimate and mirror-only merges run `check-docs` and `npm run check` (plus `npm run golden` when tests or fixtures change) | Owner, chat with the coordinator, 2026-11-26 |
 | D-428 | Row 3D-124 (overhang rebuild after a parent change, replaces the D-367 / D-372 refusal) set `ready` by the owner; started in a fresh session on wp/3d-124-overhang-rebuild in the environment "3dEditor" | Owner, chat with the coordinator, 2026-11-26 |
+| D-429 | 3D-74 (val3dity binding; `ready` since D-155, dependencies done) started at the owner's request by WP session 3D-116 in session_01RNYuqGMAcyyjSKjkhU3XEp, branch wp/3d-74-val3dity, from base 76dd156 (against D-178: starts are the coordinator's; recorded, not repeated) | Owner, WP session 3D-116, 2026-11-26 |
 
 ## Open questions
 
