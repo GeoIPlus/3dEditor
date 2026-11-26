@@ -21,16 +21,16 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 62 / 99 |
+| Done | 62 / 101 |
 | Review | 1 |
 | In progress | 7 |
 | Ready | 4 |
-| Proposed (waiting for the owner to set `ready`) | 24 |
+| Proposed (waiting for the owner to set `ready`) | 26 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 62/99 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 62/101 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-114 Resize roof, regularize footprint; 3D-115 Parametric dependencies; 3D-116 F-53 metrics; 3D-117 Validator: overhang end caps; 3D-119 Spec: 3D-19 envelope; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
+**Running:** 3D-114 Resize roof, regularize footprint; 3D-115 Parametric dependencies: ADR; 3D-116 F-53 metrics; 3D-117 Validator: overhang end caps; 3D-119 Spec: 3D-19 envelope; 3D-110 Kernel service III: handler, ports; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -120,7 +120,9 @@ flowchart TB
     D107["💡 📐 3D-107 ADR: shared plane"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
     D114["🚧 ⚙️ 3D-114 Resize roof, regularize footprint"]
-    D115["🚧 ⚙️ 3D-115 Parametric dependencies"]
+    D115["🚧 📐 3D-115 Parametric dependencies: ADR"]
+    D115_1["💡 ⚙️ 3D-115.1 Overhang rebuild"]
+    D115_2["💡 ⚙️ 3D-115.2 Dormers follow roof"]
     D116["🚧 ⚙️ 3D-116 F-53 metrics"]
     D117["🚧 ⚙️ 3D-117 Validator: overhang end caps"]
     D119["🚧 📐 3D-119 Spec: 3D-19 envelope"]
@@ -269,6 +271,12 @@ flowchart TB
   D16 --> D118
   D19 --> D119
   D115 --> D120
+  D115 --> D115_1
+  D114 --> D115_1
+  D117 --> D115_1
+  D120 --> D115_1
+  D115_1 --> D115_2
+  D20 --> D115_2
   D20 --> D100
   D71 --> D100
   D20 --> D101
@@ -355,7 +363,9 @@ Throughput: 62.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | done (D-296; merged into base, no PR; D-291..D-295) |
 | 3D-19 | Envelope: `TRANSLATE_BUILDING`, `ROTATE_BUILDING`, `SET_HEIGHT`, `SET_OVERHANG` (split D-340, D-346) | here | geo-model3d/ops | 14 | G4 | L | kernel | done (D-349; merged into base, no PR; D-336..D-348; GT-14 pending 3D-117, D-347) |
 | 3D-114 | `RESIZE_ROOF` (lower envelope, D-339), `REGULARIZE_FOOTPRINT` (algorithm to be stated first, D-340), `ALIGN_WALL` (D-346) | here | geo-model3d/ops | 19 | G4 | M | kernel | in-progress (D-376; wp/3d-114-footprint-ops) |
-| 3D-115 | Parametric geometry dependency management: parent / dependent surfaces (overhangs, soffits, dormers), rebuild after a parent edit in the pipeline (D-341) | here | geo-model3d/ops, docs/decisions/adr | 15, 17, 18, 19 | G4 | L | kernel | in-progress (D-378; wp/3d-115-dependencies; code after the 3D-114 and 3D-117 merges) |
+| 3D-115 | Parametric geometry dependency management: ADR 3D-ADR-115-1 (parent / dependent links, detach - solve - rebuild in the pipeline; split D-3D115-4) | here | docs/decisions/adr | 15, 17, 18, 19 | G4 | S | spec | in-progress (D-378; wp/3d-115-dependencies) |
+| 3D-115.1 | Overhang rebuild after a parent change: detach - solve - rebuild in the pipeline, replacing the D-367 refusal (D-3D115-2, D-3D115-3) | here | geo-model3d/ops | 115, 114, 117, 19, 120 | G4 | M | kernel | proposed |
+| 3D-115.2 | Dormers follow their roof face; explicit `components` record in the model contract (D-3D115-1) | here | geo-model3d/ops, contracts/model3d | 115.1, 20 | G4 | M | kernel | proposed |
 | 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | in-progress (D-368; wp/3d-116-metrics) |
 | 3D-117 | Validator: minimum face area of dependent overhang end caps measured with their coplanar end wall; degeneracy and minimum-area policy separated (D-343; unblocks GT-14) | here | geo-model3d/validate | 12, 19 | G4 | S | kernel | in-progress (D-376; wp/3d-117-overhang-cap-area) |
 | 3D-118 | Bug: a hard FIXED_POINT on a vertex with an EQUAL_Z target is met by turning the roof plane almost vertical (MATCH_ELEVATIONS commits `VALID_SOLID`) | here | geo-model3d/solve, validate | 13, 16 | G3 | S | kernel | done (D-375; merged into base, no PR; D-370..D-374) |
@@ -904,7 +914,37 @@ Throughput: 62.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 - Accept: after `ALIGN_RIDGE`, `MATCH_ELEVATIONS` and every 3D-15 / 3D-17 operation on a roof face with an overhang the
   overhang keeps its width in plan and the shell stays `VALID_SOLID`, or the operation is refused; a test per operation.
 - Decisions: D-336, D-337, D-341  Open: link representation in the contract (ADR)
-- Estimate: TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
+- Estimate (est0): TBD - `tools/budget.mjs` needs the full history (shallow clone in the 3D-19 session); the coordinator fills it at merge
+- Re-estimate 2026-11-26 (split D-3D115-4: 3D-115 = ADR only): $2.7 (p80 $5.1), ~2 min model time; basis: S spec n=8
+- Accept (after the split): 3D-ADR-115-1 accepted by the owner (D-18); rows 3D-115.1 and 3D-115.2 in the backlog.
+
+### 3D-115.1 Overhang rebuild after a parent change
+- Source: split of 3D-115 (D-3D115-4), owner dialog 2026-11-26; D-341, D-367, D-372.
+- Goal: every operation that changes the parent roof plane of an overhang keeps the overhang (strip, soffit, end caps)
+  in step, or is refused with the model unchanged.
+- Scope in: detach - solve - rebuild in `ops/pipeline.js` (D-3D115-2) with internal reconstruction descriptors;
+  refusal of payloads naming dependent entities (D-3D115-3); independent check of hard constraints after the rebuild;
+  the D-367 / D-372 guard removed only where the rebuild covers it. Scope out: schema changes (D-3D115-1), dormers
+  (3D-115.2), the end-cap minimum area (3D-117), solver changes.
+- Accept: after `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` and every 3D-15 / 3D-17 / 3D-105 / 3D-114 operation
+  that changes a roof plane, on GT-03 with a 0.6 m overhang: strip coplanar with its slope (<= `planarTolM`), the same
+  width in plan, soffit and caps rebuilt, ids kept, `VALID_SOLID`, patch without delete / create of kept ids - or a
+  refusal (`INVALID_TOPOLOGY` / `CONSTRAINT_CONFLICT` / `INVALID_GEOMETRY`) with the model unchanged; a test per
+  operation; PREVIEW = COMMIT patch; 3D-19 `SET_OVERHANG` / `SET_HEIGHT` tests pass; `npm run check`, golden, bench.
+- Decisions: D-08, D-336, D-337, D-338, D-341, D-367, D-372, D-373, D-378, D-3D115-2, D-3D115-3  Open: none
+- Estimate: $7.7 (p80 $9.0), ~13 min model time; basis: M kernel n=6
+
+### 3D-115.2 Dormers follow their roof face
+- Source: split of 3D-115 (D-3D115-4), owner dialog 2026-11-26; 3D-20 stores no host link for a dormer.
+- Goal: a dormer stays on its roof face when an operation changes that face's plane, or the operation is refused.
+- Scope in: the explicit `components` record in `building-model` (contract proposal, owner approval D-18), written by
+  `ADD_DORMER` (and `SET_OVERHANG` if the owner extends it), cleaned by `REMOVE_INSTALLATION`; dormer rebuild on the
+  3D-115.1 mechanism. Scope out: new component kinds, dormer sizing from the cloud (3D-100).
+- Accept: after every operation that changes a roof plane under a GT-18 dormer, the dormer base lies in the new plane
+  with the same size and ids, or the operation is refused, model unchanged; contract schema accepted by the owner;
+  `npm run check`, golden, bench.
+- Decisions: D-18, D-341, D-3D115-1  Open: the record's fields (contract proposal)
+- Estimate: $7.7 (p80 $9.0), ~13 min model time; basis: M kernel n=6
 
 ### 3D-116 F-53 geometric metrics
 - Source: owner, chat, 2026-11-26 (D-342); v0.2 F-53, §16.5 (geometric metrics only without a MeasurementProfile).
