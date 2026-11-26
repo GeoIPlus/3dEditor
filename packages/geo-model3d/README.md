@@ -151,6 +151,19 @@ only, D-258), `remove-installation.js` (deletes the node, its children and every
 leave roof components). The roof face is never cut (D-260): the installation touches it. Refusals D-259;
 `measurementId` sizing -> `INVALID_MEASUREMENT` (Q-28). New semantic node id kind `installation` (`installation-<n>`).
 
+**3D-19** (spec §10.10; D-3D19-1..D-3D19-10): `rigid-move.js` (TRANSLATE_BUILDING, ROTATE_BUILDING: one isometry on every
+plane, vertex, footprint, construction entity, LOCAL measurement and constraint target; WORLD measurements and
+targets tied to them stay; centroid of the building footprint; a hard constraint that cannot be verified refuses;
+zero move = no-op; journal warning), `set-height.js` (BASE: ground plane solved to the new Z; EAVE: the structural
+eave's roof face solved by D-231 / D-110, the ridge must stay -> else CONSTRAINT_CONFLICT; an overhang is taken off,
+the slope solved, the overhang rebuilt at the same width with the same ids), `overhang.js` + `set-overhang.js`
+(horizontal soffit profile of D-3D19-1: strip RoofSurface + OVERHANG in the roof plane, OuterCeilingSurface soffit,
+WallSurface + OVERHANG end caps in the gable planes; width carried by the soffit height and recovered from geometry;
+same width no-op, 0 removes, a new width keeps every id; unsupported junction -> INVALID_TOPOLOGY, D-3D19-9).
+Limitations: the eave vertices under an overhang have two independent planes and are EXPLICIT (spec §4 r3), so
+operations of other rows do not rebuild an overhang (3D-19.2); GT-14 caps are below `minFaceAreaM2` (3D-19.4);
+RESIZE_ROOF, REGULARIZE_FOOTPRINT: 3D-19.1; ALIGN_WALL: not assigned (owner).
+
 ## Internal modules
 ### solve (3D-13)
 

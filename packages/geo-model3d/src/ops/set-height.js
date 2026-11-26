@@ -79,11 +79,18 @@ function setEave(draft, body, shellFaces, heId, z, ctx) {
     conditions: ends.map((v) => b.vertexZ({ id: v, kind: 'EQUAL_Z' }, v, z, ctx.tol.zAlignTolM)),
     targetVertexIds: ends,
   };
-  if (!found.found || !slots) return { ok: true, ...op };
+  // D-3D19-3: the other vertices of the slope (ridge) stay; solved here so that this is checked on the solved planes
+  // (the solver alone can satisfy both targets by turning the slope towards vertical - bug row 3D-19.5)
+  const others = verticesOf(draft, [roof]).filter((v) => !ends.includes(v));
+  const before = others.map((v) => [...draft.vertices[v].p]);
   const solved = constraintStep(draft, op, ctx.tol);
   if (!solved.ok) return solved;
-  const again = addOverhang(draft, he.id, found.found.width, ctx, slots);
-  if (!again.ok) return again;
+  const moved = others.filter((v, i) => Math.hypot(...draft.vertices[v].p.map((/** @type {number} */ c, /** @type {number} */ k) => c - before[i][k])) > ctx.tol.planarTolM);
+  if (moved.length > 0) return refuse('CONSTRAINT_CONFLICT', [roof, ...moved], 'the other vertices of the slope (ridge) cannot stay (D-3D19-3)');
+  if (slots && found.found) {
+    const again = addOverhang(draft, he.id, found.found.width, ctx, slots);
+    if (!again.ok) return again;
+  }
   return { ok: true, warnings: solved.warnings };
 }
 

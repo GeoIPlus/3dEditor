@@ -5,6 +5,7 @@
 // measurements and constraint targets (FIXED_POINT / ON_PLANE points, planes, EQUAL_Z heights) move with the building;
 // the journal gets a warning (v0.3 §6). No topology change: no id is added or removed.
 import { cosSinDeg, unsign0 } from '../brep/index.js';
+import { compileConstraints } from '../solve/index.js';
 import { refuse } from './errors.js';
 import { orient, signedArea2 } from './geom2.js';
 
@@ -34,7 +35,7 @@ const isPlane = (/** @type {any} */ x) => x && typeof x === 'object' && isV3(x.n
 /**
  * Apply the isometry to everything that carries coordinates in the local frame.
  * @param {any} draft mutated @param {Iso} m
- * @returns {string[]} ids of WORLD-frame measurements left in place (TBD, Q-3D19-1)
+ * @returns {string[]} ids of WORLD-frame measurements left in place (D-3D19-10)
  */
 function applyIso(draft, m) {
   for (const f of Object.values(draft.faces)) f.supportPlane = mapPlane(m, f.supportPlane);
@@ -50,6 +51,8 @@ function applyIso(draft, m) {
     if (isPlane(e.geometry?.plane)) e.geometry.plane = mapPlane(m, e.geometry.plane);
   }
   for (const c of Object.values(draft.constraints)) {
+    // a target tied to a WORLD measurement stays with the real-world observation (D-3D19-10)
+    if (c.measurementId && draft.measurements[c.measurementId] && draft.measurements[c.measurementId].frame !== 'LOCAL') continue;
     if (isV3(c.target)) c.target = mapPoint(m, c.target);
     else if (isPlane(c.target)) c.target = mapPlane(m, c.target);
     else if (c.kind === 'EQUAL_Z' && typeof c.target === 'number') c.target = unsign0(c.target + m.t[2]);
@@ -66,8 +69,19 @@ function applyIso(draft, m) {
 /** @param {string} op @param {string[]} worldKept */
 const warningsOf = (op, worldKept) => [
   `${op}: rigid move of the building; fixed points, constraint targets and LOCAL measurements moved with it (v0.3 §6)`,
-  ...(worldKept.length > 0 ? [`${op}: WORLD-frame measurements not moved (TBD, Q-3D19-1): ${worldKept.join(', ')}`] : []),
+  ...(worldKept.length > 0 ? [`WORLD-frame measurements remain unchanged after the rigid building transformation (D-3D19-10): ${worldKept.length}: ${worldKept.join(', ')}`] : []),
 ];
+
+/**
+ * D-3D19-10: a hard constraint that cannot be verified after the move (its kind is still TBD, D-169) is not taken
+ * as satisfied -> CONSTRAINT_CONFLICT; verifiable ones are checked by the pipeline's constraint step.
+ * @param {any} draft @param {any} tol
+ */
+function unverifiable(draft, tol) {
+  const hard = Object.values(draft.constraints).filter((c) => c.hard);
+  const ids = compileConstraints(draft, hard, tol).rejected.map((r) => r.id).sort();
+  return ids.length > 0 ? refuse('CONSTRAINT_CONFLICT', ids, 'hard constraints cannot be verified after the rigid move (D-3D19-10)') : null;
+}
 
 /** @type {(draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult} */
 export function translateBuilding(draft, payload, ctx) {
@@ -81,8 +95,9 @@ export function translateBuilding(draft, payload, ctx) {
     const a = ctx.pointToLocal(o, 'WORLD'), b = ctx.pointToLocal([o[0] + v[0], o[1] + v[1], o[2] + v[2]], 'WORLD');
     t = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
   }
+  if (t.every((x) => x === 0)) return { ok: true };
   const kept = applyIso(draft, { cos: 1, sin: 0, c: [0, 0, 0], t });
-  return { ok: true, warnings: warningsOf('TRANSLATE_BUILDING', kept) };
+  return unverifiable(draft, ctx.tol) ?? { ok: true, warnings: warningsOf('TRANSLATE_BUILDING', kept) };
 }
 
 /** @type {(draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult} */
@@ -92,8 +107,9 @@ export function rotateBuilding(draft, payload, ctx) {
   const c = footprintCentroid(draft, ctx.tol.numericEpsilon);
   if (!c.ok) return c;
   const [cos, sin] = cosSinDeg(deg);
+  if (cos === 1) return { ok: true };
   const kept = applyIso(draft, { cos, sin, c: [c.x, c.y, 0], t: [0, 0, 0] });
-  return { ok: true, warnings: warningsOf('ROTATE_BUILDING', kept) };
+  return unverifiable(draft, ctx.tol) ?? { ok: true, warnings: warningsOf('ROTATE_BUILDING', kept) };
 }
 
 /**
