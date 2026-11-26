@@ -235,7 +235,7 @@ Constraint kinds (D-169, amended by D-289; tolerance of the hard check D-170; [S
 |---|---|---|---|---|
 | FIXED_POINT [S] | [vertex] | V3, default the stored position | each defining plane contains the point | `planarTolM` |
 | ON_PLANE [S] | [vertex, face] | V3 optional | the target point, else the derived vertex, lies on the face plane | `planarTolM` |
-| ON_PLANE [D-289] | [face] | Plane (required) | fixed face plane: unit normal equals the target's (scaled to unit, oriented like the stored face normal [A]) and offset equals its `d` | normal `numericEpsilon`, offset `planarTolM` |
+| ON_PLANE [D-289] | [face] | Plane (required) | fixed face plane: unit normal equals the target's (scaled to unit, oriented like the stored face normal, D-3D103-1) and offset equals its `d` | normal `numericEpsilon`, offset `planarTolM` |
 | FIXED_LINE / FIXED_EAVE / FIXED_RIDGE [S] | [half-edge] | - | both incident planes contain the edge's current line; EAVE / RIDGE need that `edgeRole` | `planarTolM` |
 | EQUAL_Z [S] | [vertex, vertex, ...] or [vertex...] + number | number optional | derived z equal to the first vertex's (or to the number) | `zAlignTolM` |
 | COINCIDENT [P] | [vertex, vertex] | - | derived positions equal | `topologySnapTolM` |

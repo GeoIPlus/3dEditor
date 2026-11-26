@@ -154,7 +154,7 @@ function isPlane(t) {
 }
 
 /**
- * The target plane scaled to a unit normal and oriented like the face's stored normal [A]: the same geometric plane
+ * The target plane scaled to a unit normal and oriented like the face's stored normal (D-3D103-1): the same geometric plane
  * given with the opposite orientation is not a conflict (the face orientation is the model's, spec §4).
  * @param {{ normal: P3, d: number }} t @param {P3} faceNormal
  */
