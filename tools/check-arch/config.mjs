@@ -80,6 +80,21 @@ export const CONFIG = {
     lockFile: 'package-lock.json',
   },
 
+  /**
+   * Append-only stores (3D-23; 3D-ADR-0003 §5, D-84, D-85): in store adapters (`files`; points adapters are not
+   * stores and may free decoder memory with `.delete()`) no code references a call that
+   * deletes, renames, truncates or overwrites stored objects. `names`: identifiers (imported functions, S3 commands);
+   * `memberNames`: `x.name` calls (`fh.writeFile` on a `wx` handle is allowed, so write calls are names only).
+   */
+  appendOnly: {
+    files: /^services\/kernel\/src\/adapters\/[^/]+-store\.[cm]?js$/,
+    names: ['unlink', 'unlinkSync', 'rm', 'rmSync', 'rmdir', 'rmdirSync', 'rename', 'renameSync', 'truncate', 'truncateSync',
+      'ftruncate', 'ftruncateSync', 'writeFile', 'writeFileSync', 'appendFile', 'appendFileSync', 'copyFile', 'copyFileSync',
+      'cp', 'cpSync', 'createWriteStream', 'DeleteObjectCommand', 'DeleteObjectsCommand', 'PutObjectCommand'],
+    memberNames: ['unlink', 'unlinkSync', 'rm', 'rmSync', 'rmdir', 'rmdirSync', 'rename', 'renameSync', 'truncate',
+      'truncateSync', 'ftruncate', 'deleteObject', 'deleteObjects', 'delete', 'clear'],
+  },
+
   /** Server artefacts legitimately carry the marker (3D-ADR-0001 Q-09 point 3). */
   serverDirs: ['packages/geo-model3d/', 'services/'],
 };

@@ -5,6 +5,7 @@ import { join, posix } from 'node:path';
 import { isCode, lineCount, parseSource, readText } from './scan.mjs';
 import { kernelModuleDag, kernelNoIo } from './kernel-rules.mjs';
 import { licenceAllowList } from './licence-rules.mjs';
+import { storeAppendOnly } from './store-rules.mjs';
 
 /**
  * @typedef {import('./config.mjs').ArchConfig} ArchConfig
@@ -174,5 +175,5 @@ export function clientOutputScan(ctx) {
 
 export const STATIC_RULES = {
   lineLimit, kernelPurity, kernelImporters, canaryWiring, canaryValueLeak, clientOutputScan, kernelModuleDag, kernelNoIo,
-  licenceAllowList,
+  licenceAllowList, storeAppendOnly,
 };
