@@ -3,9 +3,9 @@
 - Status: implemented in part - points port and LAS-whole adapter (3D-22), COPC-by-box adapter (3D-70); `history` port,
   memory and file store, COMMIT path, command status (3D-23); command API: PREVIEW store, COMMIT by `previewId`, rate
   and size limits, error mapping, contract validation (3D-109); handler, HTTPS server, auth / lease, heatmap request
-  (3D-110); `datasets` port: 3D-128; S3 store: 3D-111
+  (3D-110); `datasets` port, memory and file byte store, save / deliver results (3D-128); S3 store: 3D-111
 - Protection: P4 (server-only host of the kernel; never in a browser bundle)
-- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API), 3D-110 (handler, server, auth)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
+- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API), 3D-110 (handler, server, auth), 3D-128 (datasets)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
 - Source/donor: new; LAS layout from the ASPRS LAS Specification 1.4 R15 (2019); COPC layout from the COPC 1.0
   specification (copcio/copcio.github.io @a6336f7)
 - Runtime dependencies: `laz-perf` 0.0.7 (Apache-2.0, WASM; LAZ chunk decoder only), [3D-ADR-0009](../../docs/decisions/adr/3D-ADR-0009-copc-laz-decoder.md);
@@ -42,6 +42,22 @@ No `index.js` yet; a host imports `src/handler.js` (GV test host, 3D-50) and the
   `command-result` of a journal entry (the kernel's COMMIT result has exactly these members).
 - `src/adapters/memory-store.js` - `createMemoryStore()`; `src/adapters/file-store.js` - `createFileStore({ root,
   settleMs? })`: exclusive create (`wx`), `get` re-reads a file another writer is still filling for up to `settleMs`.
+- `src/ports/datasets.js` (3D-128; 3D-ADR-0003 §1, §4) - `DatasetsPort { read(ref) -> { bytes, entityTag } |
+  undefined, save(ref, bytes, ifMatch) -> { status: 'saved', entityTag } | { status: 'precondition-failed' },
+  putDelivered(p, bytes) -> { digest, created }, readDelivered(p, digest) }`; `ByteStore { create(key, bytes) ->
+  boolean, get(key) }`; `sha256`, `entityTag` (interim tags `"{generation}.{sha256}"`), `datasetKeys`
+  (`ds/{ref}/{n}.bin`, `p/{p}/delivered/{sha256}.bin`). `src/datasets.js` - `createByteDatasets(store)`: the port over
+  a byte store, plus `createDataset(ref, bytes)` (generation 0; the DP's act, dev and tests only). A save checks the
+  tag names the newest generation `n` with its digest and creates generation `n + 1` if absent: compare-and-swap
+  without overwrite. `src/adapters/memory-datasets-store.js` - `createMemoryByteStore()`;
+  `src/adapters/file-datasets-store.js` - `createFileByteStore({ root, settleMs? })`: exclusive create, bytes + SHA-256
+  trailer, `get` re-reads a file still being filled.
+- `src/results.js` (3D-128) - `saveResult({ datasets, projectId, ref, bytes, entityTag })` -> `SAVED` | `NOT_SAVED`
+  `NO_ENTITY_TAG` (no `PUT` sent) | `KEPT` `PRECONDITION_FAILED` + `digest` (412: bytes kept in the own store);
+  `deliverResult({ datasets, publicBase, projectId, bytes })` -> `{ digest, created, address }`;
+  `deliveredAddress(publicBase, p, digest)` = `{publicBase}/api/projects/{p}/results/{sha256}` (https only, no
+  credential, query or fragment; no pre-signed URL). Not wired into the handler: export action and the serving route
+  are 3D-24's.
 - `src/commit.js` - `createCommitService({ history, toleranceProfile, clock, newOperationId?, pointsFor? })` ->
   `{ commit(command, { actorId }, lookup?), status(projectId, commandId), execute(model, command), history }`;
   replies `{ httpStatus, body }` with a contract `command-result`, `command-status` or `error` body.
@@ -157,4 +173,10 @@ LOCAL points, another datum -> `422 INVALID_CRS` `DATUM_MISMATCH` (heatmap and F
 400 / 401. `test/server.test.js`: COMMIT and status over a real TLS socket (openssl certificate made at test time),
 401 / 413 on a body above 1 MiB, no start without TLS material. Bench through the handler: `npm run bench:handler`
 (`tools/bench/handler.mjs`).
+`test/datasets.test.js` (3D-128): the port contract suite `test/datasets-contract.js` (run by every `datasets`
+adapter, the CS adapter of 3D-63 too) on the memory and the file byte store: read with a strong tag, save with the
+current tag, stale / unknown / weak tag and missing dataset -> 412 with nothing written, concurrent saves on one tag,
+repeated bytes get a new tag, delivered bytes write-once and a second write of one digest a no-op; tag parsing, file
+settle and damage. `test/results.test.js`: no stored tag -> no `PUT` (`NOT_SAVED` `NO_ENTITY_TAG`), 412 -> `KEPT` with
+the bytes readable and the dataset unchanged, delivered address without query string, credential or fragment.
 Golden GT-20 / GT-21 run on the kernel functions (`packages/geo-model3d/test/golden/`).
