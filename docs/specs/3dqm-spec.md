@@ -836,13 +836,36 @@ dimensions or a plane-fit measurement; installation id (`REMOVE_INSTALLATION`).
 **Rules.**
 1. Pipeline (v0.2 C.16): measurement source -> roof attachment plane -> placement and bounds -> size (manual or from the
    cloud / plane fit) -> Boolean/trim of the roof only where needed -> installation shell -> validate. The report carries
-   confidence, inliers and the reason of a refusal.
+   confidence, inliers and the reason of a refusal. No case of r6..r9 trims the roof (r6).
 2. `ADD_DORMER`: type `FLAT` or `GABLE`; outline on a roof face + dimensions manual or from plane fit. `ADD_CHIMNEY`:
-   box only; dimensions manual or from the cloud (v0.3 §6).
-3. The installation is a separate closed `BuildingInstallation` body; its base lies in the roof plane (GT-17).
+   box only; dimensions manual or from the cloud (v0.3 §6). Payload fields: `command-payload-add-dormer`,
+   `command-payload-add-chimney`, `command-payload-remove-installation` ([contracts/model3d](../../contracts/model3d/README.md)).
+3. The installation is a separate closed `BuildingInstallation` body; its base lies in the roof plane (GT-17). Its base
+   face is a `ClosureSurface`; its roof faces join no roof component (as D-227) (D-261).
 4. Boolean in P0 only: plane-plane, face-half-space, union of a prism with a shell (K-12, v0.3 §14). Own implementation,
    no third-party Boolean library (D-109, [3D-ADR-0004](../decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md) B1).
-5. `REMOVE_INSTALLATION`: removes the installation and restores the underlying roof face (v0.2 §13.5).
+5. `REMOVE_INSTALLATION`: deletes the installation's semantic node, solid, shell, faces, half-edges and vertices. The
+   roof face was never changed (r6), so it is as before the installation was added (v0.2 §13.5, D-260).
+6. Roof not cut (D-260, reading of GT-17): the roof face is not cut or imprinted; the installation is a separate closed
+   body touching the roof plane; the building's volume is unchanged (GT-17: 520 m3).
+7. `ADD_CHIMNEY` (D-256, D-261): box with vertical walls along the local building axes, `widthM` along local x,
+   `depthM` along local y, base centred on `center` ([V] `packages/geo-model3d/src/ops/add-chimney.js`) in the roof
+   face plane, horizontal top. `heightAboveRoofM` is measured at the lowest (downhill) base corner: top z = lowest base
+   corner z + `heightAboveRoofM` (GT-17: top 7.125 m). A top at or below the highest base corner -> `INVALID_GEOMETRY`.
+8. `ADD_DORMER` `FLAT` (D-257): the body is the vertical prism over the whole outline, base in the roof face plane,
+   horizontal top at the highest outline corner z + `heightM`. `heightM` is the back (uphill) wall height, set by the
+   operator from the cloud or stereo (GT-18: top 7.875 m).
+9. `ADD_DORMER` `GABLE` (D-258): payload field `ridgeRiseM`, required for `GABLE` when `heightM` is given (schema
+   `if`/`then`). Walls as `FLAT` (top at the highest outline corner z + `heightM`); the ridge runs along the roof face's
+   fall line through the outline centroid, `ridgeRiseM` above the wall top; each gable slope reaches the wall top at
+   the outline corner farthest from the ridge on its side. A non-convex `GABLE` outline -> `INVALID_GEOMETRY` [A].
+10. Refusal codes (D-259, §10.1 r6):
+    - unknown `roofFaceId` or `installationId` -> `INVALID_PAYLOAD` naming the id (as D-228);
+    - face not a `RoofSurface` of a `Building` / `BuildingPart` body, or id not a `BuildingInstallation` ->
+      `INVALID_PAYLOAD`;
+    - outline or box not inside the roof face, a point off its plane beyond `planarTolM`, a self-crossing outline, a
+      top not above the base -> `INVALID_GEOMETRY`;
+    - sizing from `measurementId` -> `INVALID_MEASUREMENT` until the measurement layout (Q-28) is defined (row 3D-100).
 
 **Accept:**
 - Accept: GT-17, GT-18 (§13).
@@ -1035,7 +1058,7 @@ Count: 29 tests (GT-I1..GT-I4, GT-01..GT-25); per module: `import` 3, `export` 1
 Final ids assigned at merge (D-38, D-71). Each is recorded in DECISIONS.md. Owner answers of
 2026-11-21 (dialog): D-68 (GT-13 -> 3D-23), D-69 (CP lease only, no own lock), D-70 (imported vertices
 explicit until edited). Owner answers of 2026-11-23 (dialog, 3D-06): D-76 (refusal codes), D-77 (severities). Owner answers of 2026-11-23 (dialog, 3D-22): D-130, D-131 (Q-24 narrowed),
-D-132 (Q-18 narrowed), D-135, D-136.
+D-132 (Q-18 narrowed), D-135, D-136. Owner answers of 2026-11-25 (dialog, 3D-20): D-256..D-259, D-261 (Q-38 closed).
 
 | Id | Question | Used in |
 |---|---|---|
@@ -1066,7 +1089,7 @@ Contract open questions of 3D-06 (D-75; source and wording:
 | Q-35 | `TRIM_FACE` side to keep (`keepPoint` proposed) | 3D-15 |
 | Q-36 | `HEAL_HOLE` "allowed corrections" (read as `maxDisplacementM`) | 3D-17 |
 | Q-37 | Form of the new extent of `RESIZE_ROOF` (`roofOutline` proposed) | 3D-19 |
-| Q-38 | Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
+| Q-38 | **Closed by D-256** (D-256..D-258; §10.11 r7..r9). Dimensions of `ADD_DORMER` (FLAT / GABLE) and `ADD_CHIMNEY` beyond outline / box | 3D-20 |
 | Q-39 | Whether the command carries `leaseRef` / `leaseEpoch` (§11 rule 11) or the service takes them from the session | 3D-23 |
 
 Existing questions this spec depends on: Q-03 (CP extension content, 3D-43), Q-10 (val3dity binding, 3D-12). Q-01

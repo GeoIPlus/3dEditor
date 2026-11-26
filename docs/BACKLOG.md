@@ -21,20 +21,23 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 46 / 78 |
-| Review | 1 |
-| In progress | 10 |
+| Done | 49 / 78 |
+| Review | 2 |
+| In progress | 6 |
 | Ready | 3 |
 | Proposed (waiting for the owner to set `ready`) | 17 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 46/78 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 49/78 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-18 History; 3D-19 Envelope ops; 3D-101 Spec: 3D-20 installations; 3D-102 Eval rows in a reserved id range; 3D-82 Spec: 3D-69 cloud CRS (provisional); 3D-83 ADR-0007 note: projections (provisional); 3D-45 SC: pinned model3d schemas; 3D-47 SC: 3D view port + host.
+**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-18 History; 3D-19 Envelope ops; 3D-82 Spec: 3D-69 cloud CRS (provisional); 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D102["✅ 🧪 3D-102 Eval rows in a reserved id range"]
+    D83["✅ 📐 3D-83 ADR-0007 note: projections"]
+    D101["✅ 📐 3D-101 Spec: 3D-20 installations"]
     D20["✅ ⚙️ 3D-20 Installations"]
     D89["✅ 🔧 3D-89 Growth g per row"]
     D86["✅ 🔧 3D-86 Forecast script + backfill"]
@@ -84,6 +87,7 @@ flowchart TB
   end
   subgraph review["REVIEW"]
     D71["🔍 ⚙️ 3D-71 FIT_PLANE command"]
+    D45["🔍 🔗 3D-45 SC: pinned model3d schemas"]
   end
   subgraph ready["READY"]
     D74["▶️ 🖥️ 3D-74 val3dity image + binding"]
@@ -92,19 +96,16 @@ flowchart TB
     D51["▶️ 🔗 3D-51 geoviewer scene3d adapter"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
-    D102["🚧 🧪 3D-102 Eval rows in a reserved id range"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
     D82["🚧 📐 3D-82 Spec: 3D-69 cloud CRS (provisional)"]
-    D83["🚧 📐 3D-83 ADR-0007 note: projections (provisional)"]
     D15["🚧 ⚙️ 3D-15 Core edits"]
     D17["🚧 ⚙️ 3D-17 Repair ops"]
     D18["🚧 ⚙️ 3D-18 History"]
     D19["🚧 ⚙️ 3D-19 Envelope ops"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
-    D101["🚧 📐 3D-101 Spec: 3D-20 installations"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
@@ -120,7 +121,6 @@ flowchart TB
     D42["💡 🔗 3D-42 3DQM tools"]
     D43["💡 🔗 3D-43 plans/3dqm"]
     D44["💡 🔗 3D-44 3DQM UI panels"]
-    D45["🚧 🔗 3D-45 SC: pinned model3d schemas"]
     D50["💡 🔗 3D-50 geoviewer host adapter"]
     D60["💡 🔗 3D-60 crowdsource 3D project + CityJSON"]
     D61["💡 🔗 3D-61 crowdsource COPC stream"]
@@ -277,10 +277,10 @@ flowchart TB
 Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script ([method §4](metrics/README.md#4-forecast-etc-and-tuning)).
 
 ```
-Forecast 2026-11-25 (ledger n=39 WPs, classes with n>=5: L kernel n=5, M kernel n=5, M tooling n=5, S spec n=8; baseline d7c472d 2026-11-19)
-Known remaining: $248 / $302 over 32 rows   Overhead k=1.06   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $263 / $320
-Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accuracy: TBD (no finished WP with est0 and actual)
+Forecast 2026-11-25 (ledger n=40 WPs, classes with n>=5: L kernel n=5, M kernel n=5, M tooling n=5, S spec n=8; baseline d7c472d 2026-11-19)
+Known remaining: $237 / $285 over 29 rows   Overhead k=1.08   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $256 / $308
+Throughput: 57.2 rows/week (6 d), 422 model min/week; waiting share 99 %   Accuracy: TBD (no finished WP with est0 and actual)
 ```
 
 ## Work-package status
@@ -309,8 +309,8 @@ Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | kernel | in-progress (D-267; wp/3d-19-envelope-ops) |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | done (D-263; merged into base, no PR; D-256..D-262) |
 | 3D-100 | Installation size from the cloud: `measurementId` of `ADD_CHIMNEY` / `ADD_DORMER` (v0.3 §6 F-36, F-37) | here | geo-model3d/ops | 20, 71 | G4 | M | kernel | proposed |
-| 3D-101 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-256..D-260) | here | docs/specs | 20 | G4 | S | spec | in-progress (D-267; wp/3d-101-spec-installations) |
-| 3D-102 | Agent-eval scenarios use a reserved row id range (e.g. 3D-9xx) that the real backlog never reaches, instead of 3D-90..3D-98 (D-264) | here | docs/agent-evals, tools/agent-evals | 28, 87 | G0 | S | tests | in-progress (D-265; wp/3d-102-eval-id-range) |
+| 3D-101 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-256..D-260) | here | docs/specs | 20 | G4 | S | spec | done (D-272; merged into base, no PR) |
+| 3D-102 | Agent-eval scenarios use a reserved row id range (e.g. 3D-9xx) that the real backlog never reaches, instead of 3D-90..3D-98 (D-264) | here | docs/agent-evals, tools/agent-evals | 28, 87 | G0 | S | tests | done (D-277; merged into base, no PR) |
 | 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | kernel | done (D-230; merged into base, no PR; D-226..D-229) |
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, idempotent `commandId` + `expectedVersion` (GT-13, D-68), rate limit, error registry, command status, storage port with interim file/S3 adapter (D-35) | here | service | 03, 06, 18 | G5 | L | service | proposed |
@@ -347,7 +347,7 @@ Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
 | 3D-79 | Service image licence check: no GPL, LGPL or AGPL in the kernel service container image (3D-ADR-0004 decision 3, D-181) | here | service image, tools/check-arch | 23, 67 | G5 | M | tooling | proposed |
 | 3D-81 | Bug: public `worldToLocal` / `localToWorld` use a plain translation; wrong for geographic and north-first projected buildings (found by 3D-69) | here | geo-model3d (index) | 09, 32, 69 | G1 | S | kernel | done (D-205; merged into base, no PR) |
 | 3D-82 | Spec update for 3D-69: §4a cloud reprojection (`createCrsMapping`, `DATUM_MISMATCH` / `NO_PROJECTION`), §9 cloud CRS from the dataset descriptor (D-164, D-165, D-196..D-198) | here | docs/specs | 69, 72 | G4 | S | spec | in-progress (D-267; wp/3d-82-spec-cloud-crs) |
-| 3D-83 | 3D-ADR-0007 note: the CRS table also holds PROJ proj-strings of projected CRSs, verified against PROJ (D-198); needs owner approval (D-18) | here | docs/decisions/adr | 69 | G4 | S | spec | in-progress (D-267; wp/3d-83-adr-0007-note) |
+| 3D-83 | 3D-ADR-0007 note: the CRS table also holds PROJ proj-strings of projected CRSs, verified against PROJ (D-198); needs owner approval (D-18) | here | docs/decisions/adr | 69 | G4 | S | spec | done (D-274; merged into base, no PR) |
 | 3D-84 | BACKLOG graph icons: status and work-type icon per WP node, generated by `check-docs --fix` (D-208) | here | tools, docs | 73, 76 | G0 | M | tooling | done (D-224; merged into base, no PR) |
 | 3D-85 | Session cost ledger, per-row estimates, backlog forecast (ETC) and independent efficiency review: rules in AGENTS.md §7.7/§7.9 and the skills (D-236..D-240) | here | AGENTS.md, .claude/skills, docs/metrics, docs/templates | 00 | G0 | S | tooling | done (D-244; merged into base, no PR) |
 | 3D-87 | Bug: agent-eval start states fail `check:docs` - scenario rows lack the `Type` cell (D-221) and documents link into the paths hidden from the agent | here | tools/agent-evals, docs/agent-evals | 28, 84 | G0 | S | tooling | done (D-244; merged into base, no PR) |
@@ -359,7 +359,7 @@ Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | mirror | proposed (UI per brandbook, D-40) |
 | 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-28 | G5 | M | mirror | proposed (Q-03 shape known, 3D-01 §6; extension URI content-named, no product) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | mirror | proposed (UI per brandbook, D-40) |
-| 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared | contracts | 06, 27 | G3 | S | mirror | in-progress (D-267; wp/3d-45-sc-schemas) |
+| 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared (77) | contracts | 06, 27 | G3 | S | mirror | review (D-270; bookkeeping merged here; SC row 77 waits for PR #68) |
 | 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | mirror | in-progress (D-61; SC wp/70-3d-view-host, wp/71-3d-camera-controls; started in a fresh cloud session; UI per brandbook, D-40) |
 | 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | mirror | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared (76) | tools, CI | 27 | G0 | S | mirror | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
@@ -628,7 +628,7 @@ Throughput: 53.7 rows/week (6 d), 422 model min/week; waiting share 99 %   Accur
   real backlog (e.g. 3D-901..3D-9xx); a test that fails when a scenario id is a real row id; then real ids may use
   3D-90..3D-99 again or stay skipped (owner).
 - Accept: `pass check-docs after setup` passes with a real row of every former scenario id planted; eval scores unchanged.
-- Decisions: D-264  Open: -
+- Decisions: D-264, D-275 (range 3D-900..3D-999), D-276 (3D-90..3D-99 stay skipped)  Open: -
 
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under

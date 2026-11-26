@@ -28,7 +28,7 @@ function module285() {
 export default ({ work }) => {
   write(work, 'packages/geo-model3d/src/geom2d.js', module285());
   addRow(work, {
-    id: '3D-96', title: 'Kernel util: 2D segment helpers', modules: 'geo-model3d', deps: '05', size: 'S', status: 'ready (owner, chat)',
+    id: '3D-906', title: 'Kernel util: 2D segment helpers', modules: 'geo-model3d', deps: '05', size: 'S', status: 'ready (owner, chat)',
     details: `- Source: owner message (scenario).
 - Goal: \`segmentLength\`, \`segmentMidpoint\`, \`segmentIntersection\` (null when parallel) for 2D segments, with JSDoc and
   unit tests.
