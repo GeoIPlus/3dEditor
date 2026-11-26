@@ -57,7 +57,7 @@ Functional source documents (the owner supplies them; propose `shared_compnents/
 | 5 | Export only for valid solids; drafts stay inside | D |
 | 6 | The geometry kernel runs **only on a server** (code protection). The browser holds a visual ghost without solver logic. No WASM build of the kernel is shipped to browsers | D |
 | 7 | Kernel = a DOM-free Node package in `shared_compnents`, run by **two hosts**: the geoviewer server for testing, a Tools Plane service in production | D |
-| 8 | Planes are primary, vertices are derived (intersection of the planes of incident faces) | D |
+| 8 | Supporting surfaces (planes in V1) are primary; vertices are derived from their definitions. Plane intersection is the main way to define a vertex, not the only one. Revised by the owner on 2026-11-26: the binding text is `fullSpecsV0.3.md` §4.1 (Р-08 rev. 1) | D |
 | 9 | Workplaces: `3dqm.production` (operator edits) and `3dqm.qa` (independent check and approval by a different person; any later edit clears the approval) | D |
 | 10 | Assignments of buildings to operators and roles come from the CP contract, not from an admin screen inside the editor | D |
 | 11 | Point cloud in the editor: snapping to points, model-to-cloud deviation heatmap, plane fit from selected points | D |
