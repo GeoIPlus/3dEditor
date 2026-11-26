@@ -24,8 +24,8 @@ Updated: 2026-11-26
 | Done | 69 / 105 |
 | Review | 0 |
 | In progress | 4 |
-| Ready | 7 |
-| Proposed (waiting for the owner to set `ready`) | 24 |
+| Ready | 8 |
+| Proposed (waiting for the owner to set `ready`) | 23 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 69/105 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
@@ -148,7 +148,7 @@ flowchart TB
     D129["▶️ 🔗 3D-129 SC: INVALID_CRS schema"]
     D44["💡 🔗 3D-44 3DQM UI panels"]
     D50["▶️ 🔗 3D-50 geoviewer consumes 3DQM packages"]
-    D127["💡 🔗 3D-127 geoviewer runs 3DQM"]
+    D127["▶️ 🔗 3D-127 geoviewer runs 3DQM"]
     D60["💡 🔗 3D-60 crowdsource 3D project + CityJSON"]
     D61["💡 🔗 3D-61 crowdsource COPC stream"]
     D62["💡 🔗 3D-62 crowdsource server grant"]
@@ -468,7 +468,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | mirror | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared (76) | tools, CI | 27 | G0 | S | mirror | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
 | 3D-50 | geoviewer consumes 3DQM packages: `@geoiplus/*` dependencies (none today) with the registry token in CI and Docker build, P4 canary scan of the client build (split D-397: mount and kernel route -> 3D-127) | geoviewer | host, CI | 23, 43 | G5 | M | mirror | ready (D-381; waits for 3D-43) |
-| 3D-127 | geoviewer runs 3DQM: mount workplace (`3dqm.production`, `3dqm.qa`), kernel route on server (mounts `createKernelHandler`, 3D-ADR-0002), file storage port for tests (split of 3D-50, D-397) | geoviewer | host | 50, 110, 43 | G5 | M | mirror | proposed |
+| 3D-127 | geoviewer runs 3DQM: mount workplace (`3dqm.production`, `3dqm.qa`), kernel route on server (mounts `createKernelHandler`, 3D-ADR-0002), file storage port for tests (split of 3D-50, D-397) | geoviewer | host | 50, 110, 43 | G5 | M | mirror | ready (D-411; waits for 3D-50, 3D-43) |
 | 3D-51 | geoviewer `scene3d` adapter implementing the 3D view port (entity-id pick, model3d drawing in GV) | geoviewer | scene3d | 47, 50 | G5 | M | mirror | ready (D-61; waits for 3D-47, 3D-50; D-54; UI per brandbook, D-40) |
 
 ## Details

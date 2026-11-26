@@ -424,6 +424,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-408 | 3D-110 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-402..D-407, rows 3D-128 (datasets port + file adapter) and 3D-129 (SC mirror: re-vendor the error schema with INVALID_CRS); the command-api JSDoc conflict with 3D-121 resolved (both options) | Owner, WP session 3D-110, 2026-11-26 |
 | D-409 | Rows 3D-128 and 3D-129 set `ready` by the owner (chat in WP session 3D-110); the coordinator starts 3D-128 in a fresh session (3D-24 depends on it) | Owner, WP session 3D-110, 2026-11-26 |
 | D-410 | 3D-128 (datasets port + file adapter) started in a fresh session on branch wp/3d-128-datasets in the environment "3dEditor" (env_01P477QdYSMhcdzLmGZz2KVM: setup script runs `npm ci`); new WP sessions use that environment | Coordinating session, 2026-11-26 |
+| D-411 | Row 3D-127 (geoviewer runs 3DQM) set `ready` by the owner (chat in the estimate session); it waits for 3D-50 and 3D-43 (3D-110 done) | Owner, estimate session, 2026-11-26 |
 
 ## Open questions
 
