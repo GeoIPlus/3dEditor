@@ -91,6 +91,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D23["🔍 🖥️ 3D-23 Kernel service I: history, COMMIT"]
     D45["🔍 🔗 3D-45 SC: pinned model3d schemas"]
   end
   subgraph ready["READY"]
@@ -116,7 +117,6 @@ flowchart TB
   end
   subgraph g5["G5 - service, QC, E2E (PROPOSED)"]
     D79["💡 🔧 3D-79 Service image licence check"]
-    D23["🔍 🖥️ 3D-23 Kernel service I: history, COMMIT"]
     D23_1["💡 🖥️ 3D-23.1 Kernel service II: command API"]
     D23_2["💡 🖥️ 3D-23.2 Kernel service III: handler, ports"]
     D23_3["💡 🖥️ 3D-23.3 history S3 adapter"]
