@@ -67,6 +67,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).
 | 2026-11-26 | 3D-114 | session_01RNYuqGw3pck2hciMrRxtCX | wp | ? | ? | ? | ? | ? | ? | ? | as of - | yes (Fable, see checkpoint 3D-114) | no `result` event in the last two pages during the running turn; the coordinator reads the actual at merge (3D-19 review P2) |
+| 2026-11-26 | 3D-114.1 | session_01RNYuqGitbFyq7rHjZSv1sp | wp | ? | ? | ? | ? | ? | 5.3 | claude-opus-5-5 | as of - | not due (13 calibration reviews done; no trigger measurable without a `result` event) | no `result` event in the newest page during the running single turn (list_events kinds result, limit 10); span from get_session 14:03-19:19Z incl. owner dialog; the coordinator reads the actual at merge |
 
 ## Improvement proposals
 

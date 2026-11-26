@@ -226,7 +226,7 @@ WallSurface + OVERHANG end caps in the gable planes; width carried by the soffit
 same width no-op, 0 removes, a new width keeps every id; unsupported junction -> INVALID_TOPOLOGY, D-344).
 Limitations: the eave vertices under an overhang have two independent planes and are EXPLICIT (spec §4 r3), so
 operations of other rows do not rebuild an overhang (3D-115); GT-14 caps are below `minFaceAreaM2` (3D-117);
-RESIZE_ROOF, ALIGN_WALL: 3D-114 (below); REGULARIZE_FOOTPRINT: 3D-114.1.
+RESIZE_ROOF, ALIGN_WALL: 3D-114 (below); REGULARIZE_FOOTPRINT: 3D-114.1 (below).
 
 **3D-114** (spec §10.10 r2, r4; D-339, D-346, D-3D114-1..4): `lower-envelope.js` (lower-envelope test of the roof
 planes - no valley edge, no plane below a roof vertex -, strictly convex outline, cells of the lower envelope over the
@@ -237,6 +237,15 @@ the outline must be the footprint offset edge by edge, each outward offset is a 
 otherwise INVALID_TOPOLOGY, D-344), `align-wall.js` (ALIGN_WALL: only the wall plane changes, vertices re-derived, roof
 planes kept, eave height recomputed; footprint record follows; an overhang on the wall or its end wall is rebuilt at
 the same width with the same ids; a roof face turned over or a junction the kept planes no longer meet -> INVALID_TOPOLOGY).
+
+**3D-114.1** (spec §10.10 r3; v0.2 F-39; D-3D1141-1..8): `regularize-plan.js` (pure 2D plan: per ring, chains of walls
+within `footprintAngleTolDeg` of their longest wall merge into it, plane and id kept; optional orthogonalisation onto
+the 0 / 90 deg grid of the longest outer wall about each edge's midpoint; degenerate rings; vertex shift and area
+change), `regularize-courtyard.js` (degenerate courtyard removed with `allowCourtyardRemoval` when its hole lies in one
+ground and one roof face, else INVALID_TOPOLOGY), `regularize-footprint.js` (REGULARIZE_FOOTPRINT: wall planes set, roof
+planes kept, vertices re-derived, merged walls joined by the MERGE_FACES mechanism with the lineage composed over
+successive dissolves; footprint record follows; overhangs rebuilt, refused on a merged-away wall; change report in
+`warnings`). No distance limit (D-3D1141-3); small steps are not touched (D-3D1141-7).
 
 ## Internal modules
 ### solve (3D-13)
