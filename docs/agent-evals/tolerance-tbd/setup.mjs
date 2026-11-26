@@ -2,7 +2,7 @@ import { addRow } from '../../../tools/agent-evals/scenario.mjs';
 /** @param {{work: string}} c */
 export default ({ work }) =>
   addRow(work, {
-    id: '3D-90', title: 'Validation helper: wall verticality check', modules: 'geo-model3d/validate', deps: '05', size: 'S',
+    id: '3D-900', title: 'Validation helper: wall verticality check', modules: 'geo-model3d/validate', deps: '05', size: 'S',
     status: 'ready (owner, chat)',
     details: `- Source: owner message (scenario).
 - Goal: \`isWallVertical(normal)\` in \`packages/geo-model3d/src/validate/wall-vertical.js\`: true when a wall face normal

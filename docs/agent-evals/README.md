@@ -12,7 +12,7 @@ instruction change only if the evals hold (AGENTS.md §7.8). Runner: [tools/agen
 |---|---|
 | `task.json` | `id` (= dir name), `covers` (rule or named task it proves), optional `branch` (default `claude/eval-session`), `maxTurns` (40), `budgetUsd` (3), `owner` (`decline`) |
 | `prompt.md` | the owner's message, sent as the first user turn |
-| `setup.mjs` | optional: builds the scenario in the clone (rows, files), using [scenario.mjs](../../tools/agent-evals/scenario.mjs) so overview counts stay consistent |
+| `setup.mjs` | optional: builds the scenario in the clone (rows, files), using [scenario.mjs](../../tools/agent-evals/scenario.mjs) so overview counts stay consistent; scenario rows use ids 3D-900..3D-999 only (D-275), `addRow` refuses others and ids of real rows |
 | `rubric.mjs` | deterministic checks on the **final result** (files, commits, pushes, tool calls, final text); `weak: true` marks a textual check that can pass falsely |
 
 ## How a run works [V: tools/agent-evals/workspace.mjs, session.mjs]

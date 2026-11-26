@@ -9,7 +9,7 @@ import { checkDocs } from '../check-docs.mjs';
 import { parseTranscript } from './transcript.mjs';
 import { addedBacklogRows, askedDialog, grade, onlyDocs, reexportOnly, validateRubric } from './grade.mjs';
 import { answerPermission, DECLINE_MESSAGE } from './session.mjs';
-import { recount } from './scenario.mjs';
+import { insertRow, recount, SCENARIO_IDS, scenarioIdProblems, scenarioRowIds } from './scenario.mjs';
 import { loadTasks } from './tasks.mjs';
 import { HIDDEN, hide, STUB_TEXT } from './workspace.mjs';
 import { summarize } from './report.mjs';
@@ -149,7 +149,11 @@ describe('tasks in docs/agent-evals', () => {
 describe('task start states', () => {
   // Every setup.mjs must leave documents that pass check:docs, as `prepare` builds them (hidden paths removed).
   // Provisional ids are allowed: they come from the checked-out branch, not from the scenario.
-  it('pass check-docs after setup', async () => {
+  /**
+   * check:docs problems of every start state; `plant` edits the clone before setup.mjs runs.
+   * @param {(work: string) => void} [plant]
+   */
+  async function startStateProblems(plant) {
     const { tasks } = await loadTasks(join(root, 'docs', 'agent-evals'));
     const failures = [];
     for (const task of tasks.filter((t) => existsSync(join(t.dir, 'setup.mjs')))) {
@@ -161,16 +165,54 @@ describe('task start states', () => {
           filter: (src) => !/^(\.git|node_modules)(\/|$)/.test(relative(root, src)),
         });
         hide(work);
+        plant?.(work);
         const mod = await import(pathToFileURL(join(task.dir, 'setup.mjs')).href);
         await mod.default({ work, git: () => { throw new Error('setup.mjs must not need git here'); } });
         for (const p of checkDocs(work, { allowProvisional: true })) failures.push(`${task.id}: ${p}`);
+      } catch (e) {
+        failures.push(`${task.id}: ${String(/** @type {any} */ (e).message ?? e)}`);
       } finally {
         rmSync(dir, { recursive: true, force: true });
       }
     }
-    expect(failures).toEqual([]);
+    return failures;
+  }
+
+  it('pass check-docs after setup', async () => {
+    expect(await startStateProblems()).toEqual([]);
   }, 60_000);
 
+  // 3D-102 Accept: real rows with every former scenario id (3D-90..3D-98, D-264) do not break any start state.
+  it('pass check-docs after setup with real rows 3D-90..3D-98 planted', async () => {
+    const plant = (/** @type {string} */ work) => {
+      for (let n = 90; n <= 98; n += 1) insertRow(work, { id: `3D-${n}`, title: `Planted ${n}`, modules: 'docs', deps: '-', size: 'S', type: 'tests', status: 'proposed', details: '- Planted by a test.' });
+    };
+    expect(await startStateProblems(plant)).toEqual([]);
+  }, 60_000);
+});
+
+describe('scenario row ids (3D-102)', () => {
+  const evalsDir = join(root, 'docs', 'agent-evals');
+  const ids = scenarioRowIds(evalsDir);
+  const backlog = readFileSync(join(root, 'docs', 'BACKLOG.md'), 'utf8');
+
+  it('are found, lie in the reserved range and are no real row id of docs/BACKLOG.md', () => {
+    expect(ids.length).toBeGreaterThanOrEqual(9);
+    expect(scenarioIdProblems(backlog, ids)).toEqual([]);
+  });
+
+  it('a planted real row with a scenario id is reported', () => {
+    const { task, id } = ids[0];
+    const planted = `${backlog}\n| ${id} | planted | here | m | - | G0 | S | tests | proposed |\n`;
+    expect(scenarioIdProblems(planted, ids)).toEqual([`${task}: ${id} is a real row in docs/BACKLOG.md`]);
+  });
+
+  it('an id outside the reserved range is reported', () => {
+    expect(scenarioIdProblems('', [{ task: 't', id: '3D-91' }])).toEqual([`t: 3D-91 outside 3D-${SCENARIO_IDS.min}..3D-${SCENARIO_IDS.max}`]);
+  });
+});
+
+describe('task start states (hide)', () => {
   it('hide() leaves only neutral stubs under the hidden paths', () => {
     const dir = mkdtempSync(join(tmpdir(), 'eval-hide-'));
     const work = join(dir, 'work');
