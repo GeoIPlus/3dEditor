@@ -1,11 +1,13 @@
 // `datasets` port of the kernel service (3D-128; 3D-ADR-0003 §1, §4; D-35, D-82, D-83, D-85): the Operaflow side of the
 // data. Reading the input CityJSON named by the document (with the strong entity tag of that read), saving to a
-// `progress.save` `location` dataset (whole-body `PUT` + `If-Match`, OF `progress.md:26`), and putting / reading result
+// `progress.save` `location` dataset (whole-body `PUT` + `If-Match`, or `If-None-Match: *` to create one, OF
+// `progress.md` `location-saved-by-put`, Operaflow@d2b679c), and putting / reading result
 // bytes in the service's own store under a content-addressed key (OF `acceptance.md:17`, `:20`). Points are a separate
 // port (ports/points.js). `createByteDatasets` (../datasets.js) builds the port over a byte store: file
 // (adapters/file-datasets-store.js), memory (adapters/memory-datasets-store.js, tests). The crowdsource
 // adapter of 3D-63 implements the same port and runs the same contract suite (test/datasets-contract.js).
-// No operation deletes; `save` replaces a dataset's content only as a compare-and-swap on the entity tag, and an
+// No operation deletes; `save` replaces a dataset's content only as a compare-and-swap on the entity tag (or creates
+// an absent dataset), and an
 // adapter keeps every earlier representation (D-84).
 import { createHash } from 'node:crypto';
 import { segment } from './history.js';
@@ -16,16 +18,24 @@ import { segment } from './history.js';
  */
 
 /**
+ * @typedef {{ ifMatch: string } | { ifNoneMatch: '*' }} SavePrecondition
+ *   `ifMatch`: the strong tag of the read the results were made on (or of the own last save); `ifNoneMatch: '*'`:
+ *   create the dataset, where it was not read or its read found none (OF `location-saved-by-put`)
+ */
+
+/**
  * @typedef {{ status: 'saved', entityTag: string } | { status: 'precondition-failed' }} SaveOutcome
- *   `precondition-failed`: the `If-Match` tag is not the dataset's current one (HTTP `412`); nothing was written
+ *   `saved.entityTag`: the strong tag of the saved bytes, the next save's `If-Match`; `precondition-failed`: the
+ *   precondition does not hold (HTTP `412`: another tag is current, or the dataset exists); nothing was written
  */
 
 /**
  * @typedef {object} DatasetsPort
  * @property {(ref: string) => Promise<DatasetRead | undefined>} read current bytes of dataset `ref` with their entity
  *   tag; `undefined` if the dataset does not exist
- * @property {(ref: string, bytes: Uint8Array, ifMatch: string) => Promise<SaveOutcome>} save whole-body `PUT` of
- *   `bytes` with `If-Match: ifMatch`. Of concurrent saves with the same `ifMatch` at most one is `saved`
+ * @property {(ref: string, bytes: Uint8Array, precondition: SavePrecondition) => Promise<SaveOutcome>} save
+ *   whole-body `PUT` of `bytes` under the precondition. Of concurrent saves under one precondition at most one is
+ *   `saved`
  * @property {(p: string, bytes: Uint8Array) => Promise<{ digest: string, created: boolean }>} putDelivered write-once
  *   under the key of the bytes' digest (lower-case hex SHA-256); `created: false` when the digest is already stored
  *   (a no-op, the stored bytes are unchanged)

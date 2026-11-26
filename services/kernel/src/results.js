@@ -1,8 +1,11 @@
 // Results of the export action through the `datasets` port (3D-128; 3D-ADR-0003 §4, Operaflow groups C and D-bytes;
 // D-51, D-83). The export gate and the action itself are 3D-24's; this module is what they call.
-// - Save (C): whole-body `PUT` to a `progress.save` `location` dataset with `If-Match` = the stored entity tag of the
-//   import read (OF `progress.md:26`). No stored tag -> nothing is sent, the operator is told (`:31`). `412` -> the
-//   result is kept (bytes in the own store), the operator is told, nothing is overwritten (`:42`).
+// - Save (C), OF `progress.md` at Operaflow@d2b679c: whole-body `PUT` to a `progress.save` `location` dataset with
+//   `If-Match` = the strong tag of the read the results were made on, or of the own last save (`location-saved-by-put`);
+//   `If-None-Match: *` where the dataset was not read or its read found none (same rule). A read that found the dataset
+//   with no strong tag -> nothing is sent, the operator is told (`location-no-entity-tag-not-saved`). `412` -> the
+//   results are kept unsent, the operator is told to read again, and they are not delivered (`save-not-2xx-kept` and
+//   its scenario: `not-delivered`, no `delivered`); their bytes go to the own store only so nothing is lost.
 // - Deliver (D, bytes): write-once under the bytes' digest; the address is `https`, carries no secret, no query string,
 //   no credential and no fragment (OF `acceptance.md:17`, 3D-ADR-0003 §4: no pre-signed URLs). Read access is by the
 //   caller's bearer token at the serving route (3D-24).
@@ -10,21 +13,33 @@ import { isDigest } from './ports/datasets.js';
 import { segment } from './ports/history.js';
 
 /**
- * Outcome of `saveResult`; `reason` is the code the client shows to the operator (`NOT_SAVED`, `KEPT`).
+ * What the read the results were made on showed (kept by the caller with the import read, then the last save):
+ * `tagged` with its strong tag, `absent` (not read, or the read found none: 404 / 410), or `untagged` (found, no
+ * strong tag).
+ * @typedef {{ kind: 'tagged', entityTag: string } | { kind: 'absent' } | { kind: 'untagged' }} SaveBasis
+ */
+
+/**
+ * Outcome of `saveResult`; `reason` is the code the client shows to the operator (`NOT_SAVED`, `KEPT`). `KEPT`
+ * results are not delivered (no delivery record).
  * @typedef {{ status: 'SAVED', entityTag: string }
  *   | { status: 'NOT_SAVED', reason: 'NO_ENTITY_TAG' }
  *   | { status: 'KEPT', reason: 'PRECONDITION_FAILED', digest: string }} SaveResult
  */
 
 /**
- * Saves `bytes` to dataset `ref`. `entityTag` is the tag stored at the import read; without it no `PUT` is sent.
+ * Saves `bytes` to dataset `ref` on `basis`. `SAVED.entityTag` is the next save's basis (`tagged`).
  * @param {{ datasets: import('./ports/datasets.js').DatasetsPort, projectId: string, ref: string, bytes: Uint8Array,
- *   entityTag?: string | null }} args
+ *   basis: SaveBasis }} args
  * @returns {Promise<SaveResult>}
  */
-export async function saveResult({ datasets, projectId, ref, bytes, entityTag }) {
-  if (typeof entityTag !== 'string' || entityTag.length === 0) return { status: 'NOT_SAVED', reason: 'NO_ENTITY_TAG' };
-  const out = await datasets.save(ref, bytes, entityTag);
+export async function saveResult({ datasets, projectId, ref, bytes, basis }) {
+  /** @type {import('./ports/datasets.js').SavePrecondition} */
+  let pre;
+  if (basis?.kind === 'absent') pre = { ifNoneMatch: '*' };
+  else if (basis?.kind === 'tagged' && typeof basis.entityTag === 'string' && basis.entityTag.length > 0) pre = { ifMatch: basis.entityTag };
+  else return { status: 'NOT_SAVED', reason: 'NO_ENTITY_TAG' };
+  const out = await datasets.save(ref, bytes, pre);
   if (out.status === 'saved') return { status: 'SAVED', entityTag: out.entityTag };
   const { digest } = await datasets.putDelivered(projectId, bytes);
   return { status: 'KEPT', reason: 'PRECONDITION_FAILED', digest };

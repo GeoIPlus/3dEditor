@@ -17,32 +17,49 @@ async function setup() {
   return { datasets, tag };
 }
 
-describe('saveResult (progress.save, whole-body PUT + If-Match)', () => {
-  it('with the stored tag of the import read -> SAVED, the dataset holds the result', async () => {
+// Fixtures: the scenarios of Operaflow@d2b679c `format/tests/scenarios/progress.json` for `location-saved-by-put`,
+// `location-no-entity-tag-not-saved` and `save-not-2xx-kept`, restated on the port (the scenario's GET is the import
+// read; its `etag` is the stored basis).
+describe('saveResult (progress.save, whole-body PUT)', () => {
+  it('location-saved-by-put: read with a strong tag -> PUT with If-Match of that tag -> SAVED', async () => {
     const { datasets, tag } = await setup();
-    const out = await saveResult({ datasets, projectId: P, ref: REF, bytes: enc('{"v":2}'), entityTag: tag });
+    const save = vi.spyOn(datasets, 'save');
+    const out = await saveResult({ datasets, projectId: P, ref: REF, bytes: enc('{"v":2}'), basis: { kind: 'tagged', entityTag: tag } });
+    expect(save).toHaveBeenCalledWith(REF, enc('{"v":2}'), { ifMatch: tag });
     expect(out.status).toBe('SAVED');
-    expect(new TextDecoder().decode((await datasets.read(REF))?.bytes)).toBe('{"v":2}');
+    const r = await datasets.read(REF);
+    expect(new TextDecoder().decode(r?.bytes)).toBe('{"v":2}');
+    expect(out.status === 'SAVED' && out.entityTag).toBe(r?.entityTag);
   });
 
-  it('without a stored entity tag the PUT is not sent; the operator is told NO_ENTITY_TAG', async () => {
+  it('location-saved-by-put: not read or read found none -> PUT with If-None-Match: * creates the dataset', async () => {
+    const { datasets } = await setup();
+    const save = vi.spyOn(datasets, 'save');
+    const out = await saveResult({ datasets, projectId: P, ref: 'progress-save/bld-2', bytes: enc('{"n":1}'), basis: { kind: 'absent' } });
+    expect(save).toHaveBeenCalledWith('progress-save/bld-2', enc('{"n":1}'), { ifNoneMatch: '*' });
+    expect(out.status).toBe('SAVED');
+    expect(await saveResult({ datasets, projectId: P, ref: REF, bytes: enc('{"n":1}'), basis: { kind: 'absent' } }))
+      .toMatchObject({ status: 'KEPT' });
+  });
+
+  it('location-no-entity-tag-not-saved: read found the dataset without a strong tag -> no PUT, operator told', async () => {
     const { datasets } = await setup();
     const save = vi.spyOn(datasets, 'save');
     const before = await datasets.read(REF);
-    for (const entityTag of [undefined, null, '']) {
-      expect(await saveResult({ datasets, projectId: P, ref: REF, bytes: enc('{"v":2}'), entityTag }))
+    for (const basis of [{ kind: 'untagged' }, { kind: 'tagged', entityTag: '' }, undefined]) {
+      expect(await saveResult({ datasets, projectId: P, ref: REF, bytes: enc('{"v":2}'), basis: /** @type {any} */ (basis) }))
         .toEqual({ status: 'NOT_SAVED', reason: 'NO_ENTITY_TAG' });
     }
     expect(save).not.toHaveBeenCalled();
     expect(await datasets.read(REF)).toEqual(before);
   });
 
-  it('a 412 keeps the result: KEPT with its digest, bytes readable, the dataset unchanged', async () => {
+  it('save-not-2xx-kept: a 412 keeps the results (KEPT, bytes readable), the dataset unchanged', async () => {
     const { datasets, tag } = await setup();
-    await saveResult({ datasets, projectId: P, ref: REF, bytes: enc('{"other":1}'), entityTag: tag });
+    await saveResult({ datasets, projectId: P, ref: REF, bytes: enc('{"other":1}'), basis: { kind: 'tagged', entityTag: tag } });
     const before = await datasets.read(REF);
     const bytes = enc('{"mine":1}');
-    const out = await saveResult({ datasets, projectId: P, ref: REF, bytes, entityTag: tag });
+    const out = await saveResult({ datasets, projectId: P, ref: REF, bytes, basis: { kind: 'tagged', entityTag: tag } });
     expect(out).toEqual({ status: 'KEPT', reason: 'PRECONDITION_FAILED', digest: sha256(bytes) });
     expect(await datasets.readDelivered(P, sha256(bytes))).toEqual(bytes);
     expect(await datasets.read(REF)).toEqual(before);

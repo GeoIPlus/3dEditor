@@ -43,17 +43,20 @@ No `index.js` yet; a host imports `src/handler.js` (GV test host, 3D-50) and the
 - `src/adapters/memory-store.js` - `createMemoryStore()`; `src/adapters/file-store.js` - `createFileStore({ root,
   settleMs? })`: exclusive create (`wx`), `get` re-reads a file another writer is still filling for up to `settleMs`.
 - `src/ports/datasets.js` (3D-128; 3D-ADR-0003 §1, §4) - `DatasetsPort { read(ref) -> { bytes, entityTag } |
-  undefined, save(ref, bytes, ifMatch) -> { status: 'saved', entityTag } | { status: 'precondition-failed' },
+  undefined, save(ref, bytes, { ifMatch } | { ifNoneMatch: '*' }) -> { status: 'saved', entityTag } | { status:
+  'precondition-failed' },
   putDelivered(p, bytes) -> { digest, created }, readDelivered(p, digest) }`; `ByteStore { create(key, bytes) ->
   boolean, get(key) }`; `sha256`, `entityTag` (interim tags `"{generation}.{sha256}"`), `datasetKeys`
   (`ds/{ref}/{n}.bin`, `p/{p}/delivered/{sha256}.bin`). `src/datasets.js` - `createByteDatasets(store)`: the port over
-  a byte store, plus `createDataset(ref, bytes)` (generation 0; the DP's act, dev and tests only). A save checks the
-  tag names the newest generation `n` with its digest and creates generation `n + 1` if absent: compare-and-swap
+  a byte store, plus `createDataset(ref, bytes)` (generation 0; the DP's act, dev and tests only). `ifNoneMatch`
+  creates generation 0 if absent; an `ifMatch` save checks the tag names the newest generation `n` with its digest and creates generation `n + 1` if absent: compare-and-swap
   without overwrite. `src/adapters/memory-datasets-store.js` - `createMemoryByteStore()`;
   `src/adapters/file-datasets-store.js` - `createFileByteStore({ root, settleMs? })`: exclusive create, bytes + SHA-256
   trailer, `get` re-reads a file still being filled.
-- `src/results.js` (3D-128) - `saveResult({ datasets, projectId, ref, bytes, entityTag })` -> `SAVED` | `NOT_SAVED`
-  `NO_ENTITY_TAG` (no `PUT` sent) | `KEPT` `PRECONDITION_FAILED` + `digest` (412: bytes kept in the own store);
+- `src/results.js` (3D-128; OF `progress.md` at Operaflow@d2b679c) - `saveResult({ datasets, projectId, ref, bytes,
+  basis })`, `basis` = what the read the results were made on showed: `tagged` -> `If-Match`, `absent` (not read, or
+  404 / 410) -> `If-None-Match: *`, `untagged` -> `NOT_SAVED` `NO_ENTITY_TAG` (no `PUT` sent); `SAVED.entityTag` is
+  the next basis; 412 -> `KEPT` `PRECONDITION_FAILED` + `digest` (bytes in the own store, not delivered);
   `deliverResult({ datasets, publicBase, projectId, bytes })` -> `{ digest, created, address }`;
   `deliveredAddress(publicBase, p, digest)` = `{publicBase}/api/projects/{p}/results/{sha256}` (https only, no
   credential, query or fragment; no pre-signed URL). Not wired into the handler: export action and the serving route
@@ -175,8 +178,8 @@ LOCAL points, another datum -> `422 INVALID_CRS` `DATUM_MISMATCH` (heatmap and F
 (`tools/bench/handler.mjs`).
 `test/datasets.test.js` (3D-128): the port contract suite `test/datasets-contract.js` (run by every `datasets`
 adapter, the CS adapter of 3D-63 too) on the memory and the file byte store: read with a strong tag, save with the
-current tag, stale / unknown / weak tag and missing dataset -> 412 with nothing written, concurrent saves on one tag,
+current tag, stale / unknown / weak tag and missing dataset -> 412 with nothing written, `If-None-Match: *` creates once, concurrent saves on one tag,
 repeated bytes get a new tag, delivered bytes write-once and a second write of one digest a no-op; tag parsing, file
-settle and damage. `test/results.test.js`: no stored tag -> no `PUT` (`NOT_SAVED` `NO_ENTITY_TAG`), 412 -> `KEPT` with
-the bytes readable and the dataset unchanged, delivered address without query string, credential or fragment.
+settle and damage. `test/results.test.js`: the Operaflow scenarios (`format/tests/scenarios/progress.json`) of
+`location-saved-by-put`, `location-no-entity-tag-not-saved`, `save-not-2xx-kept` restated on the port, delivered address without query string, credential or fragment.
 Golden GT-20 / GT-21 run on the kernel functions (`packages/geo-model3d/test/golden/`).

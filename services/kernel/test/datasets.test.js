@@ -26,7 +26,7 @@ describe('interim datasets adapters', () => {
     expect(await ds.createDataset('d', new Uint8Array([1]))).toBe(true);
     expect(await ds.createDataset('d', new Uint8Array([2]))).toBe(false);
     const r = await ds.read('d');
-    await ds.save('d', new Uint8Array([3]), /** @type {string} */ (r?.entityTag));
+    await ds.save('d', new Uint8Array([3]), { ifMatch: /** @type {string} */ (r?.entityTag) });
     expect(await readdir(join(root, 'ds', 'd'))).toEqual(['0.bin', '1.bin']);
     expect(entityTag.parse((await ds.read('d'))?.entityTag)?.n).toBe(1);
   });

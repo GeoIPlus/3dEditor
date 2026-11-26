@@ -1,9 +1,11 @@
 // Port contract suite of `datasets` (3D-128; 3D-ADR-0003 "Checks"): one suite, run against every adapter - memory and
 // file here, the crowdsource adapter in 3D-63. `make()` returns a fresh port and `seed(ref, bytes)`, which stands a
 // dataset up the way the DP would (for crowdsource: a test double or a test project).
-// Operaflow rules covered: whole-body `PUT` + `If-Match` (OF `progress.md:26`), a `412` writes nothing (`:42`),
-// delivered bytes never change (`acceptance.md:20`). [A] The Operaflow suite `progress/` cases were not read in 3D-128
-// (repository not reachable from that session); the cases below restate the cited rules.
+// Operaflow rules covered (Operaflow@d2b679c `format/specification/progress.md`): whole-body `PUT` with `If-Match`, or
+// `If-None-Match: *` to create (`location-saved-by-put`), a `412` writes nothing (`save-not-2xx-kept`); delivered bytes
+// never change (`acceptance.md` `delivered-bytes-fixed`). The suite `format/suite/1.0.0/cases/progress/` holds document
+// cases for a validator only; these rules are the application's, held by `format/tests/scenarios/progress.json`
+// (restated as fixtures in test/results.test.js).
 import { describe, expect, it } from 'vitest';
 import { isDatasetsPort, sha256 } from '../src/ports/datasets.js';
 
@@ -44,7 +46,7 @@ export function datasetsContract(name, make) {
     it('save with the current tag replaces the whole body and gives a new tag', async () => {
       const { port } = await fresh();
       const t0 = /** @type {string} */ ((await port.read(REF))?.entityTag);
-      const out = await port.save(REF, enc(city('v1')), t0);
+      const out = await port.save(REF, enc(city('v1')), { ifMatch: t0 });
       expect(out.status).toBe('saved');
       const r = await port.read(REF);
       expect(dec(r?.bytes)).toBe(city('v1'));
@@ -55,20 +57,33 @@ export function datasetsContract(name, make) {
     it('a stale, unknown or missing-dataset tag -> precondition-failed (412), nothing written', async () => {
       const { port } = await fresh();
       const t0 = /** @type {string} */ ((await port.read(REF))?.entityTag);
-      await port.save(REF, enc(city('v1')), t0);
+      await port.save(REF, enc(city('v1')), { ifMatch: t0 });
       const before = await port.read(REF);
-      expect(await port.save(REF, enc(city('late')), t0)).toEqual({ status: 'precondition-failed' });
-      expect(await port.save(REF, enc(city('bogus')), '"bogus"')).toEqual({ status: 'precondition-failed' });
-      expect(await port.save(REF, enc(city('weak')), `W/${before?.entityTag}`)).toEqual({ status: 'precondition-failed' });
-      expect(await port.save('absent', enc(city('x')), t0)).toEqual({ status: 'precondition-failed' });
+      expect(await port.save(REF, enc(city('late')), { ifMatch: t0 })).toEqual({ status: 'precondition-failed' });
+      expect(await port.save(REF, enc(city('bogus')), { ifMatch: '"bogus"' })).toEqual({ status: 'precondition-failed' });
+      expect(await port.save(REF, enc(city('weak')), { ifMatch: `W/${before?.entityTag}` })).toEqual({ status: 'precondition-failed' });
+      expect(await port.save('absent', enc(city('x')), { ifMatch: t0 })).toEqual({ status: 'precondition-failed' });
       expect(await port.read(REF)).toEqual(before);
       expect(await port.read('absent')).toBeUndefined();
+    });
+
+    it('If-None-Match: * creates an absent dataset once; on an existing one -> precondition-failed', async () => {
+      const { port } = await fresh();
+      const before = await port.read(REF);
+      expect(await port.save(REF, enc(city('x')), { ifNoneMatch: '*' })).toEqual({ status: 'precondition-failed' });
+      expect(await port.read(REF)).toEqual(before);
+      const outs = await Promise.all([port.save('new', enc(city('a')), { ifNoneMatch: '*' }), port.save('new', enc(city('b')), { ifNoneMatch: '*' })]);
+      expect(outs.map((o) => o.status).sort()).toEqual(['precondition-failed', 'saved']);
+      const won = outs.find((o) => o.status === 'saved');
+      const r = await port.read('new');
+      expect(r?.entityTag).toBe(won?.status === 'saved' ? won.entityTag : '');
+      expect((await port.save('new', enc(city('c')), { ifMatch: /** @type {string} */ (r?.entityTag) })).status).toBe('saved');
     });
 
     it('two concurrent saves on one tag: exactly one is saved', async () => {
       const { port } = await fresh();
       const t0 = /** @type {string} */ ((await port.read(REF))?.entityTag);
-      const outs = await Promise.all([port.save(REF, enc(city('a')), t0), port.save(REF, enc(city('b')), t0)]);
+      const outs = await Promise.all([port.save(REF, enc(city('a')), { ifMatch: t0 }), port.save(REF, enc(city('b')), { ifMatch: t0 })]);
       expect(outs.map((o) => o.status).sort()).toEqual(['precondition-failed', 'saved']);
       const won = outs.findIndex((o) => o.status === 'saved');
       expect(dec((await port.read(REF))?.bytes)).toBe(city(won === 0 ? 'a' : 'b'));
@@ -77,13 +92,13 @@ export function datasetsContract(name, make) {
     it('saving earlier bytes again gives a new tag; the old tag stays stale', async () => {
       const { port } = await fresh();
       const t0 = /** @type {string} */ ((await port.read(REF))?.entityTag);
-      const s1 = await port.save(REF, enc(city('v1')), t0);
+      const s1 = await port.save(REF, enc(city('v1')), { ifMatch: t0 });
       const t1 = s1.status === 'saved' ? s1.entityTag : '';
-      const s2 = await port.save(REF, enc(city('input')), t1);
+      const s2 = await port.save(REF, enc(city('input')), { ifMatch: t1 });
       expect(s2.status).toBe('saved');
       const t2 = s2.status === 'saved' ? s2.entityTag : '';
       expect(t2).not.toBe(t0);
-      expect((await port.save(REF, enc(city('again')), t0)).status).toBe('precondition-failed');
+      expect((await port.save(REF, enc(city('again')), { ifMatch: t0 })).status).toBe('precondition-failed');
     });
 
     it('delivered bytes: digest key, write-once; a second write of the same digest is a no-op', async () => {

@@ -4,7 +4,8 @@ import { datasetKeys, entityTag, isDigest, sha256 } from './ports/datasets.js';
 
 /**
  * The port over an append-only byte store. Dataset `ref` holds generations `0, 1, ...`; the current one is the highest.
- * `save(ref, bytes, tag)` checks that `tag` names generation `n` with its digest and is the newest, then creates
+ * `save(ref, bytes, { ifNoneMatch: '*' })` creates generation 0 if absent. `save(ref, bytes, { ifMatch })` checks that
+ * the tag names generation `n` with its digest and is the newest, then creates
  * generation `n + 1` if absent: a compare-and-swap whose only write is a create (no overwrite, D-84).
  * @param {import('./ports/datasets.js').ByteStore} store
  * @returns {import('./ports/datasets.js').DatasetsPort & { createDataset: (ref: string, bytes: Uint8Array) => Promise<boolean> }} `createDataset`:
@@ -30,8 +31,12 @@ export function createByteDatasets(store) {
       const c = await current(ref);
       return c && { bytes: c.bytes, entityTag: entityTag.format(c.n, sha256(c.bytes)) };
     },
-    async save(ref, bytes, ifMatch) {
-      const t = entityTag.parse(ifMatch);
+    async save(ref, bytes, precondition) {
+      if ('ifNoneMatch' in precondition) {
+        if (precondition.ifNoneMatch !== '*' || !(await store.create(datasetKeys.generation(ref, 0), bytes))) return { status: 'precondition-failed' };
+        return { status: 'saved', entityTag: entityTag.format(0, sha256(bytes)) };
+      }
+      const t = entityTag.parse(precondition.ifMatch);
       if (!t) return { status: 'precondition-failed' };
       const at = await store.get(datasetKeys.generation(ref, t.n));
       if (at === undefined || sha256(at) !== t.digest) return { status: 'precondition-failed' };
