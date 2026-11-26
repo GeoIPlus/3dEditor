@@ -388,6 +388,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D110-3 | Command status route: `GET /api/projects/{projectId}/commands/{commandId}` (status is looked up per project, 3D-ADR-0003 §2), in the style of v0.2 D.1; deviates from the letter of v0.3 §9.2 `GET /api/commands/{commandId}` | Owner, dialog, 2026-11-26 (3D-110) |
 | D-3D110-4 | Q-42 interim: the D-111 gate is re-run through `createKernelHandler` on the cloud agent container with the rig fingerprint; the verdict is provisional. The re-measure on the production instance class and the image build stay with Q-42 / ADR-OPS (Q-42 stays open) | Owner, dialog, 2026-11-26 (3D-110) |
 | D-3D110-5 | `INVALID_CRS` joins the error registry inside `v1` before the first release (precedent D-331): `error.schema.json` code `INVALID_CRS` bound to `422` (domain refusal) with `details.crsReason` one of `DATUM_MISMATCH`, `NO_PROJECTION`, `UNKNOWN_OR_UNSUPPORTED`, `MALFORMED`; spec §2.4 gets the row. A kernel `CrsError` (heatmap, FIT_PLANE points) maps to it, not to `500 INTERNAL`; the model is unchanged. The SC vendored schema follows | Owner, dialog, 2026-11-26 (3D-110) |
+| D-3D110-6 | 3D-110 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-110-kernel-handler. Mirror row 3D-110.2 (SC re-vendors the error schema with `INVALID_CRS`) proposed on the owner's request | Owner, chat, 2026-11-26 (3D-110) |
 
 ## Open questions
 

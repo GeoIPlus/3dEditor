@@ -21,14 +21,14 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 60 / 100 |
+| Done | 60 / 101 |
 | Review | 2 |
 | In progress | 4 |
 | Ready | 5 |
-| Proposed (waiting for the owner to set `ready`) | 28 |
+| Proposed (waiting for the owner to set `ready`) | 29 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 60/100 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 60/101 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-116 F-53 metrics; 3D-118 Bug: EQUAL_Z vs FIXED_POINT; 3D-120 Bug: overhang left behind; 3D-47 SC: 3D view port + host.
 
@@ -141,6 +141,7 @@ flowchart TB
     D40["💡 🔗 3D-40 geo-render model3d"]
     D41["💡 🔗 3D-41 Remote kernel port"]
     D42["💡 🔗 3D-42 3DQM tools"]
+    D110_2["💡 🔗 3D-110.2 SC: INVALID_CRS schema"]
     D43["💡 🔗 3D-43 plans/3dqm"]
     D44["💡 🔗 3D-44 3DQM UI panels"]
     D50["💡 🔗 3D-50 geoviewer host adapter"]
@@ -287,6 +288,8 @@ flowchart TB
   D110 --> D24
   D109 --> D110_1
   D110_1 --> D24
+  D110 --> D110_2
+  D45 --> D110_2
   D24 --> D25
   D43 --> D25
   D50 --> D25
@@ -432,6 +435,7 @@ Throughput: 60.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
 | 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-28 | G5 | M | mirror | proposed (Q-03 shape known, 3D-01 §6; extension URI content-named, no product) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | mirror | proposed (UI per brandbook, D-40) |
 | 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared (77) | contracts | 06, 27 | G3 | S | mirror | review (D-270; bookkeeping merged here; SC row 77 waits for PR #68) |
+| 3D-110.2 | SC: re-vendor the `model3d` error schema with `INVALID_CRS` (422, `details.crsReason`; D-3D110-5) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 110, 45 | G5 | S | mirror | proposed |
 | 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | mirror | in-progress (D-61; SC wp/70-3d-view-host, wp/71-3d-camera-controls; started in a fresh cloud session; UI per brandbook, D-40) |
 | 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | mirror | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared (76) | tools, CI | 27 | G0 | S | mirror | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
@@ -1099,6 +1103,22 @@ Throughput: 60.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
   overwrites (`check:arch`).
 - Decisions: D-35, D-82..D-85, D-3D110-1  Open: none
 - Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-110.2 SC: re-vendor the `model3d` error schema with `INVALID_CRS`
+- Source: WP session 3D-110, owner chat 2026-11-26 (accepting 3D-110): D-3D110-5 added the error code `INVALID_CRS`
+  inside `v1`; the SC vendored copy (3D-45) must follow, or the SC `model3d-kernel` adapter refuses the 422 reply as an
+  invalid message (3D-ADR-0002 A1: both sides validate against the same pinned schemas).
+- Goal: SC holds the same `error.schema.json` (and `examples/error.json`) as this repository's base after 3D-110.
+- Scope in: copy the two files into `contracts/vendor/3deditor/`, update `provenance.json` (source commit, hashes); a
+  user text for `model3d.error.invalidCrs` if SC keeps message keys. Scope out: any client behaviour beyond showing
+  the refusal; other schema changes.
+- Accept: the SC hash check passes against the 3DQM base commit that holds 3D-110; an `INVALID_CRS` 422 reply with
+  `details.crsReason: DATUM_MISMATCH` validates in the SC adapter's contract test.
+- Text of the row to add in SC (`GeoIPlus/shared_compnents`, its BACKLOG; the SC row is authoritative, D-25):
+  "3DQM mirror: re-vendor `model3d` `error.schema.json` + `examples/error.json` from 3dEditor (adds `INVALID_CRS`,
+  422, `details.crsReason`; 3D-110, D-3D110-5); refresh `provenance.json`; adapter contract test with the 422 reply."
+- Decisions: D-25, D-3D110-5  Open: none
+- Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S mirror count not checked)
 
 ### 3D-111 `history` S3 adapter
 - Source: WP session 3D-23, owner dialog 2026-11-26 (D-319): the S3 adapter of 3D-ADR-0003 needs a new runtime
