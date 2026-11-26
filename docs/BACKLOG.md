@@ -21,14 +21,14 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 72 / 106 |
+| Done | 72 / 108 |
 | Review | 0 |
 | In progress | 4 |
 | Ready | 7 |
-| Proposed (waiting for the owner to set `ready`) | 22 |
+| Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 72/106 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 72/108 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-124 Overhang rebuild; 3D-24 QC and export rules; 3D-74 val3dity image + binding; 3D-47 SC: 3D view port + host.
 
@@ -139,6 +139,8 @@ flowchart TB
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D24["🚧 ⚙️ 3D-24 QC and export rules"]
+    D24_1["💡 🖥️ 3D-24.1 Return for rework"]
+    D24_2["💡 🖥️ 3D-24.2 Service import"]
     D25["💡 🧪 3D-25 E2E on mock"]
   end
   subgraph client["shared / geoviewer / crowdsource mirrors (PROPOSED)"]
@@ -305,6 +307,10 @@ flowchart TB
   D110 --> D129
   D45 --> D129
   D24 --> D25
+  D24 --> D24_1
+  D24 --> D24_2
+  D128 --> D24_2
+  D24_2 --> D25
   D43 --> D25
   D127 --> D25
   D50 --> D127
@@ -421,7 +427,9 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 123 | G3 | L | spec | proposed |
 | 3D-113 | `STRAIGHTEN_FACE` `ALIGN_SELECTED_EDGES` extensions: leading edge chosen by the operator, `BEST_FIT_LINE` mode | here | docs/specs, geo-model3d/ops | 122 | G3 | S | spec | proposed |
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110, 128 | G5 | M | kernel | in-progress (D-433; wp/3d-24-qc-export) |
-| 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 43, 127 | G5 | M | tests | proposed |
+| 3D-24.1 | Return for rework with a comment: reviewer (not an author) records a return on the head version (spec §11 r2; v0.3 §8.5) | here | service | 24 | G5 | S | service | proposed |
+| 3D-24.2 | Service import: `IMPORT_BUILDING` from the input dataset (`datasets.read`), `putBaseline`, keep the source CityJSON and the `progress.save` save basis for the export source port of 3D-24 | here | service | 24, 128 | G5 | M | service | proposed |
+| 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 24.2, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
 | 3D-29 | Verify `GeoIPlus/crowdsource` as the CP/DP implementation: data serving, storage, versions, point-cloud forms, auth, deployment | here | docs/verification | 01 | G0 | S | spec | done (D-36; merged into base, no PR) |
@@ -551,6 +559,29 @@ accuracy ratio 1.30 is n=1 and not applied.
 - Estimate: $7.72 (p80 $8.96), ~12 min model time; basis: M kernel n=6; wall: 1-2 h agent (+ owner dialogs; M span p50 16 h, p80 32 h)
 - Size check 2026-11-26 (MVP estimates): M fits (five rules, two golden tests, one module pair) [A].
 
+### 3D-24.1 Return for rework with a comment
+- Source: WP session 3D-24, owner dialog 2026-11-26 (D-3D24-3): out of 3D-24's scope; not in GT-22; no `ModelState` for it.
+- Goal: the reviewer action "return for rework with a comment" of spec §11 r2 on the service.
+- Scope in: what a return records (version, reviewer, comment), whether it clears an approval of that version, how the
+  comment is read with the model, the not-an-author rule (as for approval). Scope out: CP task routing; UI (3D-44).
+- Accept: a reviewer who authored no version after the baseline returns the head version with a non-empty comment; an
+  author or an operator -> `403 FORBIDDEN`; the comment is readable with the model; semantics decided by the owner first.
+- Decisions: D-3D24-1, D-3D24-3  Open: semantics of a return (owner dialog at the start of the row)
+- Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S service n < 5)
+
+### 3D-24.2 Service import
+- Source: WP session 3D-24, owner dialog 2026-11-26 (D-3D24-4): no row imports a building in the service; 3D-24's
+  export needs the source CityJSON, the `progress.save` reference and the save basis.
+- Goal: the service imports a building from its input dataset and keeps what export needs.
+- Scope in: `IMPORT_BUILDING` request (body, route), `datasets.read` of the input, kernel `importBuilding`,
+  `putBaseline` (second import -> conflict), the source document and the basis of the `progress.save` read (`tagged` +
+  tag | `absent` | `untagged`, D-430) behind 3D-24's export source port, the basis replaced by `SAVED.entityTag`;
+  which dataset is input / `progress.save` for a building (CP document, D-83). Scope out: CS adapters (3D-63).
+- Accept: import of GT-I1 through the handler gives version 0 `VALID_SOLID` and the import report; a second import ->
+  conflict, baseline unchanged; export of the imported building via 3D-24 saves with `If-Match` = the import read's tag.
+- Decisions: D-82..D-85, D-430, D-3D24-4  Open: mapping building -> datasets (Q-32 related)
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
 ### 3D-25 E2E
 - Accept: the v0.3 G5 E2E chain on the CP/DP mock in both workplaces; GT-23 (building outside assignment -> 403).
 - Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M tests n=1 < 5); wall: 1-3 h agent (new `e2e`
@@ -559,6 +590,7 @@ accuracy ratio 1.30 is n=1 and not applied.
   and the chain is driven through plans and the kernel API, not through UI rows 3D-40/3D-42/3D-44 [A]; if the owner
   wants it through the UI or through both hosts (GV and `apps/3dqm`, 3D-48), propose L via intake.
 
+- Change 2026-11-26 (WP session 3D-24, D-3D24-4): depends on 3D-24.2 (service import), which the chain's import step needs.
 ### 3D-26 Real-data import
 - Accept: import + export round-trip of the owner's roofer and TerraSolid samples; tolerance profile adjustments
   proposed as decisions, not edited silently. Binaries stay outside git unless the owner allows.
