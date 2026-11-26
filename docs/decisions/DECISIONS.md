@@ -330,6 +330,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D23-4 | Q-24: request bodies are limited to 1 MiB; above it `413 PAYLOAD_TOO_LARGE`, checked before JSON parsing | Owner, dialog, 2026-11-26 (3D-23) |
 | D-3D23-5 | 3D-ADR-0003 §2 amended: a full snapshot of every version (K = 1; the journal patch holds no model-level members, Q-31), written before the commit point under the write-once key `snapshot/{N}/{commandId}.json`; then create-if-absent `journal/{N}` stays the only commit point; `readVersion(N)` reads `journal/{N}`'s `commandId` and its snapshot (version 0 = `baseline.json`). No repair path; snapshots of lost commits stay as orphans (nothing deleted, D-84) | Owner, dialog, 2026-11-26 (3D-23) |
 | D-3D23-6 | 3D-23 ships the `history` file adapter only; the S3 adapter (new runtime dependency, ADR) is row 3D-23.3 and must pass the same port contract suite | Owner, dialog, 2026-11-26 (3D-23) |
+| D-3D23-7 | 3D-23 accepted by the owner (done once merged by the coordinator, D-178): `history` port, memory/file store, COMMIT path, command status, GT-13, `storeAppendOnly`; rows 3D-23.1..3D-23.3 proposed; branch wp/3d-23-kernel-service | Owner, dialog, 2026-11-26 (3D-23) |
 
 ## Open questions
 
