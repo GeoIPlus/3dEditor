@@ -5,13 +5,14 @@ import { roofCases } from './cases-roof.mjs';
 import { editCases } from './cases-edit.mjs';
 import { envelopeCases } from './cases-envelope.mjs';
 import { serviceCases } from './cases-service.mjs';
+import { trimExtendCases } from './cases-trim-extend.mjs';
 import { render } from './fixture.mjs';
 import { readSpec13, readV03 } from './source.mjs';
 
 /** Every fixture definition, in spec §13 order. */
 export function definitions() {
   const order = [...readSpec13().keys()];
-  const defs = [...importCases(), ...roofCases(), ...editCases(), ...envelopeCases(), ...serviceCases()];
+  const defs = [...importCases(), ...roofCases(), ...editCases(), ...envelopeCases(), ...serviceCases(), ...trimExtendCases()];
   return defs.sort((a, b) => order.indexOf(a.gt) - order.indexOf(b.gt));
 }
 

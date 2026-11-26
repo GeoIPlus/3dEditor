@@ -1,0 +1,32 @@
+{
+  "gt": "GT-28",
+  "source": {
+    "document": "docs/specs/3dqm-spec.md",
+    "section": "§13",
+    "input": "GT-03 with S1 ending short of the ridge at `y = 3.5` (`z = 7.625`; its top edge, the S2 ridge edge and the S1-side gable rakes open) -> `EXTEND_FACE` S1, top edge, `targetFaceId` S2",
+    "expected": "Ends re-derived at (0; 4; 8), (10; 4; 8); S1 43.75 -> 50 m2; roof 100 m2; S1 plane unchanged; `VALID_SOLID`; volume 520 m3"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "ends": [
+      [0, 4, 8],
+      [10, 4, 8]
+    ],
+    "faceAreaM2": {
+      "before": 43.75,
+      "after": 50
+    },
+    "roofAreaM2": 100,
+    "state": "VALID_SOLID",
+    "volumeM3": 520
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`EXTEND_FACE`)",
+    "row": "3D-105"
+  }
+}

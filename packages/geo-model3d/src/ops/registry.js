@@ -19,6 +19,8 @@ import { fitToSharedEdge } from './fit-to-shared-edge.js';
 import { removeFace } from './remove-face.js';
 import { healHole } from './heal-hole.js';
 import { alignJunction } from './align-junction.js';
+import { trimFace } from './trim-face.js';
+import { extendFace } from './extend-face.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -56,4 +58,6 @@ export const OPERATIONS = {
   REMOVE_FACE: { run: removeFace },
   HEAL_HOLE: { run: healHole },
   ALIGN_JUNCTION: { run: alignJunction },
+  TRIM_FACE: { run: trimFace }, // 3D-105
+  EXTEND_FACE: { run: extendFace }, // 3D-105
 };

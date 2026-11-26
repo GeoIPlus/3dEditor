@@ -20,8 +20,8 @@ const PLANAR_TOL_M = 0.02; // D-13
 const inputsOf = (gt) => readdirSync(join(ROOT, 'fixtures', gt)).filter((f) => /^input\.model.*\.json$/.test(f));
 
 describe('generation', () => {
-  it('covers exactly the 29 golden tests of spec §13', () => {
-    expect(ids).toHaveLength(29);
+  it('covers exactly the 33 golden tests of spec §13 (29 of v0.3 §12, GT-26..GT-29 of spec §10.6, 3D-105)', () => {
+    expect(ids).toHaveLength(33);
     expect(dirs).toEqual([...ids].sort());
   });
 
@@ -55,7 +55,7 @@ describe('contracts', () => {
       n++;
       expect(validModel?.(read(`fixtures/${d}/${f}`)), `${d}/${f} ${JSON.stringify(validModel?.errors)}`).toBe(true);
     }
-    expect(n).toBe(28); // 23 single-model fixtures + GT-19 (2) + GT-24 (3)
+    expect(n).toBe(32); // 27 single-model fixtures + GT-19 (2) + GT-24 (3)
   });
 
   it('every COMMAND step validates against command and targets its model and version', () => {
@@ -71,7 +71,7 @@ describe('contracts', () => {
       const first = steps.find((/** @type {any} */ x) => x.step === 'COMMAND');
       if (first && inputsOf(d).length) expect(first.command.expectedVersion, d).toBe(read(`fixtures/${d}/${first.model ?? inputsOf(d)[0]}`).version);
     }
-    expect(n).toBe(29);
+    expect(n).toBe(33); // +4 commands of GT-26..GT-29 (3D-105)
   });
 });
 

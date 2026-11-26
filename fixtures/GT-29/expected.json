@@ -1,0 +1,23 @@
+{
+  "gt": "GT-29",
+  "source": {
+    "document": "docs/specs/3dqm-spec.md",
+    "section": "§13",
+    "input": "GT-03 -> `EXTEND_FACE` S1, eave edge (shared with the south wall), `targetFaceId` S2",
+    "expected": "`INVALID_TOPOLOGY`; version unchanged"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "refusal": "INVALID_TOPOLOGY",
+    "versionUnchanged": true
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`EXTEND_FACE`)",
+    "row": "3D-105"
+  }
+}
