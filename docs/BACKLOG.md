@@ -21,16 +21,16 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 71 / 106 |
-| Review | 0 |
-| In progress | 3 |
+| Done | 71 / 107 |
+| Review | 1 |
+| In progress | 2 |
 | Ready | 8 |
-| Proposed (waiting for the owner to set `ready`) | 23 |
+| Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 71/106 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 71/107 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-124 Overhang rebuild; 3D-128 datasets port + file adapter; 3D-47 SC: 3D view port + host.
+**Running:** 3D-128 datasets port + file adapter; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -108,6 +108,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D124["🔍 ⚙️ 3D-124 Overhang rebuild"]
   end
   subgraph ready["READY"]
     D74["▶️ 🖥️ 3D-74 val3dity image + binding"]
@@ -127,8 +128,8 @@ flowchart TB
     D106["💡 ⚙️ 3D-106 ROTATE_FACE"]
     D107["💡 📐 3D-107 ADR: shared plane"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
-    D124["🚧 ⚙️ 3D-124 Overhang rebuild"]
     D125["💡 ⚙️ 3D-125 Dormers follow roof"]
+    D124_1["💡 ⚙️ 3D-124.1 Overhang width at B"]
     D130["💡 ⚙️ 3D-130 Metric change detection"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
@@ -284,6 +285,8 @@ flowchart TB
   D117 --> D124
   D120 --> D124
   D124 --> D125
+  D124 --> D124_1
+  D19 --> D124_1
   D20 --> D125
   D20 --> D100
   D71 --> D100
@@ -390,7 +393,8 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-114 | `RESIZE_ROOF` (lower envelope, D-339) and `ALIGN_WALL` (D-346); `REGULARIZE_FOOTPRINT` split to 3D-126 (D-389) | here | geo-model3d/ops | 19 | G4 | M | kernel | done (D-394; merged into base, no PR; D-389..D-393) |
 | 3D-126 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-389) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | done (D-426; merged into base, no PR; D-417..D-425) |
 | 3D-115 | Parametric geometry dependency management: ADR 3D-ADR-0010 (parent / dependent links, detach - solve - rebuild in the pipeline; split D-386) | here | docs/decisions/adr | 15, 17, 18, 19 | G4 | S | spec | done (D-388; ADR 3D-ADR-0010; merged into base, no PR; D-383..D-387) |
-| 3D-124 | Overhang rebuild after a parent change: detach - solve - rebuild in the pipeline, replacing the D-367 refusal (D-384, D-385) | here | geo-model3d/ops | 115, 114, 117, 19, 120 | G4 | M | kernel | in-progress (D-428; wp/3d-124-overhang-rebuild) |
+| 3D-124 | Overhang rebuild after a parent change: detach - solve - rebuild in the pipeline, replacing the D-367 refusal (D-384, D-385) | here | geo-model3d/ops | 115, 114, 117, 19, 120 | G4 | M | kernel | review (local, PR not requested; wp/3d-124-overhang-rebuild; D-3D124-1..4) |
+| 3D-124.1 | Overhang width in plan at both outer corners on an eave that is horizontal only within `zAlignTolM` (D-336) | here | geo-model3d/ops | 124, 19 | G4 | S | kernel | proposed |
 | 3D-125 | Dormers follow their roof face; explicit `components` record in the model contract (D-383) | here | geo-model3d/ops, contracts/model3d | 124, 20 | G4 | M | kernel | proposed |
 | 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | done (D-416; merged into base, no PR; D-412..D-415) |
 | 3D-130 | Automatic metric change detection: `patch.affectedMetrics` from a before / after `computeMetrics` comparison (PREVIEW, COMMIT, inverse patch, Undo / Redo; D-415, Q-31) | here | geo-model3d/ops, geo-model3d/brep, contracts | 116 | G4 | M | kernel | proposed |
@@ -1053,6 +1057,19 @@ accuracy ratio 1.30 is n=1 and not applied.
   operation; PREVIEW = COMMIT patch; 3D-19 `SET_OVERHANG` / `SET_HEIGHT` tests pass; `npm run check`, golden, bench.
 - Decisions: D-08, D-336, D-337, D-338, D-341, D-367, D-372, D-373, D-378, D-384, D-385  Open: none
 - Estimate: $7.7 (p80 $9.0), ~13 min model time; basis: M kernel n=6
+
+### 3D-124.1 Overhang width in plan at both outer corners on a near-horizontal eave
+- Source: WP 3D-124, finding 2026-11-26 (owner dialog: row via intake, D-3D124-4).
+- Goal: the overhang has the requested width in plan at both outer corners, or a stated tolerance, when the structural
+  eave is horizontal only within `zAlignTolM`.
+- Scope in: `addOverhang` (ops/overhang.js) soffit height rule: today the soffit is at oA's height, so oB lies off the
+  overhang line by (zB - zA) / slope [V: GT-20 after FIT_PLANE, south 0.6 m: width 0.6 at oA, 0.59989 at oB]; option
+  dialog with the owner (soffit per corner is not one plane; tolerance statement in D-336; refusal above a bound).
+  Scope out: the 3D-124 rebuild (it uses `addOverhang` unchanged), dormers.
+- Accept: on GT-20 + FIT_PLANE + 0.6 m overhang the width in plan at oA and oB matches the owner's rule (test), the
+  3D-124 FIT_PLANE test tightened from 2e-4 m accordingly; 3D-19 / 3D-124 tests pass; `npm run check`, golden.
+- Decisions: D-336, D-337, D-384, D-3D124-4  Open: the rule (owner dialog in the WP session)
+- Estimate: $3.25 (p80 $3.93), model time TBD; basis: S kernel n=5
 
 ### 3D-125 Dormers follow their roof face
 - Source: split of 3D-115 (D-386), owner dialog 2026-11-26; 3D-20 stores no host link for a dormer.

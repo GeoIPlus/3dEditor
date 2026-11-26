@@ -19,7 +19,7 @@ describe('3D-124: rebuild after the operations of other rows', () => {
     follows(m, exec(m, 'FIT_TO_SHARED_EDGE', { edgeIds: ['he-f-roof-s-2', 'he-f-roof-n-2'], leadingFaceId: 'f-roof-s', maxDisplacementM: 0.05, movableFaceIds: ['f-roof-n'] }));
   });
 
-  it('REMOVE_FACE (3D-17) of the other slope keeps the overhang; HEAL_HOLE closes it again', () => {
+  it('REMOVE_FACE (3D-17) of the other slope keeps the overhang ids (DRAFT_SOLID)', () => {
     const m = withOverhang();
     const hole = exec(m, 'REMOVE_FACE', { faceId: 'f-roof-n' }, {}, { targetState: 'DRAFT_SOLID' });
     expect(hole.result.status).toBe('COMMITTED');
