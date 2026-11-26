@@ -2,17 +2,26 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:geoiplus:schema:model3d-command-payload-trim-face:v1",
   "title": "TRIM_FACE payload",
-  "description": "Remove part of a face along an actual intersection line (v0.2 §13.5, E-08; spec §10.6 rule 7).",
+  "description": "Remove the part of a face beyond its intersection line with a cutting face (v0.2 §13.5, E-08; spec §10.6 rule 7; D-322, D-323).",
   "type": "object",
   "properties": {
-    "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
-    "trimLine": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Line3" },
+    "faceId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId"
+    },
+    "cuttingFaceId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "Face G; the trim line is plane(F) ∩ plane(G), computed by the kernel (D-322)."
+    },
     "keepPoint": {
       "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/V3",
-      "description": "A point on the part that stays."
+      "description": "A point on the part that stays (D-323)."
     }
   },
-  "required": ["faceId", "trimLine", "keepPoint"],
+  "required": [
+    "faceId",
+    "cuttingFaceId",
+    "keepPoint"
+  ],
   "additionalProperties": false,
-  "$comment": "[P] Field names; `keepPoint` (which side stays) is not in the sources: proposal (Q-35, 3D-15)."
+  "$comment": "`cuttingFaceId` replaces the free `trimLine` (D-322; schema change approved D-331, 3D-105)."
 }

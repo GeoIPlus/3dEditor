@@ -8,6 +8,7 @@ import { ROOT } from '../source.mjs';
 import { read } from './math.mjs';
 
 const RAW = readFileSync(join(ROOT, 'docs', 'source', 'fullSpecsV0.3.md'), 'utf8');
+const SPEC_RAW = readFileSync(join(ROOT, 'docs', 'specs', '3dqm-spec.md'), 'utf8');
 const dirs = readdirSync(join(ROOT, 'fixtures')).filter((d) => d.startsWith('GT-')).sort();
 /** Number words of the §12 texts. */
 const WORDS = /** @type {Record<string, number>} */ ({ 'Один': 1, 'двух': 2, 'Двое': 2 });
@@ -23,15 +24,21 @@ function numbers(t) {
 /** Leaves of an assert object. @param {unknown} v @returns {unknown[]} */
 const leaves = (v) => (Array.isArray(v) ? v.flatMap(leaves) : v && typeof v === 'object' ? Object.values(v).flatMap(leaves) : [v]);
 
-describe('expected.json copies v0.3 §12 verbatim', () => {
+describe('expected.json copies v0.3 §12 (or, for a case v0.3 does not have, spec §13) verbatim', () => {
   for (const d of dirs) {
     it(d, () => {
       const e = read(`fixtures/${d}/expected.json`);
       const s = e.source;
       expect(e.gt).toBe(d);
-      expect(s.document).toBe('docs/source/fullSpecsV0.3.md');
-      // The exact table row of the read-only source, not a parsed copy.
-      expect(RAW).toContain(`| ${d} | ${s.gate} | ${s.input} | ${s.expected} |`);
+      // The exact table row of the source, not a parsed copy. Spec-sourced cases: GT-26 and later (3D-105, D-332).
+      if (s.document === 'docs/specs/3dqm-spec.md') {
+        expect(Number(d.slice(3))).toBeGreaterThanOrEqual(26);
+        expect(s.section).toBe('§13');
+        expect(SPEC_RAW).toContain(`| ${d} | ${s.input} | ${s.expected} |`);
+      } else {
+        expect(s.document).toBe('docs/source/fullSpecsV0.3.md');
+        expect(RAW).toContain(`| ${d} | ${s.gate} | ${s.input} | ${s.expected} |`);
+      }
       expect(e.tolerance).toMatchObject({ areaM2: 0.01, volumeM3: 0.01 });
       expect(RAW).toContain('площадь ± 0,01 м², объём ± 0,01 м³');
       const text = `${s.input} ${s.expected}`;

@@ -1,0 +1,22 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-29-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-29",
+      "actorId": "usr-operator",
+      "operation": "EXTEND_FACE",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "faceId": "f-roof-s",
+        "edgeId": "he-f-roof-s-0",
+        "targetFaceId": "f-roof-n"
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

@@ -17,10 +17,14 @@ const DRAFTS = {
   // 4-plane apex, east slope 0.05 m off: spread 0.066 m > topologySnapTolM (D-152); normal distance 0.0398 m > planarTolM
   'GT-19/input.model.json': ['INCONSISTENT_JUNCTION', 'NON_PLANAR_FACE'],
   'GT-19/input.model.fixed.json': ['INCONSISTENT_JUNCTION', 'NON_PLANAR_FACE'],
+  // S1 overshooting / short of the ridge (3D-105): S1 top and rakes, the north ridge edge and the S1-side gable rakes open
+  'GT-26/input.model.json': ['OPEN_BOUNDARY', 'SHELL_NOT_CLOSED'],
+  'GT-27/input.model.json': ['OPEN_BOUNDARY', 'SHELL_NOT_CLOSED'],
+  'GT-28/input.model.json': ['OPEN_BOUNDARY', 'SHELL_NOT_CLOSED'],
 };
 
 describe('golden inputs', () => {
-  it('finds every input model', () => expect(inputs.length).toBe(28));
+  it('finds every input model', () => expect(inputs.length).toBe(32));
 
   for (const { gt, file } of inputs) {
     it(`${gt}/${file}`, async () => {

@@ -1,0 +1,28 @@
+{
+  "gt": "GT-26",
+  "source": {
+    "document": "docs/specs/3dqm-spec.md",
+    "section": "§13",
+    "input": "GT-03 with slope S1 (south, `z = 5 + 0.75·y`) overshooting the ridge to `y = 4.5` (`z = 8.375`; flap edges and the S1-side gable rakes open, `DRAFT_SOLID`) -> `TRIM_FACE` S1, `cuttingFaceId` S2, `keepPoint` (5; 2; 6.5)",
+    "expected": "S1 56.25 -> 50 m2; roof 100 m2; S1 plane unchanged; flap vertices deleted; ridge and rakes paired; `VALID_SOLID`; volume 520 m3"
+  },
+  "tolerance": {
+    "areaM2": 0.01,
+    "volumeM3": 0.01,
+    "source": "v0.3 §12 preamble, unless the row states otherwise"
+  },
+  "assert": {
+    "faceAreaM2": {
+      "before": 56.25,
+      "after": 50
+    },
+    "roofAreaM2": 100,
+    "state": "VALID_SOLID",
+    "volumeM3": 520
+  },
+  "decided": [],
+  "owner": {
+    "module": "`ops` (`TRIM_FACE`)",
+    "row": "3D-105"
+  }
+}

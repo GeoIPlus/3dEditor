@@ -2,17 +2,26 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:geoiplus:schema:model3d-command-payload-extend-face:v1",
   "title": "EXTEND_FACE payload",
-  "description": "Move a boundary of a face within its support plane (v0.2 §13.5, E-08; spec §10.6 rule 7).",
+  "description": "Move an open boundary edge of a face within its support plane up to a target face (v0.2 §13.5, E-08; spec §10.6 rule 8; D-324).",
   "type": "object",
   "properties": {
-    "faceId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "faceId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId"
+    },
     "edgeId": {
       "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
-      "description": "Boundary half-edge to move."
+      "description": "Open half-edge of the outer ring of the face to move."
     },
-    "targetLine": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Line3" }
+    "targetFaceId": {
+      "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId",
+      "description": "Face G; the new boundary line is plane(F) ∩ plane(G), computed by the kernel (D-324)."
+    }
   },
-  "required": ["faceId", "edgeId", "targetLine"],
+  "required": [
+    "faceId",
+    "edgeId",
+    "targetFaceId"
+  ],
   "additionalProperties": false,
-  "$comment": "[P] Field names."
+  "$comment": "[P] Field names; `targetFaceId` replaces the free `targetLine` (D-324; schema change approved D-331, 3D-105)."
 }

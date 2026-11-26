@@ -838,6 +838,8 @@ face + kept side (`TRIM_FACE`); face + open boundary edge + target face (`EXTEND
       the crossed edge; explicit when fewer than three, §4 r3).
    5. Closure: an open half-edge of the kept part that coincides with an open half-edge of another face of the same shell
       within `topologySnapTolM` (both ends) is paired with it; the state follows `validate` (may become `VALID_SOLID`).
+      Two vertices at one place become one: the id of the vertex that did not move survives, a new id if both moved
+      (D-363, 3D-105).
 8. `EXTEND_FACE` (3D-104; D-324; v0.2 §13.5, E-08). Payload (schema change in 3D-105, D-18 approved): `faceId`,
    `edgeId`, `targetFaceId` (replaces the free `targetLine`). Algorithm:
    1. `e` = `edgeId` must be a half-edge of the outer ring of `F` (else `INVALID_PAYLOAD`) and open; a shared edge ->
@@ -848,7 +850,8 @@ face + kept side (`TRIM_FACE`); face + open boundary edge + target face (`EXTEND
       (§4 r3). A line of `a` / `b` parallel to `L` -> `INVALID_GEOMETRY`.
    4. `L` must lie outside `F` on the far side of `e` (the area of `F` grows); otherwise `INVALID_GEOMETRY` (that is a
       trim). A self-crossing ring or a collapsed edge -> `INVALID_GEOMETRY`.
-   5. The plane of `F` is unchanged; ids of `F`, `e`, its ends kept (ends re-derived); closure as r7.5.
+   5. The plane of `F` is unchanged; ids of `F`, `e`, its ends kept (ends re-derived), except an end welded by closure into
+      a vertex that did not move (D-363); closure as r7.5. "Parallel" in r8.3 is within `coplanarTolDeg` (D-364).
 9. Decided in 3D-15 (provisional ids, D-38): `INSERT_ROOF_BREAK` payload `newPlane` + required `movingSidePoint`, the
    part holding it gets `newPlane`, the other keeps plane and face id (D-297); constraint policy on split / merge
    (D-298); split ids (D-299); `OFFSET_FACE` fixedMode interlock, `INVALID_PAYLOAD` when the mode does not apply
@@ -861,18 +864,16 @@ face + kept side (`TRIM_FACE`); face + open boundary edge + target face (`EXTEND
 - Accept: `OFFSET_FACE` of one gable slope by +0.1 m with the ridge free: both eaves and the ridge are re-derived; the
   slope normal is unchanged.
 - Accept: `MERGE_FACES MERGE_COPLANAR` on the two faces of GT-08 returns one face with lineage 2 -> 1 and volume 520 m3.
-- Accept (3D-105): GT-26 .. GT-33 (table below; 3D-105 moves them into §13 with their fixtures, D-332).
+- Accept (3D-105): GT-26 .. GT-29 (§13, with fixtures). Accept (3D-122, 3D-123): GT-30 .. GT-33 (table below; each
+  row moves them into §13 with their fixtures, D-332, D-361).
 - Accept (3D-105): the owner's test lists RD-01..RD-18 and RD-T01..RD-T24 (`REMOVE_DETAILS`), SF-COL-01..SF-COL-14
   (`REMOVE_COLLINEAR_VERTICES`), SAE-01..SAE-20 (`ALIGN_SELECTED_EDGES`), recorded in D-325..D-329.
 
-**Golden cases of 3D-105** (owner-accepted, D-331; kept here, not in §13, until their fixtures exist, D-332):
+**Golden cases of 3D-122 / 3D-123** (owner-accepted, D-331; kept here, not in §13, until their fixtures exist, D-332;
+GT-26..GT-29 moved to §13 by 3D-105):
 
 | GT | Input and operation | Expected | Module | Row |
 |---|---|---|---|---|
-| GT-26 | GT-03 with slope S1 (south, `z = 5 + 0.75·y`) overshooting the ridge to `y = 4.5` (`z = 8.375`; flap edges and the S1-side gable rakes open, `DRAFT_SOLID`) -> `TRIM_FACE` S1, `cuttingFaceId` S2, `keepPoint` (5; 2; 6.5) | S1 56.25 -> 50 m2; roof 100 m2; S1 plane unchanged; flap vertices deleted; ridge and rakes paired; `VALID_SOLID`; volume 520 m3 | `ops` (`TRIM_FACE`) | 3D-105 |
-| GT-27 | GT-26 input, `keepPoint` (5; 4.25; 8.1875) on the flap | `INVALID_TOPOLOGY` (the removed eave part shares edges with the wall); version unchanged | `ops` (`TRIM_FACE`) | 3D-105 |
-| GT-28 | GT-03 with S1 ending short of the ridge at `y = 3.5` (`z = 7.625`; its top edge, the S2 ridge edge and the S1-side gable rakes open) -> `EXTEND_FACE` S1, top edge, `targetFaceId` S2 | Ends re-derived at (0; 4; 8), (10; 4; 8); S1 43.75 -> 50 m2; roof 100 m2; S1 plane unchanged; `VALID_SOLID`; volume 520 m3 | `ops` (`EXTEND_FACE`) | 3D-105 |
-| GT-29 | GT-03 -> `EXTEND_FACE` S1, eave edge (shared with the south wall), `targetFaceId` S2 | `INVALID_TOPOLOGY`; version unchanged | `ops` (`EXTEND_FACE`) | 3D-105 |
 | GT-30 | GT-03 with an extra vertex (5; 0; 5) on the S1 eave, in the rings of S1 and the south wall -> `STRAIGHTEN_FACE` S1 `REMOVE_COLLINEAR_VERTICES`; then again | 7 faces, 10 vertices, 15 edges; no vertex moved; volume 520 m3; lineage: vertex deleted, 2 -> 1 edges in both faces; second run valid empty, no new version (D-301) | `ops` (`STRAIGHTEN_FACE`) | 3D-105 |
 | GT-31 | Flat roof at `z = 5` on (0; 0), (6; 0), (10; 0.05), (10; 8), (0; 8); south wall in two faces W1 (x 0..6, `y = 0`) and W2 ((6; 0) -> (10; 0.05)) -> `STRAIGHTEN_FACE` roof `ALIGN_SELECTED_EDGES` [eave over W1 (6 m), eave over W2 (4.0003 m)] | Leading edge over W1, W1 and roof planes unchanged; W2 plane `y = 0` within 1e-6; corner (10; 0.05; z) -> (10; 0; z); vertices (6; 0; 0), (6; 0; 5) kept (rank 2, nearest point); roof 79.9 -> 80 m2; volume 399.5 -> 400 m3; no vertex, edge or face removed | `ops` (`STRAIGHTEN_FACE`) | 3D-105 |
 | GT-32 | GT-03 with the corner (10; 4; 8) clipped by a triangle T (9.8; 4; 8), (10; 3.8; 7.85), (10; 4.2; 7.85), area 0.05 m2 (`DEGENERATE_FACE`) -> `REMOVE_DETAILS` discovery with the default `maxDisplacementM`; discovery and COMMIT [T] with `maxDisplacementM` 0.3 | Default: `candidates` = [{T, 0.05, false, `CONSTRAINT_CONFLICT`}] (move 0.25 m > `planarTolM`); 0.3: [{T, 0.05, true, null}], version unchanged; COMMIT: T collapsed to S1 ∩ S2 ∩ east gable = (10; 4; 8); neighbour planes unchanged; 7 faces, 10 vertices; `VALID_SOLID`; volume 520 m3; roof 100 m2 | `ops` (`REMOVE_DETAILS`) | 3D-105 |
@@ -1186,12 +1187,17 @@ Details, with GT-13 moved from 3D-18 to 3D-23 (D-68).
 | GT-23 | Building outside the operator's signed assignment (v0.3: "package", D-10) | `403 FORBIDDEN` on read and write | `services/kernel` | 3D-25 |
 | GT-24 | Batch export of the assignment's buildings with one `DRAFT_SOLID` (v0.3: "package", D-10) | File without that building; it is named in the `export-report` | `services/kernel` | 3D-24 |
 | GT-25 | Building with coordinates of the order of 6 000 000 m | world -> local -> world within 0.001 m | `brep` | 3D-09 |
+| GT-26 | GT-03 with slope S1 (south, `z = 5 + 0.75·y`) overshooting the ridge to `y = 4.5` (`z = 8.375`; flap edges and the S1-side gable rakes open, `DRAFT_SOLID`) -> `TRIM_FACE` S1, `cuttingFaceId` S2, `keepPoint` (5; 2; 6.5) | S1 56.25 -> 50 m2; roof 100 m2; S1 plane unchanged; flap vertices deleted; ridge and rakes paired; `VALID_SOLID`; volume 520 m3 | `ops` (`TRIM_FACE`) | 3D-105 |
+| GT-27 | GT-26 input, `keepPoint` (5; 4.25; 8.1875) on the flap | `INVALID_TOPOLOGY` (the removed eave part shares edges with the wall); version unchanged | `ops` (`TRIM_FACE`) | 3D-105 |
+| GT-28 | GT-03 with S1 ending short of the ridge at `y = 3.5` (`z = 7.625`; its top edge, the S2 ridge edge and the S1-side gable rakes open) -> `EXTEND_FACE` S1, top edge, `targetFaceId` S2 | Ends re-derived at (0; 4; 8), (10; 4; 8); S1 43.75 -> 50 m2; roof 100 m2; S1 plane unchanged; `VALID_SOLID`; volume 520 m3 | `ops` (`EXTEND_FACE`) | 3D-105 |
+| GT-29 | GT-03 -> `EXTEND_FACE` S1, eave edge (shared with the south wall), `targetFaceId` S2 | `INVALID_TOPOLOGY`; version unchanged | `ops` (`EXTEND_FACE`) | 3D-105 |
 
 Reference checks (v0.3 §12): GT-04 roof volume 3·8·(2·10 + 2)/6 = 88; GT-07 slope rise 3.5 / run 4, volume
 400 + 10·8·3.5/2 = 540; GT-14 slope length 5 + 0.5·5/4 = 5.625; GT-21 0.10·cos(arctan 0.75) = 0.080.
 
-Count: 29 tests (GT-I1..GT-I4, GT-01..GT-25); per module: `import` 3, `export` 1, `brep` 1, `cloud` 2, `ops` 18,
-`services/kernel` 4.
+Count: 33 tests (GT-I1..GT-I4, GT-01..GT-29); per module: `import` 3, `export` 1, `brep` 1, `cloud` 2, `ops` 22,
+`services/kernel` 4. GT-26..GT-29 come from spec §10.6 (3D-104, D-331), not v0.3 §12; their fixtures take this table as
+the source (3D-105, D-332).
 
 ---
 

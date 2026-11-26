@@ -1,4 +1,48 @@
 {
-  "valid": [{ "confirmedRemoveIds": [] }, { "confirmedRemoveIds": ["f-9"], "keepIds": ["inst-1"] }],
-  "invalid": [{ "why": "missing confirmation list", "instance": { "keepIds": [] } }]
+  "valid": [
+    {
+      "confirmedRemoveIds": []
+    },
+    {
+      "confirmedRemoveIds": [
+        "f-9"
+      ],
+      "keepIds": [
+        "inst-1"
+      ]
+    },
+    {
+      "confirmedRemoveIds": [],
+      "maxAreaM2": 0.25
+    },
+    {
+      "confirmedRemoveIds": [
+        "f-9"
+      ],
+      "maxAreaM2": 0.25,
+      "maxDisplacementM": 0.3
+    }
+  ],
+  "invalid": [
+    {
+      "why": "missing confirmation list",
+      "instance": {
+        "keepIds": []
+      }
+    },
+    {
+      "why": "threshold must be > 0",
+      "instance": {
+        "confirmedRemoveIds": [],
+        "maxAreaM2": 0
+      }
+    },
+    {
+      "why": "negative displacement limit",
+      "instance": {
+        "confirmedRemoveIds": [],
+        "maxDisplacementM": -0.1
+      }
+    }
+  ]
 }

@@ -1,0 +1,22 @@
+[
+  {
+    "step": "COMMAND",
+    "command": {
+      "schemaVersion": "1",
+      "commandId": "cmd-gt-26-1",
+      "projectId": "prj-golden",
+      "buildingId": "bld-gt-26",
+      "actorId": "usr-operator",
+      "operation": "TRIM_FACE",
+      "phase": "COMMIT",
+      "expectedVersion": 1,
+      "payload": {
+        "faceId": "f-roof-s",
+        "cuttingFaceId": "f-roof-n",
+        "keepPoint": [5, 2, 6.5]
+      },
+      "coordinateFrame": "LOCAL",
+      "targetState": "VALID_SOLID"
+    }
+  }
+]

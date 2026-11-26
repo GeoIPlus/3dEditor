@@ -183,8 +183,8 @@ D-257; GABLE ridge on the fall line through the outline centroid, `ridgeRiseM` a
 only, D-258), `remove-installation.js` (deletes the node, its children and every entity of their bodies; faces
 leave roof components). The roof face is never cut (D-260): the installation touches it. Refusals D-259;
 `measurementId` sizing -> `INVALID_MEASUREMENT` (Q-28). New semantic node id kind `installation` (`installation-<n>`).
-## Core edits (3D-15)
-Operations on the pipeline (spec §10.4, §10.6; D-297..D-306), one entry each in `ops/registry.js`:
+## Core edits (3D-15, 3D-105)
+Operations on the pipeline (spec §10.4, §10.6; D-297..D-306, D-322..D-324), one entry each in `ops/registry.js`:
 
 | File | Kind | Plane terms |
 |---|---|---|
@@ -194,6 +194,9 @@ Operations on the pipeline (spec §10.4, §10.6; D-297..D-306), one entry each i
 | `insert-roof-break.js` | `INSERT_ROOF_BREAK` | same cut; the part holding `movingSidePoint` gets `newPlane` (pinned), neighbours re-derived (D-297) |
 | `merge-faces.js` | `MERGE_FACES` | union loops, joint vertices dissolved, COPLANAR / REFIT (D-303) |
 | `inherit.js` | - | constraint policy table on split / merge (D-298); lineage in `warnings` (D-306) |
+| `trim-face.js` | `TRIM_FACE` (3D-105) | L = plane(F) ∩ plane(`cuttingFaceId`), same cut (D-302); the part holding `keepPoint` stays; only a dangling flap is removed (D-323); plane of F unchanged; closure |
+| `extend-face.js` | `EXTEND_FACE` (3D-105) | an open outer edge moves onto L = plane(F) ∩ plane(`targetFaceId`); ends from (F, neighbour plane, G) or an open neighbour's line (explicit); area must grow (D-324); ids kept; closure |
+| `face-line.js` | - | plane-plane line, point in face, closure of r7.5: coinciding open half-edges of one shell paired within `topologySnapTolM` |
 
 Constraint policy (D-298): split - plane kinds COPY_TO_CHILDREN (PRESERVE_ORIGINAL on a roof break), edge kinds
 copied to the new fragment of a crossed edge (FIXED_LINE / FIXED_EAVE / FIXED_RIDGE: TRANSFORM_PARAMETERS, the copy
@@ -205,6 +208,10 @@ Limitations (first version, D-302): a cut must cross the outer ring exactly twic
 text in `warnings`, not in `topologyLineage` (D-306); after `INSERT_ROOF_BREAK` only the chord's edge role is
 recomputed (other roles kept); `FIXED_POINT` without `target` and the FIXED_* edge kinds fix the positions the model
 holds before the operation (compile reads the draft before the solve).
+TRIM / EXTEND closure vertex rule (owner, D-363): two vertices at one place become one; the unmoved one's id
+survives, a new id if both moved (created counts as moved); if neither moved, the edited face's vertex [A]. The survivor
+takes the union of defining faces and is DERIVED when they give a unique point within `planarTolM`. "Parallel" for an
+EXTEND neighbour line and L: `coplanarTolDeg` (D-364). `STRAIGHTEN_FACE` is 3D-122, `REMOVE_DETAILS` 3D-123 (D-361).
 
 **3D-19** (spec §10.10; D-336..D-345): `rigid-move.js` (TRANSLATE_BUILDING, ROTATE_BUILDING: one isometry on every
 plane, vertex, footprint, construction entity, LOCAL measurement and constraint target; WORLD measurements and

@@ -1,10 +1,11 @@
-# fixtures - golden test fixtures GT-I1..GT-I4, GT-01..GT-25
+# fixtures - golden test fixtures GT-I1..GT-I4, GT-01..GT-29
 
 - Status: implemented (3D-07), accepted (D-103). Inputs proposed where v0.3 §12 is silent are marked `[P]` and wait for the
   owner's review (D-99).
 - Protection: none (synthetic test data; no kernel code).
 - WP: 3D-07   Spec: [docs/specs/3dqm-spec.md §13](../docs/specs/3dqm-spec.md#13-golden-tests---module-and-wp-row)
 - Source: v0.3 §12 (tests, expected values, reference checks), v0.2 F.3 (fixture structure), decisions D-99..D-102.
+  GT-26 and later: the owner-accepted spec §13 row (from spec §10.6, D-331, D-332; 3D-105), not in v0.3 §12.
   Generator: [tools/golden-fixtures/](../tools/golden-fixtures/) (new code, no third-party code).
 
 ## Purpose
@@ -45,7 +46,7 @@ Steps (`steps.json`, an array; a runner executes them in order on the model name
 
 | Member | Content |
 |---|---|
-| `source` | `document`, `section`, `gate`, and the `input` and `expected` cells of the v0.3 §12 row, verbatim (Russian) |
+| `source` | `document`, `section`, `gate`, and the `input` and `expected` cells of the v0.3 §12 row, verbatim (Russian); for GT-26 and later `document` is the spec, `section` §13, no `gate`, the cells of the spec §13 row (3D-105) |
 | `tolerance` | area +/- 0.01 m2, volume +/- 0.01 m3 (§12 preamble) unless the row states its own |
 | `assert` | machine-readable values of that row; every number and every `CODE` in it appears in the verbatim cells |
 | `decided` | values a later decision adds (e.g. D-76 refusal code for GT-11), each with its `D-NN` |
