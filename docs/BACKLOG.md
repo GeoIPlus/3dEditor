@@ -413,7 +413,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-23 | Kernel service I: `history` port + file adapter (3D-ADR-0003, append-only, `journal/{N+1}` create-if-absent), port contract suite, COMMIT path (idempotent `commandId` + `expectedVersion`, GT-13, D-68), command status; PREVIEW/API -> 3D-109, handler/ports -> 3D-110 (D-314) | here | service | 03, 06, 18 | G5 | M | service | done (D-321; merged into base, no PR; D-314..D-320) |
 | 3D-109 | Kernel service II: command API - PREVIEW store by `previewId` (expiry 10 min, D-315), COMMIT by `previewId`, PREVIEW rate limit 20/s (D-316), payload limit 1 MiB (D-317), error registry mapping, request/reply validation against `contracts/model3d/` | here | service | 23 | G5 | M | service | done (D-359; merged into base, no PR; D-351..D-358) |
 | 3D-110 | Kernel service III: `createKernelHandler(ports)` + `server.js`, auth/lease port (D-69, Q-39 by header), command status route, heatmap request (`INVALID_CRS`, 3D-69), bench gate through the handler (D-111, Q-42 interim); `datasets` -> 3D-128 (D-402) | here | service | 109 | G5 | M | service | done (D-408; merged into base, no PR; D-402..D-407) |
-| 3D-128 | `datasets` port + file adapter: input CityJSON read with entity tag, `progress.save` whole-body `PUT` + `If-Match`, content-addressed delivered bytes (3D-ADR-0003 §4; split from 3D-110, D-402) | here | service | 109 | G5 | M | service | review (wp/3d-128-datasets; local, PR not requested) |
+| 3D-128 | `datasets` port + file adapter: input CityJSON read with entity tag, `progress.save` whole-body `PUT` + `If-Match`, content-addressed delivered bytes (3D-ADR-0003 §4; split from 3D-110, D-402) | here | service | 109 | G5 | M | service | review (wp/3d-128-datasets; local, PR not requested; accepted D-3D128-2) |
 | 3D-111 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-319) | here | service | 23 | G5 | M | service | proposed |
 | 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 123 | G3 | L | spec | proposed |
 | 3D-113 | `STRAIGHTEN_FACE` `ALIGN_SELECTED_EDGES` extensions: leading edge chosen by the operator, `BEST_FIT_LINE` mode | here | docs/specs, geo-model3d/ops | 122 | G3 | S | spec | proposed |
@@ -1240,7 +1240,7 @@ accuracy ratio 1.30 is n=1 and not applied.
   the same digest is a no-op; a `PUT` to `progress.save` without a stored entity tag is not sent (operator told); a `412`
   leaves the result kept (Operaflow suite `progress/` cases as fixtures, 3D-01 §9.3); no adapter method deletes or
   overwrites (`check:arch`).
-- Decisions: D-35, D-82..D-85, D-402  Open: none
+- Decisions: D-35, D-82..D-85, D-402, D-3D128-1, D-3D128-2  Open: none
 - Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
 
 ### 3D-129 SC: re-vendor the `model3d` error schema with `INVALID_CRS`

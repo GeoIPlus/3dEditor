@@ -424,6 +424,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-408 | 3D-110 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-402..D-407, rows 3D-128 (datasets port + file adapter) and 3D-129 (SC mirror: re-vendor the error schema with INVALID_CRS); the command-api JSDoc conflict with 3D-121 resolved (both options) | Owner, WP session 3D-110, 2026-11-26 |
 | D-409 | Rows 3D-128 and 3D-129 set `ready` by the owner (chat in WP session 3D-110); the coordinator starts 3D-128 in a fresh session (3D-24 depends on it) | Owner, WP session 3D-110, 2026-11-26 |
 | D-410 | 3D-128 (datasets port + file adapter) started in a fresh session on branch wp/3d-128-datasets in the environment "3dEditor" (env_01P477QdYSMhcdzLmGZz2KVM: setup script runs `npm ci`); new WP sessions use that environment | Coordinating session, 2026-11-26 |
+| D-3D128-1 | 3D-ADR-0003 §4 "no tag -> not saved" is refined by Operaflow@d2b679c `progress.md` `location-saved-by-put` / `location-no-entity-tag-not-saved`: a save to a `progress.save` `location` dataset uses `If-Match` with the strong tag of the read the results were made on (or of the own last save), `If-None-Match: *` where the dataset was not read or its read found none (404 / 410); only a read that found the dataset without a strong tag sends nothing (`NO_ENTITY_TAG`, operator told). Port `save(ref, bytes, { ifMatch } \| { ifNoneMatch: '*' })`, `saveResult` takes the read's `basis`. ADR text unchanged; this row is the reference | Owner, dialog, 2026-11-26 (3D-128) |
+| D-3D128-2 | 3D-128 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-128-datasets | Owner, dialog, 2026-11-26 (3D-128) |
 
 ## Open questions
 
