@@ -922,9 +922,28 @@ Throughput: 62.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accur
   deformation limits, the change report and acceptance lines; then the code on the `executeCommand` pipeline, walls as
   the vertical planes of the new footprint edges, roof planes kept (D-08). Scope out: new contract fields without the
   owner (D-18).
-- Accept: the acceptance lines agreed in the dialog (recorded as decisions before the code); PREVIEW == COMMIT, refusal
-  leaves the model unchanged, inverse patch, UNDO / REDO; D-372 respected; `npm run check`, golden pass.
-- Decisions: D-08, D-13, D-340, D-3D114-1  Open: the algorithm (owner dialog in its own session)
+- Algorithm (owner dialog 2026-11-26, D-3D1141-1..7): straighten chains within `footprintAngleTolDeg` into the longest
+  wall (plane and id kept); optional orthogonalize onto the 0 / 90 deg grid of the longest outer wall; angle limit only,
+  shift and area reported; degenerate courtyards removed only with `allowCourtyardRemoval`; report in `warnings` +
+  lineage; overhangs rebuilt, refused when their wall is merged away; steps untouched.
+- Accept (owner-approved D-3D1141-8):
+  RF-01 FLAT, 3 deg kink -> merged into the longer wall, roof plane kept, `VALID_SOLID`, lineage merged -> survivor;
+  RF-02 GABLE, kink on an eave wall -> roof planes unchanged;
+  RF-03 chain 4 / 4 deg merged; an edge 6 deg from the reference wall breaks the chain;
+  RF-04 all turns > 5 deg -> no-op, version kept;
+  RF-05 `orthogonalize` 88 / 92 deg corners -> exactly 90, the longest wall unchanged; `false` -> corners kept;
+  RF-06 `orthogonalize` with a 120 deg corner -> those walls untouched;
+  RF-07 courtyard with a kink, removal `false` -> regularized and kept;
+  RF-08 degenerate courtyard: `false` -> `INVALID_GEOMETRY`, model unchanged; `true` -> removed, holes closed;
+  RF-09 overhang on a changed wall rebuilt at the same width; on a merged-away wall -> `INVALID_TOPOLOGY`;
+  RF-10 kept roof planes no longer meet in one point, or a face turns over -> `INVALID_TOPOLOGY`;
+  RF-11 self-intersecting result or an edge < `minEdgeLengthM` -> `INVALID_GEOMETRY`;
+  RF-12 hard constraint on a deleted wall -> `CONSTRAINT_CONFLICT` (D-213);
+  RF-13 report: `warnings` as D-3D1141-5;
+  RF-14 unknown `footprintId` -> `INVALID_PAYLOAD`; body not unique -> `INVALID_TOPOLOGY` (D-218);
+  RF-15 PREVIEW == COMMIT, refusal leaves the model unchanged, inverse patch, UNDO / REDO, D-372 respected.
+- Accept (all): `npm run check`, golden, bench pass; files <= 300 lines.
+- Decisions: D-08, D-13, D-340, D-3D114-1, D-3D1141-1..8  Open: none
 - Estimate: $7.72 (p80 $8.96), ~13 min model time; basis: M kernel n=6
 
 ### 3D-115 Parametric geometry dependency management
