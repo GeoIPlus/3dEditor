@@ -10,6 +10,10 @@ import { addChimney } from './add-chimney.js';
 import { addDormer } from './add-dormer.js';
 import { removeInstallation } from './remove-installation.js';
 import { fitPlaneCommand } from './fit-plane.js';
+import { fitToSharedEdge } from './fit-to-shared-edge.js';
+import { removeFace } from './remove-face.js';
+import { healHole } from './heal-hole.js';
+import { alignJunction } from './align-junction.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -37,4 +41,8 @@ export const OPERATIONS = {
   ADD_DORMER: { run: addDormer },
   REMOVE_INSTALLATION: { run: removeInstallation },
   FIT_PLANE: { run: fitPlaneCommand },
+  FIT_TO_SHARED_EDGE: { run: fitToSharedEdge },
+  REMOVE_FACE: { run: removeFace },
+  HEAL_HOLE: { run: healHole },
+  ALIGN_JUNCTION: { run: alignJunction },
 };

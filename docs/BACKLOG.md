@@ -21,20 +21,21 @@ Updated: 2026-11-26
 
 | Progress | Rows |
 |---|---:|
-| Done | 51 / 78 |
+| Done | 52 / 79 |
 | Review | 1 |
-| In progress | 5 |
+| In progress | 4 |
 | Ready | 3 |
-| Proposed (waiting for the owner to set `ready`) | 17 |
+| Proposed (waiting for the owner to set `ready`) | 18 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 51/78 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 52/79 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-15 Core edits; 3D-17 Repair ops; 3D-18 History; 3D-19 Envelope ops; 3D-47 SC: 3D view port + host.
+**Running:** 3D-15 Core edits; 3D-18 History; 3D-19 Envelope ops; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D17["✅ ⚙️ 3D-17 Repair ops"]
     D71["✅ ⚙️ 3D-71 FIT_PLANE command"]
     D82["✅ 📐 3D-82 Spec: 3D-69 cloud CRS (provisional)"]
     D102["✅ 🧪 3D-102 Eval rows in a reserved id range"]
@@ -101,8 +102,8 @@ flowchart TB
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
   end
   subgraph g2g4["G2..G4 - operations and cloud (PROPOSED)"]
+    D103["💡 ⚙️ 3D-103 ON_PLANE fixed plane"]
     D15["🚧 ⚙️ 3D-15 Core edits"]
-    D17["🚧 ⚙️ 3D-17 Repair ops"]
     D18["🚧 ⚙️ 3D-18 History"]
     D19["🚧 ⚙️ 3D-19 Envelope ops"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
@@ -193,6 +194,8 @@ flowchart TB
   D07 --> D08
   D08 --> D09
   D09 --> D10
+  D13 --> D103
+  D17 --> D103
   D87 --> D102
   D73 --> D84
   D00 --> D85
@@ -278,9 +281,9 @@ Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script
 
 ```
 Forecast 2026-11-26 (ledger n=40 WPs, classes with n>=5: L kernel n=5, M kernel n=5, M tooling n=5, S spec n=8; baseline d7c472d 2026-11-19)
-Known remaining: $225 / $271 over 27 rows   Overhead k=1.08   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $243 / $293
-Throughput: 51.0 rows/week (7 d), 362 model min/week; waiting share 99 %   Accuracy: TBD (no finished WP with est0 and actual)
+Known remaining: $216 / $262 over 27 rows   Overhead k=1.08   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $233 / $283
+Throughput: 52.0 rows/week (7 d), 362 model min/week; waiting share 99 %   Accuracy: TBD (no finished WP with est0 and actual)
 ```
 
 ## Work-package status
@@ -304,13 +307,14 @@ Throughput: 51.0 rows/week (7 d), 362 model min/week; waiting share 99 %   Accur
 | 3D-14 | `REPLACE_ROOF` R-01..R-04, `REBUILD_ENVELOPE` | here | geo-model3d/ops | 12, 13 | G2 | L | kernel | done (D-219; merged into base, no PR; D-212..D-218) |
 | 3D-15 | Core edits: `MOVE_VERTEX`, `MOVE_EDGE`, `OFFSET_FACE`, `SPLIT_FACE`, `INSERT_ROOF_BREAK`, `MERGE_FACES`, `REMOVE_DETAILS`, `STRAIGHTEN_FACE`, `TRIM_FACE`, `EXTEND_FACE` | here | geo-model3d/ops | 13 | G3 | L | kernel | in-progress (D-220; wp/3d-15-core-edits) |
 | 3D-16 | `ALIGN_RIDGE`, `ALIGN_EAVE`, `MATCH_ELEVATIONS` | here | geo-model3d/ops | 13 | G3 | M | kernel | done (D-235; merged into base, no PR; D-231..D-234) |
-| 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | kernel | in-progress (D-220; wp/3d-17-repair) |
+| 3D-17 | Repair: `REMOVE_FACE`, `HEAL_HOLE`, `FIT_TO_SHARED_EDGE`, `ALIGN_JUNCTION` | here | geo-model3d/ops | 12, 13 | G3/G4 | L | kernel | done (D-290; merged into base, no PR; D-284..D-289) |
 | 3D-18 | History: `UNDO`, `REDO`, `RESTORE_BASELINE` (idempotent `commandId`, `expectedVersion` moved to 3D-23, D-68) | here | geo-model3d | 09, 16 | G3 | M | kernel | in-progress (D-267; wp/3d-18-history) |
 | 3D-19 | Envelope: `RESIZE_ROOF`, `SET_OVERHANG`, `REGULARIZE_FOOTPRINT`, `ALIGN_WALL`, `SET_HEIGHT`, `TRANSLATE_BUILDING`, `ROTATE_BUILDING` | here | geo-model3d/ops | 14 | G4 | L | kernel | in-progress (D-267; wp/3d-19-envelope-ops) |
 | 3D-20 | Installations: `ADD_DORMER`, `ADD_CHIMNEY`, `REMOVE_INSTALLATION`; limited Boolean (v0.3 §14, K-12) | here | geo-model3d/ops | 12, 13 | G4 | L | kernel | done (D-263; merged into base, no PR; D-256..D-262) |
 | 3D-100 | Installation size from the cloud: `measurementId` of `ADD_CHIMNEY` / `ADD_DORMER` (v0.3 §6 F-36, F-37) | here | geo-model3d/ops | 20, 71 | G4 | M | kernel | proposed |
 | 3D-101 | Spec update for 3D-20: §10.11 dimensions, `ridgeRiseM`, refusal codes, roof not cut; §14 Q-38 closed (D-256..D-260) | here | docs/specs | 20 | G4 | S | spec | done (D-272; merged into base, no PR) |
 | 3D-102 | Agent-eval scenarios use a reserved row id range (e.g. 3D-9xx) that the real backlog never reaches, instead of 3D-90..3D-98 (D-264) | here | docs/agent-evals, tools/agent-evals | 28, 87 | G0 | S | tests | done (D-277; merged into base, no PR) |
+| 3D-103 | `solve`: `ON_PLANE` with one face and a plane target = fixed face plane; enables the GT-19 "Fixed" variant | here | geo-model3d/solve | 13, 17 | G4 | S | kernel | proposed |
 | 3D-21 | `SET_SEMANTICS`, `SET_CONSTRAINT`, `REMOVE_CONSTRAINT` | here | geo-model3d/ops | 13 | G3 | S | kernel | done (D-230; merged into base, no PR; D-226..D-229) |
 | 3D-22 | Point cloud: point port (box query) with interim adapter reading COPC by box / LAS whole (D-35), `FIT_PLANE` (RANSAC + SVD), deviation heatmap | here | geo-model3d/cloud | 09 | G4 | M | kernel | done (D-137; merged into base, no PR) |
 | 3D-23 | Kernel service: command API PREVIEW/COMMIT/`previewId`, idempotent `commandId` + `expectedVersion` (GT-13, D-68), rate limit, error registry, command status, storage port with interim file/S3 adapter (D-35) | here | service | 03, 06, 18 | G5 | L | service | proposed |
@@ -629,6 +633,19 @@ Throughput: 51.0 rows/week (7 d), 362 model min/week; waiting share 99 %   Accur
   3D-90..3D-99 again or stay skipped (owner).
 - Accept: `pass check-docs after setup` passes with a real row of every former scenario id planted; eval scores unchanged.
 - Decisions: D-264, D-275 (range 3D-900..3D-999), D-276 (3D-90..3D-99 stay skipped)  Open: -
+
+### 3D-103 `ON_PLANE` with a face and a plane target (fixed plane)
+- Source: 3D-17 session 2026-11-26; owner dialog (D-289). GT-19 "Fixed" (fixtures/GT-19/input.model.fixed.json, 3D-07)
+  writes hard `ON_PLANE` with `entityIds: [face]` and a `Plane` target; `solve/compile.js` accepts only
+  `[vertex, face]` (D-169) and drops it with `ENTITIES_DO_NOT_MATCH_KIND`, so ALIGN_JUNCTION commits instead of refusing.
+- Goal: a hard `ON_PLANE` `[face]` + `Plane` target fixes that face's support plane (planes primary, D-08).
+- Scope in: compile reading (residual of normal and offset against the target, tolerance per D-170), solve module card
+  table row (D-169 amended), unit tests; turn the GT-19 `it.todo` into the assertion "refusal listing the conflicting
+  faces". Scope out: other constraint kinds; contract change (the schema already allows the target).
+- Accept: GT-19 fixed variant -> `CONSTRAINT_CONFLICT` whose `entityIds` contain `f-roof-e`, model unchanged; existing
+  ON_PLANE `[vertex, face]` tests unchanged; `npm run check` passes.
+- Decisions: D-169, D-170, D-287, D-288, D-289  Open: -
+- Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (Size-only class, as 3D-89; S kernel count not checked)
 
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under
