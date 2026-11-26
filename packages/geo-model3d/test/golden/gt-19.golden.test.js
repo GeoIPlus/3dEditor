@@ -30,7 +30,7 @@ describe('GT-19 ALIGN_JUNCTION', () => {
     expect(spread(commit.model)).toBeLessThanOrEqual(PROFILE.topologySnapTolM);
     expect(a.primaryPlaneUnchanged).toBe(true);
     expect(commit.model.faces['f-roof-s'].supportPlane).toEqual(input.faces['f-roof-s'].supportPlane);
-    expect(commit.model.vertices['v-a'].p.map((x) => +x.toFixed(9))).toEqual([4, 4, 8]);
+    expect(commit.model.vertices['v-a'].p.map((/** @type {number} */ x) => +x.toFixed(9))).toEqual([4, 4, 8]);
     expect(maxPlaneDistance(commit.model)).toBeLessThanOrEqual(PROFILE.planarTolM);
   });
 

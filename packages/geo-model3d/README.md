@@ -1,6 +1,6 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14); other operations follow their rows (3D-15..3D-21, 3D-71)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), repair `REMOVE_FACE` / `HEAL_HOLE` / `FIT_TO_SHARED_EDGE` / `ALIGN_JUNCTION` (3D-17); other operations follow their rows (3D-15..3D-21, 3D-71)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
@@ -121,6 +121,23 @@ new roof faces join the replaced roof's component. R-04 "undetermined ridge leng
 the accepted payload (four slopes required); only the axis tie gives UNDERCONSTRAINED_GEOMETRY.
 Lineage (D-212): kept ids are not in `mapped`; old roof faces map to all new roof faces; new half-edges and
 vertices without a predecessor are only in the patch `added` (the owner's reading of spec §10.1 Accept 3).
+
+### Repair operations (3D-17; spec §10.5, §10.8; D-76, D-3D17-1..4)
+
+| File | Contents |
+|---|---|
+| `fit-to-shared-edge.js` | `FIT_TO_SHARED_EDGE`: B copies welded into the closest A copies (twin pair opposite, else `INVALID_TOPOLOGY`); welded vertex derived from the union of planes; B movable -> hard ON_PLANE of the A edge ends (O1 for the rest); hard `MAX_DISPLACEMENT` per weld -> `CONSTRAINT_CONFLICT` (minimal set) |
+| `remove-face.js` | `REMOVE_FACE`: face, its half-edges and unused vertices deleted, twins opened, shell / roof component updated (empty component deleted [A]); vertices with < 3 independent planes become EXPLICIT; VALID_SOLID target refused by the gate |
+| `heal-hole.js`, `heal-closing.js` | `HEAL_HOLE`: edges chained into the new ring (several ways -> `UNDERCONSTRAINED_GEOMETRY`, open -> `INVALID_TOPOLOGY`); plane copied / fitted (POINT measurements, D-215) / fitted to the hole; closing compatible when each boundary vertex moves <= `maxDisplacementM` (default `planarTolM`, D-3D17-1), stays on its planes, ring simple with area; else `INVALID_GEOMETRY` with `details.admissibleModes` (D-3D17-2); kind by spec §6 r7 + `SEMANTICS_INFERRED` (D-3D17-3) |
+| `align-junction.js`, `junction-point.js` | `ALIGN_JUNCTION`: node point by majority (planes through the current vertex position within `planarTolM`, containing the fixed planes, spread <= `topologySnapTolM`) else least squares on the fixed planes (D-3D17-4); moving planes get "contains the point" (stage 1, O1); optional `maxDisplacementM` per vertex |
+| `repair-topology.js` | ring walk, half-edge drop, vertex merge, zero-length edge collapse, the `MAX_DISPLACEMENT` hard condition |
+
+Readings [A] for the owner's review: `HEAL_HOLE` lists `FIT_MEASUREMENTS` as admissible when the model holds >= 3 POINT
+measurements (cannot be checked before the points are chosen); `COPY_NEIGHBOR_PLANE` needs a face beside the hole
+(`INVALID_PAYLOAD` otherwise); an ambiguous ring gives `admissibleModes: []`; a weld with < 3 independent planes keeps
+the A copy explicit; majority = planes through the current node position (with four planes every three meet).
+Gap (owner question of 3D-17): GT-19 "Fixed" variant uses `ON_PLANE` with one face and a plane target, which `solve`
+does not compile (D-169: `[vertex, face]`); its golden assertion is `todo`.
 
 ## Internal modules
 ### solve (3D-13)
