@@ -297,6 +297,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D18-2 | Spec §10.9 r5 (D-69) in the kernel: the service passes the authenticated `actorId`; the kernel replays the journal into undo / redo stacks and refuses `FORBIDDEN` (403) when the stack top was committed by another actor; nothing is skipped (stack order). No contract change | Owner, dialog, 2026-11-26 (3D-18) |
 | D-3D18-3 | `UNDO` with nothing to undo, `REDO` with nothing to redo, `RESTORE_BASELINE` on a model equal to the baseline -> `INVALID_PAYLOAD` (400), no new version (as D-229) | Owner, dialog, 2026-11-26 (3D-18) |
 | D-3D18-4 | `RESTORE_BASELINE` is a normal history entry: it can be undone and it clears the redo stack | Owner, dialog, 2026-11-26 (3D-18) |
+| D-3D18-5 | 3D-18 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-18-history | Owner, chat, 2026-11-26 (3D-18) |
 
 ## Open questions
 
