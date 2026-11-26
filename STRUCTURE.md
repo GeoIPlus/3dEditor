@@ -28,11 +28,12 @@ packages/geo-model3d/  (3D-05, 3D-09) pure kernel, protection P4, DOM-free Node 
   src/brep/                                             half-edge, planes, derived vertices, frame, transactions (3D-09)
   src/cloud/                                             plane fit (RANSAC + SVD), deviation heatmap (3D-22)
   src/validate/                                         progressive validation, severity by state, val3dity port (3D-12)
+  src/metrics/                                          F-53 geometric metrics, computeMetrics (3D-116)
   src/import/                                            CityJSON -> canonical model, RTG roles, baseline, report (3D-10); state + issues from validate via index.js (3D-75)
   src/export/                                            canonical model -> CityJSON, opaque data from the input (3D-11)
   src/solve/                                            constraint solver, conflict sets, free degrees (3D-13, 3D-ADR-0005)
   src/ops/                                               command pipeline (executeCommand), REPLACE_ROOF, REBUILD_ENVELOPE (3D-14); MOVE_VERTEX, MOVE_EDGE, OFFSET_FACE, SPLIT_FACE, INSERT_ROOF_BREAK, MERGE_FACES + face cut and constraint inheritance (3D-15); repair REMOVE_FACE, HEAL_HOLE, FIT_TO_SHARED_EDGE, ALIGN_JUNCTION (3D-17); ALIGN_RIDGE, ALIGN_EAVE, MATCH_ELEVATIONS (3D-16); ADD_CHIMNEY, ADD_DORMER, REMOVE_INSTALLATION + installation shell (3D-20); UNDO, REDO, RESTORE_BASELINE (history.js, 3D-18); FIT_PLANE (3D-71); TRANSLATE_BUILDING, ROTATE_BUILDING, SET_HEIGHT, SET_OVERHANG + overhang topology (3D-19); one module per OperationKind (3D-15..3D-21)
-  test/brep/ test/cloud/ test/validate/ test/import/ test/solve/ test/export/ test/ops/ test/golden/   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22; GT-I1..GT-I3: 3D-10; GT-I4: 3D-11; GT-01..GT-05: 3D-14; GT-08, GT-10: 3D-15; GT-07, GT-09: 3D-16; GT-17, GT-18: 3D-20; GT-14..GT-16: 3D-19 (GT-14 blocked by 3D-117); GT-12: 3D-18; GT-20 command step: 3D-71; world-local: 3D-81)
+  test/brep/ test/cloud/ test/validate/ test/import/ test/solve/ test/export/ test/ops/ test/metrics/ test/golden/   unit tests; golden tests `*.golden.test.js` (GT-25: 3D-09; GT-20, GT-21: 3D-22; GT-I1..GT-I3: 3D-10; GT-I4: 3D-11; GT-01..GT-05: 3D-14; GT-08, GT-10: 3D-15; GT-07, GT-09: 3D-16; GT-17, GT-18: 3D-20; GT-14..GT-16: 3D-19 (GT-14 blocked by 3D-117); GT-12: 3D-18; GT-20 command step: 3D-71; world-local: 3D-81; metrics on GT-01..GT-04, GT-07, GT-14, GT-15: 3D-116)
   spike/move-edge/                                      3D-08 latency spike, throwaway, not exported (card README.md)
   src/crs/                                               CRS table (generated), metric/ENU frame, write-back; `proj4` (3D-32, 3D-ADR-0007); cloud CRS mapping, box (3D-69)
 services/kernel/       (3D-22, 3D-23, 3D-109) host: createKernelHandler(ports) + own server for the image (D-33); ports `history`, `datasets` per 3D-ADR-0003; command API (PREVIEW store, limits, contract validation)
@@ -70,7 +71,7 @@ tools/agent-evals/                   agent eval runner: headless sessions in thr
    [3D-ADR-0001](docs/decisions/adr/3D-ADR-0001-contracts-location-and-p4-canary.md)).
 3. Public API of a package only through its `index.js`.
 3a. Inside `geo-model3d` (3D-ADR-0002 C1): `brep` <- `solve`, `import`, `export`, `validate`, `cloud`; `ops` <- `brep`,
-    `solve`, `validate`; `index.js` <- all; `crs` (3D-32) is a leaf of `brep`, `import`, `export`. No I/O, clock or
+    `solve`, `validate`; `metrics` <- `brep`, `validate` (3D-116); `index.js` <- all; `crs` (3D-32) is a leaf of `brep`, `import`, `export`. No I/O, clock or
     randomness in kernel source. Enforced since 3D-09 (`kernelModuleDag`, `kernelNoIo`).
 4. A new dependency between packages needs an ADR.
 5. Every runtime dependency (transitive, devDependencies excluded) of `geo-model3d` and of each `services/<name>` has a
