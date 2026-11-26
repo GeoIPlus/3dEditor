@@ -1,6 +1,6 @@
 # @geoiplus/geo-model3d
 
-- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21); other operations follow their rows (3D-15..3D-21, 3D-71)
+- Status: implemented - `brep` core (3D-09), `crs` (3D-32), `cloud` (3D-22), `validate` (3D-12), `import` (3D-10, state from `validate` 3D-75), `solve` (3D-13), `export` (3D-11), `ops` pipeline + `REPLACE_ROOF` / `REBUILD_ENVELOPE` (3D-14), `SET_SEMANTICS` / `SET_CONSTRAINT` / `REMOVE_CONSTRAINT` (3D-21), `FIT_PLANE` command (3D-71); other operations follow their rows (3D-15..3D-21, 3D-71)
 - Protection: P4 - server-only (D-06, D-07); never in a browser bundle, no DOM, no three.js (AGENTS.md §2)
 - WP: 3D-05 (bootstrap), 3D-09 (core), 3D-32 (crs), 3D-22 (cloud), 3D-12 (validate), 3D-10 (import), 3D-75 (import state), 3D-13 (solve), 3D-11 (export), 3D-69 (cloud CRS), 3D-81 (world <-> local for every CRS)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §3, §4, §4a, §6, §7, §8, §9
 - Source/donor: new; third-party runtime code permissive only ([3D-ADR-0004](../../docs/decisions/adr/3D-ADR-0004-kernel-language-boolean-licences.md));
@@ -51,7 +51,7 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   `cityjson` is the parsed document the model was imported from (kept by the service, never written); the output is a
   CityJSON document with this building only (D-192); `findings` (`PRECISION_LOSS`) go to `validateModel` (D-151).
   Refusals throw `ExportError` (`INVALID_PAYLOAD` / `NOT_FOUND`) or the `crs` error (`INVALID_CRS`).
-- `executeCommand(model, command, { toleranceProfile, clock, ids?, previewId?, previousIssues? })` -> `{ result,
+- `executeCommand(model, command, { toleranceProfile, clock, ids?, previewId?, previousIssues?, points? })` -> `{ result,
   model, journal?, modelLevel? }` (3D-14, spec §3, D-119). Sync, pure. `result` is a contract `command-result`:
   PREVIEW (`previewId`, default `<commandId>-preview` [A]; the input model object returned, nothing persisted),
   COMMITTED (`model` = new version, `journal` = contract `journal-entry` without `operationId` / `actorId`, which the
@@ -59,7 +59,9 @@ Inputs and outputs are `contracts/model3d/` shapes only (C1 rule 3).
   CONFLICT (`error` = contract `error`; the input model object returned unchanged). Kernel-side refusals before the
   operation: unknown kind `INVALID_PAYLOAD`, a kind without a module yet `INTERNAL`, other `buildingId` `NOT_FOUND`,
   stale `expectedVersion` `VERSION_CONFLICT` (status CONFLICT, as the contract example) [A]. Implemented kinds:
-  `REPLACE_ROOF`, `REBUILD_ENVELOPE`; see `ops` below.
+  `REPLACE_ROOF`, `REBUILD_ENVELOPE`; see `ops` below. `points` (3D-71): for `FIT_PLANE` the points the service read
+  for the payload `selection` (Float64Array, x y z, LOCAL; services/kernel `commandPoints`); `index.js` gives the op a
+  `planeFit(selection)` closure over `cloud.fitPlane`, so `ops` does not import `cloud` (module DAG unchanged).
 
 ## Modules (`src/`, DAG of 3D-ADR-0002 C1 rule 2, enforced by `check:arch`)
 `brep` (3D-09) is the leaf every other module imports. Its surface (`src/brep/index.js`), for kernel modules only:
@@ -96,7 +98,7 @@ same table (D-151). FAST_PREVIEW never sets `isValidForTargetState` (spec §8 ru
 Surface `src/ops/index.js`: `runPipeline` (wrapped by `executeCommand`), `OPERATIONS` / `OPERATION_KINDS` (registry; rows
 3D-15..3D-21, 3D-71 add `{ run(draft, payload, ctx) }` entries), `contractError`, `freshIds`.
 
-Pipeline (`pipeline.js`, spec §3 r1-r6): kernel envelope checks -> `brep.transact` (isolated copy): operation module
+Pipeline (`pipeline.js`, spec §3 r1-r6; the op context carries `actorId` and the optional `planeFit`, 3D-71): kernel envelope checks -> `brep.transact` (isolated copy): operation module
 builds the candidate in plane terms -> constraint step (`constraints.js`: hard constraint on a removed entity ->
 `CONSTRAINT_CONFLICT`, soft one dropped, D-213; model constraints compiled and solved for the operation's
 `movableFaceIds` / conditions, re-checked at the result) -> `runChecks` COMMIT_VALIDATION with full solid, shell
@@ -114,6 +116,7 @@ checked only when the candidate has an ERROR. A PREVIEW report never confirms (s
 | `geom2.js`, `errors.js`, `ids.js`, `registry.js` | plan helpers; error objects (HTTP table of spec §2.4); default id source skipping every id of the input (deterministic) |
 | `align-line.js` (3D-16) | `ALIGN_RIDGE` / `ALIGN_EAVE` (spec §10.7 r1, r2; v0.2 C.7): both `targetLine` points on every face of the edge (hard, `planarTolM`); movable = adjacent roof faces without a hard constraint, walls fixed (D-232); `KEEP_PLANES` moves nothing (off-line target -> `CONSTRAINT_CONFLICT`, GT-09); `KEEP_EAVES` / `KEEP_RIDGE` lock the `EAVE` / `RIDGE` lines of each movable face as fixed points on its plane; `FIT_MEASUREMENTS` adds POINT terms; other modes `INVALID_PAYLOAD` `INVALID_MODE` |
 | `match-elevations.js` (3D-16) | `MATCH_ELEVATIONS` (spec §10.7 r3): `EQUAL_Z` hard per vertex (`zAlignTolM`), target number (WORLD mapped) / MIN / MAX / MEAN of current z; movable = non-vertical roof faces defining the vertices, no hard constraint (D-231) |
+| `fit-plane.js` (3D-71) | `FIT_PLANE` (spec §10.12 r4, §9 r4-r5): payload checked (`apply`, `faceId` for FACE_PLANE only, unknown face -> `INVALID_PAYLOAD`), fit refusals passed on (`INVALID_MEASUREMENT` with `pointCount` / `inlierRatio`, the face named); `MEASUREMENT` adds a PLANE measurement `[[nx, ny, nz, d]]` LOCAL, σ = RMSE on all three axes, `fit` RANSAC_SVD, `MEASURED`, `createdBy` = `actorId`, `sourceId` null (D-3D71-1, -2); `FACE_PLANE` sets the face's `supportPlane` (outward sign kept) and re-derives its vertices, hard constraints re-checked by the constraint step (D-3D71-3). No points from the service -> `INTERNAL` [A] |
 | `align-common.js` (3D-16) | payload `hardConstraintIds` held hard (D-234); POINT measurements soft on the nearest adjacent roof plane, weight 1/σz² (D-233) |
 
 Readings [A] for the owner's review: unknown `footprintId` / measurement id -> `INVALID_PAYLOAD`; a non-POINT
@@ -302,7 +305,12 @@ run spread ~0.1 ms).
 - Golden: `test/golden/gt-25.golden.test.js` (GT-25, world -> local -> world <= 0.001 m; measured 0 m).
 - Golden GT-20 (`gt-20.golden.test.js`): normal deviation 0.0051 deg (<= 0.2), RMSE 0.00778 m (<= 0.015), inliers
   444 / 500 = 0.888 (>= 0.85). GT-21 (`gt-21.golden.test.js`): south slope mean 0.07935 m over 447 points
-  (0.080 +/- 0.005). Both run the kernel functions; the `FIT_PLANE` command step is 3D-71.
+  (0.080 +/- 0.005). Both run the kernel functions; GT-20 also runs its step as the `FIT_PLANE` command (3D-71):
+  the committed PLANE measurement carries the same fit (since 3D-80: 0.0020 deg, RMSE 0.00765 m, 441 / 500).
+- `test/ops/fit-plane.test.js` (3D-71): MEASUREMENT patch (one Measurement3D, layout and σ), PREVIEW = COMMIT;
+  FACE_PLANE on GT-03's south slope re-derives `v-e0`, `v-e1`, `v-r0`, `v-r1` (spec §10.12 Accept 2); a fit 0.3 m higher
+  gives eaves z 5.3 and ridge y 3.8, z 8.15 (hand-computed); hard FIXED_POINT -> `CONSTRAINT_CONFLICT`; 29 points,
+  ratio < 0.6, payload and host refusals, model unchanged.
 - `test/cloud/` (3D-22): fit (clean, outliers, determinism, selection, refusals at 29 points and ratio < 0.6, Ajv
   against `plane-fit-result` / `error`), heatmap (assignment, buffer, `faceIds`, polygon edge distance, refusals, Ajv
   against `heatmap-request` / `heatmap-result`), eigen solver, generator, ring test.

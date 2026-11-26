@@ -9,6 +9,7 @@ import { createCrsMapping, createMetricFrame, mappedBoxBounds } from './crs/inde
 import { exportModel } from './export/index.js';
 import { runChecks, toIssues } from './validate/index.js';
 import { runPipeline } from './ops/index.js';
+import { fitPlane as fitCloudPlane } from './cloud/index.js';
 
 export { P4_CANARY } from './canary.js';
 export { validateModel } from './validate/index.js';
@@ -150,11 +151,14 @@ export const exportBuilding = (input) => exportModel(input);
  * measurements are mapped through the building frame as import builds it (D-215, D-217).
  * @param {import('./brep/types.js').BuildingModel} model contract `building-model`, the current version
  * @param {any} command contract `command`
- * @param {Omit<import('./ops/pipeline.js').PipelineOptions, 'heightToLocal' | 'pointToLocal'>} options
- *   `toleranceProfile`, `clock`, optional `ids`, `previewId`, `previousIssues`
+ * `FIT_PLANE` (3D-71): `options.points` are the points the service read for the payload `selection` (Float64Array,
+ * x y z interleaved, LOCAL frame; `readLocalPoints` of services/kernel); the fit runs on them with the profile.
+ * @param {Omit<import('./ops/pipeline.js').PipelineOptions, 'heightToLocal' | 'pointToLocal' | 'planeFit'> & { points?: Float64Array }} options
+ *   `toleranceProfile`, `clock`, optional `ids`, `previewId`, `previousIssues`, `points`
  * @returns {{ result: any, model: import('./brep/types.js').BuildingModel, journal?: any, modelLevel?: string[] }}
  */
 export function executeCommand(model, command, options) {
+  const { points, ...rest } = options;
   /** @type {((p: V3) => V3) | null} */
   let toLocal = null;
   const local = (/** @type {V3} */ p) => {
@@ -163,7 +167,8 @@ export function executeCommand(model, command, options) {
   };
   const o = model.frame.originWorld;
   return runPipeline(model, command, {
-    ...options,
+    ...rest,
+    planeFit: points === undefined ? undefined : (selection) => fitCloudPlane(points, selection, options.toleranceProfile),
     heightToLocal: (z) => local([o[0], o[1], z])[2],
     pointToLocal: (p, frame) => (frame === 'WORLD' ? local(p) : [p[0], p[1], p[2]]),
   });

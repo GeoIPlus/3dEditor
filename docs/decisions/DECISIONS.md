@@ -281,6 +281,9 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-265 | 3D-102 (eval scenario rows in a reserved id range) set `ready` and started in a fresh session | Owner, chat, 2026-11-25 |
 | D-266 | MVP of 3DQM = E2E 3D-25 (import -> edit -> validate -> approve -> export -> re-import on the CP/DP mock) with the operations already done plus 3D-15 and 3D-17. Critical path: server 3D-18 -> 3D-23 -> 3D-24; client 3D-45 -> 3D-41 -> 3D-43 -> 3D-50; 3D-47 (SC). Not required for MVP: 3D-19, 3D-71, 3D-100, 3D-33 (P1), crowdsource rows 3D-60..3D-63 (interim store, D-35) | Owner, dialog, 2026-11-25 |
 | D-267 | 3D-18, 3D-45, 3D-82, 3D-83, 3D-101, 3D-19 and 3D-71 set `ready` and started in parallel fresh sessions (3D-19, 3D-71 by owner choice beside the MVP path) | Owner, dialog, 2026-11-25 |
+| D-3D71-1 | Q-28, `PLANE` measurement layout: `geometry.coordinates = [[nx, ny, nz, d]]`, one row holding the contract `Plane` (`normal · p + d = 0`, unit normal) in the measurement's `frame`; `FIT_PLANE` `MEASUREMENT` writes it in LOCAL. Closes Q-28 for `PLANE` (POINT: D-215; LINE stays open) | Owner, dialog, 2026-11-26 (3D-71) |
+| D-3D71-2 | σ of a `PLANE` measurement from `FIT_PLANE`: `uncertainty.sigmaX = sigmaY = sigmaZ = rmseM` of the fit, `fit = { method: RANSAC_SVD, inliers, rmseM }`; its default soft weight is `1/σ²` (v0.3 §7), read from `sigmaZ` as D-233 does | Owner, dialog, 2026-11-26 (3D-71) |
+| D-3D71-3 | `FIT_PLANE` `FACE_PLANE` replaces only the face's `supportPlane` (outward sign kept) and re-derives its vertices; no measurement is stored (v0.3 §7 "measurement or direct replacement"); the fit numbers stay in the command result / journal | Owner, dialog, 2026-11-26 (3D-71) |
 
 ## Open questions
 
@@ -379,3 +382,4 @@ Appended; the question rows above stay as written. Evidence: [docs/verification/
 | Q-29 | 2026-11-23, owner (3D-13) | closed by D-171 | `"<faceId>:OFFSET" | "<faceId>:ROTATION"` strings, contract unchanged |
 | Q-18 | 2026-11-24, owner (3D-16) | narrowed, open | `MATCH_ELEVATIONS` movable planes closed by D-231; SET_HEIGHT EAVE, SET_OVERHANG, STRAIGHTEN_FACE stay open |
 | Q-38 | 2026-11-25, owner (3D-20) | closed by D-256 | Chimney height at the downhill corner; FLAT `heightM` = back wall height over the full outline (D-257); GABLE gets `ridgeRiseM` (D-258) |
+| Q-28 | 2026-11-26, owner (3D-71) | narrowed, open | `PLANE` layout closed by D-3D71-1 (POINT by D-215); `LINE` stays open |

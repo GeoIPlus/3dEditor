@@ -9,6 +9,7 @@ import { matchElevations } from './match-elevations.js';
 import { addChimney } from './add-chimney.js';
 import { addDormer } from './add-dormer.js';
 import { removeInstallation } from './remove-installation.js';
+import { fitPlaneCommand } from './fit-plane.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -35,4 +36,5 @@ export const OPERATIONS = {
   ADD_CHIMNEY: { run: addChimney },
   ADD_DORMER: { run: addDormer },
   REMOVE_INSTALLATION: { run: removeInstallation },
+  FIT_PLANE: { run: fitPlaneCommand },
 };
