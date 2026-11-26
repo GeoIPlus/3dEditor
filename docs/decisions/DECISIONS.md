@@ -447,6 +447,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-431 | 3D-128 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-128-datasets | Owner, dialog, 2026-11-26 (3D-128) |
 | D-432 | 3D-128 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-430, D-431 | Owner, WP session 3D-128, 2026-11-26 |
 | D-433 | Row 3D-24 (QC and export rules; MVP critical path, dependencies 3D-12, 3D-110, 3D-128 done) set `ready` by the owner and started in a fresh session on wp/3d-24-qc-export in the environment "3dEditor" | Owner, chat with the coordinator, 2026-11-26 |
+| D-434 | 3D-129 (SC mirror: re-vendor the model3d error schema with INVALID_CRS, D-409) started in a fresh session in GeoIPlus/shared_compnents on branch wp/3d-129-error-invalid-crs (delivery: SC PR the owner merges) | Coordinating session, 2026-11-26 |
 
 ## Open questions
 
