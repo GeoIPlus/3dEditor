@@ -38,13 +38,23 @@ export function readV03() {
   return { rows, preamble, checks };
 }
 
-/** @returns {Map<string, { module: string, row: string }>} GT id -> module and BACKLOG row (spec §13) */
-export function readSpec13() {
+/** Row cell marker of a spec §13 golden test whose fixture is not generated yet (owner, 3D-104). */
+export const PENDING = 'fixtures pending';
+
+/**
+ * GT id -> module and BACKLOG row (spec §13). Rows whose row cell carries `PENDING` are left out unless asked for:
+ * their fixtures come with the row that builds them.
+ * @param {{ includePending?: boolean }} [opts]
+ * @returns {Map<string, { module: string, row: string }>}
+ */
+export function readSpec13(opts = {}) {
   const sec = section(SPEC, '## 13. Golden tests', '\n---');
   /** @type {Map<string, { module: string, row: string }>} */
   const out = new Map();
   for (const l of sec.split('\n').filter((x) => /^\| GT-/.test(x))) {
     const c = cells(l);
+    const pending = c[4].includes(PENDING);
+    if (pending && !opts.includePending) continue;
     out.set(c[0], { module: c[3], row: c[4] });
   }
   return out;

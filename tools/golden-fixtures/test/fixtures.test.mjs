@@ -25,6 +25,12 @@ describe('generation', () => {
     expect(dirs).toEqual([...ids].sort());
   });
 
+  it('spec §13 rows marked "fixtures pending" have no fixture yet (3D-104: GT-3D104-1..8, built by 3D-105)', () => {
+    const pending = [...readSpec13({ includePending: true }).keys()].filter((k) => !ids.includes(k));
+    expect(pending).toHaveLength(8);
+    for (const id of pending) expect(dirs, id).not.toContain(id);
+  });
+
   it('committed files are byte-identical to a fresh generation, with no stale file', () => {
     const committed = dirs.flatMap((d) => readdirSync(join(ROOT, 'fixtures', d)).map((f) => `fixtures/${d}/${f}`)).sort();
     expect(committed).toEqual([...files.keys()].sort());
