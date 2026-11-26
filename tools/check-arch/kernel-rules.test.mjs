@@ -45,12 +45,12 @@ describe('check:arch kernel module DAG (3D-ADR-0002 C1 rule 2)', () => {
     const p = await problems({
       [`${SRC}/brep/back.js`]: "import { s } from '../solve/index.js';\nexport const b = s;\n",
       [`${SRC}/solve/root.js`]: "import { one } from '../index.js';\nexport const r = one;\n",
-      [`${SRC}/brep/spike.js`]: "import '../../spike/move-edge/index.js';\n",
+      [`${SRC}/brep/outside.js`]: "import '../../tools/x.js';\n",
       [`${SRC}/gadget/index.js`]: "export const g = 1;\n",
     });
     expect(p).toEqual([
       `${SRC}/brep/back.js:1: kernel module "brep" imports "solve", not allowed by the module DAG (3D-ADR-0002 C1 rule 2)`,
-      `${SRC}/brep/spike.js:1: kernel source imports "../../spike/move-edge/index.js" outside ${SRC}/ (3D-ADR-0002 C1)`,
+      `${SRC}/brep/outside.js:1: kernel source imports "../../tools/x.js" outside ${SRC}/ (3D-ADR-0002 C1)`,
       `${SRC}/gadget/index.js:1: kernel module "gadget" is not in the module DAG (3D-ADR-0002 C1 rule 2; tools/check-arch/config.mjs)`,
       `${SRC}/solve/root.js:1: kernel module "solve" imports the root entry "index.js" (3D-ADR-0002 C1 rule 2)`,
     ]);

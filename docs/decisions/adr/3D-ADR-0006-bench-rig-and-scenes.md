@@ -33,17 +33,23 @@
 
 R1 + S1, with this protocol, implemented by `npm run bench` ([tools/bench/cli.mjs](../../../tools/bench/cli.mjs)):
 
-1. Measured span: request body string in -> reply string out, one Node process, sequential requests:
-   `JSON.parse`, Ajv `command`, model load (`JSON.parse` of the stored version string per request; storage I/O and
-   network excluded), kernel (`MOVE_EDGE` in plane terms + FAST_PREVIEW of the affected faces), Ajv `command-result`,
-   `JSON.stringify` ([tools/bench/service.mjs](../../../tools/bench/service.mjs)). `--warm` keeps the parsed model.
+1. Measured span: request body bytes in -> reply string out, one Node process, sequential requests, through the
+   kernel service's command API that ships (`createCommandApi`, services/kernel/src/command-api.js; since 3D-121,
+   D-357): body limit and `JSON.parse`, Ajv `command` + payload, PREVIEW rate limit (injected clock, 100 ms per
+   request), head and version from the `history` port over the memory store (JSON text parsed per read; network and
+   disk excluded), the kernel `executeCommand` once in phase COMMIT (D-355), the PREVIEW store, Ajv reply,
+   `JSON.stringify` ([tools/bench/service.mjs](../../../tools/bench/service.mjs)). Stage times: `parse`,
+   `validateCommand`, `loadModel`, `validateReply`, `serialize`; `kernelAndApi` is the rest (the kernel is not
+   injectable). A scene whose replies are not all PREVIEW fails. Until 3D-121, MOVE_EDGE ran the 3D-08 spike, not
+   `executeCommand` (3D-08 numbers below stay as history; `--warm` was dropped with it).
 2. Per scene: 300 warm-up requests, then 5 runs x 1000 requests; consecutive requests move the edge by a different
    offset (a drag). Nearest-rank percentiles p50/p95/p99, max and mean per run and pooled; mean time per stage.
 3. Verdict: the gate scene passes when both the pooled p95 and the worst run's p95 are <= 150 ms. `npm run bench`
    exits 1 on a miss. It is not part of `npm run check` (timing in CI flakes) [P].
 4. Every result carries the rig fingerprint ([tools/bench/rig.mjs](../../../tools/bench/rig.mjs)): CPU model and count,
    cgroup CPU quota, memory, OS, Node and V8 versions, 1-minute load, commit. Results are stored as JSON next to the
-   WP's verification note (3D-08: [docs/verification/3D-08/](../../verification/3D-08/)).
+   WP's verification note (3D-08: [docs/verification/3D-08/](../../verification/3D-08/), spike path; 3D-121:
+   [docs/verification/3D-121.md](../../verification/3D-121.md), command API path).
 5. [P] Re-measure when the PREVIEW path changes materially: 3D-13 (solver), 3D-12 (validation), 3D-15 (MOVE_EDGE for
    real), and once on the production instance class when 3D-23 builds the image (Q-42).
 
@@ -53,5 +59,7 @@ latency, import latency. Proposed follow-ups through intake, not part of this AD
 ## Checks
 
 - `npm run bench` prints the fingerprint and the verdict; exit code 1 when the gate misses.
-- `tools/bench/spike.test.mjs` (in `npm test`): the gate scene has 199 faces, is valid against `building-model`, closed,
-  and its MOVE_EDGE returns a valid PREVIEW; replies are byte-identical for the same request.
+- `tools/bench/bench.test.mjs` (in `npm test`, 3D-121): the gate scene has 199 faces, is valid against `building-model`,
+  closed, and its MOVE_EDGE through the command API returns a valid, stored PREVIEW; every scene's first reply is a
+  PREVIEW; a valley below the ground is not; replies are byte-identical for the same request on a fresh service.
+  Until 3D-121 these were `tools/bench/spike.test.mjs` over the 3D-08 spike (removed, D-357).
