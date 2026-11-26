@@ -1,0 +1,376 @@
+
+> 3deditor@0.0.0 check
+> npm run types && npm run check:arch && npm run check:docs && npm run backlog:sync -- --check && npm test && npm run golden
+
+
+> 3deditor@0.0.0 types
+> tsc -p tsconfig.json
+
+
+> 3deditor@0.0.0 check:arch
+> node tools/check-arch/cli.mjs
+
+check:arch: ok (738 files scanned; lineLimit: ok; kernelPurity: ok; kernelImporters: ok; canaryWiring: ok; canaryValueLeak: ok; clientOutputScan: ok; kernelModuleDag: ok; kernelNoIo: ok; licenceAllowList: ok; negativeControl: ./src/index.js: 2/2 outputs (js + map) contain the marker)
+
+> 3deditor@0.0.0 check:docs
+> node tools/check-docs-run.mjs
+
+check:docs: ok (branch "wp/3d-102-eval-id-range", provisional ids allowed, new final ids checked against origin/claude/keen-pascal-u7z2gk)
+
+> 3deditor@0.0.0 backlog:sync
+> node tools/backlog-sync/cli.mjs --check
+
+backlog:sync: 14 mirror rows, 1 linked to an external id, 0 problem(s)
+
+> 3deditor@0.0.0 test
+> vitest run --project unit && node --test tools/check-docs.test.mjs tools/check-docs-icons.test.mjs
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/home/user/3dEditor[39m
+
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/solve/movable.property.test.js [2m([22m[2m61 tests[22m[2m)[22m[33m 684[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/budget-history.test.mjs [2m([22m[2m4 tests[22m[2m)[22m[33m 928[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/import/refusals.test.js [2m([22m[2m6 tests[22m[2m)[22m[33m 357[2mms[22m[39m
+     [33m[2m✓[22m[39m 501 faces: imported with a warning; 500 faces: no warning [33m 350[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/bench/spike.test.mjs [2m([22m[2m10 tests[22m[2m)[22m[33m 567[2mms[22m[39m
+     [33m[2m✓[22m[39m is deterministic: the same request gives the same reply bytes [33m 308[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m services/kernel/test/copc.test.js [2m([22m[2m14 tests[22m[2m)[22m[32m 291[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m contracts/model3d/test/schemas.test.mjs [2m([22m[2m64 tests[22m[2m)[22m[33m 336[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/check-arch/check-arch.test.mjs [2m([22m[2m9 tests[22m[2m)[22m[33m 362[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/solve/conflict.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 138[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/golden-fixtures/test/fixtures.test.mjs [2m([22m[2m35 tests[22m[2m)[22m[32m 146[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/ops/semantics-constraints.test.js [2m([22m[2m14 tests[22m[2m)[22m[32m 81[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/ops/replace-roof.test.js [2m([22m[2m16 tests[22m[2m)[22m[32m 93[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/ops/rebuild-envelope.test.js [2m([22m[2m10 tests[22m[2m)[22m[32m 67[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/validate/severity.test.js [2m([22m[2m42 tests[22m[2m)[22m[32m 84[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/ops/pipeline.test.js [2m([22m[2m17 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/ops/match-elevations.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/check-arch/kernel-rules.test.mjs [2m([22m[2m6 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/export/roundtrip.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/ops/align-line.test.js [2m([22m[2m11 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/check-arch/licence-rules.test.mjs [2m([22m[2m29 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/brep/model.test.js [2m([22m[2m84 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/validate/golden-clean.test.js [2m([22m[2m31 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/validate/modes.test.js [2m([22m[2m9 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/cloud/fit-plane.test.js [2m([22m[2m9 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/ops/installations.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/check-docs-run.test.mjs [2m([22m[2m4 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/import/contract.test.js [2m([22m[2m17 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/validate/final.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/export/opaque.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+[90mstdout[2m | services/kernel/test/cloud-crs.test.js[2m > [22m[2m3D-69: UTM cloud over a geographic building[2m > [22m[2mFIT_PLANE: same counts; the two planes agree within planarTolM at every roof point
+[22m[39m3D-69 FIT_PLANE: worst plane disagreement 1.109e-6 m, rmse 2.2941e-3 / 2.2944e-3 m
+
+[90mstdout[2m | services/kernel/test/cloud-crs.test.js[2m > [22m[2m3D-69: UTM cloud over a geographic building[2m > [22m[2mheatmap: per-face values and summary agree within planarTolM
+[22m[39m3D-69 heatmap: worst value difference 2.830e-4 m over 7 faces
+
+ [32m✓[39m [30m[42m unit [49m[39m services/kernel/test/cloud-crs.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/export/vertices.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/golden-fixtures/test/geometry.test.mjs [2m([22m[2m23 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/brep/transaction.test.js [2m([22m[2m11 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/backlog-sync/backlog-sync.test.mjs [2m([22m[2m11 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/import/crs.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/solve/underconstrained.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/import/topology.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m services/kernel/test/points.test.js [2m([22m[2m18 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/validate/lineage.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/crs/box.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/solve/stage1.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/golden-fixtures/test/expected.test.mjs [2m([22m[2m35 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/ops/installations-refusals.test.js [2m([22m[2m23 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/budget.test.mjs [2m([22m[2m7 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/import/semantics.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/crs/reproject.test.js [2m([22m[2m12 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/import/noisy.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/solve/compile.test.js [2m([22m[2m27 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/cloud/deviation.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/brep/geometry.test.js [2m([22m[2m9 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/agent-evals/agent-evals.test.mjs [2m([22m[2m22 tests[22m[2m)[22m[33m 11198[2mms[22m[39m
+     [33m[2m✓[22m[39m pass check-docs after setup [33m 5338[2mms[22m[39m
+     [33m[2m✓[22m[39m pass check-docs after setup with real rows 3D-90..3D-98 planted [33m 5430[2mms[22m[39m
+     [33m[2m✓[22m[39m hide() leaves only neutral stubs under the hidden paths [33m 331[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/crs/round-trip.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/hooks/guard-base-push.test.mjs [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m services/kernel/test/copc-format.test.js [2m([22m[2m16 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/cloud/math.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m tools/crs-table/projections.test.mjs [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/crs/enu.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/crs/registry.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m [30m[42m unit [49m[39m packages/geo-model3d/test/canary.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m58 passed[39m[22m[90m (58)[39m
+[2m      Tests [22m [1m[32m844 passed[39m[22m[90m (844)[39m
+[2m   Start at [22m 23:35:01
+[2m   Duration [22m 11.97s[2m (transform 1.57s, setup 0ms, import 12.76s, tests 16.52s, environment 7ms)[22m
+
+TAP version 13
+# Subtest: 3D-84: a planted wrong icon fails
+ok 1 - 3D-84: a planted wrong icon fails
+  ---
+  duration_ms: 20.244812
+  type: 'test'
+  ...
+# Subtest: 3D-84: a node without icons fails (hand-written node)
+ok 2 - 3D-84: a node without icons fails (hand-written node)
+  ---
+  duration_ms: 6.235373
+  type: 'test'
+  ...
+# Subtest: 3D-84: a status change leaves a stale icon; --fix moves it
+ok 3 - 3D-84: a status change leaves a stale icon; --fix moves it
+  ---
+  duration_ms: 8.417827
+  type: 'test'
+  ...
+# Subtest: 3D-84: unknown or missing type fails
+ok 4 - 3D-84: unknown or missing type fails
+  ---
+  duration_ms: 6.582443
+  type: 'test'
+  ...
+# Subtest: 3D-84: legend missing or hand-edited fails; --fix writes it
+ok 5 - 3D-84: legend missing or hand-edited fails; --fix writes it
+  ---
+  duration_ms: 15.337438
+  type: 'test'
+  ...
+# Subtest: 3D-84: --fix adds both icons to nodes that have none; Running line stays without icons
+ok 6 - 3D-84: --fix adds both icons to nodes that have none; Running line stays without icons
+  ---
+  duration_ms: 6.078576
+  type: 'test'
+  ...
+# Subtest: clean fixture passes
+ok 7 - clean fixture passes
+  ---
+  duration_ms: 11.512253
+  type: 'test'
+  ...
+# Subtest: overview count differs from table
+ok 8 - overview count differs from table
+  ---
+  duration_ms: 5.133996
+  type: 'test'
+  ...
+# Subtest: overview total differs from row count
+ok 9 - overview total differs from row count
+  ---
+  duration_ms: 4.369068
+  type: 'test'
+  ...
+# Subtest: prose "rows done" differs
+ok 10 - prose "rows done" differs
+  ---
+  duration_ms: 4.735985
+  type: 'test'
+  ...
+# Subtest: row without mermaid node
+ok 11 - row without mermaid node
+  ---
+  duration_ms: 5.079205
+  type: 'test'
+  ...
+# Subtest: mermaid node without row
+ok 12 - mermaid node without row
+  ---
+  duration_ms: 4.608933
+  type: 'test'
+  ...
+# Subtest: done row outside the DONE subgraph
+ok 13 - done row outside the DONE subgraph
+  ---
+  duration_ms: 7.08059
+  type: 'test'
+  ...
+# Subtest: duplicate decision id
+ok 14 - duplicate decision id
+  ---
+  duration_ms: 4.21023
+  type: 'test'
+  ...
+# Subtest: 3D-76: decision row under "Open-question status updates" fails (3D-66 merge)
+ok 15 - 3D-76: decision row under "Open-question status updates" fails (3D-66 merge)
+  ---
+  duration_ms: 4.236011
+  type: 'test'
+  ...
+# Subtest: 3D-76: status row naming an unknown id fails; known D and Q ids pass
+ok 16 - 3D-76: status row naming an unknown id fails; known D and Q ids pass
+  ---
+  duration_ms: 11.187496
+  type: 'test'
+  ...
+# Subtest: 3D-76: status row shape - date and source required
+ok 17 - 3D-76: status row shape - date and source required
+  ---
+  duration_ms: 21.444647
+  type: 'test'
+  ...
+# Subtest: 3D-76: D/Q row outside the three tables fails; provisional status rows need provisional ids
+ok 18 - 3D-76: D/Q row outside the three tables fails; provisional status rows need provisional ids
+  ---
+  duration_ms: 15.650956
+  type: 'test'
+  ...
+# Subtest: provisional id rejected unless allowed
+ok 19 - provisional id rejected unless allowed
+  ---
+  duration_ms: 8.157426
+  type: 'test'
+  ...
+# Subtest: broken relative link, inline code ignored
+ok 20 - broken relative link, inline code ignored
+  ---
+  duration_ms: 4.194335
+  type: 'test'
+  ...
+# Subtest: row without Details entry
+ok 21 - row without Details entry
+  ---
+  duration_ms: 4.191309
+  type: 'test'
+  ...
+# Subtest: unknown status
+ok 22 - unknown status
+  ---
+  duration_ms: 4.089513
+  type: 'test'
+  ...
+# Subtest: docs/source is not scanned
+ok 23 - docs/source is not scanned
+  ---
+  duration_ms: 5.856433
+  type: 'test'
+  ...
+# Subtest: provisional row 3D-<wp>.n: full row on a WP branch, rejected on the base
+ok 24 - provisional row 3D-<wp>.n: full row on a WP branch, rejected on the base
+  ---
+  duration_ms: 8.790877
+  type: 'test'
+  ...
+# Subtest: provisional ADR file 3D-ADR-<wp>-n: accepted on a WP branch, rejected on the base
+ok 25 - provisional ADR file 3D-ADR-<wp>-n: accepted on a WP branch, rejected on the base
+  ---
+  duration_ms: 8.004771
+  type: 'test'
+  ...
+# Subtest: provisional decision and question rows are accepted on a WP branch and checked for duplicates
+ok 26 - provisional decision and question rows are accepted on a WP branch and checked for duplicates
+  ---
+  duration_ms: 7.297676
+  type: 'test'
+  ...
+# Subtest: new final ids on a WP branch fail: D-NN, Q-NN, 3D-NN row, 3D-ADR-NNNN file
+ok 27 - new final ids on a WP branch fail: D-NN, Q-NN, 3D-NN row, 3D-ADR-NNNN file
+  ---
+  duration_ms: 4.213101
+  type: 'test'
+  ...
+# Subtest: ids already on the base pass on a WP branch; without a base the rule is off (Stop hook)
+ok 28 - ids already on the base pass on a WP branch; without a base the rule is off (Stop hook)
+  ---
+  duration_ms: 7.412463
+  type: 'test'
+  ...
+# Subtest: "Updated:" with history text fails
+ok 29 - "Updated:" with history text fails
+  ---
+  duration_ms: 4.408781
+  type: 'test'
+  ...
+# Subtest: "Running:" must list the in-progress rows
+ok 30 - "Running:" must list the in-progress rows
+  ---
+  duration_ms: 12.692425
+  type: 'test'
+  ...
+# Subtest: --fix regenerates hand-broken counts, prose, Running and the date
+ok 31 - --fix regenerates hand-broken counts, prose, Running and the date
+  ---
+  duration_ms: 4.539979
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 250.711254
+
+> 3deditor@0.0.0 golden
+> vitest run --project golden --passWithNoTests
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/home/user/3dEditor[39m
+
+[90mstdout[2m | packages/geo-model3d/test/golden/world-local.golden.test.js[2m > [22m[2m3D-81 worldToLocal / localToWorld agree with import for every CRS[2m > [22m[2mEPSG:25832 (east-first projected)
+[22m[39m3D-81 EPSG:25832: world->local 0.000e+0 m, local->world 0.000e+0 m, round trip 0.000e+0 m over 10 vertices
+
+[90mstdout[2m | packages/geo-model3d/test/golden/world-local.golden.test.js[2m > [22m[2m3D-81 worldToLocal / localToWorld agree with import for every CRS[2m > [22m[2mEPSG:4937 (geographic, lat lon h)
+[22m[39m3D-81 EPSG:4937: world->local 0.000e+0 m, local->world 1.227e-9 m, round trip 1.227e-9 m over 10 vertices
+
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-i4.golden.test.js[2m > [22m[2mGT-I4 import -> export without edits[2m > [22m[2mgeometry within 0.001 m, slot by slot
+[22m[39mGT-I4 largest coordinate difference 0 m
+
+[90mstdout[2m | packages/geo-model3d/test/golden/world-local.golden.test.js[2m > [22m[2m3D-81 worldToLocal / localToWorld agree with import for every CRS[2m > [22m[2mEPSG:31467 (north-first projected)
+[22m[39m3D-81 EPSG:31467: world->local 0.000e+0 m, local->world 0.000e+0 m, round trip 0.000e+0 m over 10 vertices
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/world-local.golden.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-i4.golden.test.js [2m([22m[2m6 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 14[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-20.golden.test.js[2m > [22m[2mGT-20 FIT_PLANE[2m > [22m[2mnormal deviation <= 0.2 deg, RMSE <= 0.015 m, inlier ratio >= 0.85
+[22m[39mGT-20: normal deviation 0.0020 deg, RMSE 0.00765 m, inliers 441/500 = 0.882
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-20.golden.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 173[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-21.golden.test.js[2m > [22m[2mGT-21 heatmap[2m > [22m[2mmean slope deviation 0.08 +/- 0.005 m
+[22m[39mGT-21: f-roof-s mean 0.07935 m over 447 points (rmse 0.07977, max 0.1030)
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-21.golden.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-17.golden.test.js[2m > [22m[2mGT-17 ADD_CHIMNEY[2m > [22m[2msize 1 x 1 m, top 1 m above the slope at the downhill side, building volume 520 m3
+[22m[39mGT-17 {"buildingVolumeM3":520,"chimneyVolumeM3":0.6250000000000004,"topZ":7.125}
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-17.golden.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-18.golden.test.js[2m > [22m[2mGT-18 ADD_DORMER FLAT[2m > [22m[2mno body intersection beyond planarTolM; outline 2 x 1.5 m; building volume unchanged
+[22m[39mGT-18 {"buildingVolumeM3":520,"dormerVolumeM3":4.687500000000005}
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-18.golden.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-i1.golden.test.js[2m > [22m[2mGT-I1 import of a gable[2m > [22m[2mvolume 520 m3 and roof area 100 m2 within the §12 tolerance
+[22m[39mGT-I1 volume 520 m3, roof area 100 m2
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-i1.golden.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-03.golden.test.js[2m > [22m[2mGT-03 REPLACE_ROOF[2m > [22m[2mexpected values
+[22m[39mGT-03 {"roofFaces":2,"roofAreaM2":100,"volumeM3":520,"walls":4,"groundAreaM2":80}
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-03.golden.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-25.golden.test.js[2m > [22m[2mGT-25 world -> local -> world[2m > [22m[2mround trip error <= 0.001 m for every point
+[22m[39mGT-25 max world -> local -> world error: 0.000e+0 m over 10 points
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-25.golden.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-i3.golden.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-02.golden.test.js[2m > [22m[2mGT-02 REPLACE_ROOF[2m > [22m[2mexpected values
+[22m[39mGT-02 {"roofFaces":1,"roofAreaM2":85.44003745317531,"volumeM3":520,"walls":4,"groundAreaM2":80}
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-02.golden.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-i2.golden.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-01.golden.test.js[2m > [22m[2mGT-01 REPLACE_ROOF[2m > [22m[2mexpected values
+[22m[39mGT-01 {"roofFaces":1,"roofAreaM2":80,"volumeM3":400.00000000000006,"walls":4,"groundAreaM2":80}
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-01.golden.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-09.golden.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-04.golden.test.js[2m > [22m[2mGT-04 REPLACE_ROOF[2m > [22m[2mexpected values
+[22m[39mGT-04 {"roofFaces":4,"roofAreaM2":100.00000000000007,"volumeM3":488.00000000000006,"walls":4,"groundAreaM2":80}
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-04.golden.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+[90mstdout[2m | packages/geo-model3d/test/golden/gt-07.golden.test.js[2m > [22m[2mGT-07 ALIGN_RIDGE KEEP_EAVES[2m > [22m[2mexpected values: eaves at Z 5, roof area, volume
+[22m[39mGT-07 {"roofFaces":2,"roofAreaM2":106.30145812734648,"volumeM3":540,"walls":4,"groundAreaM2":80}
+
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-07.golden.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m [30m[43m golden [49m[39m packages/geo-model3d/test/golden/gt-05.golden.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m17 passed[39m[22m[90m (17)[39m
+[2m      Tests [22m [1m[32m53 passed[39m[22m[2m | [22m[90m1 todo[39m[90m (54)[39m
+[2m   Start at [22m 23:35:14
+[2m   Duration [22m 3.10s[2m (transform 1.08s, setup 0ms, import 6.97s, tests 291ms, environment 2ms)[22m
+

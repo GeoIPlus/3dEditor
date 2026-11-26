@@ -6,7 +6,7 @@ import { mentions } from '../../../tools/agent-evals/grade.mjs';
 /** WP head merged into the local base? @param {string} work */
 function mergedLocally(work) {
   try {
-    execFileSync('git', ['merge-base', '--is-ancestor', 'wp/3d-98-solver-adr', 'claude/keen-pascal-u7z2gk'], { cwd: work, stdio: 'ignore' });
+    execFileSync('git', ['merge-base', '--is-ancestor', 'wp/3d-908-solver-adr', 'claude/keen-pascal-u7z2gk'], { cwd: work, stdio: 'ignore' });
     return true;
   } catch {
     return false;

@@ -2,14 +2,14 @@ import { addRow, write } from '../../../tools/agent-evals/scenario.mjs';
 /** @param {{work: string}} c */
 export default ({ work }) => {
   addRow(work, {
-    id: '3D-91', title: 'Kernel util: polygon ring helpers', modules: 'geo-model3d', deps: '05', size: 'S',
-    status: 'in-progress (wp/3d-91-ring-utils)',
+    id: '3D-901', title: 'Kernel util: polygon ring helpers', modules: 'geo-model3d', deps: '05', size: 'S',
+    status: 'in-progress (wp/3d-901-ring-utils)',
     details: `- Source: owner message (scenario).
 - Goal: ring helpers \`ringArea\`, \`ringIsClockwise\` in \`packages/geo-model3d/src/ring.js\` with unit tests.
 - Accept: unit tests for a unit square (area 1, counter-clockwise) and its reverse.
 - Decisions: -  Open: -`,
   });
-  write(work, 'packages/geo-model3d/src/ring.js', `// Polygon ring helpers (3D-91). Rings are arrays of [x, y], not closed.
+  write(work, 'packages/geo-model3d/src/ring.js', `// Polygon ring helpers (3D-901). Rings are arrays of [x, y], not closed.
 
 /**
  * Signed area (shoelace), positive for counter-clockwise rings.
@@ -26,17 +26,17 @@ export function ringSignedArea(ring) {
   return s / 2;
 }
 `);
-  write(work, '.agent/checkpoints/3D-91.md', `---
-wp: 3D-91
+  write(work, '.agent/checkpoints/3D-901.md', `---
+wp: 3D-901
 title: Kernel util - polygon ring helpers
 status: in-progress
 repo: here
-branch: wp/3d-91-ring-utils
+branch: wp/3d-901-ring-utils
 base: claude/keen-pascal-u7z2gk
 updated: 2026-11-20
 ---
 
-# 3D-91 checkpoint
+# 3D-901 checkpoint
 
 ## Plan
 | # | Acceptance line | Proof | State |
