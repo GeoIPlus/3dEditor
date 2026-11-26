@@ -379,6 +379,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-363 | Closure of `TRIM_FACE` / `EXTEND_FACE` (spec §10.6 r7.5, r8.5): when two paired half-edges end in different vertices at the same place, the two vertices become one; the id of the vertex that did not move survives; if both moved, a new id replaces both (a vertex the command created counts as moved). Refines r8.5: the ends of `e` keep their ids unless closure welds them into an unmoved vertex (GT-28: ends become the ridge vertices, lineage `v-t0 -> v-r0`). Neither moved (pre-existing coincident vertices): the edited face's vertex survives [A], not asked | Owner, dialog, 2026-11-26 (3D-105) |
 | D-364 | `EXTEND_FACE` r8.3 "a line of `a` / `b` parallel to L": parallel within `coplanarTolDeg`, as the planes of r8.2 | Owner, dialog, 2026-11-26 (3D-105) |
 | D-365 | 3D-105 accepted (done); merged into the base by the coordinating session (D-178) from commit 77fc16d (the branch was deleted before the merge; restored by sha); provisional ids became D-361..D-364, rows 3D-122, 3D-123 | Owner, WP session 3D-105, 2026-11-26 |
+| D-366 | Row 3D-110 (kernel handler, server, ports; MVP critical path) set `ready` by the owner and started in a fresh session (session_01RNYuqGbVqbWtGTf3ZLpZXW, wp/3d-110-kernel-handler); WP sessions must not delete their branch before the coordinator confirms the merge (3D-105 branch was deleted first, D-365) | Owner, chat with the coordinator, 2026-11-26 |
 
 ## Open questions
 
