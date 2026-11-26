@@ -9,6 +9,9 @@ import { matchElevations } from './match-elevations.js';
 import { addChimney } from './add-chimney.js';
 import { addDormer } from './add-dormer.js';
 import { removeInstallation } from './remove-installation.js';
+import { translateBuilding, rotateBuilding } from './rigid-move.js';
+import { setHeight } from './set-height.js';
+import { setOverhang } from './set-overhang.js';
 
 /** @typedef {{ run: (draft: any, payload: any, ctx: import('./pipeline.js').OpContext) => import('./pipeline.js').OpResult }} Operation */
 
@@ -35,4 +38,8 @@ export const OPERATIONS = {
   ADD_CHIMNEY: { run: addChimney },
   ADD_DORMER: { run: addDormer },
   REMOVE_INSTALLATION: { run: removeInstallation },
+  TRANSLATE_BUILDING: { run: translateBuilding },
+  ROTATE_BUILDING: { run: rotateBuilding },
+  SET_HEIGHT: { run: setHeight },
+  SET_OVERHANG: { run: setOverhang },
 };
