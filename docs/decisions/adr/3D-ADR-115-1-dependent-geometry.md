@@ -1,6 +1,6 @@
 # 3D-ADR-115-1: Dependent geometry follows its parent through the pipeline
 
-- Status: proposed
+- Status: accepted (owner, 2026-11-26, D-3D115-5)
 - WP: 3D-115   Decisions: D-3D115-1..D-3D115-4 (owner, dialog, 2026-11-26)   Questions closed: none
 
 ## Context
@@ -58,7 +58,7 @@
   does not cover is still refused with `INVALID_TOPOLOGY` (D-373).
 
 ## Decision
-Owner answers in a dialog, 2026-11-26 (status stays `proposed` until the owner accepts this document, D-18):
+Owner answers in a dialog, 2026-11-26; document accepted by the owner in a dialog (D-3D115-5, D-18):
 - **A2 as the target, introduced later** (D-3D115-1): the explicit `components` record comes with dormers in row
   3D-115.2 as its own contract proposal. 3D-115 and 3D-115.1 change no canonical model schema, tolerance profile,
   `definingFaceIds` contract or general solver; overhangs are recognised from topology inside the transaction.
