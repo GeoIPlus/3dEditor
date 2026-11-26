@@ -39,5 +39,12 @@ describe('GT-19 ALIGN_JUNCTION', () => {
     expect(commit.result.topologyLineage.preserved).toContain('f-roof-e');
   });
 
-  it.todo('fixed variant: refusal listing the conflicting faces - its ON_PLANE [face] + plane target is not compiled by solve (D-169); owner question 3D-17');
+  it('fixed variant: refusal listing the conflicting faces (ON_PLANE [face] + Plane target = fixed plane, D-289)', () => {
+    expect(a.fixedVariant).toBe('refusal listing the conflicting faces');
+    const { commit: fixedRun, model: fixedIn } = outs[1];
+    expect(fixedRun.result.status).toBe('REJECTED');
+    expect(fixedRun.result.error.code).toBe('CONSTRAINT_CONFLICT');
+    expect(fixedRun.result.error.entityIds).toEqual(expect.arrayContaining(['c-on-plane-f-roof-e', 'f-roof-e']));
+    expect(fixedRun.model).toEqual(fixedIn);
+  });
 });
