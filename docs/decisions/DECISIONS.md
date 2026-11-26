@@ -454,6 +454,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-438 | Finding of 3D-124: `addOverhang` puts the soffit at oA's height, so on an eave horizontal only within `zAlignTolM` the width in plan at oB differs (1.1e-4 m on GT-20 after FIT_PLANE); 3D-124 accepts the existing construction (test: rebuild equals SET_OVERHANG, width tolerance 2e-4 m) and the rule goes to row 3D-131 | Owner, dialog, 2026-11-26 (3D-124) |
 | D-439 | 3D-124 accepted by the owner (chat, 2026-11-26); D-437 confirmed; branch wp/3d-124-overhang-rebuild handed to the coordinator for the merge | Owner, chat, 2026-11-26 (3D-124) |
 | D-440 | 3D-124 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-435..D-439, row 3D-131 | Owner, WP session 3D-124, 2026-11-26 |
+| D-441 | Row 3D-131 (overhang width at both outer corners on a near-horizontal eave) set `ready` by the owner (chat in WP session 3D-124); started by the coordinator in a fresh session on wp/3d-131-overhang-corners after the 3D-124 merge | Owner, WP session 3D-124, 2026-11-26 |
 
 ## Open questions
 
