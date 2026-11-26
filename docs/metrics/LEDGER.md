@@ -51,6 +51,7 @@ into `final` after the session is idle. Unknown values are `?` with the reason i
 | 2026-11-24 | 3D-81 | session_01RNYuqF4ErqsAPBJaEC8dzq | wp | 2.32 | 17.6 | 126.8 | 4781.9 | 3.2 | 3.05 | claude-opus-5-5 | final | - | newest result event 2026-11-24T16:31:10Z; backfill 3D-86 |
 | 2026-11-25 | 3D-86 | session_01RNYuqHnuDRZzVutCfR9HFd | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals; cost inside session) | no finished turn when written (first turn); coordinator reads it at merge |
 | 2026-11-25 | 3D-89 | session_01RNYuqJtpgwUr65orM4dzJp | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | yes (Fable, 3 proposals, see checkpoint 3D-89; ~105k subagent tokens, cost inside session) | no finished turn when written (first turn); coordinator reads it at merge |
+| 2026-11-26 | 3D-71 | session_01RNYuqFfd7PWPVauTxGedzj | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | done (Fable; 3 proposals, see checkpoint 3D-71) | no finished turn when written (first turn; list_events kinds result empty); coordinator reads it at merge |
 
 Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by `list_sessions` (mine) that had no
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).
@@ -71,4 +72,3 @@ From efficiency reviews (README §5). Status: `open`, `adopted (D-NN)`, `rejecte
 | 2026-11-25 | 3D-89, session_01RNYuqJtpgwUr65orM4dzJp | P1: a session-profile reducer for list_events (one line per turn: calls, tokens, cost), so a review reads the whole session, not its last third | fewer event pages read per review | open |
 | 2026-11-25 | 3D-89, session_01RNYuqJtpgwUr65orM4dzJp | P2: a finish-step helper (ledger row template, review due, no first-turn `?` row); overlaps 3D-86 P2/P3 - batch into one skill change | a few calls and one correction step per WP | open (instruction change, AGENTS.md §10) |
 | 2026-11-25 | 3D-89, session_01RNYuqJtpgwUr65orM4dzJp | P3: `check-docs --fix` moves the mermaid node with the status change; run tsc + check:docs before the full check (overlaps 3D-88 P2) | ~2-4 calls per WP | open |
-| 2026-11-26 | 3D-71 | session_01RNYuqFfd7PWPVauTxGedzj | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | REVIEW_PENDING | no finished turn when written (first turn; list_events kinds result empty); coordinator reads it at merge |
