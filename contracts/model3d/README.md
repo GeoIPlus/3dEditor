@@ -37,6 +37,10 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 | 16 | `export-report` | exported / skipped with reason |
 | (3D-22) | `heatmap-request` | building, model version, `PointSelection`, optional `faceIds`, required `thresholdM` (D-136; spec §2 row 17) |
 | 18 (3D-116) | `metrics-result` | F-53 geometric metrics, `volumeStatus`; owner-approved names (D-412, D-413); the nine metric members are the `affectedMetrics` names (D-415) |
+| 19 (3D-24) | `approval-request` | `expectedVersion` of the reviewer's approval; building in the route (D-3D24-1, D-3D24-6; proposed) |
+| 20 (3D-24) | `approval` | approval mark of one version, written once (D-3D24-1, D-3D24-6; proposed) |
+| 21 (3D-24) | `export-request` | `buildingIds` of a batch export (D-3D24-4, D-3D24-6; proposed) |
+| 22 (3D-24) | `export-result` | `export-report` + per-building save outcome and delivered digest / address (D-3D24-6; proposed) |
 
 `examples/<name>.json` holds `{ "valid": [...], "invalid": [{ "why", "instance" }] }` (for `common`: per `$defs` entry).
 
@@ -54,7 +58,9 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 - Changes inside `v1` before the first release, approved per D-18 (precedent `insert-roof-break`, 3D-15): 3D-105 (D-331)
   replaced `trim-face.trimLine` by `cuttingFaceId` (D-322) and `extend-face.targetLine` by `targetFaceId` (D-324), added
   `remove-details.maxAreaM2` (D-326) and `maxDisplacementM` (D-330), and the optional `command-result.candidates` (D-325).
-  3D-110 (D-406) added the error code `INVALID_CRS` (422) with `details.crsReason`.
+  3D-110 (D-406) added the error code `INVALID_CRS` (422) with `details.crsReason`. 3D-24 (D-3D24-7) adds `NOT_APPROVABLE`
+  (422) with `details.approvalReason` and the four schemas of rows 19-22 (D-3D24-6); status proposed until the owner
+  approves the shapes (D-18).
 
 ### Proposals accepted by the owner (D-75)
 

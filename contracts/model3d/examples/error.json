@@ -4,7 +4,10 @@
       "code": "CONSTRAINT_CONFLICT",
       "httpStatus": 422,
       "messageKey": "model3d.error.constraintConflict",
-      "entityIds": ["c-1", "v-1"]
+      "entityIds": [
+        "c-1",
+        "v-1"
+      ]
     },
     {
       "code": "INVALID_PAYLOAD",
@@ -16,25 +19,51 @@
       "code": "INVALID_MEASUREMENT",
       "httpStatus": 422,
       "messageKey": "model3d.error.planeFit",
-      "details": { "pointCount": 29 }
+      "details": {
+        "pointCount": 29
+      }
     },
     {
       "code": "INVALID_GEOMETRY",
       "httpStatus": 422,
       "messageKey": "model3d.error.healHole",
-      "details": { "admissibleModes": ["FILL_PLANAR"] }
+      "details": {
+        "admissibleModes": [
+          "FILL_PLANAR"
+        ]
+      }
     },
     {
       "code": "INVALID_CRS",
       "httpStatus": 422,
       "messageKey": "model3d.error.invalidCrs",
-      "details": { "crsReason": "DATUM_MISMATCH" }
+      "details": {
+        "crsReason": "DATUM_MISMATCH"
+      }
+    },
+    {
+      "code": "NOT_APPROVABLE",
+      "httpStatus": 422,
+      "messageKey": "model3d.error.notApprovable",
+      "entityIds": [
+        "b-1"
+      ],
+      "details": {
+        "approvalReason": "NO_FINAL_VALIDATION"
+      }
     }
   ],
   "invalid": [
     {
       "why": "INVALID_CRS with a reason outside the list (D-406)",
-      "instance": { "code": "INVALID_CRS", "httpStatus": 422, "messageKey": "model3d.error.invalidCrs", "details": { "crsReason": "ELLIPSOID" } }
+      "instance": {
+        "code": "INVALID_CRS",
+        "httpStatus": 422,
+        "messageKey": "model3d.error.invalidCrs",
+        "details": {
+          "crsReason": "ELLIPSOID"
+        }
+      }
     },
     {
       "why": "code outside the registry (v0.2 GEOMETRY_INVALID)",
@@ -42,7 +71,10 @@
         "code": "GEOMETRY_INVALID",
         "httpStatus": 422,
         "messageKey": "model3d.error.constraintConflict",
-        "entityIds": ["c-1", "v-1"]
+        "entityIds": [
+          "c-1",
+          "v-1"
+        ]
       }
     },
     {
@@ -51,23 +83,51 @@
         "code": "CONSTRAINT_CONFLICT",
         "httpStatus": 409,
         "messageKey": "model3d.error.constraintConflict",
-        "entityIds": ["c-1", "v-1"]
+        "entityIds": [
+          "c-1",
+          "v-1"
+        ]
       }
     },
-    { "why": "INVALID_MODE as a code", "instance": { "code": "INVALID_MODE", "httpStatus": 400, "messageKey": "k" } },
+    {
+      "why": "INVALID_MODE as a code",
+      "instance": {
+        "code": "INVALID_MODE",
+        "httpStatus": 400,
+        "messageKey": "k"
+      }
+    },
     {
       "why": "subcode on a non-payload error",
       "instance": {
         "code": "CONSTRAINT_CONFLICT",
         "httpStatus": 422,
         "messageKey": "model3d.error.constraintConflict",
-        "entityIds": ["c-1", "v-1"],
+        "entityIds": [
+          "c-1",
+          "v-1"
+        ],
         "subcode": "INVALID_MODE"
       }
     },
     {
       "why": "no message key",
-      "instance": { "code": "CONSTRAINT_CONFLICT", "httpStatus": 422, "entityIds": ["c-1", "v-1"] }
+      "instance": {
+        "code": "CONSTRAINT_CONFLICT",
+        "httpStatus": 422,
+        "entityIds": [
+          "c-1",
+          "v-1"
+        ]
+      }
+    },
+    {
+      "why": "NOT_APPROVABLE bound to 403 (D-3D24-7: 422)",
+      "instance": {
+        "code": "NOT_APPROVABLE",
+        "httpStatus": 403,
+        "messageKey": "model3d.error.notApprovable"
+      }
     }
   ]
 }

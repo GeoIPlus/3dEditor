@@ -3,6 +3,7 @@
 // version N-1 exactly one creates it, the other finds another `commandId` there (409) or its own (idempotent
 // repeat). The idempotency record `cmd/{commandId}` is written last; it is derivable from the journal, so a lost
 // record is found again through `journal/{expectedVersion + 1}`. Nothing is deleted or overwritten (D-84, D-85).
+// QC records (3D-24): one `FINAL_VALIDATION` report and one approval per version, written once (D-3D24-1, D-3D24-2).
 import { isObjectStore, keys } from './ports/history.js';
 
 /** @typedef {import('./ports/history.js').ObjectStore} ObjectStore */
@@ -93,8 +94,14 @@ export function createHistory(store) {
     return findCommand(p, commandId);
   }
 
+  /** create-if-absent; the stored value either way. @param {string} key @param {unknown} value */
+  const once = async (key, value) => ((await store.create(key, value)) ? value : store.get(key));
   return {
     putBaseline: (p, b, model) => store.create(keys.baseline(p, b), model),
     readBaseline, head, readVersion, readJournal, commit, findCommand, recordResult,
+    putFinalValidation: (p, b, n, report) => once(keys.qc(p, b, n, 'final-validation'), report),
+    readFinalValidation: (p, b, n) => store.get(keys.qc(p, b, n, 'final-validation')),
+    putApproval: (p, b, n, approval) => once(keys.qc(p, b, n, 'approval'), approval),
+    readApproval: (p, b, n) => store.get(keys.qc(p, b, n, 'approval')),
   };
 }

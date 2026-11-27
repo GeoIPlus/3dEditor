@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-export-request:v1",
+  "title": "ExportRequest",
+  "description": "Batch export of buildings of the reviewer's assignment (v0.3 §8.4; spec §11 r9; D-3D24-4). Each building is exported at its head version or skipped with a reason.",
+  "$comment": "[P] Shape (D-3D24-6). The client sends the assignment's building ids; the check that each is in the signed assignment is 3D-25 (GT-23).",
+  "type": "object",
+  "properties": {
+    "buildingIds": { "type": "array", "items": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" }, "minItems": 1, "uniqueItems": true }
+  },
+  "required": ["buildingIds"],
+  "additionalProperties": false
+}

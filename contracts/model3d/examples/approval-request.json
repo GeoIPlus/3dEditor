@@ -1,0 +1,7 @@
+{
+  "valid": [{ "expectedVersion": 2 }],
+  "invalid": [
+    { "why": "no expectedVersion", "instance": {} },
+    { "why": "status is not a member: the route sets APPROVED", "instance": { "expectedVersion": 2, "status": "APPROVED" } }
+  ]
+}

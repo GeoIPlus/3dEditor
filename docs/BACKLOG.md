@@ -17,18 +17,18 @@ method and session data in [docs/metrics/](metrics/README.md) (D-236).
 
 ## Progress overview
 
-Updated: 2026-11-26
+Updated: 2026-11-27
 
 | Progress | Rows |
 |---|---:|
-| Done | 72 / 108 |
+| Done | 72 / 109 |
 | Review | 0 |
 | In progress | 4 |
 | Ready | 7 |
-| Proposed (waiting for the owner to set `ready`) | 24 |
+| Proposed (waiting for the owner to set `ready`) | 25 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 72/108 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 72/109 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-124 Overhang rebuild; 3D-24 QC and export rules; 3D-74 val3dity image + binding; 3D-47 SC: 3D view port + host.
 
@@ -141,6 +141,7 @@ flowchart TB
     D24["🚧 ⚙️ 3D-24 QC and export rules"]
     D24_1["💡 🖥️ 3D-24.1 Return for rework"]
     D24_2["💡 🖥️ 3D-24.2 Service import"]
+    D24_3["💡 🔗 3D-24.3 SC: vendor 3D-24 schemas"]
     D25["💡 🧪 3D-25 E2E on mock"]
   end
   subgraph client["shared / geoviewer / crowdsource mirrors (PROPOSED)"]
@@ -309,6 +310,8 @@ flowchart TB
   D24 --> D25
   D24 --> D24_1
   D24 --> D24_2
+  D24 --> D24_3
+  D45 --> D24_3
   D128 --> D24_2
   D24_2 --> D25
   D43 --> D25
@@ -429,6 +432,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110, 128 | G5 | M | kernel | in-progress (D-433; wp/3d-24-qc-export) |
 | 3D-24.1 | Return for rework with a comment: reviewer (not an author) records a return on the head version (spec §11 r2; v0.3 §8.5) | here | service | 24 | G5 | S | service | proposed |
 | 3D-24.2 | Service import: `IMPORT_BUILDING` from the input dataset (`datasets.read`), `putBaseline`, keep the source CityJSON and the `progress.save` save basis for the export source port of 3D-24 | here | service | 24, 128 | G5 | M | service | proposed |
+| 3D-24.3 | SC: vendor the `model3d` schemas of 3D-24 (`approval-request`, `approval`, `export-request`, `export-result`; error `NOT_APPROVABLE`, D-3D24-6, D-3D24-7) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 24, 45 | G5 | S | mirror | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 24.2, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
@@ -581,6 +585,22 @@ accuracy ratio 1.30 is n=1 and not applied.
   conflict, baseline unchanged; export of the imported building via 3D-24 saves with `If-Match` = the import read's tag.
 - Decisions: D-82..D-85, D-430, D-3D24-4  Open: mapping building -> datasets (Q-32 related)
 - Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-24.3 SC: vendor the 3D-24 `model3d` schemas
+- Source: WP session 3D-24, 2026-11-26: D-3D24-6 adds four schemas and D-3D24-7 the error code `NOT_APPROVABLE` inside
+  `v1`; the SC vendored copy (3D-45) must follow, or the SC adapter refuses the QC / export replies (3D-ADR-0002 A1).
+- Goal: SC holds the same `approval-request`, `approval`, `export-request`, `export-result` and `error` schemas (with
+  examples) as this repository's base after 3D-24.
+- Scope in: copy the files into `contracts/vendor/3deditor/`, update `provenance.json`; user texts for
+  `model3d.error.notApprovable` and the `model3d.export.*` reason keys if SC keeps message keys. Scope out: UI (3D-44).
+- Accept: the SC hash check passes against the 3DQM base commit that holds 3D-24; a `422 NOT_APPROVABLE` reply and an
+  `export-result` example validate in the SC adapter's contract test.
+- Text of the row to add in SC (`GeoIPlus/shared_compnents`, its BACKLOG; the SC row is authoritative, D-25):
+  "3DQM mirror: vendor `model3d` `approval-request`, `approval`, `export-request`, `export-result` + re-vendor
+  `error.schema.json` (adds `NOT_APPROVABLE`, 422, `details.approvalReason`) from 3dEditor (3D-24); refresh
+  `provenance.json`; adapter contract test." May be merged with 3D-129 if that row has not started.
+- Decisions: D-37, D-3D24-6, D-3D24-7  Open: none
+- Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S mirror n < 5)
 
 ### 3D-25 E2E
 - Accept: the v0.3 G5 E2E chain on the CP/DP mock in both workplaces; GT-23 (building outside assignment -> 403).

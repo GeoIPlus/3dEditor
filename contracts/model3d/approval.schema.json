@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-approval:v1",
+  "title": "Approval",
+  "description": "The approval mark of one model version (D-3D24-1): written once, never changed; the building reads `APPROVED` while its head version has one. The reviewer is not an author of any version after the baseline (v0.3 §8.1).",
+  "$comment": "[P] Shape (D-3D24-6).",
+  "type": "object",
+  "properties": {
+    "projectId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "buildingId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+    "actorId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId", "description": "The authenticated reviewer (spec §11 r1)." },
+    "timestamp": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Timestamp" }
+  },
+  "required": ["projectId", "buildingId", "modelVersion", "actorId", "timestamp"],
+  "additionalProperties": false
+}

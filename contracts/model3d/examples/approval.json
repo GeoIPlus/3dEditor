@@ -1,0 +1,7 @@
+{
+  "valid": [{ "projectId": "p-1", "buildingId": "b-1", "modelVersion": 2, "actorId": "usr-reviewer", "timestamp": "2026-11-26T10:00:00Z" }],
+  "invalid": [
+    { "why": "no actorId", "instance": { "projectId": "p-1", "buildingId": "b-1", "modelVersion": 2, "timestamp": "2026-11-26T10:00:00Z" } },
+    { "why": "negative version", "instance": { "projectId": "p-1", "buildingId": "b-1", "modelVersion": -1, "actorId": "u", "timestamp": "2026-11-26T10:00:00Z" } }
+  ]
+}

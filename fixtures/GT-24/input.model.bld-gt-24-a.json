@@ -9,7 +9,7 @@
     "verticalCrs": null,
     "axisOrder": "EAST_NORTH_UP",
     "unit": "m",
-    "originWorld": [0, 0, 0],
+    "originWorld": [512000, 6170000, 0],
     "buildingAxisDeg": 0
   },
   "footprints": {
@@ -33,61 +33,71 @@
       "id": "v-b0",
       "p": [0, 0, 0],
       "definingFaceIds": ["f-ground", "f-wall-s", "f-wall-w"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "0"
     },
     "v-b1": {
       "id": "v-b1",
       "p": [10, 0, 0],
       "definingFaceIds": ["f-ground", "f-wall-s", "f-wall-e"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "1"
     },
     "v-b2": {
       "id": "v-b2",
       "p": [10, 8, 0],
       "definingFaceIds": ["f-ground", "f-wall-e", "f-wall-n"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "2"
     },
     "v-b3": {
       "id": "v-b3",
       "p": [0, 8, 0],
       "definingFaceIds": ["f-ground", "f-wall-n", "f-wall-w"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "3"
     },
     "v-e0": {
       "id": "v-e0",
       "p": [0, 0, 5],
       "definingFaceIds": ["f-wall-s", "f-wall-w", "f-roof-s"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "4"
     },
     "v-e1": {
       "id": "v-e1",
       "p": [10, 0, 5],
       "definingFaceIds": ["f-wall-s", "f-wall-e", "f-roof-s"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "5"
     },
     "v-e2": {
       "id": "v-e2",
       "p": [10, 8, 5],
       "definingFaceIds": ["f-wall-e", "f-wall-n", "f-roof-n"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "6"
     },
     "v-e3": {
       "id": "v-e3",
       "p": [0, 8, 5],
       "definingFaceIds": ["f-wall-n", "f-wall-w", "f-roof-n"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "7"
     },
     "v-r0": {
       "id": "v-r0",
       "p": [0, 4, 8],
       "definingFaceIds": ["f-wall-w", "f-roof-s", "f-roof-n"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "8"
     },
     "v-r1": {
       "id": "v-r1",
       "p": [10, 4, 8],
       "definingFaceIds": ["f-wall-e", "f-roof-s", "f-roof-n"],
-      "positionMode": "DERIVED"
+      "positionMode": "EXPLICIT",
+      "sourceRef": "9"
     }
   },
   "halfEdges": {
@@ -372,7 +382,8 @@
         "d": 0
       },
       "surfaceKind": "GroundSurface",
-      "tags": []
+      "tags": [],
+      "sourceRef": "bld-gt-24-a/geometry/0/boundaries/0/0"
     },
     "f-wall-s": {
       "id": "f-wall-s",
@@ -383,7 +394,8 @@
         "d": 0
       },
       "surfaceKind": "WallSurface",
-      "tags": []
+      "tags": [],
+      "sourceRef": "bld-gt-24-a/geometry/0/boundaries/0/1"
     },
     "f-wall-e": {
       "id": "f-wall-e",
@@ -394,7 +406,8 @@
         "d": -10
       },
       "surfaceKind": "WallSurface",
-      "tags": []
+      "tags": [],
+      "sourceRef": "bld-gt-24-a/geometry/0/boundaries/0/2"
     },
     "f-wall-n": {
       "id": "f-wall-n",
@@ -405,7 +418,8 @@
         "d": -8
       },
       "surfaceKind": "WallSurface",
-      "tags": []
+      "tags": [],
+      "sourceRef": "bld-gt-24-a/geometry/0/boundaries/0/3"
     },
     "f-wall-w": {
       "id": "f-wall-w",
@@ -416,7 +430,8 @@
         "d": 0
       },
       "surfaceKind": "WallSurface",
-      "tags": []
+      "tags": [],
+      "sourceRef": "bld-gt-24-a/geometry/0/boundaries/0/4"
     },
     "f-roof-s": {
       "id": "f-roof-s",
@@ -428,7 +443,8 @@
       },
       "surfaceKind": "RoofSurface",
       "tags": [],
-      "roofComponentId": "rc-1"
+      "roofComponentId": "rc-1",
+      "sourceRef": "bld-gt-24-a/geometry/0/boundaries/0/5"
     },
     "f-roof-n": {
       "id": "f-roof-n",
@@ -440,7 +456,8 @@
       },
       "surfaceKind": "RoofSurface",
       "tags": [],
-      "roofComponentId": "rc-1"
+      "roofComponentId": "rc-1",
+      "sourceRef": "bld-gt-24-a/geometry/0/boundaries/0/6"
     }
   },
   "shells": {
@@ -472,7 +489,8 @@
       "id": "sem-bld",
       "kind": "Building",
       "solidIds": ["so-1"],
-      "attributes": {}
+      "attributes": {},
+      "sourceRef": "bld-gt-24-a"
     }
   },
   "toleranceProfileId": "tp-default"
