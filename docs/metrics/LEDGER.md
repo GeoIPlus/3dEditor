@@ -86,6 +86,7 @@ row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier
 | 2026-11-27 | 3D-131 | session_01RNYuqFMAqsBQj9W73mLSZp | wp | ? | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - (not due: calibration count over 10, no trigger measurable) | newest result page empty at the finish (worker restarted once); coordinator re-reads at merge |
 | 2026-11-27 | 3D-137 | session_01RNYuqJA4wpG55UfUjupeLm | wp | 3.87 | 42.9 | 222.8 | 6114.8 | ? | 6.5 | 1.72 | claude-opus-5-5 | final | see checkpoint | newest result event 2026-11-27T12:07:16Z (coordinator at merge, total_cost_usd) |
 | 2026-11-27 | 3D-136 | session_01RNYuqFWdcNDV3cUu4qiUXL | wp | 2.55 | 24.0 | 145.5 | 4552.8 | ? | 3.9 | 1.69 | claude-opus-5-5 | final | see checkpoint | newest result event 2026-11-27T12:05:55Z (coordinator at merge, total_cost_usd) |
+| 2026-11-27 | coord | session_01RNYuqELimvoRN2QuP66W9c | coord | 176.68 | 610.6 | 7622.0 | 516051.4 | 720 | 114.6 | ? | claude-opus-5-5 | as of 2026-11-27T12:09:03Z | - | coordinator at rotation; newest result event total_cost_usd of the worker process (turns before a worker restart may be missing: lower bound) |
 
 ## Improvement proposals
 
