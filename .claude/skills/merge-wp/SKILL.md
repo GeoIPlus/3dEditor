@@ -59,23 +59,30 @@ checkpoint). Stop and ask the owner (dialog with proposed answers) if any of the
 
 ## 4a. Cost, estimate, forecast (AGENTS.md §7.7, [docs/metrics/README.md](../../../docs/metrics/README.md))
 
-1. For every session that worked on the WP (checkpoint, `list_sessions` with `children: true`): read the newest
-   `result` event (README §1) now that the session is idle; set its ledger row to the final figures, `state: final`.
+1. **Mandatory, once per session (3D-137).** For every session that worked on the WP (checkpoint, ledger, `list_sessions`
+   with `children: true`), once it is idle: one call `list_events(session_id, kinds=["result"], limit=10)` (page back
+   with `before_id` only if the page has none). From the newest event write the row (README §1): `cost_usd` =
+   `total_cost_usd`; `out_k`, `cache_write_k`, `cache_read_k` summed over `modelUsage` (cumulative; **never**
+   `model_usage_since_last_result`); `ctx_k` from `usage.iterations[-1]`; `api_min` = `duration_api_ms` / 60000;
+   `span_h` from `get_session`; `models` = keys of `modelUsage`; `state` = `final`; `source` = event time. No `result`
+   event at all: `cost_usd` `?` and `source` `no cost: <reason>`. Missing a session's row: add it. The gate (step 5)
+   fails the merge commit otherwise.
 2. Details entry of the row: add the `- Actual:` line (README §3) with the ratio to `est0`.
 3. Copy the review's proposals (checkpoint "Cost and efficiency") into LEDGER.md "Improvement proposals" as `open`.
 4. Recompute the forecast by script (README §4; never by hand) and replace the block in BACKLOG "## Budget and
    forecast". A class whose median ratio left 0.8..1.25: add re-estimate lines to its open rows.
-5. Add the coordinating session's own row (`WP = coord`) once per day it worked.
+5. The coordinating session's own row (`WP = coord`) is written at its rotation (3D-136), not per merge.
 
 ## 5. Gate
 
 Strict, never with `--allow-provisional`:
 
 ```
-node tools/check-docs.mjs && node --test tools/check-docs.test.mjs
+node tools/check-docs.mjs && node tools/ledger-check.mjs && node --test tools/check-docs.test.mjs
 ```
 
-Both must exit 0 (once 3D-05 is done: `npm run check`). Fix and re-run; do not commit a failing state.
+All must exit 0 (once 3D-05 is done: `npm run check`). `tools/ledger-check.mjs` (also inside `npm run check:docs`) reads the
+merge commit: a missing or non-final ledger row of the WP fails it (step 4a.1). Fix and re-run; do not commit a failing state.
 
 ## 6. Commit, push, confirm
 

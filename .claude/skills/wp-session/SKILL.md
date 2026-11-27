@@ -24,8 +24,7 @@ coordinator's.
 
 1. Commit and push work in progress on the WP branch (never `main`).
 2. Update the checkpoint: `status: paused`, what is done (with check output), what fails (with output), next step.
-   Measure the session (AGENTS.md §7.7, [docs/metrics/README.md §1](../../../docs/metrics/README.md)): own row in
-   `docs/metrics/LEDGER.md` (`as of` the newest result event) and the checkpoint section "Cost and efficiency".
+   Do not measure the session at a pause: its ledger row is written once, by the coordinator at merge (3D-137, D-475).
 3. Handoff text - only these fields, no conversation history:
 
 ```

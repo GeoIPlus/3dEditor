@@ -2,13 +2,15 @@
 // `npm run check:docs` (3D-05, 3D-78): runs tools/check-docs.mjs. On a WP branch `wp/*` (or with
 // `--allow-provisional`, for a platform-named WP branch) provisional ids are allowed (D-38, D-179) and a final id that
 // the base branch lacks is a problem: the base's documents are read from `origin/<base>` (else the local `<base>`).
-// Everywhere else, including the base branch and CI on it, the check is strict. `--fix` first regenerates the BACKLOG
+// Everywhere else, including the base branch and CI on it, the check is strict. A WP merge commit at HEAD also needs
+// final ledger rows (tools/ledger-check.mjs, 3D-137). `--fix` first regenerates the BACKLOG
 // overview (D-180).
 import { execFileSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BASE_BRANCH } from './base-branch.mjs';
 import { checkDocs, fixDocs } from './check-docs.mjs';
+import { checkLedgerAtHead } from './ledger-check.mjs';
 
 /** @param {string[]} args @param {string} cwd */
 const git = (args, cwd) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
@@ -67,6 +69,7 @@ if (isMain) {
   if (args.includes('--fix')) fixDocs(root, new Date().toISOString().slice(0, 10));
   const base = lenient ? readBase(root) : null;
   const problems = checkDocs(root, { allowProvisional: lenient, base: base?.docs });
+  problems.push(...checkLedgerAtHead(root)); // 3D-137: a WP merge commit needs final ledger rows
   if (lenient && !base) problems.push(`base branch ${BASE_BRANCH} not found; run \`git fetch origin ${BASE_BRANCH}\` (D-179 new-id rule)`);
   if (problems.length > 0) {
     for (const p of problems) console.error(`check:docs: ${p}`);
