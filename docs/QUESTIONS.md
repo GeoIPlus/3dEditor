@@ -19,3 +19,4 @@ questions from the section "Open questions" of the WP checkpoints, provisional d
 | R-138-2 | 3D-138 | D-3D138-2 | (c) check-docs checks RISKS.md and checkpoint open-question lines, not the freshness of QUESTIONS.md; the coordinator regenerates it at merge: catches the silent drop of (b) without the merge friction of (a) | 2026-11-27 | working tree |
 | R-138-3 | 3D-138 | D-3D138-3 | (b) awaiting = RISKS.md rows without a review row: the register outlives the WP session and is closed by an appended review | 2026-11-27 | working tree |
 | R-138-4 | 3D-138 | D-3D138-4 | (b) checkpoint + handoff first, the dialog last, the answer to a fresh session: same cost effect without breaking §2 item 2 | 2026-11-27 | working tree |
+| R-138-5 | 3D-138 | D-3D138-5 | (b) both lines written by the coordinator in `merge-wp` §6 step 1, missing `start` lines caught up at merge | 2026-11-27 | working tree |

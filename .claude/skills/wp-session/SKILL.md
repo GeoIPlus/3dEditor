@@ -43,8 +43,7 @@ Owner answers can arrive hours later. Classify each question before asking it.
 
 1. Commit and push work in progress on the WP branch (never `main`).
 2. Update the checkpoint: `status: paused`, what is done (with check output), what fails (with output), next step.
-   Measure the session (AGENTS.md §7.7, [docs/metrics/README.md §1](../../../docs/metrics/README.md)): own row in
-   `docs/metrics/LEDGER.md` (`as of` the newest result event) and the checkpoint section "Cost and efficiency".
+   Do not measure the session at a pause: its ledger row is written once, by the coordinator at merge (3D-137, D-475).
 3. Handoff text - only these fields, no conversation history:
 
 ```
@@ -70,12 +69,12 @@ Checks outstanding: <list>
    `--fix` inside that merge commit.
 3. Checkpoint: `status: done`, results with numbers, what the next WP needs to know.
 3a. **Cost and efficiency** (AGENTS.md §7.7, §7.9; method in [docs/metrics/README.md](../../../docs/metrics/README.md)):
-   - Read the newest `result` event of this session (README §1); write the own ledger row (`as of`) and the checkpoint
-     section: figures, `est0` of the row, ratio, and a self-retro of at most 5 lines (what cost tokens without moving
+   - Read the newest `result` event of this session (README §1) into the checkpoint section (no ledger row: the
+     coordinator writes the only one at merge, D-478): figures, `est0` of the row, ratio, and a self-retro of at most 5 lines (what cost tokens without moving
      an acceptance line: re-reads, large tool output, failed attempts, waits).
    - If the review is due (README §5: calibration count < 10, or a trigger), run it now with the fixed prompt
-     (Agent tool, `model: "fable"`). Paste its answer unedited, reply to each proposal, fill `review` in the ledger row.
-   - Commit both files on the WP branch with the finish commit.
+     (Agent tool, `model: "fable"`). Paste its answer unedited, reply to each proposal in the checkpoint.
+   - Commit the checkpoint on the WP branch with the finish commit.
 4. Report to the owner in chat: what was done, check results, open questions (asked via dialog, not as text; provisional
    decisions of this WP are put to the owner there for confirmation). When the
    owner accepts, send_message to the coordinator: "WP 3D-<id> done, owner accepted, <branch>@<sha>".

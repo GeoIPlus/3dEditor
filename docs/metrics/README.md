@@ -17,12 +17,21 @@ The own session id is `$CLAUDE_CODE_REMOTE_SESSION_ID` (or `get_session` with no
 | `out_k` | `modelUsage.<model>.outputTokens` / 1000 | cumulative, per model |
 | `cache_write_k` | `modelUsage.<model>.cacheCreationInputTokens` / 1000 | cumulative |
 | `cache_read_k` | `modelUsage.<model>.cacheReadInputTokens` / 1000 | cumulative; usually 90+ % of input volume, priced at 1/20 of input |
+| `ctx_k` | `usage.iterations[-1]`: `input_tokens + cache_read_input_tokens + cache_creation_input_tokens`, / 1000 | context size at the session's last model call (3D-137); the daily report flags `ctx_k > 250` and `cache_write_k > 2 x ctx_k` (context rebuilt) |
 | `api_min` | `duration_api_ms` / 60000 | cumulative model time `[V: 3D-84, 392078 -> 412394 -> 415392]` |
 | `span_h` | `get_session`: `updated_at - created_at` | wall clock incl. waits for the owner |
 | `models` | keys of `modelUsage` | a subagent on another model shows as its own key `[A: verify on the first Fable review]` |
 
 The current turn is not in any `result` event yet. A session's own figure is therefore "as of turn N"; the coordinator
 re-reads it after the session is idle and that value is the one that counts.
+
+**Written once at merge (3D-137, D-475 part A).** `cost_usd` and the token columns are cumulative over the session:
+use `total_cost_usd` and `modelUsage` (summed over models), **never** `model_usage_since_last_result` (only the last
+turn). The coordinator writes the WP's rows `final` in merge-wp step 4a, one `list_events` call per session;
+`npm run check:docs` (tools/ledger-check.mjs) fails while HEAD is a WP merge commit (`3D-<id>: merge wp/...`) and a
+`kind = wp` row of that WP is missing, not `final`, or has no numeric `cost_usd` and no `no cost: <reason>` in `source`.
+WP sessions do not measure themselves at pauses. Coordinator rows are written at rotation (3D-136); other sessions when
+learned. `node tools/daily-report.mjs --date YYYY-MM-DD` lists the rows still not final.
 
 ## 2. Ledger rows
 
@@ -127,11 +136,16 @@ Answer in this shape, at most 25 lines, facts with their source:
 ```
 
 **Where the result goes.** The WP session copies the answer into the checkpoint section "Cost and efficiency" without
-editing it, adds its own reply per proposal (agree / disagree, why), and fills `review` in the ledger row. Proposals
+editing it, adds its own reply per proposal (agree / disagree, why); the coordinator fills `review` in the ledger row at merge
+(D-478). Proposals
 never change instructions directly: the coordinator lists them in LEDGER.md "Improvement proposals"; instruction
 changes are batched, approved by the owner and measured with the agent evals (§7.6, §7.8, §10).
 
 ## 6. Data quality
+
+Daily report from git (3D-137): `node tools/daily-report.mjs --date YYYY-MM-DD [--tz Europe/Copenhagen] [--ref <branch>]`
+prints WP status changes, decisions added, open owner actions, ledger rows finalized that day (with flags), totals by
+kind and rows without a final figure. The scheduled task's prompt is [daily-report-prompt.md](daily-report-prompt.md).
 
 - The ledger is append-only except for the coordinator's final re-read of a row (`as of` -> `final`).
 - A figure that could not be read is `?` with the reason; never estimated after the fact.
