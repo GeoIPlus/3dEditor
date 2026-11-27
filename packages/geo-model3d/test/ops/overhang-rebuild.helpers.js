@@ -1,6 +1,6 @@
 // Test helpers for 3D-124 (D-384): GT-03 with a 0.6 m overhang on the south eave and the acceptance checks of the
 // rebuild, computed outside the operation code (strip on its parent plane, width in plan from the wall, soffit
-// horizontal at the outer edge, caps on the end-wall planes, ids kept, no delete / create of kept ids).
+// through the outer edge and level across it (D-463), caps on the end-wall planes, ids kept, no delete / create of kept ids).
 import { expect } from 'vitest';
 import { deepFreeze, readFixture } from '../brep/helpers.js';
 import { exec, sound } from './envelope.helpers.js';
@@ -50,11 +50,22 @@ export function follows(before, out, widthTol = PROFILE.numericEpsilon * 10) {
       expect(Math.abs(off(W.supportPlane, p) - WIDTH)).toBeLessThanOrEqual(widthTol);
       expect(Math.abs(off(m.faces[f.soffit].supportPlane, p))).toBeLessThanOrEqual(PROFILE.planarTolM);
     }
-    samePlane(m.faces[f.soffit].supportPlane, { normal: [0, 0, -1], d: m.vertices[f.oA].p[2] });
+    level(m.faces[f.soffit].supportPlane, W.supportPlane, m.vertices[f.oA].p, m.vertices[f.oB].p);
     samePlane(m.faces[f.capA].supportPlane, m.faces[f.gA].supportPlane);
     samePlane(m.faces[f.capB].supportPlane, m.faces[f.gB].supportPlane);
     samePlane(strip.supportPlane, R.supportPlane);
   }
+}
+
+/**
+ * Soffit of D-463: through both outer corners, level across the overhang (contains W's horizontal normal), facing
+ * down; horizontal z = oA.z when the corners are level. @param {any} sp @param {any} wp @param {number[]} a @param {number[]} b
+ */
+function level(sp, wp, a, b) {
+  for (const p of [a, b]) expect(Math.abs(off(sp, p))).toBeLessThanOrEqual(PROFILE.numericEpsilon * 10);
+  expect(Math.abs(sp.normal[0] * wp.normal[0] + sp.normal[1] * wp.normal[1])).toBeLessThanOrEqual(PROFILE.numericEpsilon);
+  expect(sp.normal[2]).toBeLessThan(0);
+  if (Math.abs(a[2] - b[2]) <= PROFILE.numericEpsilon) samePlane(sp, { normal: [0, 0, -1], d: a[2] });
 }
 
 /** Planes equal within numericEpsilon (0 and -0 alike). @param {any} a @param {any} b */

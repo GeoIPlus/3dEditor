@@ -238,8 +238,9 @@ targets tied to them stay; centroid of the building footprint; a hard constraint
 zero move = no-op; journal warning), `set-height.js` (BASE: ground plane solved to the new Z; EAVE: the structural
 eave's roof face solved by D-231 / D-110, the ridge must stay -> else CONSTRAINT_CONFLICT; an overhang is taken off,
 the slope solved, the overhang rebuilt at the same width with the same ids), `overhang.js` + `set-overhang.js`
-(horizontal soffit profile of D-336: strip RoofSurface + OVERHANG in the roof plane, OuterCeilingSurface soffit,
-WallSurface + OVERHANG end caps in the gable planes; width carried by the soffit height and recovered from geometry;
+(soffit profile of D-336: strip RoofSurface + OVERHANG in the roof plane, OuterCeilingSurface soffit through the
+outer edge and level across it (D-463: exact width at both corners on an eave horizontal within `zAlignTolM`),
+WallSurface + OVERHANG end caps in the gable planes; width carried by the soffit plane and recovered from geometry;
 same width no-op, 0 removes, a new width keeps every id; unsupported junction -> INVALID_TOPOLOGY, D-344).
 Limitations: the eave vertices under an overhang have two independent planes and are EXPLICIT (spec §4 r3), so
 operations of other rows do not rebuild an overhang (3D-115); GT-14 caps are below `minFaceAreaM2` and pass as verified caps (3D-117, D-343);

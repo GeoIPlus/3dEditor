@@ -21,20 +21,21 @@ Updated: 2026-11-27
 
 | Progress | Rows |
 |---|---:|
-| Done | 77 / 110 |
+| Done | 78 / 110 |
 | Review | 0 |
 | In progress | 2 |
 | Ready | 6 |
-| Proposed (waiting for the owner to set `ready`) | 24 |
+| Proposed (waiting for the owner to set `ready`) | 23 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 77/110 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 78/110 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-131 Overhang width at B; 3D-133 Service import.
+**Running:** 3D-133 Service import; 3D-40 geo-render model3d.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D131["✅ ⚙️ 3D-131 Overhang width at B"]
     D47["✅ 🔗 3D-47 SC: 3D view port + host"]
     D129["✅ 🔗 3D-129 SC: INVALID_CRS schema"]
     D24["✅ ⚙️ 3D-24 QC and export rules"]
@@ -133,7 +134,6 @@ flowchart TB
     D107["💡 📐 3D-107 ADR: shared plane"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
     D125["💡 ⚙️ 3D-125 Dormers follow roof"]
-    D131["🚧 ⚙️ 3D-131 Overhang width at B"]
     D130["💡 ⚙️ 3D-130 Metric change detection"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
@@ -147,7 +147,7 @@ flowchart TB
     D25["💡 🧪 3D-25 E2E on mock"]
   end
   subgraph client["shared / geoviewer / crowdsource mirrors (PROPOSED)"]
-    D40["💡 🔗 3D-40 geo-render model3d"]
+    D40["🚧 🔗 3D-40 geo-render model3d"]
     D41["▶️ 🔗 3D-41 Remote kernel port"]
     D42["💡 🔗 3D-42 3DQM tools"]
     D43["▶️ 🔗 3D-43 plans/3dqm"]
@@ -360,9 +360,9 @@ Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script
 
 ```
 Forecast 2026-11-27 (ledger n=43 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=5, S kernel n=5, S spec n=8; baseline d7c472d 2026-11-19)
-Known remaining: $239 / $303 over 34 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $257 / $325
-Throughput: 66.5 rows/week (8 d), 350 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
+Known remaining: $224 / $285 over 32 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $240 / $305
+Throughput: 68.3 rows/week (8 d), 350 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
 ```
 
 MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
@@ -403,7 +403,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-126 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-389) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | done (D-426; merged into base, no PR; D-417..D-425) |
 | 3D-115 | Parametric geometry dependency management: ADR 3D-ADR-0010 (parent / dependent links, detach - solve - rebuild in the pipeline; split D-386) | here | docs/decisions/adr | 15, 17, 18, 19 | G4 | S | spec | done (D-388; ADR 3D-ADR-0010; merged into base, no PR; D-383..D-387) |
 | 3D-124 | Overhang rebuild after a parent change: detach - solve - rebuild in the pipeline, replacing the D-367 refusal (D-384, D-385) | here | geo-model3d/ops | 115, 114, 117, 19, 120 | G4 | M | kernel | done (D-440; merged into base, no PR; D-435..D-439) |
-| 3D-131 | Overhang width in plan at both outer corners on an eave that is horizontal only within `zAlignTolM` (D-336) | here | geo-model3d/ops | 124, 19 | G4 | S | kernel | in-progress (D-441; wp/3d-131-overhang-corners) |
+| 3D-131 | Overhang width in plan at both outer corners on an eave that is horizontal only within `zAlignTolM` (D-336) | here | geo-model3d/ops | 124, 19 | G4 | S | kernel | done (D-464; merged into base, no PR; D-463) |
 | 3D-125 | Dormers follow their roof face; explicit `components` record in the model contract (D-383) | here | geo-model3d/ops, contracts/model3d | 124, 20 | G4 | M | kernel | proposed |
 | 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | done (D-416; merged into base, no PR; D-412..D-415) |
 | 3D-130 | Automatic metric change detection: `patch.affectedMetrics` from a before / after `computeMetrics` comparison (PREVIEW, COMMIT, inverse patch, Undo / Redo; D-415, Q-31) | here | geo-model3d/ops, geo-model3d/brep, contracts | 116 | G4 | M | kernel | proposed |
@@ -476,7 +476,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-88 | Bug: two eval rubrics give false negatives - `js-esm-jsdoc` `esm-jsdoc` (re-export-only file needs `@param`) and `never-push-main` `names-rule` (misses "not to `main`") | here | docs/agent-evals, tools/agent-evals | 28, 00.3 | G0 | S | tooling | done (D-247; merged into base, no PR) |
 | 3D-86 | Forecast script `tools/budget.mjs` (ledger + BACKLOG -> ETC block) and ledger backfill of every finished WP session | here | tools, docs/metrics | 85 | G0 | S | tooling | done (D-248; merged into base, no PR) |
 | 3D-89 | Forecast growth g from per-row first appearance: rows dated by the commit where they first appear, the plan baseline (first 14 days of the backlog) excluded; baseline commit printed, shallow clone refused (D-250) | here | tools, docs/metrics | 86 | G0 | S | tooling | done (D-255; merged into base, no PR) |
-| 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | mirror | proposed (Q-16 closed by D-54: 3D host split out to 3D-47; UI per brandbook, D-40) |
+| 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | mirror | in-progress (D-465; SC session) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-80, WP-81 (WP-28 core slice + 3DQM plan support) | G3 | M | mirror | ready (D-381; waits for SC WP-81; WP-80 merged, D-442) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | mirror | proposed (UI per brandbook, D-40) |
 | 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-80, WP-81 | G5 | M | mirror | ready (D-381; waits for 3D-41, SC WP-80, WP-81) |
@@ -1120,7 +1120,7 @@ accuracy ratio 1.30 is n=1 and not applied.
   Scope out: the 3D-124 rebuild (it uses `addOverhang` unchanged), dormers.
 - Accept: on GT-20 + FIT_PLANE + 0.6 m overhang the width in plan at oA and oB matches the owner's rule (test), the
   3D-124 FIT_PLANE test tightened from 2e-4 m accordingly; 3D-19 / 3D-124 tests pass; `npm run check`, golden.
-- Decisions: D-336, D-337, D-384, D-438  Open: the rule (owner dialog in the WP session)
+- Decisions: D-336, D-337, D-384, D-438, D-463  Open: none (rule decided by D-463)
 - Estimate: $3.25 (p80 $3.93), model time TBD; basis: S kernel n=5
 
 ### 3D-125 Dormers follow their roof face
