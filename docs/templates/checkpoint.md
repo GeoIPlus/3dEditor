@@ -26,7 +26,7 @@ Decisions used: D-..   Open questions: Q-..
 <numbers, test counts, bench values - copied from real output>
 
 ## Cost and efficiency
-<!-- AGENTS.md §7.7, §7.9; docs/metrics/README.md. Fill at every pause and at finish. -->
+<!-- AGENTS.md §7.7, §7.9; docs/metrics/README.md. Fill at finish (not at pauses; 3D-137). -->
 Measured (as of <result event time>): $<cost>, out <k>, cache write <k>, cache read <k>, model <min> min, wall <h> h
 Estimate est0: <line from the BACKLOG Details entry | none>   Ratio: <actual/est0>
 Self-retro (<= 5 lines): <what cost tokens without moving an acceptance line>

@@ -22,15 +22,15 @@ Updated: 2026-11-27
 | Progress | Rows |
 |---|---:|
 | Done | 79 / 114 |
-| Review | 0 |
-| In progress | 6 |
+| Review | 1 |
+| In progress | 5 |
 | Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 23 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 79/114 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-135 Profile id by content hash; 3D-136 Coordinator rotation; 3D-137 Ledger + daily report; 3D-138 Async owner answers; 3D-40 geo-render model3d; 3D-41 Remote kernel port.
+**Running:** 3D-135 Profile id by content hash; 3D-136 Coordinator rotation; 3D-138 Async owner answers; 3D-40 geo-render model3d; 3D-41 Remote kernel port.
 
 ```mermaid
 flowchart TB
@@ -116,6 +116,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D137["🔍 🔧 3D-137 Ledger + daily report"]
   end
   subgraph ready["READY"]
     D48["▶️ 🔗 3D-48 SC: apps/3dqm host"]
@@ -146,7 +147,6 @@ flowchart TB
     D134["💡 🔗 3D-134 SC: vendor 3D-24 schemas"]
     D135["🚧 🖥️ 3D-135 Profile id by content hash"]
     D136["🚧 🔧 3D-136 Coordinator rotation"]
-    D137["🚧 🔧 3D-137 Ledger + daily report"]
     D138["🚧 🔧 3D-138 Async owner answers"]
     D25["💡 🧪 3D-25 E2E on mock"]
   end
@@ -447,7 +447,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-134 | SC: vendor the `model3d` schemas of 3D-24 (`approval-request`, `approval`, `export-request`, `export-result`; error `NOT_APPROVABLE`, D-455, D-456) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 24, 45 | G5 | S | mirror | proposed |
 | 3D-135 | Tolerance profile identity by content: the service sets `toleranceProfileId` = `sha256:<hex>` of the canonical profile for every import, so a profile without `id` imports and a changed profile under one label gets a new id | here | service, contracts | 133 | G5 | S | service | in-progress (D-474; wp/3d-135-tolerance-id) |
 | 3D-136 | Coordinator rotation: `coordinator-handover` skill, handover and history files (proposal part D, D-475) | here | .claude/skills, AGENTS.md, docs/coordination | 00 | G0 | S | tooling | in-progress (D-475; wp/3d-136-coordinator-handover) |
-| 3D-137 | Ledger written once at merge + scripted daily report (proposal parts A, B, D-475) | here | .claude/skills/merge-wp, tools, docs/metrics | 86 | G0 | M | tooling | in-progress (D-475; wp/3d-137-ledger-report) |
+| 3D-137 | Ledger written once at merge + scripted daily report (proposal parts A, B, D-475) | here | .claude/skills/merge-wp, tools, docs/metrics | 86 | G0 | M | tooling | review (D-475, D-3D137-1; local, PR not requested) |
 | 3D-138 | Owner answers that arrive hours later: risk-based provisional decisions, RISKS.md, handover above ~150k, QUESTIONS.md (proposal part C, D-475) | here | AGENTS.md, .claude/skills/wp-session, docs | 136 | G0 | S | tooling | in-progress (D-475; wp/3d-138-async-answers) |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 133, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |

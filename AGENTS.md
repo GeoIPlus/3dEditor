@@ -120,7 +120,7 @@ audit PDF are background only. Read source specs with an offset by section, neve
 | `docs/specs/*` | spec WPs; others only through intake | spec defect found -> question, not silent edit |
 | `.agent/checkpoints/3D-<id>.md` | the WP's session only | every stop, handoff and finish |
 | `docs/CHORES.md` | any session, fast lane only (D-26) | one line per chore |
-| `docs/metrics/LEDGER.md` | every session (own row); coordinator (final figures, proposals) | pause, finish, merge (§7.7) |
+| `docs/metrics/LEDGER.md` | coordinator (WP rows `final` at merge, own rows at rotation, proposals); WP session (own row at finish) | finish, merge (§7.7) |
 | module `README.md` | the WP that changes the module | public API, protection, status, source revision |
 | `docs/source/*` | nobody | read-only; corrections are recorded in DECISIONS.md |
 
@@ -152,8 +152,8 @@ keep what holds up.**
 6. **Stable prefix.** AGENTS.md, CLAUDE.md and skills change rarely, in batches, with the owner's approval: each change
    invalidates the prompt cache for every following session.
 7. **Budgets from data (D-236).** Every session measures its own cost and tokens from its `result` events and writes
-   them into [docs/metrics/LEDGER.md](docs/metrics/LEDGER.md) and its checkpoint, at every pause and finish; the
-   coordinator re-reads the final figures at merge. Every row carries an estimate (`est0`) from the ledger, the
+   them into [docs/metrics/LEDGER.md](docs/metrics/LEDGER.md) and its checkpoint at finish (not at pauses); the
+   coordinator writes the `final` row once at merge (`check:docs` fails a merge commit without it, 3D-137). Every row carries an estimate (`est0`) from the ledger, the
    coordinator records the actual and keeps the backlog forecast (ETC) current. Method, fields and formulas:
    [docs/metrics/README.md](docs/metrics/README.md). Stop rules are in §3; no number is guessed (`TBD` or `prior`).
 8. **Instruction changes are measured** with the agent evals (3D-28): run each task at least twice and look at which tasks
