@@ -28,3 +28,8 @@ Rules [D: D-475]:
 
 | Risk | Date | Status | Decision | By |
 |---|---|---|---|---|
+| R-138-1 | 2026-11-27 | confirmed | D-3D138-1 | Owner, dialog, WP session 3D-138 |
+| R-138-2 | 2026-11-27 | confirmed | D-3D138-2 | Owner, dialog, WP session 3D-138 |
+| R-138-3 | 2026-11-27 | confirmed | D-3D138-3 | Owner, dialog, WP session 3D-138 |
+| R-138-4 | 2026-11-27 | confirmed | D-3D138-4 | Owner, dialog, WP session 3D-138 |
+| R-138-5 | 2026-11-27 | confirmed | D-3D138-5 | Owner, dialog, WP session 3D-138 |
