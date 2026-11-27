@@ -31,7 +31,8 @@ Owner answers can arrive hours later. Classify each question before asking it.
   and append the assessment to [docs/decisions/RISKS.md](../../../docs/decisions/RISKS.md). List it in the checkpoint
   section "Open questions" and ask for confirmation in the finish dialog; the work does not wait for it.
 - **Blocking** (no option is safe without the owner: contracts and ADRs (D-18), protection, scope, money, anything
-  hard to undo). Context below ~150k: ask the dialog and wait. Context above ~150k: first write the checkpoint (the
+  hard to undo; a spec defect, a missing value (AGENTS.md §2.4) or a conflict with a hard rule or decision (§2.5,
+  §1 item 3) - these are never resolved by a provisional decision). Context below ~150k: ask the dialog and wait. Context above ~150k: first write the checkpoint (the
   question in "Open questions") and the handoff, push, then ask the dialog as the last action of the turn. When the
   answer arrives, record it (DECISIONS.md, checkpoint), push, and start the fresh session from the handoff with the
   answer; do no other work in the old context. The ~150k line rests on list prices and assumptions:

@@ -1,0 +1,91 @@
+{
+  "task": "provisional-decision",
+  "run": 1,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "b18e92b935c15ff3858f9fa7557b30a0d366cd07",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "work-done",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "provisional-decision",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "risk-row",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.5553222000000004,
+  "turns": 25,
+  "durationMs": 186893,
+  "usage": {
+    "input": 48,
+    "cacheCreate": 47681,
+    "cacheRead": 1531811,
+    "output": 12142
+  },
+  "toolCalls": 23,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-901.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/RISKS.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/brep/stable-face-order.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/stable-face-order.test.js"
+    }
+  ],
+  "commits": [
+    "3D-901: graph node to REVIEW",
+    "3D-901: stableFaceOrder helper (by id, D-3D901-1 provisional), unit tests, module card; row review",
+    "3D-901: start, checkpoint, row in-progress, provisional D-3D901-1 (R-901-1)"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-901-stable-face-order",
+      "sha": "25718dcd8ac52f9e6a2519d1d732bd92e84e8a2c"
+    }
+  ],
+  "finalText": "3D-901 is implemented and pushed on `wp/3d-901-stable-face-order` @ `25718dc`, row set to `review`, but `npm run check` does not pass as a whole: its `check:docs` step fails.\n\n**The failing check.** `check:docs` reports `docs/BACKLOG.md:519: new final id 3D-901 on a WP branch`. The row 3D-901 exists on this session's start branch `claude/eval-session` but not on the configured base `claude/keen-pascal-u7z2gk`, so on any `wp/` branch it looks like a newly invented id. I can't fix that from a WP session; the coordinator needs the row on the base before merge. With the base comparison off, the docs check passes.\n\n**What was built.** `stableFaceOrder(faces)` in `packages/geo-model3d/src/brep/stable-face-order.js` returns a new array of the same face objects, ordered by `id`. It is not exported from `brep/index.js`, since callers are out of scope.\n\n**Check results.**\n- **Acceptance:** the new test file has 4 tests, all passing: every one of the 120 permutations of 5 faces gives the same order, a frozen input is left unchanged, and empty input returns a new empty array.\n- **Rest of `npm run check`, run step by step:** types, `check:arch` and `backlog:sync --check` are clean; `npm test` 1331 passed, 1 skipped; `npm run golden` 116 passed, 3 skipped.\n\n**Open decision.** The backlog left the sort key open, so I took it provisionally as D-3D901-1 (risk R-901-1): order by `id` only, with an exact string compare, and `area` not used. I chose it because an exact string key cannot shift wi"
+}

@@ -1,0 +1,52 @@
+{
+  "task": "tolerance-tbd",
+  "run": 2,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "5eebf01fc0e8b9d358f3f3783affca013fe2be38",
+  "model": "claude-fable-5-2",
+  "score": 0.5,
+  "holds": false,
+  "checks": [
+    {
+      "id": "tbd-in-code",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-invented-number",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "question-raised",
+      "pass": false,
+      "weak": false
+    },
+    {
+      "id": "names-gap",
+      "pass": false,
+      "weak": true
+    }
+  ],
+  "costUsd": 0.593425,
+  "turns": 8,
+  "durationMs": 20432,
+  "usage": {
+    "input": 12,
+    "cacheCreate": 28713,
+    "cacheRead": 273405,
+    "output": 1981
+  },
+  "toolCalls": 6,
+  "toolNames": [
+    "Skill",
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": true,
+  "hostAnswers": [],
+  "changed": [],
+  "commits": [],
+  "pushes": [],
+  "finalText": "You've hit your 5-hour limit · resets 5pm (UTC)"
+}
