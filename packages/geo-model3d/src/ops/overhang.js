@@ -1,12 +1,12 @@
 // ops (3D-19): overhang topology of SET_OVERHANG (D-336, D-337) - shared by SET_OVERHANG and SET_HEIGHT EAVE.
 // At a structural eave A -> B of roof face R over wall W, with end walls GA (at A) and GB (at B):
 //   strip  RoofSurface + OVERHANG, plane of R:          B -> A -> oA -> oB
-//   soffit OuterCeilingSurface + OVERHANG, z = zs:       oB -> oA -> sA -> sB
+//   soffit OuterCeilingSurface + OVERHANG, level:        oB -> oA -> sA -> sB
 //   capA / capB WallSurface + OVERHANG, plane of GA/GB:  oA -> A -> sA  /  B -> oB -> sB
 // W's top edge B -> A becomes sB -> sA; GA and GB get the collinear vertices sA, sB (no T-junction).
 // Planes are primary (D-08): the outer edge is strip ∩ soffit ∩ cap, so the width in plan is carried by the soffit
-// height; oA, oB, sA, sB are derived from three planes. A and B keep only two independent planes (R, GA / GB) and
-// become EXPLICIT at R ∩ W ∩ G (spec §4 r3; definingFaceIds must be incident faces, brep checkTopology) - a recorded
+// plane (through the outer edge at both corners, D-3D131-1); oA, oB, sA, sB are derived from three planes. A and B
+// keep only two independent planes (R, GA / GB) and become EXPLICIT at R ∩ W ∩ G (spec §4 r3; definingFaceIds must be incident faces, brep checkTopology) - a recorded
 // limitation for other rows' operations (D-341). The width is recovered from the geometry (signed distance of oA
 // from W); a removed overhang hands its ids back so a rebuild adds no new entities.
 import { derivePoint, signedDistance } from '../brep/index.js';
@@ -119,12 +119,11 @@ export function addOverhang(d, hId, width, ctx, reuse) {
   const V = { normal: W.supportPlane.normal, d: W.supportPlane.d - width };
   const pA = derivePoint([R.supportPlane, V, GA.supportPlane], eps)?.p, pB = derivePoint([R.supportPlane, V, GB.supportPlane], eps)?.p;
   if (!pA || !pB) return corner('roof, overhang line and end wall do not meet in a point');
-  const zs = pA[2];
   const geo = (/** @type {string} */ why) => refuse('INVALID_GEOMETRY', [hId], why);
-  if (Math.abs(pB[2] - zs) > tol.zAlignTolM) return geo('eave is not horizontal');
-  if (!(zs < d.vertices[A].p[2] - eps)) return geo('the roof does not descend outward over the eave');
-  const below = [wn, wp].map((x) => (x === wn ? d.halfEdges[wn.nextId].startVertexId : wp.startVertexId));
-  if (below.some((v) => !(d.vertices[v].p[2] < zs - tol.minEdgeLengthM))) return geo('soffit at or below the next wall vertex');
+  if (Math.abs(pB[2] - pA[2]) > tol.zAlignTolM) return geo('eave is not horizontal');
+  if (!(pA[2] < d.vertices[A].p[2] - eps) || !(pB[2] < d.vertices[B].p[2] - eps)) return geo('the roof does not descend outward over the eave');
+  const below = [d.halfEdges[wn.nextId].startVertexId, wp.startVertexId];
+  if (below.some((v, i) => !(d.vertices[v].p[2] < [pA, pB][i][2] - tol.minEdgeLengthM))) return geo('soffit at or below the next wall vertex');
 
   const id = (/** @type {keyof Slots | string} */ k, /** @type {string} */ kind) => (reuse ? (/** @type {any} */ (reuse)[k] ?? reuse.he[k]) : ctx.ids(kind));
   /** @type {Slots} */
@@ -133,7 +132,7 @@ export function addOverhang(d, hId, width, ctx, reuse) {
     oA: id('oA', 'vertex'), oB: id('oB', 'vertex'), sA: id('sA', 'vertex'), sB: id('sB', 'vertex'), he: {},
   };
   for (const k of ['t', 'a1', 'a2', 'a3', 'q0', 'q1', 'q2', 'q3', 'c0', 'c1', 'c2', 'd0', 'd1', 'd2', 'g1', 'g2']) s.he[k] = id(k, 'halfEdge');
-  const soffitPlane = { normal: /** @type {P3} */ ([0, 0, -1]), d: zs };
+  const soffitPlane = soffitThrough(pA, pB, W.supportPlane.normal, eps);
   const copy = (/** @type {Plane} */ p) => ({ normal: /** @type {P3} */ ([...p.normal]), d: p.d });
   const face = (/** @type {string} */ fid, /** @type {Plane} */ plane, /** @type {string} */ kind, /** @type {string} */ first, /** @type {any} */ extra = {}) => {
     d.faces[fid] = { ...extra, id: fid, outerLoopId: first, innerLoopIds: [], supportPlane: plane, surfaceKind: kind, tags: [OVERHANG] };
@@ -173,6 +172,21 @@ export function addOverhang(d, hId, width, ctx, reuse) {
   }
   h.edgeRole = 'EAVE'; d.halfEdges[H.t].edgeRole = 'EAVE';
   return { ok: true, faceIds: added };
+}
+
+/**
+ * Soffit plane through the outer edge pA -> pB, level across the overhang (contains W's horizontal normal) - D-3D131-1:
+ * the width in plan is exact at both corners; on an eave horizontal only within `zAlignTolM` the soffit follows the
+ * eave's height difference along it, on an exactly horizontal eave it is z = pA.z.
+ * @param {P3} pA @param {P3} pB @param {P3} nW @param {number} eps @returns {Plane}
+ */
+function soffitThrough(pA, pB, nW, eps) {
+  if (Math.abs(pB[2] - pA[2]) <= eps) return { normal: [0, 0, -1], d: pA[2] };
+  const e = [pB[0] - pA[0], pB[1] - pA[1], pB[2] - pA[2]], u = [nW[0], nW[1], 0];
+  let n = [e[1] * u[2] - e[2] * u[1], e[2] * u[0] - e[0] * u[2], e[0] * u[1] - e[1] * u[0]];
+  const len = Math.hypot(n[0], n[1], n[2]) * (n[2] > 0 ? -1 : 1);
+  n = n.map((x) => x / len);
+  return { normal: /** @type {P3} */ (n), d: -(n[0] * pA[0] + n[1] * pA[1] + n[2] * pA[2]) };
 }
 
 /** Write one loop: [half-edge id, start vertex] in order. @param {any} d @param {string} faceId @param {[string, string][]} loop */

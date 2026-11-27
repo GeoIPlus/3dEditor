@@ -455,6 +455,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-439 | 3D-124 accepted by the owner (chat, 2026-11-26); D-437 confirmed; branch wp/3d-124-overhang-rebuild handed to the coordinator for the merge | Owner, chat, 2026-11-26 (3D-124) |
 | D-440 | 3D-124 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-435..D-439, row 3D-131 | Owner, WP session 3D-124, 2026-11-26 |
 | D-441 | Row 3D-131 (overhang width at both outer corners on a near-horizontal eave) set `ready` by the owner (chat in WP session 3D-124); started by the coordinator in a fresh session on wp/3d-131-overhang-corners after the 3D-124 merge | Owner, WP session 3D-124, 2026-11-26 |
+| D-3D131-1 | 3D-131 (refines D-336 "horizontal soffit"): the soffit is one plane through the outer overhang edge at the requested width in plan at both corners, level across the overhang (it contains the eave wall's horizontal normal); on an eave horizontal only within `zAlignTolM` it follows the eave's height difference along the eave (tilt at most `zAlignTolM` over the eave length), on an exactly horizontal eave it is z = const (GT-14 unchanged). The width in plan is exact at oA and oB; the refusal above `zAlignTolM` stays. Before: soffit at oA's height, width at oB off by (zB - zA) / tan(slope), worst case 1.7 cm at 30 deg [V: 1.1e-4 m on GT-20 after FIT_PLANE] | Owner, dialog, 2026-11-27 (3D-131) |
 
 ## Open questions
 

@@ -17,20 +17,20 @@ method and session data in [docs/metrics/](metrics/README.md) (D-236).
 
 ## Progress overview
 
-Updated: 2026-11-26
+Updated: 2026-11-27
 
 | Progress | Rows |
 |---|---:|
 | Done | 73 / 107 |
-| Review | 0 |
-| In progress | 5 |
+| Review | 1 |
+| In progress | 4 |
 | Ready | 6 |
 | Proposed (waiting for the owner to set `ready`) | 22 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 73/107 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-131 Overhang width at B; 3D-24 QC and export rules; 3D-74 val3dity image + binding; 3D-129 SC: INVALID_CRS schema; 3D-47 SC: 3D view port + host.
+**Running:** 3D-24 QC and export rules; 3D-74 val3dity image + binding; 3D-129 SC: INVALID_CRS schema; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -110,6 +110,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D131["🔍 ⚙️ 3D-131 Overhang width at B"]
   end
   subgraph ready["READY"]
     D74["🚧 🖥️ 3D-74 val3dity image + binding"]
@@ -130,7 +131,6 @@ flowchart TB
     D107["💡 📐 3D-107 ADR: shared plane"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
     D125["💡 ⚙️ 3D-125 Dormers follow roof"]
-    D131["🚧 ⚙️ 3D-131 Overhang width at B"]
     D130["💡 ⚙️ 3D-130 Metric change detection"]
     D100["💡 ⚙️ 3D-100 Installation size from cloud"]
     D33["💡 ⚙️ 3D-33 Inter-building validation (P1)"]
@@ -394,7 +394,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-126 | `REGULARIZE_FOOTPRINT`: stated algorithm agreed with the owner, then code (D-340, D-389) | here | geo-model3d/ops | 19, 114 | G4 | M | kernel | done (D-426; merged into base, no PR; D-417..D-425) |
 | 3D-115 | Parametric geometry dependency management: ADR 3D-ADR-0010 (parent / dependent links, detach - solve - rebuild in the pipeline; split D-386) | here | docs/decisions/adr | 15, 17, 18, 19 | G4 | S | spec | done (D-388; ADR 3D-ADR-0010; merged into base, no PR; D-383..D-387) |
 | 3D-124 | Overhang rebuild after a parent change: detach - solve - rebuild in the pipeline, replacing the D-367 refusal (D-384, D-385) | here | geo-model3d/ops | 115, 114, 117, 19, 120 | G4 | M | kernel | done (D-440; merged into base, no PR; D-435..D-439) |
-| 3D-131 | Overhang width in plan at both outer corners on an eave that is horizontal only within `zAlignTolM` (D-336) | here | geo-model3d/ops | 124, 19 | G4 | S | kernel | in-progress (D-441; wp/3d-131-overhang-corners) |
+| 3D-131 | Overhang width in plan at both outer corners on an eave that is horizontal only within `zAlignTolM` (D-336) | here | geo-model3d/ops | 124, 19 | G4 | S | kernel | review (local, PR not requested; wp/3d-131-overhang-corners; D-3D131-1) |
 | 3D-125 | Dormers follow their roof face; explicit `components` record in the model contract (D-383) | here | geo-model3d/ops, contracts/model3d | 124, 20 | G4 | M | kernel | proposed |
 | 3D-116 | F-53 geometric metrics: main / overhang / total volume, roof, overhang and soffit area as a kernel result (D-342, Q-31) | here | geo-model3d, contracts | 19 | G4 | M | kernel | done (D-416; merged into base, no PR; D-412..D-415) |
 | 3D-130 | Automatic metric change detection: `patch.affectedMetrics` from a before / after `computeMetrics` comparison (PREVIEW, COMMIT, inverse patch, Undo / Redo; D-415, Q-31) | here | geo-model3d/ops, geo-model3d/brep, contracts | 116 | G4 | M | kernel | proposed |
@@ -1068,7 +1068,7 @@ accuracy ratio 1.30 is n=1 and not applied.
   Scope out: the 3D-124 rebuild (it uses `addOverhang` unchanged), dormers.
 - Accept: on GT-20 + FIT_PLANE + 0.6 m overhang the width in plan at oA and oB matches the owner's rule (test), the
   3D-124 FIT_PLANE test tightened from 2e-4 m accordingly; 3D-19 / 3D-124 tests pass; `npm run check`, golden.
-- Decisions: D-336, D-337, D-384, D-438  Open: the rule (owner dialog in the WP session)
+- Decisions: D-336, D-337, D-384, D-438, D-3D131-1  Open: none (rule decided by D-3D131-1)
 - Estimate: $3.25 (p80 $3.93), model time TBD; basis: S kernel n=5
 
 ### 3D-125 Dormers follow their roof face

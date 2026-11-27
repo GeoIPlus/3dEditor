@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { readFixture, deepFreeze } from '../brep/helpers.js';
 import { exec, sameGeometry } from './envelope.helpers.js';
 import { run, command } from './helpers.js';
+import { overhangsOf } from '../../src/ops/dependents.js';
 import { withOverhang, follows, refusedUnchanged, overhangIds, S, N, WIDTH } from './overhang-rebuild.helpers.js';
 
 const points = Float64Array.from(readFixture('GT-20', 'input.points.json').points.flat()).map((c, i) => (i % 3 === 2 ? c + 0.3 : c));
@@ -37,12 +38,13 @@ describe('3D-124: rebuild after the operations of other rows', () => {
     follows(m, exec(m, 'EXTEND_FACE', { faceId: 'f-roof-s', edgeId, targetFaceId: 'f-roof-n' }));
   });
 
-  it('FIT_PLANE (3D-71) on GT-20: the same result as SET_OVERHANG on the fitted roof (width at B within the D-336 eave tolerance)', () => {
+  it('FIT_PLANE (3D-71) on GT-20: the same result as SET_OVERHANG on the fitted roof, width exact at both corners (D-3D131-1)', () => {
     const m = withOverhang([S], 'GT-20');
     const out = run(m, command(m, 'FIT_PLANE', FIT), { points });
-    // the fitted eave is horizontal within zAlignTolM only; the soffit is at oA's height (overhang.js), so the width
-    // at oB differs by 1.1e-4 m - a property of the 3D-19 construction, the same on SET_OVERHANG
-    follows(m, out, 2e-4);
+    // the fitted eave is horizontal within zAlignTolM only (before 3D-131 the width at oB was off by 1.1e-4 m)
+    const f = overhangsOf(out.model)[0].f;
+    expect(Math.abs(out.model.vertices[f.oA].p[2] - out.model.vertices[f.oB].p[2])).toBeGreaterThan(1e-6);
+    follows(m, out);
     const plain = readFixture('GT-20', 'input.model.json');
     const fitted = run(plain, command(plain, 'FIT_PLANE', FIT), { points }).model;
     sameGeometry(out.model, exec(fitted, 'SET_OVERHANG', { eaveEdgeIds: [S], overhangM: WIDTH }).model);
