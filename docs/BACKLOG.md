@@ -23,14 +23,14 @@ Updated: 2026-11-27
 |---|---:|
 | Done | 79 / 114 |
 | Review | 0 |
-| In progress | 6 |
+| In progress | 7 |
 | Ready | 5 |
-| Proposed (waiting for the owner to set `ready`) | 23 |
+| Proposed (waiting for the owner to set `ready`) | 22 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 79/114 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-135 Profile id by content hash; 3D-136 Coordinator rotation; 3D-137 Ledger + daily report; 3D-138 Async owner answers; 3D-40 geo-render model3d; 3D-41 Remote kernel port.
+**Running:** 3D-134 SC: vendor 3D-24 schemas; 3D-135 Profile id by content hash; 3D-136 Coordinator rotation; 3D-137 Ledger + daily report; 3D-138 Async owner answers; 3D-40 geo-render model3d; 3D-41 Remote kernel port.
 
 ```mermaid
 flowchart TB
@@ -143,7 +143,7 @@ flowchart TB
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D132["💡 🖥️ 3D-132 Return for rework"]
-    D134["💡 🔗 3D-134 SC: vendor 3D-24 schemas"]
+    D134["🚧 🔗 3D-134 SC: vendor 3D-24 schemas"]
     D135["🚧 🖥️ 3D-135 Profile id by content hash"]
     D136["🚧 🔧 3D-136 Coordinator rotation"]
     D137["🚧 🔧 3D-137 Ledger + daily report"]
@@ -444,7 +444,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110, 128 | G5 | M | kernel | done (D-461; merged into base, no PR; D-450..D-460) |
 | 3D-132 | Return for rework with a comment: reviewer (not an author) records a return on the head version (spec §11 r2; v0.3 §8.5) | here | service | 24 | G5 | S | service | proposed |
 | 3D-133 | Service import: `IMPORT_BUILDING` from the input dataset (`datasets.read`), `putBaseline`, keep the source CityJSON and the `progress.save` save basis for the export source port of 3D-24 | here | service | 24, 128 | G5 | M | service | done (D-472; merged into base, no PR; D-467..D-471) |
-| 3D-134 | SC: vendor the `model3d` schemas of 3D-24 (`approval-request`, `approval`, `export-request`, `export-result`; error `NOT_APPROVABLE`, D-455, D-456) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 24, 45 | G5 | S | mirror | proposed |
+| 3D-134 | SC: vendor the `model3d` schemas of 3D-24 (`approval-request`, `approval`, `export-request`, `export-result`; error `NOT_APPROVABLE`, D-455, D-456) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 24, 45 | G5 | S | mirror | in-progress (D-476; SC session) |
 | 3D-135 | Tolerance profile identity by content: the service sets `toleranceProfileId` = `sha256:<hex>` of the canonical profile for every import, so a profile without `id` imports and a changed profile under one label gets a new id | here | service, contracts | 133 | G5 | S | service | in-progress (D-474; wp/3d-135-tolerance-id) |
 | 3D-136 | Coordinator rotation: `coordinator-handover` skill, handover and history files (proposal part D, D-475) | here | .claude/skills, AGENTS.md, docs/coordination | 00 | G0 | S | tooling | in-progress (D-475; wp/3d-136-coordinator-handover) |
 | 3D-137 | Ledger written once at merge + scripted daily report (proposal parts A, B, D-475) | here | .claude/skills/merge-wp, tools, docs/metrics | 86 | G0 | M | tooling | in-progress (D-475; wp/3d-137-ledger-report) |
