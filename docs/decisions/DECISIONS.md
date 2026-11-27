@@ -480,6 +480,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D133-3 | Import route `POST /api/projects/{p}/buildings/{b}/import`, new contract `import-request` (empty object; approved by D-3D133-5), reply `201 import-report`; a building with a baseline -> `409 VERSION_CONFLICT`, baseline unchanged; operator role and the building's CP lease (`X-3DQM-Lease`), as for commands | Owner, dialog, 2026-11-27 (3D-133) |
 | D-3D133-4 | The building's source (document, `progress.save` ref, basis) is kept persistently over the history's append-only object store (adapter `createStoreSources`): document content-addressed, source written once, each `SAVED` tag a new generation; nothing overwritten (D-84, D-85) | Owner, dialog, 2026-11-27 (3D-133) |
 | D-3D133-5 | The `import-request` contract shape is approved (D-18): empty object, building in the route, reply `201 import-report`, repeat `409 VERSION_CONFLICT`, datasets only from the `buildings` port; D-3D133-3 no longer proposed | Owner, dialog, 2026-11-27 (3D-133) |
+| D-3D133-6 | Tolerance profile identity: the service always writes `building-model.toleranceProfileId` = `sha256:<hex>` of the canonical tolerance profile (the 14 tolerances, `id` excluded), never the label; contract shape unchanged, field description to be approved with row 3D-133.1 (D-18). Reason: the label is optional in `tolerance-profile` and does not change when the numbers do | Owner, dialog, 2026-11-27 (3D-133) |
 
 ## Open questions
 
