@@ -1,0 +1,7 @@
+{
+  "valid": [{}],
+  "invalid": [
+    { "why": "the dataset is resolved by the service, never named by the client (D-467)", "instance": { "inputRef": "ds-input" } },
+    { "why": "not an object", "instance": [] }
+  ]
+}
