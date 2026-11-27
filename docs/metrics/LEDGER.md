@@ -118,3 +118,4 @@ From efficiency reviews (README §5). Status: `open`, `adopted (D-NN)`, `rejecte
 | 2026-11-26 | 3D-110, session_01RNYuqGbVqbWtGTf3ZLpZXW | P1-P3 in .agent/checkpoints/3D-110.md (efficiency review) | see checkpoint | open |
 | 2026-11-26 | 3D-116, session_01RNYuqFijt1dWVmijVtc519 | P1-P3 in .agent/checkpoints/3D-116.md (efficiency review) | see checkpoint | open |
 | 2026-11-27 | 3D-131 | session_01RNYuqFMAqsBQj9W73mLSZp | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - (not due: calibration count over 10, no trigger measurable) | newest result page empty at the finish (worker restarted once); coordinator re-reads at merge |
+| 2026-11-27 | 3D-135 | session_01RNYuqJtaJVu5gYrTY5YPQE | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - (not due: calibration count >= 10, no trigger measurable) | no `result` event at the finish (first turn, worker restarted once; two pages read); coordinator re-reads at merge |

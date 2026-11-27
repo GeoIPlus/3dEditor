@@ -7,7 +7,7 @@
   approval), export gate, batch export, serving route of delivered bytes, `sources` port (3D-24); service import,
   `buildings` port, store adapter of `sources` (3D-133); S3 store: 3D-111
 - Protection: P4 (server-only host of the kernel; never in a browser bundle)
-- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API), 3D-110 (handler, server, auth), 3D-128 (datasets), 3D-74 (val3dity adapter), 3D-24 (QC, export), 3D-133 (import)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
+- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API), 3D-110 (handler, server, auth), 3D-128 (datasets), 3D-74 (val3dity adapter), 3D-24 (QC, export), 3D-133 (import), 3D-135 (tolerance id)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
 - Source/donor: new; LAS layout from the ASPRS LAS Specification 1.4 R15 (2019); COPC layout from the COPC 1.0
   specification (copcio/copcio.github.io @a6336f7)
 - Runtime dependencies: `laz-perf` 0.0.7 (Apache-2.0, WASM; LAZ chunk decoder only), [3D-ADR-0009](../../docs/decisions/adr/3D-ADR-0009-copc-laz-decoder.md);
@@ -86,8 +86,9 @@ No `index.js` yet; a host imports `src/handler.js` (GV test host, 3D-50) and the
   (none -> `404`, not JSON -> `400`) -> basis from the `progress.save` read (D-430) -> kernel `importBuilding`
   (`ImportError` -> its code; `INVALID_CRS` via `failureReply`) -> `sources.put` -> `putBaseline` (the commit point;
   lost race -> `409`) -> `201 import-report`. A source left by a failed or a concurrent attempt is reused, so a baseline never lacks
-  its source. The kernel import needs `toleranceProfile.id` (optional in the contract): hosts give profiles with
-  an id. `src/ports/buildings.js` - `BuildingsPort { locate(p, b) -> { inputRef, cityObjectId?, saveRef } |
+  its source. The model's `toleranceProfileId` is the content id of the profile (3D-135, D-473; `src/tolerance-id.js`,
+  rule and test vector in [contracts/model3d/README.md](../../contracts/model3d/README.md)), so a profile without `id`
+  imports; a profile missing a tolerance is a host defect (500). `src/ports/buildings.js` - `BuildingsPort { locate(p, b) -> { inputRef, cityObjectId?, saveRef } |
   undefined }`; `src/adapters/memory-buildings.js` - `createMemoryBuildings()` (`set`).
 - `src/commit.js` - `createCommitService({ history, toleranceProfile, clock, newOperationId?, pointsFor? })` ->
   `{ commit(command, { actorId }, lookup?), status(projectId, commandId), execute(model, command), history }`;
@@ -244,5 +245,7 @@ settle and damage. `test/results.test.js`: the Operaflow scenarios (`format/test
 GT-I1 counts; second import -> 409 with baseline and source unchanged; export `If-Match` = the import's `progress.save`
 read tag, then the own last save; absent -> `If-None-Match: *`; `progress.save` = input -> the input tag; source
 survives a new handler on one store; refusals (role, lease, body, unknown building, missing / malformed input,
-missing CityObject, unconfigured) change nothing. `test/sources.test.js`: both `sources` adapters, store keys.
+missing CityObject, unconfigured) change nothing. `test/tolerance-id.test.js` (3D-135): the canonical form and
+its test vector, label / key order -> same id, each changed tolerance -> another id, partial profile throws; GT-I1
+imported with a profile without `id` -> 201, model id = the vector. `test/sources.test.js`: both `sources` adapters, store keys.
 Golden GT-20 / GT-21 run on the kernel functions (`packages/geo-model3d/test/golden/`).

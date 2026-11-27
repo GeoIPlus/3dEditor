@@ -1,10 +1,12 @@
 // Service import of one building (3D-133; spec §6, §11; v0.3 §5; D-467..D-470): the CP document's input dataset
 // (`buildings.locate` -> `datasets.read`) -> kernel `importBuilding` -> source kept for export (`sources.put`: the
 // document, the `progress.save` ref and the basis of its read, D-430) -> `putBaseline`, the commit point (version 0).
-// A building with a baseline is not imported again: 409, nothing changed. The source is written before the baseline,
+// `toleranceProfileId` is the content id of the profile (tolerance-id.js, D-473). A building with a baseline is not
+// imported again: 409, nothing changed. The source is written before the baseline,
 // so a baseline never lacks a source; a source left by a failed attempt is the one the next import uses.
 import { importBuilding } from '@geoiplus/geo-model3d';
 import { errorReply } from './errors.js';
+import { toleranceProfileId } from './tolerance-id.js';
 
 /**
  * @typedef {object} ImportDeps
@@ -68,10 +70,12 @@ export function createImport(deps) {
     if (!loc) return errorReply('NOT_FOUND', [b], 'the CP document names no such building');
     const src = await sourceFor(p, b, loc);
     if ('reply' in src) return src.reply;
+    const toleranceProfile = deps.toleranceProfile(p);
     let out;
     try {
+      // the model names its tolerances by content, never by the profile's label (D-473)
       out = importBuilding({ cityjson: src.cityjson, cityObjectId: loc.cityObjectId ?? b, buildingId: b, projectId: p,
-        toleranceProfile: deps.toleranceProfile(p), originalSourceRef: loc.inputRef });
+        toleranceProfile, toleranceProfileId: toleranceProfileId(toleranceProfile), originalSourceRef: loc.inputRef });
     } catch (err) {
       if (isImportError(err)) return errorReply(/** @type {any} */ (err).code, [b], /** @type {Error} */ (err).message);
       throw err;  // INVALID_CRS and failures: failureReply (errors.js)

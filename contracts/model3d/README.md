@@ -61,6 +61,20 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
   `remove-details.maxAreaM2` (D-326) and `maxDisplacementM` (D-330), and the optional `command-result.candidates` (D-325).
   3D-110 (D-406) added the error code `INVALID_CRS` (422) with `details.crsReason`. 3D-24 (D-456) adds `NOT_APPROVABLE`
   (422) with `details.approvalReason` and the four schemas of rows 19-22 (D-455); approved by the owner (D-458).
+  3D-135 (D-473) states the form of `building-model.toleranceProfileId` in its description; shape unchanged.
+
+### Tolerance profile id (3D-135, D-473)
+`toleranceProfileId` = `sha256:` + lower-case hex SHA-256 of the UTF-8 bytes of the canonical JSON of the profile:
+an object of exactly the members in `tolerance-profile` `required` (the 14 tolerances; `id` and nothing else
+excluded), keys sorted by UTF-16 code units, no whitespace, numbers in the ECMAScript `Number::toString` form
+(`JSON.stringify`; the RFC 8785 number form: `1.0` -> `1`, `1e-9` -> `1e-9`). The label does not enter the id: the same
+numbers under any or no label give one id; any changed number gives another. Implementation:
+`services/kernel/src/tolerance-id.js`. Test vector, the D-13 defaults:
+
+```
+{"coplanarTolDeg":1,"exportRoundDecimals":3,"flatRoofTolDeg":1,"footprintAngleTolDeg":5,"heatmapBufferM":1,"minEdgeLengthM":0.05,"minFaceAreaM2":0.1,"numericEpsilon":1e-9,"planarTolM":0.02,"planeFitMinInlierRatio":0.6,"planeFitMinPoints":30,"screenSnapPx":10,"topologySnapTolM":0.01,"zAlignTolM":0.01}
+sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7
+```
 
 ### Proposals accepted by the owner (D-75)
 

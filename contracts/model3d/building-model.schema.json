@@ -22,7 +22,7 @@
     "constraints": { "type": "object", "additionalProperties": { "$ref": "#/$defs/Constraint" } },
     "measurements": { "type": "object", "additionalProperties": { "$ref": "urn:geoiplus:schema:model3d-measurement:v1" } },
     "semantics": { "type": "object", "additionalProperties": { "$ref": "#/$defs/SemanticNode" } },
-    "toleranceProfileId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+    "toleranceProfileId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId", "description": "The tolerances the model was built with, by content (D-473): `sha256:` + lower-case hex SHA-256 of the canonical JSON of the 14 tolerance members of `tolerance-profile` (`id` excluded), written by the service at import; never the profile label. Canonical form and test vector: contracts/model3d/README.md." },
     "originalSourceRef": { "type": "string", "description": "Reference to the original CityJSON (v0.2 B.2)." }
   },
   "required": ["schemaVersion", "projectId", "buildingId", "version", "state", "frame", "footprints", "constructionEntities", "vertices", "halfEdges", "faces", "shells", "solids", "roofComponents", "constraints", "measurements", "semantics", "toleranceProfileId"],
