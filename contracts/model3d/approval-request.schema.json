@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-approval-request:v1",
+  "title": "ApprovalRequest",
+  "description": "A reviewer marks the head version of a building `APPROVED` (v0.3 §8.1; spec §11 r8; D-450). Not a command: it makes no model version. The building is named by the route; the lease by the `X-3DQM-Lease` header (D-403, D-454).",
+  "$comment": "[P] Shape (D-455). `expectedVersion` is the version the reviewer saw: another head -> 409 VERSION_CONFLICT.",
+  "type": "object",
+  "properties": {
+    "expectedVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" }
+  },
+  "required": ["expectedVersion"],
+  "additionalProperties": false
+}

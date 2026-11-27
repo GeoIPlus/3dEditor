@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:model3d-export-result:v1",
+  "title": "ExportResult",
+  "description": "Reply of a batch export (D-453, D-455): the `export-report` and, per building that reached the save, its outcome: the save to its `progress.save` dataset (3D-ADR-0003 §4, D-430) and the delivered bytes (digest and `https` address without a secret, Operaflow group D). The client sends the delivery record from these (D-51).",
+  "$comment": "[P] Shape and names. `save.status` / `save.reason` are the codes of services/kernel results.js (3D-128); a KEPT building is not delivered and is listed as skipped in the report.",
+  "type": "object",
+  "properties": {
+    "report": { "$ref": "urn:geoiplus:schema:model3d-export-report:v1" },
+    "deliveries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "buildingId": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/EntityId" },
+          "modelVersion": { "$ref": "urn:geoiplus:schema:model3d-common:v1#/$defs/Version" },
+          "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 of the delivered bytes, lower-case hex." },
+          "address": { "type": "string", "format": "uri", "pattern": "^https://[^?#@]+$", "description": "Served by the service to a bearer token with a project role; no query string, credential or fragment." },
+          "save": {
+            "type": "object",
+            "properties": {
+              "status": { "enum": ["SAVED", "NOT_SAVED", "KEPT"] },
+              "reason": { "enum": ["NO_ENTITY_TAG", "PRECONDITION_FAILED"] }
+            },
+            "required": ["status"],
+            "additionalProperties": false,
+            "allOf": [
+              { "if": { "properties": { "status": { "const": "SAVED" } } }, "then": { "not": { "required": ["reason"] } } },
+              { "if": { "properties": { "status": { "const": "NOT_SAVED" } } }, "then": { "required": ["reason"], "properties": { "reason": { "const": "NO_ENTITY_TAG" } } } },
+              { "if": { "properties": { "status": { "const": "KEPT" } } }, "then": { "required": ["reason"], "properties": { "reason": { "const": "PRECONDITION_FAILED" } } } }
+            ]
+          }
+        },
+        "required": ["buildingId", "modelVersion", "save"],
+        "additionalProperties": false,
+        "if": { "properties": { "save": { "type": "object", "properties": { "status": { "const": "KEPT" } } } } },
+        "then": { "not": { "anyOf": [{ "required": ["digest"] }, { "required": ["address"] }] } },
+        "else": { "required": ["digest", "address"] }
+      }
+    }
+  },
+  "required": ["report", "deliveries"],
+  "additionalProperties": false
+}

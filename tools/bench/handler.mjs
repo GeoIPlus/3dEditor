@@ -49,7 +49,7 @@ async function main() {
     const handle = await handlerFor(sc.model);
     const url = `/api/projects/${encodeURIComponent(sc.model.projectId)}/commands`;
     const reqs = Array.from({ length: 20 }, (_, i) => ({ method: 'POST', url, headers: HEADERS, body: JSON.stringify(sc.command(i)) }));
-    const first = JSON.parse((await handle(reqs[0])).body);
+    const first = JSON.parse(String((await handle(reqs[0])).body));
     if (first.status !== 'PREVIEW') throw new Error(`${sc.id}: ${first.status ?? first.code} ${JSON.stringify(first.error ?? first.message)}`);
     for (let i = 0; i < warmup; i++) await handle(reqs[i % reqs.length]);
     /** @type {number[]} */

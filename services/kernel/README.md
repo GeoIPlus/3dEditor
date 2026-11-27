@@ -3,9 +3,10 @@
 - Status: implemented in part - points port and LAS-whole adapter (3D-22), COPC-by-box adapter (3D-70); `history` port,
   memory and file store, COMMIT path, command status (3D-23); command API: PREVIEW store, COMMIT by `previewId`, rate
   and size limits, error mapping, contract validation (3D-109); handler, HTTPS server, auth / lease, heatmap request
-  (3D-110); val3dity adapter of the `validate` port (3D-74); `datasets` port, memory and file byte store, save / deliver results (3D-128); S3 store: 3D-111
+  (3D-110); val3dity adapter of the `validate` port (3D-74); `datasets` port, memory and file byte store, save / deliver results (3D-128); QC (FINAL_VALIDATION request,
+  approval), export gate, batch export, serving route of delivered bytes, `sources` port (3D-24); S3 store: 3D-111
 - Protection: P4 (server-only host of the kernel; never in a browser bundle)
-- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API), 3D-110 (handler, server, auth), 3D-128 (datasets), 3D-74 (val3dity adapter)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
+- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API), 3D-110 (handler, server, auth), 3D-128 (datasets), 3D-74 (val3dity adapter), 3D-24 (QC, export)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
 - Source/donor: new; LAS layout from the ASPRS LAS Specification 1.4 R15 (2019); COPC layout from the COPC 1.0
   specification (copcio/copcio.github.io @a6336f7)
 - Runtime dependencies: `laz-perf` 0.0.7 (Apache-2.0, WASM; LAZ chunk decoder only), [3D-ADR-0009](../../docs/decisions/adr/3D-ADR-0009-copc-laz-decoder.md);
@@ -23,7 +24,12 @@ No `index.js` yet; a host imports `src/handler.js` (GV test host, 3D-50) and the
   string, `cache-control: no-store`). Routes (`src/routes.js`, D-404): `POST /api/projects/{p}/commands`
   (PREVIEW / COMMIT), `GET /api/projects/{p}/commands/{commandId}` (status), `POST /api/projects/{p}/heatmap`
   (`heatmap-request` -> `heatmap-result`), `GET /api/projects/{p}/buildings/{b}/model?version=N` (v0.2 D.1; head when
-  no version). Any other route or method -> `404`.
+  no version; `state` reads `APPROVED` when the version has an approval, D-450). 3D-24 (src/qc-routes.js):
+  `POST /api/projects/{p}/buildings/{b}/final-validation` (empty body -> `validation-report`),
+  `POST /api/projects/{p}/buildings/{b}/approval` (`approval-request` -> `approval`), `POST /api/projects/{p}/export`
+  (`export-request` -> `export-result`), `GET /api/projects/{p}/results/{sha256}` (delivered bytes,
+  `application/json`). Any other route or method -> `404`. Optional ports for 3D-24: `externalValidator` (3D-74),
+  `datasets`, `sources`, `publicBase`, `projectSettings` (`exportRequiresApproval`, default `false`, D-90).
 - `src/server.js` - `createKernelServer({ handler, tls: { key, cert } })`: Node `https` (3D-ADR-0002 A.4), no
   framework; `nodeListener(handler)` for a host's own server. TLS material comes from the deployment (ADR-OPS).
 - `src/ports/auth.js` - `AuthPort { authenticate(token) -> { actorId, roles } | undefined }`, `LeasesPort
@@ -61,6 +67,13 @@ No `index.js` yet; a host imports `src/handler.js` (GV test host, 3D-50) and the
   `deliveredAddress(publicBase, p, digest)` = `{publicBase}/api/projects/{p}/results/{sha256}` (https only, no
   credential, query or fragment; no pre-signed URL). Not wired into the handler: export action and the serving route
   are 3D-24's.
+- `src/qc.js` (3D-24) - `createQc({ history, toleranceProfile, clock, externalValidator? })` -> `{ modelAt(p, b, n),
+  finalValidation(p, b), approve(user, p, b, { expectedVersion }) }`; `passed(report)` = `isValidForTargetState` for
+  `VALID_SOLID`. `src/export.js` - `createExport({ history, datasets, sources, publicBase, toleranceProfile,
+  projectSettings? })` -> `{ exportBatch(p, { buildingIds }) }` -> `{ report, deliveries }`; `SKIP` reason keys [P].
+  `src/qc-routes.js` - the four routes above. `src/ports/sources.js` - `SourcesPort { source(p, b) -> { cityjson,
+  saveRef, basis } | undefined, saved(p, b, entityTag) }` (filled by service import, 3D-133);
+  `src/adapters/memory-sources.js` - `createMemorySources()` (`set`).
 - `src/commit.js` - `createCommitService({ history, toleranceProfile, clock, newOperationId?, pointsFor? })` ->
   `{ commit(command, { actorId }, lookup?), status(projectId, commandId), execute(model, command), history }`;
   replies `{ httpStatus, body }` with a contract `command-result`, `command-status` or `error` body.
@@ -144,8 +157,26 @@ No `index.js` yet; a host imports `src/handler.js` (GV test host, 3D-50) and the
 - Lease (D-69, D-403): the `X-3DQM-Lease` header must name the building's current `leaseRef` and `leaseEpoch` and
   the user must be its holder; missing or malformed header, no current lease, stale epoch or another holder -> `403
   FORBIDDEN` before anything is read or run (PREVIEW and COMMIT; a repeat of a stored COMMIT too). Nothing is stored.
-- Not yet enforced here: building outside the signed assignment (spec §11 r1, GT-23, 3D-25); QC / approve / export
-  roles (3D-24). The status route answers any `commandId` of the project to a user with a role.
+- Not yet enforced here: building outside the signed assignment (spec §11 r1, GT-23, 3D-25); the export request's
+  `buildingIds` are not checked against the assignment (3D-25). The status route answers any `commandId` of the
+  project to a user with a role.
+- QC (3D-24; spec §11 r8; D-450, -2, -5, -7): `FINAL_VALIDATION` runs on the head for target `VALID_SOLID`
+  (`validateModel`, `fullSolid`, external port); the first report of a version is stored at
+  `p/{p}/b/{b}/qc/{N}/final-validation.json` and a repeat returns it without calling the validator [A: deterministic
+  per model and validator]; a validator failure stores nothing (`503` for a read failure, else `500`); no port ->
+  `503`. Roles: operator and reviewer; no lease. Approval order: role `3dqm.qa` (`403`, before the body) -> body
+  `approval-request` -> lease (`403`) -> unknown building (`404`) -> `expectedVersion != head` (`409`) -> the reviewer
+  is the `actorId` of any journal entry (`403`; separation of duties is enforced here, the Operaflow format has none)
+  -> stored approval of the head returned (written once) -> head not `VALID_SOLID` / no passed stored report -> `422
+  NOT_APPROVABLE` (`details.approvalReason`) -> `qc/{N}/approval.json` create-if-absent. An approval makes no version
+  and no journal entry; the next commit makes version N+1 without a mark, so the building reads its snapshot state again.
+- Export (3D-24; spec §11 r9; D-453, D-457): reviewer only; per building of the request in order: unknown ->
+  skipped `unknownBuilding`; state (snapshot or `APPROVED`) not `VALID_SOLID` / `APPROVED` -> `notValidSolid`; with
+  `exportRequiresApproval` a `VALID_SOLID` -> `notApproved`; no passed stored report -> `noFinalValidation`; no source
+  -> `noSource`; `exportBuilding` on the source document -> bytes (`JSON.stringify`) -> `saveResult` on the source's
+  basis (`SAVED` -> `sources.saved`, the next basis; `NOT_SAVED` -> delivered with the reason; `KEPT` -> not delivered,
+  skipped `saveKept`) -> `deliverResult`. Any thrown failure skips that building with `failed`; earlier deliveries and
+  saves stay (D-84). One CityJSON file per building (the kernel writes one building per document, D-192).
 - Heatmap: changes nothing, needs no lease; no dataset opened for the building or unknown version -> `404`; dataset CRS
   on another datum (D-197) or without a projection (D-198) -> `422 INVALID_CRS` (also for FIT_PLANE points).
 - LAS whole: the whole file is held in memory (interim). COPC: only header, pages and meeting chunks are read.
@@ -184,6 +215,10 @@ LOCAL points, another datum -> `422 INVALID_CRS` `DATUM_MISMATCH` (heatmap and F
 400 / 401. `test/server.test.js`: COMMIT and status over a real TLS socket (openssl certificate made at test time),
 401 / 413 on a body above 1 MiB, no start without TLS material. Bench through the handler: `npm run bench:handler`
 (`tools/bench/handler.mjs`).
+`test/qc.test.js` (3D-24): FINAL_VALIDATION stored and repeated, DRAFT not passing, validator failure, approval role
+/ body / lease / 409 / 404 / 422 reasons / reviewer-author 403 / written once. `test/export.test.js`: gate reasons,
+`exportRequiresApproval`, reviewer only, 503 unconfigured, failure skips one building, SAVED basis, KEPT, NOT_SAVED,
+serving route. `test/gt-22.golden.test.js` (both stores), `test/gt-24.golden.test.js` (`npm run golden`).
 `test/datasets.test.js` (3D-128): the port contract suite `test/datasets-contract.js` (run by every `datasets`
 adapter, the CS adapter of 3D-63 too) on the memory and the file byte store: read with a strong tag, save with the
 current tag, stale / unknown / weak tag and missing dataset -> 412 with nothing written, `If-None-Match: *` creates once, concurrent saves on one tag,

@@ -104,6 +104,19 @@ export function historyContract(name, makeStore) {
       expect(await h.head(P, B)).toBe(1);
     });
 
+    it('QC records (3D-24): one FINAL_VALIDATION report and one approval per version, the first kept', async () => {
+      const { h } = await fresh();
+      expect(await h.readFinalValidation(P, B, 1)).toBeUndefined();
+      expect(await h.readApproval(P, B, 1)).toBeUndefined();
+      expect(await h.putFinalValidation(P, B, 1, { tag: 'fv-1' })).toEqual({ tag: 'fv-1' });
+      expect(await h.putFinalValidation(P, B, 1, { tag: 'fv-2' })).toEqual({ tag: 'fv-1' });
+      expect(await h.putApproval(P, B, 1, { actorId: 'r1' })).toEqual({ actorId: 'r1' });
+      expect(await h.putApproval(P, B, 1, { actorId: 'r2' })).toEqual({ actorId: 'r1' });
+      expect(await h.readApproval(P, B, 1)).toEqual({ actorId: 'r1' });
+      expect(await h.readApproval(P, B, 2)).toBeUndefined();
+      expect(await h.head(P, B)).toBe(1); // a QC record makes no version (D-450)
+    });
+
     it('the store never overwrites: create of an existing key is false and keeps the value', async () => {
       const store = await makeStore();
       expect(await store.create('a/b.json', { v: 1 })).toBe(true);

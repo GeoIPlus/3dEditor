@@ -119,6 +119,10 @@ copy [D] (D-37, 3D-ADR-0001). Internal kernel structures never leave the package
 | 16 | `export-report` | Batch export: exported buildings, skipped buildings with reason (§11) | v0.3 §8.4 |
 | 17 | `heatmap-request` | Heatmap request, not a command (changes nothing): `buildingId`, `modelVersion`, `selection` (`PointSelection`), optional `faceIds`, required `thresholdM` (§9 r6) | v0.3 §7; D-136 |
 | 18 | `metrics-result` | F-53 geometric metrics of one model version: footprint, roof plan, roof, overhang roof, soffit areas; main / overhang / total volume; `volumeStatus` FINAL / PROVISIONAL / NOT_AVAILABLE (§3; geometric only, v0.2 §16.5) | v0.2 F-53; D-412, D-413 |
+| 19 | `approval-request` | Reviewer's approval of the head version: `expectedVersion`; building in the route; not a command (§11 r8) | v0.3 §8.1; D-450, D-455 |
+| 20 | `approval` | Approval mark of one version: `projectId`, `buildingId`, `modelVersion`, `actorId`, `timestamp`; written once (§11 r8) | v0.3 §8.1; D-450, D-455 |
+| 21 | `export-request` | Batch export: `buildingIds` (§11 r9) | v0.3 §8.4; D-453, D-455 |
+| 22 | `export-result` | `export-report` + per-building save outcome and delivered bytes (digest, `https` address) (§11 r9) | 3D-ADR-0003 §4; D-455 |
 
 The 3DQM extension of the CP document (building list, roles, tolerance profile, endpoints) is an SC schema (3D-43; Q-03),
 not part of this list.
@@ -188,6 +192,7 @@ CP assignment lease applies [D] (D-69; amends D-13 for this field). The profile 
 | 413 | `PAYLOAD_TOO_LARGE` | Limit exceeded (limit `TBD`, Q-24) |
 | 422 | `UNDERCONSTRAINED_GEOMETRY`, `CONSTRAINT_CONFLICT`, `INVALID_TOPOLOGY`, `INVALID_GEOMETRY`, `INVALID_MEASUREMENT`, `UNSUPPORTED_FOOTPRINT` | Domain refusals |
 | 422 | `INVALID_CRS` | The point cloud's CRS cannot be mapped to the building's (`details.crsReason`; §9 r7, r8; D-406) |
+| 422 | `NOT_APPROVABLE` | Approval of a head version that is not `VALID_SOLID` or has no passed `FINAL_VALIDATION` (`details.approvalReason`; §11 r8; D-456) |
 | 429 | `RATE_LIMITED` | PREVIEW rate exceeded (server limit `TBD`, Q-24) |
 | 500 / 503 | `INTERNAL`, `UNAVAILABLE` | Failure; model unchanged |
 
@@ -1144,10 +1149,14 @@ and export rules (3D-ADR-0002 C2, D-51). Built as its own container image (D-33)
    DRAFT_SOLID` by a command with `targetState: DRAFT_SOLID`; `DRAFT_SOLID -> VALID_SOLID` automatically (§8 rule 8);
    `VALID_SOLID -> APPROVED` by a reviewer after `FINAL_VALIDATION`, who is not the author of any version after the
    baseline; `APPROVED -> VALID_SOLID | DRAFT_SOLID` automatically on any edit. Separation of duties is enforced here; the
-   Operaflow format has no such rule (3D-01; 3D-24 row).
+   Operaflow format has no such rule (3D-01; 3D-24 row). `APPROVED` is a mark on a version, not a new version: the
+   building reads `APPROVED` while its head version has one (D-450); `FINAL_VALIDATION` is its own request, stored
+   per version (D-451); approval needs the building's lease (D-454); not `VALID_SOLID` or no passed
+   `FINAL_VALIDATION` -> `422 NOT_APPROVABLE` (D-456). Return for rework: row 3D-132.
 9. Export gate (v0.3 §8.4): export allowed for `VALID_SOLID` and `APPROVED` with a passed `FINAL_VALIDATION`; project
    setting `exportRequiresApproval`, default `false` [D] (v0.3 Д-03, D-90). Batch export skips buildings without the right and
-   lists them in the `export-report`.
+   lists them in the `export-report`; one CityJSON file per building, saved to its `progress.save` dataset and
+   delivered; a failure skips that building only (D-453, D-457).
 10. Journal: one `journal-entry` per commit (§2 row 12); versions and journal kept >= 90 days (v0.3 §11; 3D-03).
 11. Lease, no own lock: 3DQM enforces the CP assignment lease (`leaseRef` / `leaseEpoch`, 3D-01); a command from a session
     that does not hold the current lease -> `403 FORBIDDEN`. The own building lock of v0.3 §8.5 and `lockTtlMin` are

@@ -1,0 +1,7 @@
+{
+  "valid": [{ "buildingIds": ["b-1", "b-2"] }],
+  "invalid": [
+    { "why": "empty batch", "instance": { "buildingIds": [] } },
+    { "why": "duplicate building", "instance": { "buildingIds": ["b-1", "b-1"] } }
+  ]
+}

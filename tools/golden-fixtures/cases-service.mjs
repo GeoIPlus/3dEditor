@@ -1,14 +1,17 @@
 // GT-20, GT-21 (cloud, 3D-22) and GT-22..GT-24 (kernel service, 3D-24 / 3D-25).
 
 import { toModel } from './brep.mjs';
-import { IMPORT_TRANSLATE } from './cityjson.mjs';
+import { IMPORT_TRANSLATE, toCityJson } from './cityjson.mjs';
 import { command } from './fixture.mjs';
 import { gable, hip } from './geom.mjs';
 import { GT20, gt20Points, shiftZ } from './points.mjs';
-import { MARK, gt03Model } from './models.mjs';
+import { GABLE, MARK, gt03Model } from './models.mjs';
 import { alignRidge85 } from './cases-edit.mjs';
 
 /** @typedef {import('./fixture.mjs').Def} Def */
+
+/** Options of `toModel` for a model as imported from a CityJSON object (D-70). @param {string} cityObjectId */
+const asImported = (cityObjectId) => ({ imported: true, cityObjectId, originWorld: IMPORT_TRANSLATE });
 
 const BASE_MARKS = [MARK.gt03, MARK.ids, MARK.version, MARK.crs, MARK.commit];
 const POINTS_MARK = {
@@ -79,16 +82,20 @@ export function serviceCases() {
     {
       gt: 'GT-24',
       inputs: {
-        'input.model.bld-gt-24-a.json': gt03Model('bld-gt-24-a'),
-        'input.model.bld-gt-24-b.json': toModel(gable({ gap: 0.03 }), { buildingId: 'bld-gt-24-b', imported: true, cityObjectId: 'bld-gt-i2', originWorld: IMPORT_TRANSLATE }),
-        'input.model.bld-gt-24-c.json': toModel(hip(), { buildingId: 'bld-gt-24-c' }),
+        'input.model.bld-gt-24-a.json': toModel(GABLE, { buildingId: 'bld-gt-24-a', ...asImported('bld-gt-24-a') }),
+        'input.model.bld-gt-24-b.json': toModel(gable({ gap: 0.03 }), { buildingId: 'bld-gt-24-b', ...asImported('bld-gt-i2') }),
+        'input.model.bld-gt-24-c.json': toModel(hip(), { buildingId: 'bld-gt-24-c', ...asImported('bld-gt-24-c') }),
+        'input.cityjson.bld-gt-24-a.json': toCityJson(GABLE, { cityObjectId: 'bld-gt-24-a' }),
+        'input.cityjson.bld-gt-24-b.json': toCityJson(gable({ gap: 0.03 }), { cityObjectId: 'bld-gt-i2' }),
+        'input.cityjson.bld-gt-24-c.json': toCityJson(hip(), { cityObjectId: 'bld-gt-24-c' }),
         'input.context.json': context({ 'usr-reviewer': ['bld-gt-24-a', 'bld-gt-24-b', 'bld-gt-24-c'] }),
       },
       steps: [REQ('FINAL_VALIDATION', 'usr-reviewer', { buildingIds: ['bld-gt-24-a', 'bld-gt-24-c'] }, '3D-24'),
         REQ('EXPORT_BATCH', 'usr-reviewer', { assignmentId: 'asg-1' }, '3D-24')],
       assert: { skipped: 'bld-gt-24-b', skippedState: 'DRAFT_SOLID', namedInExportReport: true, exported: ['bld-gt-24-a', 'bld-gt-24-c'] },
       marks: [MARK.ids, MARK.version, MARK.crs, CONTEXT_MARK,
-        { what: 'Three buildings: GT-03 gable (VALID_SOLID), GT-I2 gap gable (DRAFT_SOLID), GT-04 hip (VALID_SOLID); FINAL_VALIDATION first', mark: '[P]', why: '"one DRAFT_SOLID"; export gate spec §11 r9' }],
+        { what: 'Three buildings: GT-03 gable (VALID_SOLID), GT-I2 gap gable (DRAFT_SOLID), GT-04 hip (VALID_SOLID); FINAL_VALIDATION first', mark: '[P]', why: '"one DRAFT_SOLID"; export gate spec §11 r9' },
+        { what: 'Each model as imported from its `input.cityjson.<buildingId>.json` (explicit vertices, `sourceRef`, IMPORT_TRANSLATE origin): export writes CityJSON from the source document', mark: '[P]', why: 'D-453: kernel `exportBuilding` needs the import source' }],
       check: 'The test checks exactly one input model is DRAFT_SOLID (open shell) and the others are closed.',
     },
   ];

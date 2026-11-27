@@ -1,0 +1,21 @@
+{
+  "valid": [
+    {
+      "report": {
+        "exported": [{ "buildingId": "b-1", "modelVersion": 7 }],
+        "skipped": [{ "buildingId": "b-2", "state": "DRAFT_SOLID", "reasonKey": "model3d.export.notValidSolid" }, { "buildingId": "b-3", "reasonKey": "model3d.export.saveKept" }]
+      },
+      "deliveries": [
+        { "buildingId": "b-1", "modelVersion": 7, "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "address": "https://kernel.example/api/projects/p-1/results/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "save": { "status": "SAVED" } },
+        { "buildingId": "b-3", "modelVersion": 2, "save": { "status": "KEPT", "reason": "PRECONDITION_FAILED" } }
+      ]
+    },
+    { "report": { "exported": [], "skipped": [] }, "deliveries": [] }
+  ],
+  "invalid": [
+    { "why": "delivered without digest", "instance": { "report": { "exported": [], "skipped": [] }, "deliveries": [{ "buildingId": "b-1", "modelVersion": 1, "address": "https://k.example/x", "save": { "status": "SAVED" } }] } },
+    { "why": "KEPT building delivered", "instance": { "report": { "exported": [], "skipped": [] }, "deliveries": [{ "buildingId": "b-1", "modelVersion": 1, "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "address": "https://k.example/x", "save": { "status": "KEPT", "reason": "PRECONDITION_FAILED" } }] } },
+    { "why": "address with a query string", "instance": { "report": { "exported": [], "skipped": [] }, "deliveries": [{ "buildingId": "b-1", "modelVersion": 1, "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "address": "https://k.example/x?sig=1", "save": { "status": "SAVED" } }] } },
+    { "why": "NOT_SAVED without reason", "instance": { "report": { "exported": [], "skipped": [] }, "deliveries": [{ "buildingId": "b-1", "modelVersion": 1, "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "address": "https://k.example/x", "save": { "status": "NOT_SAVED" } }] } }
+  ]
+}

@@ -47,10 +47,17 @@
  * @property {(p: string, b: string, commandId: string, result: any) => Promise<any>} recordResult create-if-absent of a
  *   result that changed nothing (ADR `recordRejection`, also used for a `noChange` COMMIT); returns the stored result
  *   (the earlier one if the record exists)
+ * @property {(p: string, b: string, n: number, report: any) => Promise<any>} putFinalValidation create-if-absent of the
+ *   `validation-report` of `FINAL_VALIDATION` on version `n` (D-451); returns the stored report (the earlier one if any)
+ * @property {(p: string, b: string, n: number) => Promise<any>} readFinalValidation `undefined` if version `n` has none
+ * @property {(p: string, b: string, n: number, approval: any) => Promise<any>} putApproval create-if-absent of the
+ *   `approval` of version `n` (D-450, the state record of 3D-ADR-0003 §6); returns the stored approval
+ * @property {(p: string, b: string, n: number) => Promise<any>} readApproval `undefined` if version `n` is not approved
  */
 
 /** Operations of the port (start-up check of the handler, adapter tests). */
-export const HISTORY_OPERATIONS = Object.freeze(['putBaseline', 'readBaseline', 'head', 'readVersion', 'readJournal', 'commit', 'findCommand', 'recordResult']);
+export const HISTORY_OPERATIONS = Object.freeze(['putBaseline', 'readBaseline', 'head', 'readVersion', 'readJournal', 'commit', 'findCommand', 'recordResult',
+  'putFinalValidation', 'readFinalValidation', 'putApproval', 'readApproval']);
 
 /** @param {unknown} port @returns {port is HistoryPort} */
 export const isHistoryPort = (port) => typeof port === 'object' && port !== null
@@ -80,6 +87,9 @@ export const keys = {
   snapshot: (/** @type {string} */ p, /** @type {string} */ b, /** @type {number} */ n, /** @type {string} */ c) =>
     `${keys.building(p, b)}/snapshot/${version(n)}/${segment(c)}.json`,
   command: (/** @type {string} */ p, /** @type {string} */ c) => `p/${segment(p)}/cmd/${segment(c)}.json`,
+  /** QC records of version `n` (3D-24, D-450, D-451): `kind` = `final-validation` | `approval` */
+  qc: (/** @type {string} */ p, /** @type {string} */ b, /** @type {number} */ n, /** @type {'final-validation' | 'approval'} */ kind) =>
+    `${keys.building(p, b)}/qc/${version(n)}/${kind}.json`,
 };
 
 /** @param {number} n */

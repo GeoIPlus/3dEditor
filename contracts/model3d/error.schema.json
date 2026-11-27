@@ -20,7 +20,8 @@
         "missingDegreesOfFreedom": { "type": "array", "items": { "type": "string", "minLength": 1 }, "description": "UNDERCONSTRAINED_GEOMETRY shows the missing degrees of freedom (v0.2 D.4)." },
         "pointCount": { "type": "integer", "minimum": 0, "description": "INVALID_MEASUREMENT of plane fit carries the numbers (v0.3 §7)." },
         "inlierRatio": { "type": "number", "minimum": 0, "maximum": 1, "description": "As pointCount." },
-        "crsReason": { "enum": ["DATUM_MISMATCH", "NO_PROJECTION", "UNKNOWN_OR_UNSUPPORTED", "MALFORMED"], "description": "INVALID_CRS: why the cloud cannot be mapped to the building's CRS (D-197, D-198; D-406)." }
+        "crsReason": { "enum": ["DATUM_MISMATCH", "NO_PROJECTION", "UNKNOWN_OR_UNSUPPORTED", "MALFORMED"], "description": "INVALID_CRS: why the cloud cannot be mapped to the building's CRS (D-197, D-198; D-406)." },
+        "approvalReason": { "enum": ["NOT_VALID_SOLID", "NO_FINAL_VALIDATION"], "description": "NOT_APPROVABLE: the head version is not VALID_SOLID, or has no passed stored FINAL_VALIDATION (D-456)." }
       },
       "additionalProperties": false
     }
@@ -34,14 +35,14 @@
     { "if": { "properties": { "code": { "const": "NOT_FOUND" } } }, "then": { "properties": { "httpStatus": { "const": 404 } } } },
     { "if": { "properties": { "code": { "const": "VERSION_CONFLICT" } } }, "then": { "properties": { "httpStatus": { "const": 409 } } } },
     { "if": { "properties": { "code": { "const": "PAYLOAD_TOO_LARGE" } } }, "then": { "properties": { "httpStatus": { "const": 413 } } } },
-    { "if": { "properties": { "code": { "enum": ["UNDERCONSTRAINED_GEOMETRY", "CONSTRAINT_CONFLICT", "INVALID_TOPOLOGY", "INVALID_GEOMETRY", "INVALID_MEASUREMENT", "UNSUPPORTED_FOOTPRINT", "INVALID_CRS"] } } }, "then": { "properties": { "httpStatus": { "const": 422 } } } },
+    { "if": { "properties": { "code": { "enum": ["UNDERCONSTRAINED_GEOMETRY", "CONSTRAINT_CONFLICT", "INVALID_TOPOLOGY", "INVALID_GEOMETRY", "INVALID_MEASUREMENT", "UNSUPPORTED_FOOTPRINT", "INVALID_CRS", "NOT_APPROVABLE"] } } }, "then": { "properties": { "httpStatus": { "const": 422 } } } },
     { "if": { "properties": { "code": { "const": "RATE_LIMITED" } } }, "then": { "properties": { "httpStatus": { "const": 429 } } } },
     { "if": { "properties": { "code": { "const": "INTERNAL" } } }, "then": { "properties": { "httpStatus": { "const": 500 } }, "$comment": "[A] Spec §2.4 groups '500 / 503 | INTERNAL, UNAVAILABLE'; INTERNAL -> 500, UNAVAILABLE -> 503 is this schema's reading." } },
     { "if": { "properties": { "code": { "const": "UNAVAILABLE" } } }, "then": { "properties": { "httpStatus": { "const": 503 } } } }
   ],
   "$defs": {
     "ErrorCode": {
-      "enum": ["INVALID_PAYLOAD", "UNAUTHENTICATED", "FORBIDDEN", "NOT_FOUND", "VERSION_CONFLICT", "PAYLOAD_TOO_LARGE", "UNDERCONSTRAINED_GEOMETRY", "CONSTRAINT_CONFLICT", "INVALID_TOPOLOGY", "INVALID_GEOMETRY", "INVALID_MEASUREMENT", "UNSUPPORTED_FOOTPRINT", "INVALID_CRS", "RATE_LIMITED", "INTERNAL", "UNAVAILABLE"]
+      "enum": ["INVALID_PAYLOAD", "UNAUTHENTICATED", "FORBIDDEN", "NOT_FOUND", "VERSION_CONFLICT", "PAYLOAD_TOO_LARGE", "UNDERCONSTRAINED_GEOMETRY", "CONSTRAINT_CONFLICT", "INVALID_TOPOLOGY", "INVALID_GEOMETRY", "INVALID_MEASUREMENT", "UNSUPPORTED_FOOTPRINT", "INVALID_CRS", "NOT_APPROVABLE", "RATE_LIMITED", "INTERNAL", "UNAVAILABLE"]
     }
   }
 }

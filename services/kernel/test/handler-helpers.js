@@ -41,5 +41,7 @@ export const headers = (token, lease = `${LEASE.leaseRef};${LEASE.leaseEpoch}`) 
 export const post = (url, body, h) => ({ method: 'POST', url, headers: h, body: JSON.stringify(body) });
 /** @param {string} url @param {Record<string, string>} h */
 export const get = (url, h) => ({ method: 'GET', url, headers: h });
-/** @param {{ status: number, body: string }} r */
-export const json = (r) => ({ status: r.status, body: JSON.parse(r.body) });
+/** Body text of a reply (JSON, or the delivered bytes of a result). @param {string | Uint8Array} b */
+export const text = (b) => (typeof b === 'string' ? b : new TextDecoder().decode(b));
+/** @param {{ status: number, body: string | Uint8Array }} r */
+export const json = (r) => ({ status: r.status, body: JSON.parse(text(r.body)) });
