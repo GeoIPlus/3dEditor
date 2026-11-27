@@ -80,6 +80,8 @@ audit PDF are background only. Read source specs with an offset by section, neve
 - **Narrate briefly**: one line per step; results go into the checkpoint and the PR description.
 - **Budgets** - stop, write the checkpoint, hand off when: the same failure survives three different fixes; the context
   is over ~60 % without the criteria converging; the WP outgrows its size (S < 1 day, M, L) - propose a split via intake.
+- **Rotation**: the coordinating session hands over to a fresh one past ~250k context or daily, a WP session past the
+  budget above - skill [coordinator-handover](.claude/skills/coordinator-handover/SKILL.md) (D-475).
 
 ## 4. Workflow for one WP
 

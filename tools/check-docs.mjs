@@ -13,6 +13,7 @@ import { PROVISIONAL, PROVISIONAL_ADR, definedFinalIds, newFinalIds } from './ch
 import { overview } from './check-docs-overview.mjs';
 import { checkDecisionTables } from './check-docs-decisions.mjs';
 import { icons, TYPES } from './check-docs-icons.mjs';
+import { checkCoordination } from './check-docs-coordination.mjs';
 
 export { section };
 
@@ -199,6 +200,7 @@ export function checkDocs(root, opts = {}) {
     checkDetails(lines, rows, out);
   }
   checkDecisionIds(root, out);
+  out.push(...checkCoordination(root));
   checkFiles(root, markdownFiles(root), Boolean(opts.allowProvisional), out);
   if (opts.base) out.push(...newFinalIds(definedFinalIds(readIdDocs(root)), definedFinalIds(opts.base)));
   return out;

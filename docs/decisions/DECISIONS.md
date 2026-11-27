@@ -497,6 +497,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-481 | POC to check the editor as a whole: internal online tool in geoviewer, static tokens; one building of a single uploaded CityJSON, plus LAS/COPC upload, points, heatmap and FIT_PLANE; oblique images (stereo) view-only in a second viewport synced with the 3D viewport. Images are a POC-only exception: D-03 (no stereo in production) unchanged. Rows 3D-139..3D-141 | Owner, dialog, 2026-11-27 (3D-133) |
 | D-482 | geoviewer is the host of every task and product; D-55 (independent host SC `apps/3dqm`) stays and 3D-48 keeps its status: both hosts | Owner, dialog, 2026-11-27 (3D-133) |
 | D-483 | 3D-133 follow-up wp/3d-133-service-import@ab55a1f (docs, owner dialog) merged: three provisional decisions became D-480..D-482, three intake rows became 3D-139..3D-141 (POC: service file mode; geoviewer mirrors POC workplace and oblique view-only viewport), all `proposed` | Owner, WP session 3D-133, 2026-11-27 |
+| D-484 | `merge-wp` and the WP start procedure get a step that appends the `merge` / `start` line to `docs/coordination/history/YYYY-MM.md` (coordinator-handover §2); it is added in 3D-137, which already edits `merge-wp`, not in 3D-136 | Owner, dialog, WP session 3D-136, 2026-11-27 |
+| D-485 | 3D-136 accepted (done); merged into the base by the coordinating session (D-178); provisional D-484 became D-484; the coordinator rotates now by the new `coordinator-handover` skill | Owner, WP session 3D-136, 2026-11-27 |
 
 ## Open questions
 
