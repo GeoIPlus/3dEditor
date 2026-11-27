@@ -123,6 +123,7 @@ copy [D] (D-37, 3D-ADR-0001). Internal kernel structures never leave the package
 | 20 | `approval` | Approval mark of one version: `projectId`, `buildingId`, `modelVersion`, `actorId`, `timestamp`; written once (§11 r8) | v0.3 §8.1; D-450, D-455 |
 | 21 | `export-request` | Batch export: `buildingIds` (§11 r9) | v0.3 §8.4; D-453, D-455 |
 | 22 | `export-result` | `export-report` + per-building save outcome and delivered bytes (digest, `https` address) (§11 r9) | 3D-ADR-0003 §4; D-455 |
+| 23 | `import-request` | Service import of one building: empty; building in the route; input / `progress.save` datasets resolved by the service (§11 r15) | v0.3 §5; D-3D133-1, D-3D133-3 |
 
 The 3DQM extension of the CP document (building list, roles, tolerance profile, endpoints) is an SC schema (3D-43; Q-03),
 not part of this list.
@@ -1169,6 +1170,12 @@ and export rules (3D-ADR-0002 C2, D-51). Built as its own container image (D-33)
     miss is an owner escalation, never a client fallback, D-06); COMMIT of a simple operation p95 <= 1 s;
     `FINAL_VALIDATION` p95 <= 10 s (assumption); import of a building up to 500 faces <= 2 s (assumption). Bench rig,
     scenes and protocol: [3D-ADR-0006](../decisions/adr/3D-ADR-0006-bench-rig-and-scenes.md) (D-111; `npm run bench`).
+15. Service import (`IMPORT_BUILDING`, 3D-133): `POST /api/projects/{p}/buildings/{b}/import`, empty `import-request`,
+    operator with the building's lease; the input dataset, the CityObject and the `progress.save` dataset come from the
+    CP document through the `buildings` port, never from the client (D-3D133-1). The service reads the input, imports
+    (§6), keeps the document, the `progress.save` ref and the basis of the `progress.save` read at import (D-430; one
+    read when it is the input dataset) for export, then writes the baseline (version 0): `201 import-report`. A
+    building with a baseline -> `409 VERSION_CONFLICT`, nothing changed (D-3D133-2..4).
 
 **Accept:**
 - Accept: GT-13 (3D-23, D-68), GT-22, GT-24 (3D-24), GT-23 (3D-25) (§13).

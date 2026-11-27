@@ -2,7 +2,7 @@
 // D-51): `(request) => reply`, mountable in-process by a host (GV test host, 3D-50) and wrapped by server.js in the
 // container (D-33). Order per request: route -> bearer token (401) -> role (403) -> body (413 / 400) -> contract ->
 // lease for commands and approval (403) -> command API / status / heatmap / model read / QC and export (3D-24,
-// qc-routes.js). Every reply is contract-validated JSON, except the delivered result bytes.
+// qc-routes.js) / import (3D-133). Every reply is contract-validated JSON, except the delivered result bytes.
 import { ACTIONS, authenticate, checkLease, requireRole } from './access.js';
 import { readJsonBody } from './body.js';
 import { createCommandApi } from './command-api.js';
@@ -10,11 +10,13 @@ import { commandPoints } from './cloud-points.js';
 import { createContractValidator } from './contracts.js';
 import { errorReply, failureReply } from './errors.js';
 import { heatmap } from './heatmap.js';
+import { createImport } from './import.js';
 import { createQc } from './qc.js';
 import { createQcRoutes } from './qc-routes.js';
 import { isDatasetsPort } from './ports/datasets.js';
 import { isHistoryPort } from './ports/history.js';
 import { isAuthPort, isLeasesPort } from './ports/auth.js';
+import { isBuildingsPort } from './ports/buildings.js';
 import { isSourcesPort } from './ports/sources.js';
 import { matchRoute } from './routes.js';
 
@@ -33,6 +35,7 @@ import { matchRoute } from './routes.js';
  * @property {import('./qc.js').QcDeps['externalValidator']} [externalValidator] FINAL_VALIDATION port (3D-74)
  * @property {import('./ports/datasets.js').DatasetsPort} [datasets] export: saves and delivered bytes (3D-128)
  * @property {import('./ports/sources.js').SourcesPort} [sources] export: source document, `progress.save`, basis
+ * @property {import('./ports/buildings.js').BuildingsPort} [buildings] import: datasets of a building (3D-133)
  * @property {string} [publicBase] `https` origin of the delivered addresses
  * @property {import('./export.js').ExportDeps['projectSettings']} [projectSettings] `exportRequiresApproval` (D-90)
  */
@@ -68,6 +71,7 @@ export function createKernelHandler(ports) {
   if (!isLeasesPort(ports.leases)) throw new TypeError('handler: ports.leases must implement the leases port');
   if (ports.datasets !== undefined && !isDatasetsPort(ports.datasets)) throw new TypeError('handler: ports.datasets must implement the datasets port');
   if (ports.sources !== undefined && !isSourcesPort(ports.sources)) throw new TypeError('handler: ports.sources must implement the sources port');
+  if (ports.buildings !== undefined && !isBuildingsPort(ports.buildings)) throw new TypeError('handler: ports.buildings must implement the buildings port');
   const contracts = ports.contracts ?? createContractValidator();
   /** @param {any} model @param {any} command */
   const pointsFor = async (model, command) => {
@@ -77,6 +81,8 @@ export function createKernelHandler(ports) {
   const api = createCommandApi({ ...ports, contracts, pointsFor });
   const qc = createQc(ports);
   const qcRoute = createQcRoutes(ports, qc, contracts);
+  const { datasets, sources, buildings } = ports;
+  const importer = datasets && sources && buildings ? createImport({ ...ports, datasets, sources, buildings }) : undefined;
 
   /** @param {KernelRequest} request */
   async function handle(request) {
@@ -107,6 +113,7 @@ export function createKernelHandler(ports) {
         : checkLease(ports.leases, user, headers, c.projectId, c.buildingId));
       return api.commandBody(request.body ?? '', actor, { declaredLength: declaredLength(headers['content-length']), authorize });
     }
+    if (r.name === 'import') return importRoute(r, user, headers, body);
     const qcReply = await qcRoute(r, user, headers, body);
     if (qcReply) return qcReply;
     const refused = requireRole(user, ACTIONS.VIEW);
@@ -118,6 +125,24 @@ export function createKernelHandler(ports) {
     const bad = contracts.request('heatmap-request', b.value);
     if (bad) return bad;
     return contracts.reply(await heatmap(ports, r.projectId, b.value), 'heatmap-result');
+  }
+
+  /**
+   * Service import (3D-133; D-3D133-3): operator, empty body, the building's lease; `import-report` 201.
+   * @param {{ projectId: string, buildingId: string }} r @param {import('./ports/auth.js').AuthUser} user
+   * @param {Record<string, string | undefined>} headers @param {() => ReturnType<typeof readJsonBody>} body
+   */
+  async function importRoute(r, user, headers, body) {
+    const refused = requireRole(user, ACTIONS.IMPORT);
+    if (refused) return refused;
+    const b = await body();
+    if (!b.ok) return b.reply;
+    const bad = contracts.request('import-request', b.value);
+    if (bad) return bad;
+    const noLease = await checkLease(ports.leases, user, headers, r.projectId, r.buildingId);
+    if (noLease) return noLease;
+    if (!importer) return errorReply('UNAVAILABLE', [], 'import is not configured (datasets, sources, buildings)');
+    return contracts.reply(await importer.importOne(r.projectId, r.buildingId), 'import-report');
   }
 
   /** v0.2 D.1 model read by version; head when no version is named. @param {string} p @param {string} b @param {string | null} v */

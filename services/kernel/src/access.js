@@ -4,10 +4,11 @@
 import { errorReply } from './errors.js';
 import { LEASE_HEADER, ROLES, parseLeaseHeader } from './ports/auth.js';
 
-/** Actions of spec §11 r2 (3D-110; approve and export 3D-24). FINAL_VALIDATION changes no model: VIEW (D-451). */
+/** Actions of spec §11 r2 (3D-110; approve and export 3D-24; import 3D-133, D-3D133-3). FINAL_VALIDATION changes no model: VIEW (D-451). */
 export const ACTIONS = Object.freeze({
   VIEW: [ROLES.OPERATOR, ROLES.REVIEWER],
   EDIT: [ROLES.OPERATOR],
+  IMPORT: [ROLES.OPERATOR],
   APPROVE: [ROLES.REVIEWER],
   EXPORT: [ROLES.REVIEWER],
 });

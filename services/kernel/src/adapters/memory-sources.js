@@ -1,4 +1,4 @@
-// Memory adapter of the `sources` port (3D-24): dev, tests, GV test host until service import (3D-133) fills it.
+// Memory adapter of the `sources` port (3D-24): dev and tests; the service uses the store adapter (3D-133, D-3D133-4).
 
 /**
  * @returns {import('../ports/sources.js').SourcesPort & {
@@ -18,6 +18,11 @@ export function createMemorySources() {
       const s = all.get(key(p, b));
       if (!s) throw new Error(`sources: no source of ${b}`);
       all.set(key(p, b), { ...s, basis: { kind: 'tagged', entityTag } });
+    },
+    put: async (p, b, source) => {
+      if (all.has(key(p, b))) return false;
+      all.set(key(p, b), { ...source, basis: { ...source.basis } });
+      return true;
     },
     set: (p, b, source) => { all.set(key(p, b), { ...source, basis: { ...source.basis } }); },
   };
