@@ -1,8 +1,8 @@
-// ops (3D-120, D-372): until 3D-115 rebuilds dependent geometry, a command that leaves an overhang strip
-// (RoofSurface + OVERHANG, D-336) off the plane of its parent roof face is refused atomically, model unchanged. Run by
-// the pipeline after the constraint step, so it covers every operation that changes a roof plane (D-341: broken
-// dependent geometry is not acceptable). Operations that rebuild the overhang themselves (SET_HEIGHT EAVE, D-338;
-// SET_OVERHANG) leave it coplanar and pass. Only a strip that was coplanar with its parent in the input is checked.
+// ops (3D-120, D-372, D-373): the last check of the pipeline for dependent overhangs. Since 3D-124 (D-384) the
+// pipeline takes overhangs off before the operation and rebuilds them after the solve (dependents.js); this guard
+// still refuses, atomically with the model unchanged, a command that leaves an overhang strip (RoofSurface +
+// OVERHANG, D-336) off the plane of its parent roof face - the cases the rebuild does not cover (operations that
+// rebuild by themselves, registry SELF_REBUILD). Only a strip that was coplanar with its parent in the input is checked.
 import { signedDistance } from '../brep/index.js';
 import { refuse } from './errors.js';
 
@@ -48,5 +48,5 @@ export function overhangGuard(before, draft, tol) {
   const broken = now.filter(([s, p]) => was.has(s) && offPlane(draft, s, p) > tol.planarTolM);
   if (broken.length === 0) return null;
   const ids = [...new Set(broken.flat())].sort();
-  return refuse('INVALID_TOPOLOGY', ids, 'the roof plane changes but its overhang strip would stay on the old plane; rebuild of dependent geometry is 3D-115 (D-341)');
+  return refuse('INVALID_TOPOLOGY', ids, 'the roof plane changes but its overhang strip would stay on the old plane; not covered by the overhang rebuild (D-373)');
 }

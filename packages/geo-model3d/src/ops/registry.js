@@ -74,3 +74,12 @@ export const OPERATIONS = {
   ALIGN_WALL: { run: alignWall }, // 3D-114
   REGULARIZE_FOOTPRINT: { run: regularizeFootprint }, // 3D-126
 };
+
+/** D-385: the operations that own dependent overhang entities and may name them in a payload. */
+export const OVERHANG_OWNERS = new Set(['SET_OVERHANG', 'SET_HEIGHT']);
+
+/**
+ * D-384: operations that take overhangs off and re-add them themselves (SET_OVERHANG; SET_HEIGHT EAVE, D-338;
+ * ALIGN_WALL, D-392; RESIZE_ROOF, D-390; REGULARIZE_FOOTPRINT, D-422) - the pipeline does not detach for them.
+ */
+export const SELF_REBUILD = new Set(['SET_OVERHANG', 'SET_HEIGHT', 'ALIGN_WALL', 'RESIZE_ROOF', 'REGULARIZE_FOOTPRINT']);
