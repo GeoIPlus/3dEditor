@@ -22,15 +22,15 @@ Updated: 2026-11-27
 | Progress | Rows |
 |---|---:|
 | Done | 72 / 109 |
-| Review | 0 |
-| In progress | 4 |
+| Review | 1 |
+| In progress | 3 |
 | Ready | 7 |
 | Proposed (waiting for the owner to set `ready`) | 25 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 72/109 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-124 Overhang rebuild; 3D-24 QC and export rules; 3D-74 val3dity image + binding; 3D-47 SC: 3D view port + host.
+**Running:** 3D-124 Overhang rebuild; 3D-74 val3dity image + binding; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
@@ -138,7 +138,7 @@ flowchart TB
     D79["💡 🔧 3D-79 Service image licence check"]
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
-    D24["🚧 ⚙️ 3D-24 QC and export rules"]
+    D24["🔍 ⚙️ 3D-24 QC and export rules"]
     D24_1["💡 🖥️ 3D-24.1 Return for rework"]
     D24_2["💡 🖥️ 3D-24.2 Service import"]
     D24_3["💡 🔗 3D-24.3 SC: vendor 3D-24 schemas"]
@@ -429,7 +429,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-111 | `history` S3 adapter: ADR for the S3 client dependency (D-109), adapter with conditional writes (`If-None-Match: *`), the 3D-23 port contract suite against an S3-compatible double (D-319) | here | service | 23 | G5 | M | service | proposed |
 | 3D-112 | `REMOVE_DETAILS` advanced generalisation: parallel-wall jogs, KEEP_PRIMARY_PLANE, neighbour alignment, deformation limits, width / aspect criteria, groups of details, LoD generalisation, check against measurements | here | docs/specs, geo-model3d/ops | 123 | G3 | L | spec | proposed |
 | 3D-113 | `STRAIGHTEN_FACE` `ALIGN_SELECTED_EDGES` extensions: leading edge chosen by the operator, `BEST_FIT_LINE` mode | here | docs/specs, geo-model3d/ops | 122 | G3 | S | spec | proposed |
-| 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110, 128 | G5 | M | kernel | in-progress (D-433; wp/3d-24-qc-export) |
+| 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110, 128 | G5 | M | kernel | review (wp/3d-24-qc-export; local, PR not requested; D-3D24-1..8) |
 | 3D-24.1 | Return for rework with a comment: reviewer (not an author) records a return on the head version (spec §11 r2; v0.3 §8.5) | here | service | 24 | G5 | S | service | proposed |
 | 3D-24.2 | Service import: `IMPORT_BUILDING` from the input dataset (`datasets.read`), `putBaseline`, keep the source CityJSON and the `progress.save` save basis for the export source port of 3D-24 | here | service | 24, 128 | G5 | M | service | proposed |
 | 3D-24.3 | SC: vendor the `model3d` schemas of 3D-24 (`approval-request`, `approval`, `export-request`, `export-result`; error `NOT_APPROVABLE`, D-3D24-6, D-3D24-7) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 24, 45 | G5 | S | mirror | proposed |
