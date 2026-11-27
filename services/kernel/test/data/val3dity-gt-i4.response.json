@@ -1,0 +1,48 @@
+{
+  "validator": {
+    "name": "val3dity",
+    "version": "2.7.0",
+    "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+    "libraries": {
+      "cgal": "5.6",
+      "geos": "3.12.1",
+      "boost": "1.83.0"
+    }
+  },
+  "report": {
+    "all_errors": [],
+    "dataset_errors": [],
+    "features": [
+      {
+        "errors": [],
+        "id": "bld-gt-i1",
+        "type": "Building",
+        "validity": true
+      }
+    ],
+    "features_overview": [
+      {
+        "total": 1,
+        "type": "Building",
+        "valid": 1
+      }
+    ],
+    "input_file_type": "CityJSON",
+    "parameters": {
+      "overlap_tol": -1,
+      "planarity_d2p_tol": 0.02,
+      "planarity_n_tol": 20,
+      "snap_tol": 0.01
+    },
+    "primitives_overview": [
+      {
+        "total": 1,
+        "type": "Solid",
+        "valid": 1
+      }
+    ],
+    "type": "val3dity_report",
+    "val3dity_version": "2.7.0",
+    "validity": true
+  }
+}

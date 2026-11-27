@@ -82,6 +82,12 @@ export const CONFIG = {
   },
 
   /**
+   * Images of programs outside the licence allow-list, reached over the network only (3D-74; 3D-ADR-0008, D-148):
+   * no npm package inside, no import into them from packages/ or services/, Dockerfile and SOURCE.md present.
+   */
+  isolatedImages: [{ dir: 'images/val3dity', licence: 'GPL-3.0' }],
+
+  /**
    * Append-only stores (3D-23; 3D-ADR-0003 §5, D-84, D-85): in store adapters (`files`; points adapters are not
    * stores and may free decoder memory with `.delete()`) no code references a call that
    * deletes, renames, truncates or overwrites stored objects. `names`: identifiers (imported functions, S3 commands);

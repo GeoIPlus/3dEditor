@@ -1,0 +1,125 @@
+{
+  "valid": [
+    {
+      "document": {
+        "type": "CityJSON",
+        "version": "2.0",
+        "transform": {
+          "scale": [
+            0.001,
+            0.001,
+            0.001
+          ],
+          "translate": [
+            0,
+            0,
+            0
+          ]
+        },
+        "CityObjects": {},
+        "vertices": []
+      },
+      "parameters": {
+        "snapTolM": 0.01,
+        "planarityD2pTolM": 0.02,
+        "planarityNormalsTolDeg": 20
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "why": "not CityJSON",
+      "instance": {
+        "document": {
+          "type": "FeatureCollection",
+          "CityObjects": {}
+        },
+        "parameters": {
+          "snapTolM": 0.01,
+          "planarityD2pTolM": 0.02,
+          "planarityNormalsTolDeg": 20
+        }
+      }
+    },
+    {
+      "why": "overlap tolerance is not sent (D-3D74-4)",
+      "instance": {
+        "document": {
+          "type": "CityJSON",
+          "version": "2.0",
+          "transform": {
+            "scale": [
+              0.001,
+              0.001,
+              0.001
+            ],
+            "translate": [
+              0,
+              0,
+              0
+            ]
+          },
+          "CityObjects": {},
+          "vertices": []
+        },
+        "parameters": {
+          "snapTolM": 0.01,
+          "planarityD2pTolM": 0.02,
+          "planarityNormalsTolDeg": 20,
+          "overlapTolM": 0
+        }
+      }
+    },
+    {
+      "why": "zero snap tolerance",
+      "instance": {
+        "document": {
+          "type": "CityJSON",
+          "version": "2.0",
+          "transform": {
+            "scale": [
+              0.001,
+              0.001,
+              0.001
+            ],
+            "translate": [
+              0,
+              0,
+              0
+            ]
+          },
+          "CityObjects": {},
+          "vertices": []
+        },
+        "parameters": {
+          "snapTolM": 0,
+          "planarityD2pTolM": 0.02,
+          "planarityNormalsTolDeg": 20
+        }
+      }
+    },
+    {
+      "why": "parameters missing",
+      "instance": {
+        "document": {
+          "type": "CityJSON",
+          "version": "2.0",
+          "transform": {
+            "scale": [
+              0.001,
+              0.001,
+              0.001
+            ],
+            "translate": [
+              0,
+              0,
+              0
+            ]
+          },
+          "CityObjects": {},
+          "vertices": []
+        }
+      }
+    }
+  ]
+}

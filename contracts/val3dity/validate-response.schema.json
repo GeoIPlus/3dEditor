@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:val3dity-validate-response:v1",
+  "title": "Val3dityValidateResponse",
+  "description": "Reply 200 of POST /validate (3D-74; 3D-ADR-0008): the validator identity and val3dity's own JSON report, passed through unchanged by the image's wrapper. The service adapter maps `features[].errors[]` and `dataset_errors[]` to port findings (`externalValidatorCode` = the code as a string) and val3dity ids to kernel entity ids.",
+  "$comment": "D-3D74-3. `report` is val3dity's format (2.7.0, `src/input.cpp` build_report, `src/Feature.cpp` get_report_json): only the members the adapter reads are required; val3dity's other members (time, input_file, overviews, all_errors, ...) are allowed and ignored [A]. Error `id` of a feature error reads `coid=<CityObject id>|geom=<geometry index>|shell=<shell>|face=<face>` (observed, GT-I2: `coid=bld-gt-i2|geom=0|shell=0|face=`); it is a string the adapter parses, not a contract of its own.",
+  "type": "object",
+  "properties": {
+    "validator": { "$ref": "urn:geoiplus:schema:val3dity-validator:v1" },
+    "report": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "val3dity_report" },
+        "val3dity_version": { "type": "string" },
+        "validity": { "type": "boolean" },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "snap_tol": { "type": "number" },
+            "planarity_d2p_tol": { "type": "number" },
+            "planarity_n_tol": { "type": "number" },
+            "overlap_tol": { "type": "number" }
+          },
+          "required": ["snap_tol", "planarity_d2p_tol", "planarity_n_tol"]
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "type": { "type": "string" },
+              "validity": { "type": "boolean" },
+              "errors": { "type": "array", "items": { "$ref": "#/$defs/ReportError" } }
+            },
+            "required": ["id", "type", "validity", "errors"]
+          }
+        },
+        "dataset_errors": { "type": "array", "items": { "$ref": "#/$defs/ReportError" } }
+      },
+      "required": ["type", "val3dity_version", "validity", "parameters", "features", "dataset_errors"]
+    }
+  },
+  "required": ["validator", "report"],
+  "additionalProperties": false,
+  "$defs": {
+    "ReportError": {
+      "type": "object",
+      "properties": {
+        "code": { "type": "integer", "minimum": 100, "maximum": 999 },
+        "description": { "type": "string" },
+        "id": { "type": "string" },
+        "info": { "type": "string" }
+      },
+      "required": ["code", "description"]
+    }
+  }
+}

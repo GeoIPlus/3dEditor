@@ -1,0 +1,39 @@
+{
+  "valid": [
+    {
+      "code": "VALIDATOR_FAILED",
+      "httpStatus": 500,
+      "message": "val3dity exited 1"
+    },
+    {
+      "code": "BAD_REQUEST",
+      "httpStatus": 400,
+      "message": "parameters missing"
+    }
+  ],
+  "invalid": [
+    {
+      "why": "code bound to its status",
+      "instance": {
+        "code": "VALIDATOR_FAILED",
+        "httpStatus": 503,
+        "message": "x"
+      }
+    },
+    {
+      "why": "unknown code",
+      "instance": {
+        "code": "UNAVAILABLE",
+        "httpStatus": 503,
+        "message": "x"
+      }
+    },
+    {
+      "why": "message missing",
+      "instance": {
+        "code": "NOT_FOUND",
+        "httpStatus": 404
+      }
+    }
+  ]
+}
