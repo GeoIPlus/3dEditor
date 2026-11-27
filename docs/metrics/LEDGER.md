@@ -82,8 +82,9 @@ row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier
 | 2026-11-26 | 3D-124 | session_01RNYuqFiYEUrcQPi1wE7ZmQ | wp | ? | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - (not due: calibration count over 10, no trigger measurable) | no `result` event before the finish (one owner turn, worker restarted once); coordinator re-reads at merge |
 | 2026-11-27 | 3D-74 | session_01RNYuqGMAcyyjSKjkhU3XEp | wp | ? | ? | ? | ? | ? | ? | 0.73 | claude-opus-5-5 | as of - | not due (calibration count 14 >= 10; no est0 for 3D-74; not a 5th session) | no `result` event in three pages (whole WP in the first turn, worker restarted once); span from get_session created 2026-11-26T23:16:57Z to 2026-11-27T00:00Z; the coordinator re-reads at idle |
 | 2026-11-27 | 3D-24 | session_01RNYuqJrHeUaDGKYD2Ldbus | wp | TBD | TBD | TBD | TBD | ? | TBD | ? | claude-opus-5-5 | as of: no result event (whole WP in the first turn) | not due (calibration count >= 10; trigger unknown until the coordinator re-reads the ratio) | coordinator reads the figures at merge |
-| 2026-11-27 | 3D-133 | session_01RNYuqGf4eR4xYipvVZZZn4 | wp | 4.69 | 41.5 | 148 | 13347 | ? | 7.6 | 0.54 | claude-opus-5-5 | as of 2026-11-27T01:31:14Z (first turn; later turns not yet in a result event) | not due (calibration count >= 10; ratio 0.71 < 1.5; no budget stop) | result event of the session |
+| 2026-11-27 | 3D-133 | session_01RNYuqGf4eR4xYipvVZZZn4 | wp | 10.94 | 77.7 | 570.0 | 24098.6 | ? | 13.2 | 11.1 | claude-opus-5-5 | final | see checkpoint | newest result event 2026-11-27T12:05:48Z (coordinator at merge, total_cost_usd) |
 | 2026-11-27 | 3D-131 | session_01RNYuqFMAqsBQj9W73mLSZp | wp | ? | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - (not due: calibration count over 10, no trigger measurable) | newest result page empty at the finish (worker restarted once); coordinator re-reads at merge |
+| 2026-11-27 | 3D-137 | session_01RNYuqJA4wpG55UfUjupeLm | wp | 3.87 | 42.9 | 222.8 | 6114.8 | ? | 6.5 | 1.72 | claude-opus-5-5 | final | see checkpoint | newest result event 2026-11-27T12:07:16Z (coordinator at merge, total_cost_usd) |
 
 ## Improvement proposals
 
