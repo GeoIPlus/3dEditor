@@ -24,8 +24,8 @@ Updated: 2026-11-27
 | Done | 72 / 109 |
 | Review | 1 |
 | In progress | 3 |
-| Ready | 7 |
-| Proposed (waiting for the owner to set `ready`) | 25 |
+| Ready | 8 |
+| Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
 **Implementation progress: 0 %** of code; 72/109 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
@@ -140,7 +140,7 @@ flowchart TB
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D24_1["💡 🖥️ 3D-24.1 Return for rework"]
-    D24_2["💡 🖥️ 3D-24.2 Service import"]
+    D24_2["▶️ 🖥️ 3D-24.2 Service import"]
     D24_3["💡 🔗 3D-24.3 SC: vendor 3D-24 schemas"]
     D25["💡 🧪 3D-25 E2E on mock"]
   end
@@ -431,7 +431,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-113 | `STRAIGHTEN_FACE` `ALIGN_SELECTED_EDGES` extensions: leading edge chosen by the operator, `BEST_FIT_LINE` mode | here | docs/specs, geo-model3d/ops | 122 | G3 | S | spec | proposed |
 | 3D-24 | QC and export rules: state transitions, approver != author (enforced by 3DQM: the Operaflow format has no separation-of-duties rule), reset on edit, export gate, batch export report | here | geo-model3d, service | 12, 110, 128 | G5 | M | kernel | review (wp/3d-24-qc-export; local, PR not requested; D-3D24-1..8) |
 | 3D-24.1 | Return for rework with a comment: reviewer (not an author) records a return on the head version (spec §11 r2; v0.3 §8.5) | here | service | 24 | G5 | S | service | proposed |
-| 3D-24.2 | Service import: `IMPORT_BUILDING` from the input dataset (`datasets.read`), `putBaseline`, keep the source CityJSON and the `progress.save` save basis for the export source port of 3D-24 | here | service | 24, 128 | G5 | M | service | proposed |
+| 3D-24.2 | Service import: `IMPORT_BUILDING` from the input dataset (`datasets.read`), `putBaseline`, keep the source CityJSON and the `progress.save` save basis for the export source port of 3D-24 | here | service | 24, 128 | G5 | M | service | ready (D-3D24-11) |
 | 3D-24.3 | SC: vendor the `model3d` schemas of 3D-24 (`approval-request`, `approval`, `export-request`, `export-result`; error `NOT_APPROVABLE`, D-3D24-6, D-3D24-7) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 24, 45 | G5 | S | mirror | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 24.2, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |

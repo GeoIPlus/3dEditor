@@ -457,6 +457,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-3D24-8 | Batch export: a building whose export fails (no source, `exportBuilding` refusal, store failure) is skipped with a `reasonKey` and listed in the report; the others are exported; delivered bytes and saves already done stay (D-84) | Owner, dialog, 2026-11-26 (3D-24) |
 | D-3D24-9 | The 3D-24 contract shapes are approved (D-18): `approval-request`, `approval`, `export-request`, `export-result`, error `NOT_APPROVABLE` with `details.approvalReason`, and the skip `reasonKey`s `model3d.export.{unknownBuilding, notValidSolid, notApproved, noFinalValidation, noSource, failed, saveKept}`; D-3D24-6 and D-3D24-7 no longer proposed | Owner, dialog, 2026-11-27 (3D-24) |
 | D-3D24-10 | 3D-24 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-24-qc-export | Owner, dialog, 2026-11-27 (3D-24) |
+| D-3D24-11 | Row 3D-24.2 (service import; dependencies 3D-24 accepted, 3D-128 done) set `ready` by the owner; to start in a fresh session after the coordinator merges 3D-24 | Owner, chat, 2026-11-27 (3D-24) |
 
 ## Open questions
 
