@@ -85,7 +85,7 @@ No `index.js` yet; a host imports `src/handler.js` (GV test host, 3D-50) and the
   -> `{ importOne(p, b) }`: head exists -> `409`; `buildings.locate` (none -> `404`) -> `datasets.read(inputRef)`
   (none -> `404`, not JSON -> `400`) -> basis from the `progress.save` read (D-430) -> kernel `importBuilding`
   (`ImportError` -> its code; `INVALID_CRS` via `failureReply`) -> `sources.put` -> `putBaseline` (the commit point;
-  lost race -> `409`) -> `201 import-report`. A source left by a failed attempt is reused, so a baseline never lacks
+  lost race -> `409`) -> `201 import-report`. A source left by a failed or a concurrent attempt is reused, so a baseline never lacks
   its source. The kernel import needs `toleranceProfile.id` (optional in the contract): hosts give profiles with
   an id. `src/ports/buildings.js` - `BuildingsPort { locate(p, b) -> { inputRef, cityObjectId?, saveRef } |
   undefined }`; `src/adapters/memory-buildings.js` - `createMemoryBuildings()` (`set`).

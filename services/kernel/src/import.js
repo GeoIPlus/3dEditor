@@ -76,7 +76,8 @@ export function createImport(deps) {
       if (isImportError(err)) return errorReply(/** @type {any} */ (err).code, [b], /** @type {Error} */ (err).message);
       throw err;  // INVALID_CRS and failures: failureReply (errors.js)
     }
-    if (src.fresh) await sources.put(p, b, src.fresh);
+    // a concurrent import kept its source first: import again from that one, so the baseline matches the kept source
+    if (src.fresh && !(await sources.put(p, b, src.fresh))) return importOne(p, b);
     if (!(await history.putBaseline(p, b, out.baseline))) return errorReply('VERSION_CONFLICT', [b], 'the building is already imported');
     return { httpStatus: 201, body: out.report };
   }

@@ -76,6 +76,13 @@ describe('service import of GT-I1 through the handler', () => {
     expect(c2).toEqual([{ ref: INPUT, pre: { ifMatch: inputTag } }]);
   });
 
+  it('two concurrent imports: one 201, one 409; one baseline', async () => {
+    const { handle, leaseHeader, history } = await importHandler();
+    const rs = await Promise.all([importReq(handle, leaseHeader), importReq(handle, leaseHeader)]);
+    expect(rs.map((r) => r.status).sort()).toEqual([201, 409]);
+    expect(await history.head(P, B)).toBe(0);
+  });
+
   it('the source survives a new handler on the same store (D-3D133-4)', async () => {
     const one = await importHandler();
     expect((await importReq(one.handle, one.leaseHeader)).status).toBe(201);
