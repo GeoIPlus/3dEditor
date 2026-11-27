@@ -118,6 +118,7 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
+    D138["🔍 🔧 3D-138 Async owner answers"]
   end
   subgraph ready["READY"]
     D48["▶️ 🔗 3D-48 SC: apps/3dqm host"]
@@ -147,7 +148,6 @@ flowchart TB
     D132["💡 🖥️ 3D-132 Return for rework"]
     D134["🚧 🔗 3D-134 SC: vendor 3D-24 schemas"]
     D135["🚧 🖥️ 3D-135 Profile id by content hash"]
-    D138["🔍 🔧 3D-138 Async owner answers"]
     D139["💡 🖥️ 3D-139 POC file mode of the service"]
     D140["💡 🔗 3D-140 GV POC workplace"]
     D141["💡 🔗 3D-141 GV POC oblique viewport"]
