@@ -19,6 +19,13 @@ Files expected to change:
 Source sections to read (with line offsets):
 Decisions used: D-..   Open questions: Q-..
 
+## Open questions
+<!-- AGENTS.md §2 item 2, wp-session "Questions to the owner"; collected into docs/QUESTIONS.md. One line each:
+- blocking: <question> | since: YYYY-MM-DD
+- provisional D-3D<wp>-n (R-<wp>-n): <decision taken> | since: YYYY-MM-DD
+Remove a blocking line once answered; provisional lines stay (a review row in RISKS.md closes them). -->
+- none
+
 ## Log
 - YYYY-MM-DD: <step, result, output reference>
 

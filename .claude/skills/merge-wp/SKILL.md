@@ -66,6 +66,9 @@ checkpoint). Stop and ask the owner (dialog with proposed answers) if any of the
 4. Recompute the forecast by script (README §4; never by hand) and replace the block in BACKLOG "## Budget and
    forecast". A class whose median ratio left 0.8..1.25: add re-estimate lines to its open rows.
 5. Add the coordinating session's own row (`WP = coord`) once per day it worked.
+6. Owner questions (D-475 part C): `git fetch origin`, then `node tools/questions.mjs --remote --write`; commit
+   `docs/QUESTIONS.md` with the merge. An owner answer to a provisional decision: append its review row to
+   `docs/decisions/RISKS.md` with the DECISIONS.md entry.
 
 ## 5. Gate
 

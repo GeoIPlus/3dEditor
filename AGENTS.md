@@ -37,7 +37,9 @@ audit PDF are background only. Read source specs with an offset by section, neve
    chore fast lane of the skill (D-26), logged in `docs/CHORES.md`.
 2. **Questions to the owner only as a dialog with proposed answers** (the ask-user tool: 2-4 options, the recommended one
    first and marked "(Recommended)", each with its consequence). Ask only what changes what is built. Never ask in a file,
-   a PR or a code comment and wait there. Every answer is recorded in DECISIONS.md in the same session.
+   a PR or a code comment and wait there. Every answer is recorded in DECISIONS.md in the same session. In a WP session
+   a **non-blocking** question is not waited on: decide it by risk as a provisional decision and log it in
+   [docs/decisions/RISKS.md](docs/decisions/RISKS.md); the owner confirms later (D-475; procedure in `wp-session`).
 3. **One WP per branch, per pull request, per session.** Branch `wp/3d-<id>-<short-name>`, e.g. `wp/3d-09-brep-core`
    (a platform-assigned branch is used as is and named in the checkpoint). Do not mix WPs. Do not grow a WP silently:
    extra findings go through `task-intake` as new rows.
@@ -79,7 +81,9 @@ audit PDF are background only. Read source specs with an offset by section, neve
 - **Batch independent tool calls.** **Verify against real output** (tests, checks, benchmarks), not expectation.
 - **Narrate briefly**: one line per step; results go into the checkpoint and the PR description.
 - **Budgets** - stop, write the checkpoint, hand off when: the same failure survives three different fixes; the context
-  is over ~60 % without the criteria converging; the WP outgrows its size (S < 1 day, M, L) - propose a split via intake.
+  is over ~60 % without the criteria converging; the WP outgrows its size (S < 1 day, M, L) - propose a split via intake;
+  a **blocking** owner question with the context over ~150k - checkpoint and handoff first, the answer goes to a fresh
+  session (D-475). Open questions of all sessions: [docs/QUESTIONS.md](docs/QUESTIONS.md), generated.
 
 ## 4. Workflow for one WP
 

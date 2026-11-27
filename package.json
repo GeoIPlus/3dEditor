@@ -13,7 +13,7 @@
   },
   "scripts": {
     "check": "npm run types && npm run check:arch && npm run check:docs && npm run backlog:sync -- --check && npm test && npm run golden",
-    "test": "vitest run --project unit && node --test tools/check-docs.test.mjs tools/check-docs-icons.test.mjs",
+    "test": "vitest run --project unit && node --test tools/check-docs.test.mjs tools/check-docs-icons.test.mjs tools/questions.test.mjs",
     "types": "tsc -p tsconfig.json",
     "check:arch": "node tools/check-arch/cli.mjs",
     "check:docs": "node tools/check-docs-run.mjs",

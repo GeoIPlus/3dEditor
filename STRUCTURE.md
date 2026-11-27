@@ -14,6 +14,8 @@ docs/
   BACKLOG.md                         the 3DQM progress board (incl. mirror rows of other repos)
   CHORES.md                          fast-lane log of trivial document fixes (D-26)
   decisions/DECISIONS.md             D-NN decisions, Q-NN open questions (append-only)
+  decisions/RISKS.md                 risk register of provisional decisions, append-only (D-475, 3D-138)
+  QUESTIONS.md                       generated list of open owner questions, tools/questions.mjs (3D-138)
   decisions/adr/3D-ADR-NNNN-*.md     architecture decision records
   specs/3dqm-spec.md                 maintained spec (3D-04)
   verification/                      verification notes against code (3D-01)
@@ -54,6 +56,8 @@ tools/check-docs.mjs                 document consistency check, Node built-ins 
 tools/check-docs-run.mjs             `npm run check:docs`: strict on every branch except `wp/*` (D-38) (3D-05); new final ids vs. base, `--fix` (3D-78)
 tools/check-docs-{md,ids,overview}.mjs  check-docs parts: markdown helpers, id rules (D-179), generated overview (D-180) (3D-78)
 tools/check-docs-decisions.mjs       check-docs DECISIONS.md tables: id tables, status-row shape and ids, rows outside the tables (D-167) (3D-76)
+tools/questions{,-parse}.mjs         generated docs/QUESTIONS.md (blocking questions from checkpoints, unreviewed RISKS.md rows; `--remote --write`) and its parsers (3D-138)
+tools/check-docs-questions.mjs       check-docs rules: RISKS.md shape, checkpoint "Open questions" lines (3D-138)
 tools/base-branch.mjs                base branch name and coordinator marker (D-178) (3D-78)
 tools/budget{,-parse,-calc}.mjs      backlog forecast: ledger + BACKLOG -> "Budget and forecast" block, `--fix` (D-236) (3D-86)
 tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09); append-only store adapters in store-rules.mjs (3D-23); isolated GPL images in image-rules.mjs (3D-74)

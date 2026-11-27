@@ -20,6 +20,25 @@ coordinator's.
    touch, source sections with line offsets, the check that proves each line.
 5. First commit: checkpoint + BACKLOG status `in-progress (wp/3d-<id>-...)`.
 
+## Questions to the owner (D-475 part C)
+
+Owner answers can arrive hours later. Classify each question before asking it.
+
+- **Non-blocking** (the WP can reach its acceptance lines with any of the options; a wrong pick is undone by a later
+  change): do not ask and wait. List the options; for each, the implementation risk (what can break, how likely, the
+  cost to undo) and the speed to the goal. Take the lowest-risk option that still reaches the goal fastest. Record it
+  as a provisional decision `D-3D<wp>-n` in DECISIONS.md (source: "provisional, risk R-<wp>-n, awaiting the owner")
+  and append the assessment to [docs/decisions/RISKS.md](../../../docs/decisions/RISKS.md). List it in the checkpoint
+  section "Open questions" and ask for confirmation in the finish dialog; the work does not wait for it.
+- **Blocking** (no option is safe without the owner: contracts and ADRs (D-18), protection, scope, money, anything
+  hard to undo). Context below ~150k: ask the dialog and wait. Context above ~150k: first write the checkpoint (the
+  question in "Open questions") and the handoff, push, then ask the dialog as the last action of the turn. When the
+  answer arrives, record it (DECISIONS.md, checkpoint), push, and start the fresh session from the handoff with the
+  answer; do no other work in the old context. The ~150k line rests on list prices and assumptions:
+  [docs/metrics/README.md §7](../../../docs/metrics/README.md#7-wait-or-hand-off-d-475-part-c).
+- A blocking line is removed from the checkpoint once answered. Provisional lines stay; a review row in RISKS.md
+  closes them. `node tools/questions.mjs --write` (the coordinator) collects all into `docs/QUESTIONS.md`.
+
 ## Pause or hand off (budget reached, or session must end)
 
 1. Commit and push work in progress on the WP branch (never `main`).
@@ -57,7 +76,8 @@ Checks outstanding: <list>
    - If the review is due (README §5: calibration count < 10, or a trigger), run it now with the fixed prompt
      (Agent tool, `model: "fable"`). Paste its answer unedited, reply to each proposal, fill `review` in the ledger row.
    - Commit both files on the WP branch with the finish commit.
-4. Report to the owner in chat: what was done, check results, open questions (asked via dialog, not as text). When the
+4. Report to the owner in chat: what was done, check results, open questions (asked via dialog, not as text; provisional
+   decisions of this WP are put to the owner there for confirmation). When the
    owner accepts, send_message to the coordinator: "WP 3D-<id> done, owner accepted, <branch>@<sha>".
 5. **Keep the repository clean (D-42).** After the coordinating session has merged the WP into the base and confirmed
    the branch head is an ancestor of the base, the WP branch is deleted and the session archived. A cloud session may push
