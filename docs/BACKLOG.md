@@ -21,14 +21,14 @@ Updated: 2026-11-27
 
 | Progress | Rows |
 |---|---:|
-| Done | 76 / 111 |
+| Done | 76 / 114 |
 | Review | 1 |
 | In progress | 2 |
 | Ready | 6 |
-| Proposed (waiting for the owner to set `ready`) | 25 |
+| Proposed (waiting for the owner to set `ready`) | 28 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 76/111 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 76/114 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-131 Overhang width at B; 3D-47 SC: 3D view port + host.
 
@@ -145,9 +145,12 @@ flowchart TB
     D132["💡 🖥️ 3D-132 Return for rework"]
     D134["💡 🔗 3D-134 SC: vendor 3D-24 schemas"]
     D133_1["💡 🖥️ 3D-133.1 Profile id by content hash"]
+    D133_2["💡 🖥️ 3D-133.2 POC file mode of the service"]
     D25["💡 🧪 3D-25 E2E on mock"]
   end
   subgraph client["shared / geoviewer / crowdsource mirrors (PROPOSED)"]
+    D133_3["💡 🔗 3D-133.3 GV POC workplace"]
+    D133_4["💡 🔗 3D-133.4 GV POC oblique viewport"]
     D40["💡 🔗 3D-40 geo-render model3d"]
     D41["▶️ 🔗 3D-41 Remote kernel port"]
     D42["💡 🔗 3D-42 3DQM tools"]
@@ -319,6 +322,14 @@ flowchart TB
   D128 --> D133
   D133 --> D25
   D133 --> D133_1
+  D133 --> D133_2
+  D70 --> D133_2
+  D133_2 --> D133_3
+  D127 --> D133_3
+  D51 --> D133_3
+  D42 --> D133_3
+  D44 --> D133_3
+  D133_3 --> D133_4
   D43 --> D25
   D127 --> D25
   D50 --> D127
@@ -440,6 +451,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-133 | Service import: `IMPORT_BUILDING` from the input dataset (`datasets.read`), `putBaseline`, keep the source CityJSON and the `progress.save` save basis for the export source port of 3D-24 | here | service | 24, 128 | G5 | M | service | review (local, PR not requested; wp/3d-133-service-import) |
 | 3D-134 | SC: vendor the `model3d` schemas of 3D-24 (`approval-request`, `approval`, `export-request`, `export-result`; error `NOT_APPROVABLE`, D-455, D-456) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 24, 45 | G5 | S | mirror | proposed |
 | 3D-133.1 | Tolerance profile identity by content: the service sets `toleranceProfileId` = `sha256:<hex>` of the canonical profile for every import, so a profile without `id` imports and a changed profile under one label gets a new id | here | service, contracts | 133 | G5 | S | service | proposed |
+| 3D-133.2 | POC file mode of the kernel service: upload one CityJSON and LAS/COPC files as datasets, `buildings` adapter over the Buildings of the uploaded file, single-user lease adapter, static tokens; result as a download | here | service, contracts | 133, 70 | G5 | M | service | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 133, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
@@ -492,6 +504,8 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-50 | geoviewer consumes 3DQM packages: `@geoiplus/*` dependencies (none today) with the registry token in CI and Docker build, P4 canary scan of the client build (split D-397: mount and kernel route -> 3D-127) | geoviewer | host, CI | 23, 43 | G5 | M | mirror | ready (D-381; waits for 3D-43) |
 | 3D-127 | geoviewer runs 3DQM: mount workplace (`3dqm.production`, `3dqm.qa`), kernel route on server (mounts `createKernelHandler`, 3D-ADR-0002), file storage port for tests (split of 3D-50, D-397) | geoviewer | host | 50, 110, 43 | G5 | M | mirror | ready (D-411; waits for 3D-50, 3D-43) |
 | 3D-51 | geoviewer `scene3d` adapter implementing the 3D view port (entity-id pick, model3d drawing in GV) | geoviewer | scene3d | 47, 50 | G5 | M | mirror | ready (D-61; waits for 3D-47, 3D-50; D-54; UI per brandbook, D-40) |
+| 3D-133.3 | geoviewer POC workplace: upload a CityJSON (+ LAS/COPC), pick one building, edit it with the 3DQM tools (points, heatmap, FIT_PLANE, validation, undo/redo), download the result; internal, static tokens (D-3D133-8) | geoviewer | host, POC | 133.2, 127, 51, 42, 44 | G5 | M | mirror | proposed |
+| 3D-133.4 | geoviewer POC: oblique images (stereo) view-only in a second viewport kept in sync with the 3D viewport (camera, selected building); no measurement, no effect on the model (D-03 unchanged, D-3D133-8) | geoviewer | host, oblique | 133.3 | G5 | M | mirror | proposed |
 
 ## Details
 
@@ -608,6 +622,49 @@ accuracy ratio 1.30 is n=1 and not applied.
   -> another id; key order of the profile does not change the id; `npm run check` green.
 - Decisions: D-13, D-3D133-6  Open: none
 - Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S service n < 5)
+
+### 3D-133.2 POC file mode of the kernel service
+- Source: owner, chat 2026-11-27 (WP session 3D-133; D-3D133-7, D-3D133-8): an online POC to check the editor as a
+  whole on one building of a single CityJSON, outside the CP / Operaflow chain.
+- Goal: the kernel service runs without a CP document: the uploaded files are its datasets and its building list.
+- Scope in: upload route(s) for one CityJSON and LAS/COPC files (contract first, D-18); `datasets` over the uploads
+  (existing byte store); `buildings` adapter listing the file's `Building` CityObjects (`cityObjectId` = id in the
+  file); points dataset of a building from the uploaded cloud (D-196); a lease adapter that grants the single user;
+  static tokens (`static-auth`); the edited CityJSON as a download (export without `progress.save`, or a save
+  dataset in the own store). Scope out: UI (3D-133.3); public access, upload quotas, deletion (D-84 unchanged).
+- Accept: upload GT-I1 + a small COPC file -> the building list holds `bld-gt-i1`; import, a command, FIT_PLANE and a
+  heatmap on it through the handler; download returns a valid CityJSON with the edit; nothing reachable without a
+  token; `npm run check` green.
+- Decisions: D-3D133-1..4, D-3D133-7, D-3D133-8, D-196  Open: upload size limit (body limit is 1 MiB, D-317); where the
+  POC runs (hosting)
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (M service n=1 < 5)
+
+### 3D-133.3 geoviewer POC workplace
+- Source: owner, chat 2026-11-27 (D-3D133-8, D-3D133-9): geoviewer is the host of every task and product; the POC runs there.
+- Goal: an internal online page in geoviewer where one building of an uploaded CityJSON is edited against its cloud.
+- Scope in: upload page, building pick, 3DQM workplace mounted on the POC kernel service (3D-133.2) instead of a CP
+  document, points drawing, tools, heatmap, FIT_PLANE, validation panel, undo/redo, download; static tokens.
+  Scope out: oblique viewport (3D-133.4); CP / QC flow; public access.
+- Accept: on the GT-I1 file + a COPC file an internal user edits the building, sees the heatmap, fits a plane, and
+  downloads a CityJSON that imports again with the edit; no kernel code in the browser bundle (P4 canary, 3D-50).
+- Text of the row to add in geoviewer (its BACKLOG is authoritative, D-25): "3DQM POC workplace: upload CityJSON +
+  LAS/COPC, pick a building, edit with 3DQM tools against the POC kernel service (3dEditor 3D-133.2), heatmap,
+  FIT_PLANE, download; internal, static tokens."
+- Decisions: D-3D133-7..9, D-17, D-40  Open: hosting of the POC
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (M mirror n < 5)
+
+### 3D-133.4 geoviewer POC oblique viewport
+- Source: owner, chat 2026-11-27 (D-3D133-8): oblique images in stereo, in another viewport in sync with the 3D one.
+- Goal: the POC user sees the building in oblique (stereo) imagery next to the 3D view, as a reference only.
+- Scope in: second viewport with geoviewer's oblique viewer; sync with the 3D viewport (camera position / view
+  direction, selected building); stereo display where the viewer supports it. Scope out: measurement from images,
+  any effect on the model (D-03: no stereo in the product; this is a POC-only exception, D-3D133-8).
+- Accept: moving the 3D camera or selecting another building updates the oblique viewport within one frame budget
+  the owner sets; no image data reaches the kernel service.
+- Text of the row to add in geoviewer: "3DQM POC: oblique (stereo) view-only viewport synced with the 3D viewport
+  (camera, selected building)."
+- Decisions: D-03, D-3D133-8  Open: sync criterion (latency), which oblique datasets the POC uses
+- Estimate: $6.63 (p80 $8.96); basis: M n=16 (M mirror n < 5)
 
 ### 3D-134 SC: vendor the 3D-24 `model3d` schemas
 - Source: WP session 3D-24, 2026-11-26: D-455 adds four schemas and D-456 the error code `NOT_APPROVABLE` inside
