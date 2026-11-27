@@ -3,7 +3,7 @@
   "$id": "urn:geoiplus:schema:model3d-import-request:v1",
   "title": "ImportRequest",
   "description": "An operator imports one building into the service (spec §6, §11; IMPORT_BUILDING, v0.3 §5). The building is named by the route, the lease by the `X-3DQM-Lease` header. The service resolves the input dataset, the CityObject and the `progress.save` dataset from the CP document through its `buildings` port, never from the client (D-3D133-1). Reply: `import-report` (201); a building that already has a baseline -> 409 VERSION_CONFLICT, nothing changed.",
-  "$comment": "[P] Shape (D-3D133-3): empty, like the IMPORT_BUILDING payload (Q-32).",
+  "$comment": "Shape approved (D-3D133-3, D-3D133-5): empty, like the IMPORT_BUILDING payload (Q-32).",
   "type": "object",
   "properties": {},
   "additionalProperties": false

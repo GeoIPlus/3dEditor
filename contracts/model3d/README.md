@@ -41,7 +41,7 @@ Every file is `<name>.schema.json` with `$id` `urn:geoiplus:schema:model3d-<name
 | 20 (3D-24) | `approval` | approval mark of one version, written once (D-450, D-455, D-458) |
 | 21 (3D-24) | `export-request` | `buildingIds` of a batch export (D-453, D-455, D-458) |
 | 22 (3D-24) | `export-result` | `export-report` + per-building save outcome and delivered digest / address (D-455, D-458) |
-| 23 (3D-133) | `import-request` | empty body of a service import; building in the route, datasets from the `buildings` port (D-3D133-1, D-3D133-3; proposed) |
+| 23 (3D-133) | `import-request` | empty body of a service import; building in the route, datasets from the `buildings` port (D-3D133-1, D-3D133-3, D-3D133-5) |
 
 `examples/<name>.json` holds `{ "valid": [...], "invalid": [{ "why", "instance" }] }` (for `common`: per `$defs` entry).
 
