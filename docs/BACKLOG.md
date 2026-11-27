@@ -112,6 +112,7 @@ flowchart TB
     D24["🔍 ⚙️ 3D-24 QC and export rules"]
   end
   subgraph ready["READY"]
+    D24_2["▶️ 🖥️ 3D-24.2 Service import"]
     D74["🚧 🖥️ 3D-74 val3dity image + binding"]
     D47["🚧 🔗 3D-47 SC: 3D view port + host"]
     D48["▶️ 🔗 3D-48 SC: apps/3dqm host"]
@@ -140,7 +141,6 @@ flowchart TB
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D24_1["💡 🖥️ 3D-24.1 Return for rework"]
-    D24_2["▶️ 🖥️ 3D-24.2 Service import"]
     D24_3["💡 🔗 3D-24.3 SC: vendor 3D-24 schemas"]
     D25["💡 🧪 3D-25 E2E on mock"]
   end
