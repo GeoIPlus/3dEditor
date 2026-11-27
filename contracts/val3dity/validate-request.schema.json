@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:val3dity-validate-request:v1",
+  "title": "Val3dityValidateRequest",
+  "description": "Body of POST /validate to the val3dity image (3D-74; 3D-ADR-0008). `document` is the CityJSON the kernel export wrote for one building (3D-11); the image runs val3dity on it with `parameters` and replies with a validate-response.",
+  "$comment": "D-446, D-447. [P] Member names. Parameters come from the tolerance profile (D-13, D-447): snapTolM = topologySnapTolM -> val3dity --snap_tol; planarityD2pTolM = planarTolM -> --planarity_d2p_tol; planarityNormalsTolDeg = 20 (val3dity default; the profile has no such field) -> --planarity_n_tol. --overlap_tol is not sent (val3dity default). The document is not validated here beyond its type: checking it is val3dity's job (9xx dataset errors).",
+  "type": "object",
+  "properties": {
+    "document": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "CityJSON" },
+        "CityObjects": { "type": "object" }
+      },
+      "required": ["type", "CityObjects"]
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "snapTolM": { "type": "number", "exclusiveMinimum": 0 },
+        "planarityD2pTolM": { "type": "number", "exclusiveMinimum": 0 },
+        "planarityNormalsTolDeg": { "type": "number", "exclusiveMinimum": 0, "maximum": 90 }
+      },
+      "required": ["snapTolM", "planarityD2pTolM", "planarityNormalsTolDeg"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["document", "parameters"],
+  "additionalProperties": false
+}

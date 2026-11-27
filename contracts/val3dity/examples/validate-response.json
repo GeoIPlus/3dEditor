@@ -1,0 +1,261 @@
+{
+  "valid": [
+    {
+      "validator": {
+        "name": "val3dity",
+        "version": "2.7.0",
+        "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+        "libraries": {
+          "cgal": "5.6",
+          "geos": "3.12.1",
+          "boost": "1.83.0"
+        }
+      },
+      "report": {
+        "type": "val3dity_report",
+        "val3dity_version": "2.7.0",
+        "validity": false,
+        "parameters": {
+          "overlap_tol": -1.0,
+          "planarity_d2p_tol": 0.01,
+          "planarity_n_tol": 20.0,
+          "snap_tol": 0.001
+        },
+        "features": [
+          {
+            "errors": [
+              {
+                "code": 302,
+                "description": "SHELL_NOT_CLOSED",
+                "id": "coid=bld-gt-i2|geom=0|shell=0|face=",
+                "info": "Location hole: (512010, 6170004.0300000003, 8)"
+              }
+            ],
+            "id": "bld-gt-i2",
+            "type": "Building",
+            "validity": false
+          }
+        ],
+        "dataset_errors": [],
+        "time": "2026-11-26T23:48:09 (UTC)",
+        "input_file": "input.cityjson.json"
+      }
+    },
+    {
+      "validator": {
+        "name": "val3dity",
+        "version": "2.7.0",
+        "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+        "libraries": {
+          "cgal": "5.6",
+          "geos": "3.12.1",
+          "boost": "1.83.0"
+        }
+      },
+      "report": {
+        "type": "val3dity_report",
+        "val3dity_version": "2.7.0",
+        "validity": true,
+        "parameters": {
+          "snap_tol": 0.01,
+          "planarity_d2p_tol": 0.02,
+          "planarity_n_tol": 20.0,
+          "overlap_tol": -1.0
+        },
+        "features": [
+          {
+            "id": "bld-gt-i1",
+            "type": "Building",
+            "validity": true,
+            "errors": []
+          }
+        ],
+        "dataset_errors": []
+      }
+    },
+    {
+      "validator": {
+        "name": "val3dity",
+        "version": "2.7.0",
+        "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+        "libraries": {
+          "cgal": "5.6",
+          "geos": "3.12.1",
+          "boost": "1.83.0"
+        }
+      },
+      "report": {
+        "type": "val3dity_report",
+        "val3dity_version": "2.7.0",
+        "validity": true,
+        "parameters": {
+          "overlap_tol": -1.0,
+          "planarity_d2p_tol": 0.01,
+          "planarity_n_tol": 20.0,
+          "snap_tol": 0.001
+        },
+        "features": [],
+        "dataset_errors": [
+          {
+            "code": 904,
+            "description": "FORMAT_NOT_SUPPORTED",
+            "info": "x"
+          }
+        ],
+        "time": "2026-11-26T23:48:09 (UTC)",
+        "input_file": "input.cityjson.json"
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "why": "error code outside 100..999",
+      "instance": {
+        "validator": {
+          "name": "val3dity",
+          "version": "2.7.0",
+          "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+          "libraries": {
+            "cgal": "5.6",
+            "geos": "3.12.1",
+            "boost": "1.83.0"
+          }
+        },
+        "report": {
+          "type": "val3dity_report",
+          "val3dity_version": "2.7.0",
+          "validity": false,
+          "parameters": {
+            "overlap_tol": -1.0,
+            "planarity_d2p_tol": 0.01,
+            "planarity_n_tol": 20.0,
+            "snap_tol": 0.001
+          },
+          "features": [
+            {
+              "errors": [
+                {
+                  "code": 42,
+                  "description": "X"
+                }
+              ],
+              "id": "bld-gt-i2",
+              "type": "Building",
+              "validity": false
+            }
+          ],
+          "dataset_errors": [],
+          "time": "2026-11-26T23:48:09 (UTC)",
+          "input_file": "input.cityjson.json"
+        }
+      }
+    },
+    {
+      "why": "no validator identity",
+      "instance": {
+        "report": {
+          "type": "val3dity_report",
+          "val3dity_version": "2.7.0",
+          "validity": false,
+          "parameters": {
+            "overlap_tol": -1.0,
+            "planarity_d2p_tol": 0.01,
+            "planarity_n_tol": 20.0,
+            "snap_tol": 0.001
+          },
+          "features": [
+            {
+              "errors": [
+                {
+                  "code": 302,
+                  "description": "SHELL_NOT_CLOSED",
+                  "id": "coid=bld-gt-i2|geom=0|shell=0|face=",
+                  "info": "Location hole: (512010, 6170004.0300000003, 8)"
+                }
+              ],
+              "id": "bld-gt-i2",
+              "type": "Building",
+              "validity": false
+            }
+          ],
+          "dataset_errors": [],
+          "time": "2026-11-26T23:48:09 (UTC)",
+          "input_file": "input.cityjson.json"
+        }
+      }
+    },
+    {
+      "why": "report without features",
+      "instance": {
+        "validator": {
+          "name": "val3dity",
+          "version": "2.7.0",
+          "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+          "libraries": {
+            "cgal": "5.6",
+            "geos": "3.12.1",
+            "boost": "1.83.0"
+          }
+        },
+        "report": {
+          "type": "val3dity_report",
+          "val3dity_version": "2.7.0",
+          "validity": false,
+          "parameters": {
+            "overlap_tol": -1.0,
+            "planarity_d2p_tol": 0.01,
+            "planarity_n_tol": 20.0,
+            "snap_tol": 0.001
+          },
+          "dataset_errors": [],
+          "time": "2026-11-26T23:48:09 (UTC)",
+          "input_file": "input.cityjson.json"
+        }
+      }
+    },
+    {
+      "why": "not a val3dity report",
+      "instance": {
+        "validator": {
+          "name": "val3dity",
+          "version": "2.7.0",
+          "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+          "libraries": {
+            "cgal": "5.6",
+            "geos": "3.12.1",
+            "boost": "1.83.0"
+          }
+        },
+        "report": {
+          "type": "report",
+          "val3dity_version": "2.7.0",
+          "validity": false,
+          "parameters": {
+            "overlap_tol": -1.0,
+            "planarity_d2p_tol": 0.01,
+            "planarity_n_tol": 20.0,
+            "snap_tol": 0.001
+          },
+          "features": [
+            {
+              "errors": [
+                {
+                  "code": 302,
+                  "description": "SHELL_NOT_CLOSED",
+                  "id": "coid=bld-gt-i2|geom=0|shell=0|face=",
+                  "info": "Location hole: (512010, 6170004.0300000003, 8)"
+                }
+              ],
+              "id": "bld-gt-i2",
+              "type": "Building",
+              "validity": false
+            }
+          ],
+          "dataset_errors": [],
+          "time": "2026-11-26T23:48:09 (UTC)",
+          "input_file": "input.cityjson.json"
+        }
+      }
+    }
+  ]
+}

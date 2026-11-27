@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:val3dity-error:v1",
+  "title": "Val3dityError",
+  "description": "Reply of the val3dity image other than 200 (3D-74): 400 BAD_REQUEST (body not a validate-request), 404 NOT_FOUND (unknown route), 413 PAYLOAD_TOO_LARGE, 500 VALIDATOR_FAILED (val3dity did not exit 0 or wrote no report), 504 VALIDATOR_TIMEOUT. The service adapter treats every non-200 reply, a refused connection and a timeout as a port failure: the promise rejects and the service answers 503 UNAVAILABLE, model unchanged (spec §2.4; 3D-ADR-0008 decision 1).",
+  "$comment": "D-446. [P] Codes and member names; `code` is bound to the HTTP status. The size limit and timeout values are image settings (environment), not contract fields.",
+  "type": "object",
+  "properties": {
+    "code": { "enum": ["BAD_REQUEST", "NOT_FOUND", "PAYLOAD_TOO_LARGE", "VALIDATOR_FAILED", "VALIDATOR_TIMEOUT"] },
+    "httpStatus": { "enum": [400, 404, 413, 500, 504] },
+    "message": { "type": "string" }
+  },
+  "required": ["code", "httpStatus", "message"],
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "code": { "const": "BAD_REQUEST" } } }, "then": { "properties": { "httpStatus": { "const": 400 } } } },
+    { "if": { "properties": { "code": { "const": "NOT_FOUND" } } }, "then": { "properties": { "httpStatus": { "const": 404 } } } },
+    { "if": { "properties": { "code": { "const": "PAYLOAD_TOO_LARGE" } } }, "then": { "properties": { "httpStatus": { "const": 413 } } } },
+    { "if": { "properties": { "code": { "const": "VALIDATOR_FAILED" } } }, "then": { "properties": { "httpStatus": { "const": 500 } } } },
+    { "if": { "properties": { "code": { "const": "VALIDATOR_TIMEOUT" } } }, "then": { "properties": { "httpStatus": { "const": 504 } } } }
+  ]
+}

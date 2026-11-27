@@ -21,20 +21,21 @@ Updated: 2026-11-27
 
 | Progress | Rows |
 |---|---:|
-| Done | 73 / 107 |
+| Done | 74 / 107 |
 | Review | 1 |
-| In progress | 4 |
+| In progress | 3 |
 | Ready | 6 |
 | Proposed (waiting for the owner to set `ready`) | 22 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 73/107 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 74/107 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-131 Overhang width at B; 3D-24 QC and export rules; 3D-74 val3dity image + binding; 3D-47 SC: 3D view port + host.
+**Running:** 3D-131 Overhang width at B; 3D-24 QC and export rules; 3D-47 SC: 3D view port + host.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D74["✅ 🖥️ 3D-74 val3dity image + binding"]
     D124["✅ ⚙️ 3D-124 Overhang rebuild"]
     D128["✅ 🖥️ 3D-128 datasets port + file adapter"]
     D126["✅ ⚙️ 3D-126 Regularize footprint"]
@@ -113,7 +114,6 @@ flowchart TB
     D129["🔍 🔗 3D-129 SC: INVALID_CRS schema"]
   end
   subgraph ready["READY"]
-    D74["🚧 🖥️ 3D-74 val3dity image + binding"]
     D47["🚧 🔗 3D-47 SC: 3D view port + host"]
     D48["▶️ 🔗 3D-48 SC: apps/3dqm host"]
     D51["▶️ 🔗 3D-51 geoviewer scene3d adapter"]
@@ -350,10 +350,10 @@ flowchart TB
 Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script ([method §4](metrics/README.md#4-forecast-etc-and-tuning)).
 
 ```
-Forecast 2026-11-26 (ledger n=43 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=5, S kernel n=5, S spec n=8; baseline d7c472d 2026-11-19)
-Known remaining: $244 / $307 over 34 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $262 / $329
-Throughput: 73.0 rows/week (7 d), 400 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
+Forecast 2026-11-27 (ledger n=43 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=5, S kernel n=5, S spec n=8; baseline d7c472d 2026-11-19)
+Known remaining: $237 / $298 over 33 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $254 / $320
+Throughput: 64.8 rows/week (8 d), 350 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 1, range 1.30..1.30)
 ```
 
 MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
@@ -449,7 +449,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-71 | `FIT_PLANE` command: apply the plane fit as a `PLANE` measurement or as a face's new `supportPlane` through PREVIEW/COMMIT (spec §10.12 r4, D-134) | here | geo-model3d/ops | 14, 22 | G4 | M | kernel | done (D-283; merged into base, no PR; D-280..D-282) |
 | 3D-72 | Spec update for 3D-22 decisions: `heatmap-request` and `PointSelection` in §2, §9 r3/r6 (D-130, D-131, D-135), §10.12 r4 selection (D-132) | here | docs/specs | 22 | G4 | S | spec | done (D-176; merged into base, no PR) |
 | 3D-73 | `backlog:sync` links mirror rows to `shared_compnents`: accept SC's bare-number row ids (`76`), vendor the first SC pin (D-57), link 3D-46 as `shared (76)` | here | tools | 05, 46 | G0 | S | tooling | done (D-210; merged into base, no PR) |
-| 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 110 | G5 | M | service | in-progress (D-429; wp/3d-74-val3dity) |
+| 3D-74 | val3dity binding: own pinned container image (val3dity 2.7.0, GPL-3.0 isolated) and the `services/kernel` adapter of the `validate` external-validator port (D-148, D-149) | here | services/kernel, val3dity image, contracts | 11, 12, 110 | G5 | M | service | done (D-449; merged into base, no PR; D-444..D-448) |
 | 3D-75 | Import state from `validateModel`: replace the interim `import/state.js` (D-157) | here | geo-model3d (index, import, validate) | 10, 12 | G1 | S | kernel | done (D-185; merged into base, no PR) |
 | 3D-76 | `check:docs`: DECISIONS.md table integrity - a `D-NN` / `Q-NN` row in "Open-question status updates" must have the status-row shape and name an existing id; a decision row outside "## Decisions" is a problem (D-167) | here | tools | 30, 05 | G0 | S | tooling | done (D-209; merged into base, no PR) |
 | 3D-77 | Spec §5 text for the solver decisions: per-kind constraint table (D-169) and D-170..D-172 | here | docs/specs | 13, 66 | G3 | S | spec | done (D-206; merged into base, no PR) |

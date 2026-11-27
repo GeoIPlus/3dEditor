@@ -1,0 +1,64 @@
+{
+  "valid": [
+    {
+      "name": "val3dity",
+      "version": "2.7.0",
+      "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+      "libraries": {
+        "cgal": "5.6",
+        "geos": "3.12.1",
+        "boost": "1.83.0"
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "why": "short commit",
+      "instance": {
+        "name": "val3dity",
+        "version": "2.7.0",
+        "commit": "fbe9e4d",
+        "libraries": {
+          "cgal": "5.6",
+          "geos": "3.12.1",
+          "boost": "1.83.0"
+        }
+      }
+    },
+    {
+      "why": "other validator",
+      "instance": {
+        "name": "cjio",
+        "version": "2.7.0",
+        "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+        "libraries": {
+          "cgal": "5.6",
+          "geos": "3.12.1",
+          "boost": "1.83.0"
+        }
+      }
+    },
+    {
+      "why": "library versions missing (3D-ADR-0008 records them)",
+      "instance": {
+        "name": "val3dity",
+        "version": "2.7.0",
+        "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a"
+      }
+    },
+    {
+      "why": "unknown member",
+      "instance": {
+        "name": "val3dity",
+        "version": "2.7.0",
+        "commit": "fbe9e4d65376e1c3f63401f15967485783f78c0a",
+        "libraries": {
+          "cgal": "5.6",
+          "geos": "3.12.1",
+          "boost": "1.83.0"
+        },
+        "tag": "2.7.0"
+      }
+    }
+  ]
+}

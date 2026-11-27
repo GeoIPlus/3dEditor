@@ -1,7 +1,7 @@
 // GT-I4 (v0.3 §12; spec §7, §13; row 3D-11): import GT-I1 -> export without edits: geometry within 0.001 m, semantics
 // and object ids identical, val3dity without errors. Expected values are read from the fixture; coordinates are
 // decoded by the test's own code (v0.2 F.3). "val3dity without errors" is proven by 3D-74 against the pinned image
-// (D-189); here the export is re-imported and checked by `validateModel` (FINAL_VALIDATION, stub port, full solid).
+// (D-189, services/kernel/test/gt-i4-val3dity.golden.test.js); here the export is re-imported and checked by `validateModel` (FINAL_VALIDATION, stub port, full solid).
 import { describe, expect, it } from 'vitest';
 import { importBuilding, exportBuilding, validateModel } from '@geoiplus/geo-model3d';
 import { PROFILE, goldenImport } from '../import/helpers.js';
@@ -66,5 +66,5 @@ describe('GT-I4 import -> export without edits', () => {
     expect(r.issues.filter((i) => i.severity === 'ERROR')).toEqual([]);
     expect(r.isValidForTargetState).toBe(true);
   });
-  it.todo('val3dity without errors against the pinned image: row 3D-74 (D-189)');
+  // "val3dity without errors" against the pinned image: services/kernel/test/gt-i4-val3dity.golden.test.js (3D-74, D-189).
 });

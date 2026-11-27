@@ -3,9 +3,9 @@
 - Status: implemented in part - points port and LAS-whole adapter (3D-22), COPC-by-box adapter (3D-70); `history` port,
   memory and file store, COMMIT path, command status (3D-23); command API: PREVIEW store, COMMIT by `previewId`, rate
   and size limits, error mapping, contract validation (3D-109); handler, HTTPS server, auth / lease, heatmap request
-  (3D-110); `datasets` port, memory and file byte store, save / deliver results (3D-128); S3 store: 3D-111
+  (3D-110); val3dity adapter of the `validate` port (3D-74); `datasets` port, memory and file byte store, save / deliver results (3D-128); S3 store: 3D-111
 - Protection: P4 (server-only host of the kernel; never in a browser bundle)
-- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API), 3D-110 (handler, server, auth), 3D-128 (datasets)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
+- WP: 3D-22 (points), 3D-70 (COPC), 3D-23 (history, COMMIT), 3D-109 (command API), 3D-110 (handler, server, auth), 3D-128 (datasets), 3D-74 (val3dity adapter)   Spec: [docs/specs/3dqm-spec.md](../../docs/specs/3dqm-spec.md) §9, §11
 - Source/donor: new; LAS layout from the ASPRS LAS Specification 1.4 R15 (2019); COPC layout from the COPC 1.0
   specification (copcio/copcio.github.io @a6336f7)
 - Runtime dependencies: `laz-perf` 0.0.7 (Apache-2.0, WASM; LAZ chunk decoder only), [3D-ADR-0009](../../docs/decisions/adr/3D-ADR-0009-copc-laz-decoder.md);
@@ -74,8 +74,16 @@ No `index.js` yet; a host imports `src/handler.js` (GV test host, 3D-50) and the
 - `src/preview-store.js` - `createPreviewStore({ now, ttlMs?, perKey?, total?, newId? })`: `nextId`, `put`, `get`,
   `delete`, `size` (3D-ADR-0003 `putPreview` / `takePreview`). `src/rate-limit.js` - `createRateLimiter({ now })`
   `.admit(actorId, projectId, buildingId)`. `src/body.js` - `readJsonBody(source, { limit?, declaredLength? })`.
+- `src/adapters/val3dity.js` (3D-74) - `createVal3dityValidator({ url, documentOf, timeoutMs?, fetch?, contractsDir? })`
+  -> `{ validate({ model, tolerances }), version() }`: the `validate` external-validator port (3D-ADR-0008). Exports
+  the model (`exportBuilding`, with the import document from `documentOf`), calls the val3dity image
+  ([images/val3dity](../../images/val3dity/README.md)) over [contracts/val3dity](../../contracts/val3dity/README.md),
+  returns `{ validatorVersion: 'val3dity 2.7.0', findings }`; `VAL3DITY_PIN`, `parametersOf(profile)` (D-447),
+  `findingsOf`. Any image failure rejects with `PortUnavailableError` (-> `503 UNAVAILABLE`). `src/adapters/val3dity-ids.js`
+  - `parseVal3dityId`, `entityIdsOf(model, errorId, featureId)` (face / shell / solid / semantic node by export nesting).
+  Not wired into a route yet: the FINAL_VALIDATION / export route and the stored import document are later rows.
 - `src/errors.js` - `HTTP_STATUS` (spec §2.4), `errorKey`, `errorReply(code, entityIds?, message?, details?)`,
-  `failureReply(err)` (D-353; a kernel `CrsError` -> `422 INVALID_CRS` with `details.crsReason`, D-406).
+  `PortUnavailableError` (3D-74), `failureReply(err)` (D-353; a kernel `CrsError` -> `422 INVALID_CRS` with `details.crsReason`, D-406).
 - `src/ports/points.js` - `PointsPort { queryBox(box, { signal }) -> Promise<Float64Array> }`: points in an inclusive
   world box of the dataset CRS, x y z interleaved, full source precision (spec §9 r7); `isPointsPort`, `inBox`.
 - `src/adapters/las-points.js` - `createLasPointsAdapter({ path, read? })`: reads one uncompressed LAS 1.0-1.4 file

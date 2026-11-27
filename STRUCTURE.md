@@ -45,6 +45,8 @@ services/kernel/       (3D-22, 3D-23, 3D-109, 3D-110, 3D-128) host: createKernel
   src/ports/datasets.js datasets.js results.js          `datasets` port over an append-only byte store (adapters/*-datasets-store.js: memory, file), save to `progress.save` / deliver results (3D-128)
   test/datasets-contract.js                              `datasets` port contract suite, run by every adapter (CS adapter 3D-63 too) (3D-128)
 contracts/model3d/     (3D-06)        authoritative `model3d` schemas; consumers pin a commit (D-37, 3D-ADR-0001)
+contracts/val3dity/    (3D-74)        service-internal wire contract kernel service <-> val3dity image (D-448); not vendored by consumers
+images/val3dity/       (3D-74)        val3dity 2.7.0 image (GPL-3.0, isolated: D-109, D-148): Dockerfile, collect.sh, HTTP wrapper server.py, SOURCE.md
   <name>.schema.json examples/<name>.json test/           54 schemas ($id urn:geoiplus:schema:model3d-<name>:v1), valid/invalid examples, Ajv test (3D-06; card README.md)
 fixtures/GT-<id>/                    golden fixtures of v0.3 §12, generated; format in fixtures/README.md (3D-07)
 tools/golden-fixtures/               fixture generator (`npm run fixtures`) and its tests (3D-07)
@@ -54,7 +56,7 @@ tools/check-docs-{md,ids,overview}.mjs  check-docs parts: markdown helpers, id r
 tools/check-docs-decisions.mjs       check-docs DECISIONS.md tables: id tables, status-row shape and ids, rows outside the tables (D-167) (3D-76)
 tools/base-branch.mjs                base branch name and coordinator marker (D-178) (3D-78)
 tools/budget{,-parse,-calc}.mjs      backlog forecast: ledger + BACKLOG -> "Budget and forecast" block, `--fix` (D-236) (3D-86)
-tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09); append-only store adapters in store-rules.mjs (3D-23)
+tools/check-arch/                    `npm run check:arch`: rules in config.mjs, negative-control browser build (3D-05); kernel DAG and no-I/O rules in kernel-rules.mjs (3D-09); append-only store adapters in store-rules.mjs (3D-23); isolated GPL images in image-rules.mjs (3D-74)
 tools/backlog-sync/                  `npm run backlog:sync`: sources.json (row id rule per source), pins/<repo>/ snapshots + provenance (3D-05; first pin pins/shared, 3D-73)
 tools/bench/                         `npm run bench`: server PREVIEW latency bench through the command API `createCommandApi` (3D-121, D-357), scenes, rig fingerprint, scene and path tests (3D-08, 3D-ADR-0006); `solve-cost.mjs` (3D-13); `handler.mjs` = `npm run bench:handler`, the same scenes through `createKernelHandler` (3D-110, D-405)
 tools/hooks/                         Claude Code hook scripts (3D-30)

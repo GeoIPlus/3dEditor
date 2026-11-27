@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:geoiplus:schema:val3dity-validator:v1",
+  "title": "Val3dityValidator",
+  "description": "Identity of the validator inside the val3dity image: the reply of GET /version and the `validator` member of every validate reply (3D-74; 3D-ADR-0008). The service reports `validatorVersion` = `val3dity <version>`.",
+  "$comment": "D-446. [P] Member names. `version` is what `val3dity --version` prints; `commit` is the pinned source commit the image was built from (D-444); `libraries` records the CGAL / GEOS / Boost versions the binary links (3D-ADR-0008: 'records CGAL / GEOS versions').",
+  "type": "object",
+  "properties": {
+    "name": { "const": "val3dity" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "libraries": {
+      "type": "object",
+      "properties": {
+        "cgal": { "type": "string", "minLength": 1 },
+        "geos": { "type": "string", "minLength": 1 },
+        "boost": { "type": "string", "minLength": 1 }
+      },
+      "required": ["cgal", "geos", "boost"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["name", "version", "commit", "libraries"],
+  "additionalProperties": false
+}

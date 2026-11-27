@@ -32,6 +32,18 @@ export function errorReply(code, entityIds = [], message, details) {
   return { httpStatus, body };
 }
 
+/**
+ * A port whose backing process cannot answer (3D-74: the val3dity image refused, timed out, or replied outside its
+ * contract). `failureReply` maps it to `503 UNAVAILABLE`; the caller changed nothing (spec §2.4, D-448).
+ */
+export class PortUnavailableError extends Error {
+  /** @param {string} message @param {{ cause?: unknown }} [options] */
+  constructor(message, options) {
+    super(message, options);
+    this.name = 'PortUnavailableError';
+  }
+}
+
 /** Abort / timeout names of a failed read (`AbortSignal.timeout`, `fetch`). */
 const READ_ABORTS = new Set(['AbortError', 'TimeoutError']);
 
@@ -49,7 +61,7 @@ const isCrsError = (e) => e?.name === 'CrsError' && e.code === 'INVALID_CRS' && 
  * Registry reply of a thrown failure (D-353): a kernel `CrsError` (the cloud's CRS cannot be mapped to the building's,
  * D-197, D-198) -> `422 INVALID_CRS` with `details.crsReason` (D-406); `LasFormatError` (corrupt or unsupported
  * point file) -> `500 INTERNAL`,
- * a read failure -> `503 UNAVAILABLE`, anything else -> `500 INTERNAL`. The message is diagnostic, not UI text.
+ * a `PortUnavailableError` (3D-74) or a read failure -> `503 UNAVAILABLE`, anything else -> `500 INTERNAL`. The message is diagnostic, not UI text.
  * @param {unknown} err
  * @returns {{ httpStatus: number, body: any }}
  */
@@ -57,6 +69,7 @@ export function failureReply(err) {
   const e = /** @type {any} */ (err);
   if (isCrsError(e)) return errorReply('INVALID_CRS', [], e.message, { crsReason: e.details.reason });
   if (e instanceof LasFormatError) return errorReply('INTERNAL', [], `point file: ${e.message}`);
+  if (e instanceof PortUnavailableError) return errorReply('UNAVAILABLE', [], e.message);
   if (isReadFailure(e)) return errorReply('UNAVAILABLE', [], `read failed: ${e.code ?? e.name}`);
   return errorReply('INTERNAL', [], 'unexpected failure');
 }
