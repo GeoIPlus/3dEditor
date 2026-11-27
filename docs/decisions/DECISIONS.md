@@ -455,6 +455,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-439 | 3D-124 accepted by the owner (chat, 2026-11-26); D-437 confirmed; branch wp/3d-124-overhang-rebuild handed to the coordinator for the merge | Owner, chat, 2026-11-26 (3D-124) |
 | D-440 | 3D-124 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-435..D-439, row 3D-131 | Owner, WP session 3D-124, 2026-11-26 |
 | D-441 | Row 3D-131 (overhang width at both outer corners on a near-horizontal eave) set `ready` by the owner (chat in WP session 3D-124); started by the coordinator in a fresh session on wp/3d-131-overhang-corners after the 3D-124 merge | Owner, WP session 3D-124, 2026-11-26 |
+| D-442 | SC PR #72 (SC WP-80, WP-28 core composition slice) merged into shared_compnents main (8994694; main e4c2466 with #74); SC pin refreshed. 3D-41 and 3D-43 still wait for SC WP-81 (blocked in SC until its ADR is approved) | Owner (SC merge), coordinating session, 2026-11-27 |
 
 ## Open questions
 
