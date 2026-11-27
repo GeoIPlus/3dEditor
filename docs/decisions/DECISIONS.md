@@ -499,6 +499,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-483 | 3D-133 follow-up wp/3d-133-service-import@ab55a1f (docs, owner dialog) merged: three provisional decisions became D-480..D-482, three intake rows became 3D-139..3D-141 (POC: service file mode; geoviewer mirrors POC workplace and oblique view-only viewport), all `proposed` | Owner, WP session 3D-133, 2026-11-27 |
 | D-484 | `merge-wp` and the WP start procedure get a step that appends the `merge` / `start` line to `docs/coordination/history/YYYY-MM.md` (coordinator-handover §2); it is added in 3D-137, which already edits `merge-wp`, not in 3D-136 | Owner, dialog, WP session 3D-136, 2026-11-27 |
 | D-485 | 3D-136 accepted (done); merged into the base by the coordinating session (D-178); provisional D-484 became D-484; the coordinator rotates now by the new `coordinator-handover` skill | Owner, WP session 3D-136, 2026-11-27 |
+| D-486 | 3D-134 done: SC PR #87 (vendor of the 3D-24 `model3d` schemas) merged into shared_compnents main 287c4b24 and records PR #88 (SC row 90 `done`, WP-90 closed) merged as 5c14f256 on the owner's instruction in the SC session; reported by the 3D-134 session, not verified from here (no SC access in the coordinating session) | Owner (SC), coordinating session, 2026-11-27 |
 
 ## Open questions
 
