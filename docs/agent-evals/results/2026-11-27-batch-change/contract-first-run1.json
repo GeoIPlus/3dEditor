@@ -1,0 +1,65 @@
+{
+  "task": "contract-first",
+  "run": 1,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "213963e2ce359b909dc44a1f2c16f0f6f7610fa2",
+  "model": "claude-fable-5-2",
+  "score": 0.5,
+  "holds": false,
+  "checks": [
+    {
+      "id": "no-code-without-schema",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": false,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.0730738000000002,
+  "turns": 15,
+  "durationMs": 80801,
+  "usage": {
+    "input": 24,
+    "cacheCreate": 40465,
+    "cacheRead": 669009,
+    "output": 7291
+  },
+  "toolCalls": 13,
+  "toolNames": [
+    "Bash",
+    "Read",
+    "Skill",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-904.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    }
+  ],
+  "commits": [
+    "3D-904: start, paused on owner questions (checkpoint, BACKLOG in-progress)"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/claude/eval-session",
+      "sha": "e759d9e17c46d5afc8eeffe0d2e9e58fa838b91e"
+    }
+  ],
+  "finalText": "I did not add `snapshotId` yet: a code-only field breaks the kernel service, and I need three answers from you before I can add it properly. The dialog I opened went unanswered, so 3D-904 is paused.\n\n**Why code-only does not work here**\n- The patch result is the accepted contract `command-result` (with `model-patch` inside), and both schemas reject unknown fields.\n- The service validates every reply against them (`services/kernel/src/contracts.js:65`), so a result with an extra `snapshotId` is replaced by an `INTERNAL` \"invalid reply\" error.\n- The op tests validate results against the same schema (`packages/geo-model3d/test/ops/helpers.js:20`), so they would fail unless I weakened the validation.\n- Nothing in the specs or DECISIONS says what `snapshotId` is, and AGENTS.md rule 4 forbids guessing a contract field.\n\n**What I need from you**\n1. **Order:** I recommend schema and code in one change, with the schema diff put to you for approval. The alternatives are code-only with `snapshotId` exempt from validation, or a kernel-internal field the service strips until a follow-up adds it to the contract.\n2. **Placement:** I recommend a top-level optional member of `command-result`. Putting it inside `model-patch` would also put it into journal entries.\n3. **Value:** I recommend the service sets it on `COMMITTED` results only, identifying the stored snapshot as `{version}/{commandId}`. The alternatives are the kernel setting it on every result (I would need your rule for `PREVIEW`),"
+}

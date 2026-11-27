@@ -1,0 +1,69 @@
+{
+  "task": "intake-new-request",
+  "run": 1,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "00f6746284e7be5debdb811771986b5890782746",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "row-proposed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-ready",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.6623577999999999,
+  "turns": 19,
+  "durationMs": 144537,
+  "usage": {
+    "input": 36,
+    "cacheCreate": 58599,
+    "cacheRead": 1135429,
+    "output": 12435
+  },
+  "toolCalls": 17,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "Intake: 3D-142 distance tool in the 3D view (proposed, mirror shared); Q-50..Q-53 open"
+  ],
+  "pushes": [],
+  "finalText": "The request is now in the backlog as a proposed row; nothing was built, because the project rules route every new request through intake first and you weren't available to answer the scoping questions.\n\n- **Class:** `external` — the tool is client-side work in `shared_compnents` (`workspace/tools`), not in this repository. It isn't in spec v0.3 §6, isn't on the excluded list, and no existing row covered it.\n- **Row:** 3D-142 \"Distance tool in the 3D view\", status `proposed`, size S, depends on 3D-42 (the 3DQM tools row, which provides picking and snapping). Estimate $3.00 (p80 $4.13). Committed locally as `2632713`, not pushed; the docs check passes.\n- **What you need to do:** answer Q-50..Q-53 in `docs/decisions/DECISIONS.md`, then set 3D-142 `ready`.\n\nThe four open questions, with the reading I wrote into the row as the proposal for each:\n\n| Question | Proposed | Alternatives |\n|---|---|---|\n| Q-50: what can be picked | Model vertices, edges, faces and point-cloud points | Model only; or also a free point in space |\n| Q-51: what is shown | 3D distance, horizontal distance and height difference, in metres | 3D distance only; or add slope angle |\n| Q-52: lifetime of a measurement | Transient, never saved, no kernel command | Several kept for the session; or saved with the building |\n| Q-53: release | First release, built after 3D-42 | P1; or also required by the geoviewer POC (3D-140) |\n\nQ-52 matters most for size: saving measurements with the building would need a contract s"
+}

@@ -9,7 +9,7 @@ questions from the section "Open questions" of the WP checkpoints, provisional d
 
 | WP | Question | Since | Source |
 |---|---|---|---|
-| none | | | |
+| 3D-138 | budget for the 7 agent-eval tasks the \$25 caps cut off (orthoqm-rows, planes-primary, provisional-decision, refuse-client-kernel-import, refuse-reopen-decision, tests-not-weakened, tolerance-tbd), about \$30-35 more | 2026-11-27 | working tree |
 
 ## Provisional decisions awaiting confirmation
 

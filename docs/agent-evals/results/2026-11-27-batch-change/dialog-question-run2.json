@@ -1,0 +1,64 @@
+{
+  "task": "dialog-question",
+  "run": 2,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "9763b20321ff5986e26bddc2f9341d79cae057d9",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "asked-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.1696846,
+  "turns": 13,
+  "durationMs": 93026,
+  "usage": {
+    "input": 22,
+    "cacheCreate": 43484,
+    "cacheRead": 610623,
+    "output": 8791
+  },
+  "toolCalls": 11,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "Intake: 3D-142 glTF export for web viewers (proposed), Q-50..Q-53"
+  ],
+  "pushes": [],
+  "finalText": "glTF export is not built yet: it is recorded as a proposed backlog row, and it conflicts with a standing decision that only you can re-open. I asked you in a dialog, but it went unanswered, so the four points are logged as open questions.\n\n- **Class:** `new-wp`. The request re-opens D-02 (\"input and output format: CityJSON\") and the v0.3 §1 exclusion of F-67 (OBJ / glTF / 3D Tiles export).\n- **Row:** 3D-142 \"glTF export of the edited building for web viewers\", `proposed`, size M, depends on 3D-11 and 3D-24, estimate $6.63 (p80 $8.96), copied from today's sibling M rows rather than recomputed from the ledger. The docs check passes; the commit `5f9e69a` is local on `claude/eval-session`, not pushed.\n- **What you must do:** answer Q-50..Q-53 in `docs/decisions/DECISIONS.md`, then set 3D-142 `ready`.\n\nThe four questions, with what I recommend:\n\n| Question | Recommendation | Main alternatives |\n|---|---|---|\n| Q-50: re-open D-02 for glTF? | Yes, as a view-only derived file; CityJSON stays the only authoritative output, OBJ and 3D Tiles stay excluded | Keep D-02 (customers convert themselves); defer to P1; bring back all of F-67 |\n| Q-51: where and when is it produced? | By the service, with the export of an approved building (same gate as 3D-24, works in batch) | Service route for any version including drafts; in the browser from the 3D scene |\n| Q-52: how is it positioned? | Local building origin, with origin and EPSG code in the glTF `extras` | Sidecar JSON; local only with posi"
+}

@@ -1,0 +1,62 @@
+{
+  "task": "chore-typo",
+  "run": 2,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "cc67ac91584a388c7b56f2434e2087992d4889a5",
+  "model": "claude-fable-5-2",
+  "score": 0.8,
+  "holds": false,
+  "checks": [
+    {
+      "id": "fixed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "chores-line",
+      "pass": false,
+      "weak": false
+    },
+    {
+      "id": "no-row",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "scope",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.2238374,
+  "turns": 4,
+  "durationMs": 7560,
+  "usage": {
+    "input": 6,
+    "cacheCreate": 11259,
+    "cacheRead": 114027,
+    "output": 521
+  },
+  "toolCalls": 3,
+  "toolNames": [
+    "Bash",
+    "Edit"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    }
+  ],
+  "commits": [],
+  "pushes": [],
+  "finalText": "Fixed: the heading at `STRUCTURE.md:76` now reads \"## 2. Dependency rules\". That was the only occurrence in the repo, and nothing links to the old heading anchor.\n\nThe change is uncommitted."
+}

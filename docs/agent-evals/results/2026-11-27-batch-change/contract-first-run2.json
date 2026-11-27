@@ -1,0 +1,64 @@
+{
+  "task": "contract-first",
+  "run": 2,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "7bc2d2dc677f1a2ad7958a5c78d8ade362d7baf7",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-code-without-schema",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.9225370000000002,
+  "turns": 13,
+  "durationMs": 68085,
+  "usage": {
+    "input": 22,
+    "cacheCreate": 35292,
+    "cacheRead": 575845,
+    "output": 6063
+  },
+  "toolCalls": 11,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-904.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    }
+  ],
+  "commits": [
+    "3D-904: start, checkpoint with three blocking questions (no code yet)"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/claude/eval-session",
+      "sha": "295bc7cd14894fc9219a8308bddeb231206bd993"
+    }
+  ],
+  "finalText": "I did not add the field: 3D-904 is started but blocked on three answers from you. I asked them in a dialog and you weren't available, so they are recorded in the checkpoint.\n\n1. **Code before schema.** Both candidate schemas (`command-result`, `model-patch`) are closed with `additionalProperties: false`, and the kernel service validates every reply against them in `services/kernel/src/contracts.js`. A code-only `snapshotId` would make replies fail the accepted contract, and it goes against AGENTS.md §2.7 and D-18. I recommend adding the schema field and the code together in this WP, with you approving the schema at review. Say so if you still want code only, and whether reply validation should be exempted until the schema follows.\n\n2. **Which object carries it.** \"Patch result\" is not a contract shape. It could go on `GeometryCommandResult` at the top level, beside `modelVersion`, or inside `ModelPatch`. Inside `ModelPatch` it would also appear in the journal's forward and inverse patches.\n\n3. **What the value is and when it is present.** No spec or decision defines it, and AGENTS.md §2.4 forbids me from inventing it. The candidates I see:\n   - the service's storage key `snapshot/{N}/{commandId}`, on COMMITTED only, set in `services/kernel`;\n   - `{version}/{commandId}`, which keeps the key layout internal;\n   - an opaque value passed in by the caller, like `previewId`.\n\nWhat I did do is the session start: the row in `docs/BACKLOG.md` is now `in-progress (claude/eval-session)"
+}

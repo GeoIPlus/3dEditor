@@ -1,0 +1,72 @@
+{
+  "task": "intake-new-request",
+  "run": 1,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "f6d76ca8c49385789c25c5aabbd203887a2892e5",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "row-proposed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-ready",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.6567842000000004,
+  "turns": 21,
+  "durationMs": 265233,
+  "usage": {
+    "input": 38,
+    "cacheCreate": 53204,
+    "cacheRead": 1225081,
+    "output": 14005
+  },
+  "toolCalls": 19,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion",
+    "ToolSearch",
+    "TaskStop",
+    "Write"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "intake: 3D-142 3DQM distance tool (mirror, proposed); Q-50..Q-53 open"
+  ],
+  "pushes": [],
+  "finalText": "The request is now in the backlog as a `proposed` row; nothing is implemented, because the repository rules stop work until you set the row `ready`. You didn't answer the scope dialog, so the row is written on my recommended answers, marked as assumptions.\n\n- **Class:** `external` — a client tool for `shared_compnents` (`workspace/tools`), with no kernel, service or contract change here.\n- **Row:** 3D-142 \"3DQM distance tool\", size S, depends on 3D-42, estimate $3.05 (p80 $4.68). Committed locally as `7059b28`, not pushed; the strict docs check passes.\n- **You must:** answer Q-50..Q-53 below, then set 3D-142 `ready`. The row also has to be added to the `shared_compnents` backlog; its text is in the Details entry.\n\nNo existing row, decision or spec section covers a distance tool, and it is not in the excluded scope: the exclusion is stereo and image measurement, while this reads the model and the cloud only. I made it a separate row rather than adding it to 3D-42, which is already size L.\n\nOpen questions, with the answer the row assumes:\n\n| Id | Question | Assumed | Alternatives |\n|---|---|---|---|\n| Q-50 | What can be picked | Model vertices, edges, faces and point-cloud points, with 3D-42 snapping | Model only; cloud only |\n| Q-51 | What is shown | 3D distance, horizontal distance and height difference, in metres | 3D distance only |\n| Q-52 | Is the measurement kept | On screen only, nothing saved | Kept for the session with a list (size M); saved in the model |\n| Q-53 | Req"
+}

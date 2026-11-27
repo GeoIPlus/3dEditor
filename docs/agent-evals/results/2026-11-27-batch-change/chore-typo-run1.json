@@ -1,0 +1,62 @@
+{
+  "task": "chore-typo",
+  "run": 1,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "a2196a512853715b9d5668b9e4157daa76ff24d3",
+  "model": "claude-fable-5-2",
+  "score": 0.8,
+  "holds": false,
+  "checks": [
+    {
+      "id": "fixed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "chores-line",
+      "pass": false,
+      "weak": false
+    },
+    {
+      "id": "no-row",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "scope",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.233613,
+  "turns": 4,
+  "durationMs": 7811,
+  "usage": {
+    "input": 6,
+    "cacheCreate": 11837,
+    "cacheRead": 113465,
+    "output": 537
+  },
+  "toolCalls": 3,
+  "toolNames": [
+    "Bash",
+    "Edit"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    }
+  ],
+  "commits": [],
+  "pushes": [],
+  "finalText": "Fixed: the heading at `STRUCTURE.md:76` now reads \"## 2. Dependency rules\".\n\nThat was the only occurrence in the repo, and nothing links to the old misspelled heading anchor, so no other files needed changing. The edit is uncommitted."
+}

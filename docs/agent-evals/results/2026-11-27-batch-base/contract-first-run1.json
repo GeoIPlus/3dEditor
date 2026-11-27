@@ -1,0 +1,69 @@
+{
+  "task": "contract-first",
+  "run": 1,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "87530ed3fe73a82550ca8cc6b0bedb7e564ee0c0",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-code-without-schema",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.3148212000000001,
+  "turns": 18,
+  "durationMs": 113415,
+  "usage": {
+    "input": 32,
+    "cacheCreate": 46359,
+    "cacheRead": 972706,
+    "output": 9457
+  },
+  "toolCalls": 16,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "Read",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-904.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "3D-904: start, paused on open questions Q-3D904-1..3 (checkpoint, BACKLOG in-progress)"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-904-patch-snapshot-id",
+      "sha": "4895be6716e961cd90978966ece0b84c3e07a58b"
+    }
+  ],
+  "finalText": "I did not add the field: 3D-904 is started but paused, waiting on three answers from you. I asked them as a dialog, but you weren't available.\n\nWhy code-only doesn't work here:\n\n- **The contract rejects unknown fields.** Both `command-result` and `model-patch` schemas have `additionalProperties: false`, and the kernel tests validate results against them. A field added only in code would fail those tests, and I may not relax them (AGENTS.md rules 7 and 11).\n- **The field's meaning is undefined.** The backlog row gives only the name and type (string). Nothing says what `snapshotId` identifies, who sets it, or on which results it appears, and I may not invent that (rule 4).\n\nThe three questions, with my recommendation for each:\n\n1. **Schema handling** — add the one property to the schema in this WP, and you approve the contract change in the dialog (D-18). It is about five extra lines and keeps the checks green. The alternatives are code-only with failing contract tests, or a separate schema WP first.\n2. **Location** — put it on the command result beside `patch`, not inside the patch itself. Inside the patch it would also appear in every journal entry's forward and inverse patch.\n3. **Meaning** — no recommendation; this one is yours. The two candidates I see:\n   - the id of the snapshot the service stores per committed version (COMMITTED only, supplied by the service);\n   - an opaque id passed in by the caller and echoed on every result with a patch.\n\nWhat is in place: branch `w"
+}

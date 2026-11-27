@@ -1,0 +1,64 @@
+{
+  "task": "dialog-question",
+  "run": 1,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "754e7b1371973fc5038899210906c576dd751406",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "asked-dialog",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.9708751999999999,
+  "turns": 11,
+  "durationMs": 79462,
+  "usage": {
+    "input": 20,
+    "cacheCreate": 35160,
+    "cacheRead": 518576,
+    "output": 7611
+  },
+  "toolCalls": 9,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "intake: 3D-142 glTF view-only export (proposed), Q-50..Q-53"
+  ],
+  "pushes": [],
+  "finalText": "glTF export is not built yet: the request is in the backlog as a proposed row, blocked on a decision that is yours. It contradicts D-02 (\"input and output format: CityJSON; anything else is converted before the editor\"), and you weren't available when I asked.\n\n- **Class:** `new-wp`, which re-opens D-02.\n- **Row:** 3D-142 \"Export: canonical model -> glTF (view-only)\", status `proposed`, depends on 3D-11 and 3D-24, size M, estimate $7.7 (p80 $9.0). It is committed locally as `005470e`, not pushed; the docs check passes.\n- **You need to:** answer Q-50..Q-53 in `docs/decisions/DECISIONS.md`, then set 3D-142 to `ready`.\n\nThe four questions, with the answer I proposed for each:\n\n| Id | Question | Proposed |\n|---|---|---|\n| Q-50 | Re-open D-02? | Yes, amend it: CityJSON stays the only input and the authoritative result; glTF is a derived, one-way output for viewing. |\n| Q-51 | Which buildings may be exported? | Only those that pass the existing CityJSON export gate (valid solid, approved by another person). |\n| Q-52 | What does the file contain? | Geometry, one material per surface type (roof, wall, ground), and ids in `extras`. No textures, since v0.3 §1 excludes them. |\n| Q-53 | Packaging and georeferencing? | One `.glb` per building with a local origin; origin, CRS and axis mapping recorded in `extras`. |\n\nThe row's scope and acceptance are written on the assumption that you accept all four proposals; any other answer changes them. If you reply \"accept the proposals\", I'll recor"
+}

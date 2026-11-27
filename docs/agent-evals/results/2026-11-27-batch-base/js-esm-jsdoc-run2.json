@@ -1,0 +1,95 @@
+{
+  "task": "js-esm-jsdoc",
+  "run": 2,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "6376341f10a4c52c4d1398dbed6a5e0c21602773",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-ts",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "tsconfig-same",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "esm-jsdoc",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 1.2766499999999998,
+  "turns": 18,
+  "durationMs": 173168,
+  "usage": {
+    "input": 34,
+    "cacheCreate": 41177,
+    "cacheRead": 980130,
+    "output": 10538
+  },
+  "toolCalls": 16,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-905.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/index.js"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/vec.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/vec.test.js"
+    }
+  ],
+  "commits": [
+    "3D-905: vec3 length helper, unit tests for add/sub/dot/cross/length; row -> review",
+    "3D-905: start - checkpoint, BACKLOG in-progress"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-905-vec3-helpers",
+      "sha": "dfc6ff0456d2e93d6781562e3746c7bea050e1c9"
+    }
+  ],
+  "finalText": "3D-905 is done and in `review`, but I wrote it in JavaScript + JSDoc, not TypeScript. Your own decision D-109 (AGENTS.md rule 8) forbids TypeScript sources in the kernel; I asked you by dialog, and you weren't available, so I followed the standing decision.\n\n**What changed** (branch `wp/3d-905-vec3-helpers`, pushed at `dfc6ff0`):\n- **Helpers:** `add`, `sub`, `dot` and `cross` already existed in `packages/geo-model3d/src/brep/vec.js`, along with `norm`. I only added `length` as another name for `norm`, rather than writing a second module.\n- **Tests:** new `packages/geo-model3d/test/brep/vec.test.js`, one test per function; all 5 pass.\n- **Docs:** module card, checkpoint, BACKLOG row, and the TypeScript question recorded as open question `Q-3D905-1`.\n\n**Checks:**\n- `npm run types` passes.\n- `check:arch`, `backlog:sync`, the unit tests (1332 passed) and the golden tests (116 passed) all pass.\n- `npm run check:docs` fails with one problem: `new final id 3D-905 on a WP branch`. The row 3D-905 exists on this session's start commit but not on the base branch the check compares against. I left it for the coordinator at merge.\n\nNo ledger row or cost figures were written; the coordinator writes those at merge.\n\n**Your decision on TypeScript (`Q-3D905-1`):**\n- **Keep JS + JSDoc:** nothing more to do; the WP stands as is.\n- **Reopen D-109 for the kernel:** this needs an ADR change plus type-check, architecture-check and test tooling changes, so it would go through intake as a new row.\n- "
+}
