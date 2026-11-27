@@ -69,6 +69,7 @@ Backfill 2026-11-25 (row 3D-86): every `3D-*` session of a `done` row listed by 
 row, read from its newest `result` event; 3D-01, 3D-27, 3D-29 keep their earlier rows (no duplicate).
 | 2026-11-26 | 3D-115 | session_01RNYuqEtcBd4unsqJjFBuDq | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - (not due) | no `result` event before the finish (one owner turn); coordinator re-reads |
 | 2026-11-26 | 3D-116 | session_01RNYuqFijt1dWVmijVtc519 | wp | ? | ? | ? | ? | ? | ? | claude-opus-5-5 | as of - | - (not due: calibration done, est0 TBD, 59th WP row) | only the first short turn has a `result` event (three pages of 100 events read back without the newer one; the work ran as one long turn with a worker restart); coordinator re-reads at merge |
+| 2026-11-27 | 3D-136 | session_01RNYuqFWdcNDV3cUu4qiUXL | wp | TBD | TBD | TBD | TBD | TBD | ? | claude-opus-5-5 | as of: no result event (whole WP in the first turn) | not due (calibration count >= 10; no est0 for 3D-136) | coordinator reads the figures at merge |
 
 ## Improvement proposals
 

@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 
 // `unit` runs with `npm test`; `golden` (v0.3 §12 golden tests, from 3D-07) with `npm run golden`.
-// tools/check-docs.test.mjs and tools/check-docs-icons.test.mjs use node:test and run under `node --test` (see package.json "test").
+// tools/check-docs.test.mjs, tools/check-docs-icons.test.mjs and tools/check-docs-coordination.test.mjs use node:test and run under `node --test` (see package.json "test").
 const GOLDEN = '**/*.golden.test.{js,mjs}';
 
 export default defineConfig({
@@ -11,7 +11,7 @@ export default defineConfig({
         test: {
           name: 'unit',
           include: ['packages/*/test/**/*.test.js', 'tools/**/*.test.mjs', 'services/*/test/**/*.test.js', 'contracts/*/test/**/*.test.mjs'],
-          exclude: ['**/node_modules/**', GOLDEN, 'tools/check-docs.test.mjs', 'tools/check-docs-icons.test.mjs'],
+          exclude: ['**/node_modules/**', GOLDEN, 'tools/check-docs.test.mjs', 'tools/check-docs-icons.test.mjs', 'tools/check-docs-coordination.test.mjs'],
         },
       },
       { test: { name: 'golden', include: [GOLDEN], exclude: ['**/node_modules/**'] } },
