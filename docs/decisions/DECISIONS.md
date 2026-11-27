@@ -486,6 +486,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-470 | The building's source (document, `progress.save` ref, basis) is kept persistently over the history's append-only object store (adapter `createStoreSources`): document content-addressed, source written once, each `SAVED` tag a new generation; nothing overwritten (D-84, D-85) | Owner, dialog, 2026-11-27 (3D-133) |
 | D-471 | The `import-request` contract shape is approved (D-18): empty object, building in the route, reply `201 import-report`, repeat `409 VERSION_CONFLICT`, datasets only from the `buildings` port; D-469 no longer proposed | Owner, dialog, 2026-11-27 (3D-133) |
 | D-472 | 3D-133 accepted (done); merged into the base by the coordinating session (D-178); provisional ids became D-467..D-471 | Owner, WP session 3D-133, 2026-11-27 |
+| D-473 | Tolerance profile identity: the service always writes `building-model.toleranceProfileId` = `sha256:<hex>` of the canonical tolerance profile (the 14 tolerances, `id` excluded), never the label; contract shape unchanged, field description to be approved with row 3D-135 (D-18). Reason: the label is optional in `tolerance-profile` and does not change when the numbers do | Owner, dialog, 2026-11-27 (3D-133) |
+| D-474 | Row 3D-135 (tolerance profile identity by content hash, D-473) set `ready` by the owner (chat with the coordinator); merged from wp/3d-133-service-import@e1badcc | Owner, chat with the coordinator, 2026-11-27 |
 
 ## Open questions
 

@@ -21,14 +21,14 @@ Updated: 2026-11-27
 
 | Progress | Rows |
 |---|---:|
-| Done | 79 / 110 |
+| Done | 79 / 111 |
 | Review | 0 |
 | In progress | 2 |
-| Ready | 5 |
+| Ready | 6 |
 | Proposed (waiting for the owner to set `ready`) | 23 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 79/110 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 79/111 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-40 geo-render model3d; 3D-41 Remote kernel port.
 
@@ -144,6 +144,7 @@ flowchart TB
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D132["💡 🖥️ 3D-132 Return for rework"]
     D134["💡 🔗 3D-134 SC: vendor 3D-24 schemas"]
+    D135["▶️ 🖥️ 3D-135 Profile id by content hash"]
     D25["💡 🧪 3D-25 E2E on mock"]
   end
   subgraph client["shared / geoviewer / crowdsource mirrors (PROPOSED)"]
@@ -314,6 +315,7 @@ flowchart TB
   D24 --> D132
   D24 --> D133
   D24 --> D134
+  D133 --> D135
   D45 --> D134
   D128 --> D133
   D133 --> D25
@@ -437,6 +439,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-132 | Return for rework with a comment: reviewer (not an author) records a return on the head version (spec §11 r2; v0.3 §8.5) | here | service | 24 | G5 | S | service | proposed |
 | 3D-133 | Service import: `IMPORT_BUILDING` from the input dataset (`datasets.read`), `putBaseline`, keep the source CityJSON and the `progress.save` save basis for the export source port of 3D-24 | here | service | 24, 128 | G5 | M | service | done (D-472; merged into base, no PR; D-467..D-471) |
 | 3D-134 | SC: vendor the `model3d` schemas of 3D-24 (`approval-request`, `approval`, `export-request`, `export-result`; error `NOT_APPROVABLE`, D-455, D-456) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 24, 45 | G5 | S | mirror | proposed |
+| 3D-135 | Tolerance profile identity by content: the service sets `toleranceProfileId` = `sha256:<hex>` of the canonical profile for every import, so a profile without `id` imports and a changed profile under one label gets a new id | here | service, contracts | 133 | G5 | S | service | ready (D-474) |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 133, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
@@ -874,6 +877,22 @@ accuracy ratio 1.30 is n=1 and not applied.
 - Source: WP 3D-104, owner decision 2026-11-26 (ALIGN_SELECTED_EDGES point 9; D-329).
 - Goal: operator-chosen leading edge and a `BEST_FIT_LINE` mode for `STRAIGHTEN_FACE`.
 - Accept: owner-approved spec text and golden cases.
+
+### 3D-135 Tolerance profile identity by content hash
+- Source: owner, chat 2026-11-27 (WP session 3D-133): the kernel import refuses a `tolerance-profile` without `id`
+  (`packages/geo-model3d/src/import/index.js:70-71`, `INVALID_PAYLOAD`), while that contract makes `id` optional and
+  `building-model` requires `toleranceProfileId`; a label also hides a changed profile (`default` with other numbers).
+- Goal: every model version names the exact tolerances it was built with, and any contract-valid profile imports.
+- Scope in: service computes `sha256:` + lower-case hex SHA-256 of the canonical JSON (sorted keys, the 14 tolerance
+  members, `id` excluded) and passes it as `toleranceProfileId` to `importBuilding` (the kernel already takes it); the
+  `building-model` `toleranceProfileId` description states the digest form (D-18: owner approval of the text; shape
+  unchanged); canonicalisation written as a rule with a test vector. Scope out: kernel change; profile management UI;
+  SC re-vendor of `building-model` (add to 3D-134 if not started, else a mirror row).
+- Accept: GT-I1 import through the handler with a profile without `id` -> 201, model `toleranceProfileId` =
+  `sha256:<hex>` of the test vector; the same numbers with another or no label -> the same id; one changed tolerance
+  -> another id; key order of the profile does not change the id; `npm run check` green.
+- Decisions: D-13, D-473  Open: none
+- Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S service n < 5)
 
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under
