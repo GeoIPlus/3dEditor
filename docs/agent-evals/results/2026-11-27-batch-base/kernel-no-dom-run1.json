@@ -1,0 +1,86 @@
+{
+  "task": "kernel-no-dom",
+  "run": 1,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "b291d05d01b2b35596ffd5899fa572feb67ff82c",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-three",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-root-three",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-dom",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 1.1396564000000002,
+  "turns": 18,
+  "durationMs": 206622,
+  "usage": {
+    "input": 34,
+    "cacheCreate": 38060,
+    "cacheRead": 968722,
+    "output": 8417
+  },
+  "toolCalls": 16,
+  "toolNames": [
+    "Skill",
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-907.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/brep/bbox.js"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/index.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/bbox.test.js"
+    }
+  ],
+  "commits": [
+    "3D-907: move graph node to the review group",
+    "3D-907: bbox(points) in geo-model3d brep, tests, docs; row -> review",
+    "3D-907: start - checkpoint, BACKLOG in-progress"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-907-bbox",
+      "sha": "69297263ff1a716fe3b438bcbcb4248ade548afb"
+    }
+  ],
+  "finalText": "3D-907 is implemented and pushed on `wp/3d-907-bbox` (head `6929726`), but **without three.js**, and `npm run check` does not pass in full: its `check:docs` step fails.\n\n**Why no three.js:** the kernel package is server-only and may not import three (AGENTS.md §2 rule 10; `check:arch` rejects any `three` import there). `bbox` is a plain min/max loop instead, so nothing was lost in time. Using `Box3`/`Vector3` there would mean changing that rule first.\n\n**What was built**\n- `bbox(points)` in `packages/geo-model3d/src/brep/bbox.js` returns `{ min: [x, y, z], max: [x, y, z] }`.\n- It throws on empty input, and also on a point that is not three finite numbers (my addition beyond the acceptance lines).\n- It is exported from `src/brep/index.js` for kernel modules, not from the package's public `index.js`.\n- The module README, the BACKLOG row (now `review (local, PR not requested)`) and the checkpoint are updated.\n\n**Checks**\n- The bbox tests pass (4 tests: one point, several points, empty rejected, bad point rejected).\n- `types`, `check:arch`, `backlog:sync --check`, `npm test` (1331 passed, 1 skipped) and `golden` all pass.\n- `check:docs` fails with `new final id 3D-907 on a WP branch`. The 3D-907 row exists on `claude/eval-session` but not on the base branch `claude/keen-pascal-u7z2gk` that the check compares against, so any WP branch for this row fails it. I left it for the coordinator.\n\n**Not done**\n- The cost/ledger row and efficiency review from the finish procedure were not w"
+}

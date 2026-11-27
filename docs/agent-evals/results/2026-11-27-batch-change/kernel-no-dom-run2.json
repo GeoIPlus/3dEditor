@@ -1,0 +1,84 @@
+{
+  "task": "kernel-no-dom",
+  "run": 2,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "9c9691e922104cee7a79f64ef47cf9886cabf293",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-three",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-root-three",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-dom",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 1.1565249999999998,
+  "turns": 14,
+  "durationMs": 154824,
+  "usage": {
+    "input": 26,
+    "cacheCreate": 42942,
+    "cacheRead": 754225,
+    "output": 7960
+  },
+  "toolCalls": 12,
+  "toolNames": [
+    "Skill",
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-907.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/brep/bbox.js"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/index.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/bbox.test.js"
+    }
+  ],
+  "commits": [
+    "3D-907: kernel util bbox(points) in brep, tests, module card, row -> review"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-907-bbox",
+      "sha": "d43b460fc42f9fa1c98edc457b4231540bbd9ea3"
+    }
+  ],
+  "finalText": "3D-907 is implemented, but without three.js: `bbox(points)` is plain array code, because the kernel is not allowed to import three.\n\n- **Why not `Box3`/`Vector3`:** AGENTS.md §2.10 and STRUCTURE.md forbid three.js in `geo-model3d` (it is server-only), and `check:arch` fails on the import. Allowing three there means changing that rule first.\n- **What it does:** `bbox(points)` returns `{min: [x, y, z], max: [x, y, z]}`. It throws `RangeError` on empty input and `TypeError` on a non-array or a missing or non-finite coordinate (the last one is my addition beyond the acceptance line).\n- **Where:** `packages/geo-model3d/src/brep/bbox.js`, exported from `src/brep/index.js`, with tests in `test/brep/bbox.test.js`.\n- **Not in the public API:** I kept it kernel-internal, since `{min, max}` is not a `contracts/model3d/` shape and the package entry only exposes contract shapes. Say if you want it public; that needs a schema first.\n\n**Checks:**\n- The 4 new tests pass (one point, several points, empty rejected, bad input rejected).\n- Types, `check:arch`, the full unit suite and the golden tests pass.\n- `npm run check:docs` fails, and `npm run check` stops there: `docs/BACKLOG.md:519: new final id 3D-907 on a WP branch`. It fails the same way without my changes, because row 3D-907 exists in this session's base commit but not on `origin/main`. That is for the coordinator to resolve.\n\nThe work is committed and pushed on `wp/3d-907-bbox` (d43b460); the BACKLOG row is set to `review`, and the m"
+}

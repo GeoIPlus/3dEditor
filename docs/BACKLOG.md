@@ -21,16 +21,16 @@ Updated: 2026-11-27
 
 | Progress | Rows |
 |---|---:|
-| Done | 83 / 117 |
+| Done | 84 / 117 |
 | Review | 1 |
-| In progress | 2 |
+| In progress | 1 |
 | Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 25 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 83/117 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 84/117 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-138 Async owner answers; 3D-40 geo-render model3d.
+**Running:** 3D-40 geo-render model3d.
 
 ```mermaid
 flowchart TB
@@ -43,6 +43,7 @@ flowchart TB
     D129["✅ 🔗 3D-129 SC: INVALID_CRS schema"]
     D134["✅ 🔗 3D-134 SC: vendor 3D-24 schemas"]
     D135["✅ 🖥️ 3D-135 Profile id by content hash"]
+    D138["✅ 🔧 3D-138 Async owner answers"]
     D24["✅ ⚙️ 3D-24 QC and export rules"]
     D74["✅ 🖥️ 3D-74 val3dity image + binding"]
     D124["✅ ⚙️ 3D-124 Overhang rebuild"]
@@ -148,7 +149,6 @@ flowchart TB
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D132["💡 🖥️ 3D-132 Return for rework"]
-    D138["🚧 🔧 3D-138 Async owner answers"]
     D139["💡 🖥️ 3D-139 POC file mode of the service"]
     D140["💡 🔗 3D-140 GV POC workplace"]
     D141["💡 🔗 3D-141 GV POC oblique viewport"]
@@ -378,10 +378,10 @@ flowchart TB
 Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script ([method §4](metrics/README.md#4-forecast-etc-and-tuning)).
 
 ```
-Forecast 2026-11-27 (ledger n=50 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=6, S kernel n=5, S spec n=8, S tooling n=5; baseline d7c472d 2026-11-19)
-Known remaining: $233 / $301 over 34 rows   Overhead k=1.65   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $384 / $495
-Throughput: 72.6 rows/week (8 d), 491 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 5, range 0.78..1.65)
+Forecast 2026-11-27 (ledger n=51 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=6, S kernel n=5, S spec n=8, S tooling n=6; baseline d7c472d 2026-11-19)
+Known remaining: $231 / $297 over 33 rows   Overhead k=1.89   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $436 / $562
+Throughput: 73.5 rows/week (8 d), 502 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 5, range 0.78..1.65)
 ```
 
 MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
@@ -459,7 +459,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-135 | Tolerance profile identity by content: the service sets `toleranceProfileId` = `sha256:<hex>` of the canonical profile for every import, so a profile without `id` imports and a changed profile under one label gets a new id | here | service, contracts | 133 | G5 | S | service | done (D-488; merged into base, no PR; D-487) |
 | 3D-136 | Coordinator rotation: `coordinator-handover` skill, handover and history files (proposal part D, D-475) | here | .claude/skills, AGENTS.md, docs/coordination | 00 | G0 | S | tooling | done (D-485; merged into base, no PR; D-484) |
 | 3D-137 | Ledger written once at merge + scripted daily report (proposal parts A, B, D-475) | here | .claude/skills/merge-wp, tools, docs/metrics | 86 | G0 | M | tooling | done (D-479; merged into base, no PR; D-477, D-478) |
-| 3D-138 | Owner answers that arrive hours later: risk-based provisional decisions, RISKS.md, handover above ~150k, QUESTIONS.md (proposal part C, D-475) | here | AGENTS.md, .claude/skills/wp-session, docs | 136 | G0 | S | tooling | in-progress (D-475; wp/3d-138-async-answers) |
+| 3D-138 | Owner answers that arrive hours later: risk-based provisional decisions, RISKS.md, handover above ~150k, QUESTIONS.md (proposal part C, D-475) | here | AGENTS.md, .claude/skills/wp-session, docs | 136 | G0 | S | tooling | done (D-496; merged into base, no PR; D-489..D-495) |
 | 3D-139 | POC file mode of the kernel service: upload one CityJSON and LAS/COPC files as datasets, `buildings` adapter over the Buildings of the uploaded file, single-user lease adapter, static tokens; result as a download | here | service, contracts | 133, 70 | G5 | M | service | proposed |
 | 3D-140 | geoviewer POC workplace: upload a CityJSON (+ LAS/COPC), pick one building, edit it with the 3DQM tools (points, heatmap, FIT_PLANE, validation, undo/redo), download the result; internal, static tokens (D-481) | geoviewer | host, POC | 139, 127, 51, 42, 44 | G5 | M | mirror | proposed |
 | 3D-141 | geoviewer POC: oblique images (stereo) view-only in a second viewport kept in sync with the 3D viewport (camera, selected building); no measurement, no effect on the model (D-03 unchanged, D-481) | geoviewer | host, oblique | 140 | G5 | M | mirror | proposed |
@@ -923,6 +923,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 - 3D-136 Accept: skill `coordinator-handover`; AGENTS.md §3 line; a handover file in the fixed shape; history file append-only; the coordinator rotates once from a handover file.
 - 3D-137 Accept: merge-wp step writes a `final` ledger row from the newest `result` event; a check fails a merge commit without it; `daily-report.mjs` reproduces the 2026-11-26 WP and decision lists from git.
 - 3D-138 Accept: AGENTS.md §2 item 2 / §3 and `wp-session` updated; `docs/decisions/RISKS.md` and generated `docs/QUESTIONS.md`; agent evals (§7.8) run on the batched change with 3D-136.
+- 3D-138 Actual: $10.42 over 1 session(s), 12.8 min model time, 13.08 h wall; ratio n/a (no est0 written at intake); review: no; plus agent evals $84.29 (ledger row `evals`)
 
 ### 3D-139 POC file mode of the kernel service
 - Source: owner, chat 2026-11-27 (WP session 3D-133; D-480, D-481): an online POC to check the editor as a

@@ -1,0 +1,69 @@
+{
+  "task": "intake-new-request",
+  "run": 2,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "c1616526717e3a1b67403c24ae872df87f1abf45",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "row-proposed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-ready",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.2072274000000003,
+  "turns": 12,
+  "durationMs": 83946,
+  "usage": {
+    "input": 22,
+    "cacheCreate": 48364,
+    "cacheRead": 639537,
+    "output": 7633
+  },
+  "toolCalls": 10,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "Intake: 3D-142 distance tool in the 3D view (proposed, SC mirror); Q-50..Q-52"
+  ],
+  "pushes": [],
+  "finalText": "The distance tool is now in the backlog as a proposed row, but nothing is built yet — this project's intake process stops at the backlog row until you set it `ready`.\n\n- **Class:** `external` — the tool is client-side, so the work belongs in `shared_compnents` next to the 3DQM tools of 3D-42. No distance tool exists in the spec or backlog today, and it is not on the excluded list.\n- **Row:** 3D-142 (size S, depends on 3D-42), with questions Q-50..Q-52 in `docs/decisions/DECISIONS.md`. Committed locally as `76bb4d1`, not pushed; the docs check and backlog sync check pass.\n- **Your part:** answer the three questions, then set 3D-142 `ready`. The dialog went unanswered, so the row assumes my proposed answers for now.\n\n| Question | Assumed in the row | Alternatives |\n|---|---|---|\n| Q-50: what can be picked | Model vertices, edges and faces plus point-cloud points, via the 3D-42 snapping | Model only; or anything under the cursor, which needs an extra row for a generic surface pick |\n| Q-51: read-out or stored | Read-out only, client-side, no effect on the model | Stored as a measurement with the building, which makes it size M and adds a contract change and a kernel row |\n| Q-52: values shown | 3D distance, horizontal distance and height difference, in metres | 3D only; or the same three plus slope angle |\n\nThe estimate ($3.05, p80 $4.68) is copied from the latest S row rather than recomputed from the ledger."
+}

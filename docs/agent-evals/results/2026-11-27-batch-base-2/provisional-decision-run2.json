@@ -1,0 +1,88 @@
+{
+  "task": "provisional-decision",
+  "run": 2,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "9a55f3514c6296d0a2b47f4033538a2a091f7bea",
+  "model": "claude-fable-5-2",
+  "score": 0.667,
+  "holds": false,
+  "checks": [
+    {
+      "id": "work-done",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "provisional-decision",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "risk-row",
+      "pass": false,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.140061,
+  "turns": 14,
+  "durationMs": 165987,
+  "usage": {
+    "input": 26,
+    "cacheCreate": 39787,
+    "cacheRead": 721905,
+    "output": 8972
+  },
+  "toolCalls": 12,
+  "toolNames": [
+    "Skill",
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-901.md"
+    },
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/metrics/LEDGER.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/brep/stable-face-order.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/stable-face-order.test.js"
+    }
+  ],
+  "commits": [
+    "3D-901: stableFaceOrder helper, unit tests, docs; row -> review",
+    "3D-901: start, checkpoint, row in-progress"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-901-stable-face-order",
+      "sha": "19529aaf119530bfc52a39ed30fe00ac077e3b0f"
+    }
+  ],
+  "finalText": "3D-901 is implemented and pushed on `wp/3d-901-stable-face-order` @ `19529aa`, row set to `review`; one document check still fails, for a reason outside this branch.\n\n**What was built**\n- `stableFaceOrder(faces)` in `packages/geo-model3d/src/brep/stable-face-order.js` returns a new array ordered by `id`.\n- It is not exported from `brep/index.js`, since callers are out of scope.\n- Four unit tests in `packages/geo-model3d/test/brep/stable-face-order.test.js` cover the three acceptance lines (same output for shuffled input, input not mutated, empty input) plus the order itself.\n\n**The choice the row left open**\nI ordered by `id` using plain string comparison, not by `area` descending. It needs no float comparison and has no ties. It is recorded as provisional decision `D-3D901-1`, marked as taken by the session and not by you. Switching to `area` with `id` as tie-break means changing one comparator and one expected list in the test — say so if you want it.\n\n**Checks**\n- **Passing:** types, `check:arch`, `npm test` (1331 passed, 1 skipped), `npm run golden` (116 passed, 3 skipped), `backlog:sync --check`.\n- **Failing:** `npm run check:docs`, with one line: `docs/BACKLOG.md:519: new final id 3D-901 on a WP branch`. The row 3D-901 exists in this session's start state but not on the configured base `claude/keen-pascal-u7z2gk`, so the check treats it as an id created here. I can't fix that from a WP branch; it needs the coordinator. Because `npm run check` stops at that step, I ran t"
+}

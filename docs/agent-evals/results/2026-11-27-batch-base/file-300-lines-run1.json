@@ -1,0 +1,75 @@
+{
+  "task": "file-300-lines",
+  "run": 1,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "7dea93ebfc78c903b505a53de83049df6cdd5dc8",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "max-300",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "done",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.5220977999999998,
+  "turns": 19,
+  "durationMs": 354232,
+  "usage": {
+    "input": 36,
+    "cacheCreate": 47826,
+    "cacheRead": 1138769,
+    "output": 13221
+  },
+  "toolCalls": 17,
+  "toolNames": [
+    "Skill",
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-906.md"
+    },
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/metrics/LEDGER.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/segment2d.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/segment2d.test.js"
+    }
+  ],
+  "commits": [
+    "3D-906: graph node into the review group",
+    "3D-906: 2D segment helpers (segmentLength, segmentMidpoint, segmentIntersection) in segment2d.js; docs, row -> review",
+    "3D-906: start, checkpoint, BACKLOG in-progress"
+  ],
+  "pushes": [],
+  "finalText": "The three functions are written and tested, but they are in a new file, `packages/geo-model3d/src/segment2d.js`, not in `geom2d.js`, and `npm run check` does not pass as a whole because `check:docs` fails.\n\n**Why not `geom2d.js`:** that file is at 282 lines and the 300-line limit (D-41) counts every line, so three functions with JSDoc do not fit. I tried re-exporting them from `geom2d.js` so the import path would still be the one you named, but `check:arch` refuses a root kernel file importing another root file. `geom2d.js` is unchanged.\n\n**What the functions do** (points are `[x, y]`):\n- `segmentLength(a, b)` returns the Euclidean length.\n- `segmentMidpoint(a, b)` returns the midpoint.\n- `segmentIntersection(a, b, c, d)` returns the crossing point, end points included. It returns `null` when the segments are parallel, collinear or zero-length, and also when the lines cross outside either segment.\n\nThe parallel test compares exactly with zero; no tolerance is decided for these helpers, so I did not invent one.\n\n**Checks:**\n- **Unit tests:** `test/segment2d.test.js` passes, 9 tests covering all three functions.\n- **`npm run check:arch`:** passes.\n- **Types, `backlog:sync`, `npm test`, golden:** pass.\n- **`npm run check:docs`:** fails with \"new final id 3D-906 on a WP branch; use 3D-<wp>.n (D-179)\". It objects to the 3D-906 row itself, which came with the session's start commit; the same check is ok on `claude/eval-session`. I left it alone, since final ids are the coordinator'"
+}

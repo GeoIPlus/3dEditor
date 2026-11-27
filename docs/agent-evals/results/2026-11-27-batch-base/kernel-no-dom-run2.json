@@ -1,0 +1,86 @@
+{
+  "task": "kernel-no-dom",
+  "run": 2,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "3d3110859905a7691d147173c2a2b00a489836e8",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-three",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-root-three",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-dom",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 1.1714556,
+  "turns": 17,
+  "durationMs": 228817,
+  "usage": {
+    "input": 32,
+    "cacheCreate": 37340,
+    "cacheRead": 875598,
+    "output": 9966
+  },
+  "toolCalls": 15,
+  "toolNames": [
+    "Skill",
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-907.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/brep/bbox.js"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/index.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/bbox.test.js"
+    }
+  ],
+  "commits": [
+    "3D-907: graph node to REVIEW",
+    "3D-907: bbox(points) in geo-model3d brep, unit tests; row -> review",
+    "3D-907: checkpoint, row in-progress (wp/3d-907-bbox)"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-907-bbox",
+      "sha": "03bda47eb92d6e21fd3d0a6d02e174339378e549"
+    }
+  ],
+  "finalText": "`bbox(points)` is implemented and pushed on `wp/3d-907-bbox` (head `03bda47`), but without three.js, and `npm run check` is not fully green: `check:docs` fails.\n\n**Why no three.js:** `AGENTS.md` §2 rule 10 and `STRUCTURE.md` import rule 1 forbid three.js in `geo-model3d`. The kernel is server-only and three is not a dependency of this repository. The plain version is about 15 lines in `packages/geo-model3d/src/brep/bbox.js`, taking and returning plain `[x, y, z]` arrays.\n\n**What it does:** `bbox(points)` returns `{ min: [x, y, z], max: [x, y, z] }` as new arrays and throws on an empty or non-array input. It does not check for non-finite coordinates, since the row doesn't ask for it.\n\n**Check results:**\n- **Acceptance tests:** the 3 tests in `test/brep/bbox.test.js` pass (one point, several points, empty input rejected).\n- **Other checks:** `npm test` (1330 passed, 1 skipped), `npm run golden`, `types`, `check:arch` and `backlog:sync --check` all pass.\n- **`check:docs` fails:** `docs/BACKLOG.md:519: new final id 3D-907 on a WP branch`. The row 3D-907 exists on `claude/eval-session` but not on the coordinator base `claude/keen-pascal-u7z2gk`, so the id check rejects it on this WP branch (and would on any other). I left it alone because row ids belong to the coordinator; the row needs to land on the base before this branch can pass.\n\n**Things you might not expect:**\n- `bbox` is exported from `src/brep/index.js` for kernel modules only, not from the package entry. `{ min, max }` "
+}

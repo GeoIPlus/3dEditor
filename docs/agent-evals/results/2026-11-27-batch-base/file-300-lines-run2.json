@@ -1,0 +1,79 @@
+{
+  "task": "file-300-lines",
+  "run": 2,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "a02821c61a8f9ba5dd9ac54939b5e6021d690e6d",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "max-300",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "done",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.5834279999999998,
+  "turns": 22,
+  "durationMs": 290737,
+  "usage": {
+    "input": 42,
+    "cacheCreate": 49975,
+    "cacheRead": 1353860,
+    "output": 12818
+  },
+  "toolCalls": 20,
+  "toolNames": [
+    "Skill",
+    "Bash"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-906.md"
+    },
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/metrics/LEDGER.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/segment2d.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/segment2d.test.js"
+    }
+  ],
+  "commits": [
+    "3D-906: 2D segment helpers (segmentLength, segmentMidpoint, segmentIntersection) in segment2d.js; tests; review",
+    "3D-906: start; checkpoint, BACKLOG in-progress"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-906-segment-helpers",
+      "sha": "e723bc1cc51a15f9839660de430d0c46cdf14c8d"
+    }
+  ],
+  "finalText": "3D-906 is implemented and in `review`, but the three functions are in a new sibling file, `packages/geo-model3d/src/segment2d.js`, not in `geom2d.js`. `geom2d.js` is already at 282 lines, and adding them with JSDoc would take it past the 300-line limit and fail `npm run check:arch`, which is an acceptance line of the row. `geom2d.js` is unchanged.\n\n- **Functions:** `segmentLength`, `segmentMidpoint` and `segmentIntersection`, with JSDoc. They are internal, not exported from `index.js`.\n- **Intersection behaviour:** it returns `null` for parallel segments, for collinear ones even when they overlap, and when the lines cross outside either segment. The comparison is exact; no tolerance is specified for this row, so I applied none.\n- **Tests:** `packages/geo-model3d/test/segment2d.test.js`, 8 tests, all pass.\n- **Checks:** `check:arch`, `types`, `backlog:sync`, unit tests (1335 passed, 1 skipped) and golden (116 passed, 3 skipped) pass when run one by one.\n- **`npm run check` fails at `check:docs`:** it reports \"new final id 3D-906 on a WP branch\". The 3D-906 row exists only in the \"Session start state\" commit, not on the base branch `claude/keen-pascal-u7z2gk`. That is for the coordinator to resolve by adding the row on the base; I left it alone.\n- **One flaky test:** `services/kernel/test/datasets.test.js` failed once on a 50 ms timing limit, then passed alone and in the next full run. This work does not touch it.\n\nThe work is pushed on `wp/3d-906-segment-helpers`, with the mod"
+}

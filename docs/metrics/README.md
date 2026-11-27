@@ -136,7 +136,8 @@ Answer in this shape, at most 25 lines, facts with their source:
 ```
 
 **Where the result goes.** The WP session copies the answer into the checkpoint section "Cost and efficiency" without
-editing it, adds its own reply per proposal (agree / disagree, why), and fills `review` in the ledger row. Proposals
+editing it, adds its own reply per proposal (agree / disagree, why); the coordinator fills `review` in the ledger row at merge
+(D-478). Proposals
 never change instructions directly: the coordinator lists them in LEDGER.md "Improvement proposals"; instruction
 changes are batched, approved by the owner and measured with the agent evals (§7.6, §7.8, §10).
 
@@ -150,3 +151,20 @@ kind and rows without a final figure. The scheduled task's prompt is [daily-repo
 - A figure that could not be read is `?` with the reason; never estimated after the fact.
 - Prices behind `total_cost_usd` change with model versions; the ledger keeps `models` so classes can be split by model
   if a price change makes old rows incomparable.
+
+## 7. Wait or hand off (D-475 part C)
+
+A blocking owner question above ~150k context is answered in a fresh session from the handoff, not in the old context
+(AGENTS.md §3, `wp-session`). The ~150k line is the owner's (D-475). The arithmetic behind it, with list prices for
+`claude-opus-5-5` per million tokens [V: Anthropic list prices as of 2026-11-03]: input $4, cache write $5 (5-minute
+TTL) or $8 (1-hour TTL), cache read $0.20, output $20.
+
+- An answer hours later finds the prompt cache expired. Continuing re-writes the whole context once and then reads it
+  on every turn: `C * (w + N * r)`; C context tokens, w cache-write price, r cache-read price, N remaining turns.
+- A fresh session writes and reads only its own start context S (instructions, handoff, checkpoint, the files it must
+  re-read) and pays the handoff H (checkpoint and handoff text, a few k output tokens): `S * (w + N * r) + H`.
+- Handing off pays when `(C - S) * (w + N * r) > H`. Example [A]: S = 70k, N = 20, w = $8, H = $0.50 ->
+  `(C - 70k) * $12/M > $0.50` -> C > ~112k. 150k leaves a margin for the facts the fresh session lacks.
+- Assumptions, not measured [A]: S, N and H; that a resumed context costs a full re-write (true after the cache TTL);
+  that long contexts do not degrade answers (they do, which favours handing off earlier). Replace S, N and H with
+  ledger medians once sessions record them; the owner moves the line, not a session.

@@ -1,0 +1,88 @@
+{
+  "task": "file-300-lines",
+  "run": 1,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "ce0ec82639b474edcdad31bd92acd3e1fb5ff790",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "max-300",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "done",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.7737201999999999,
+  "turns": 23,
+  "durationMs": 279642,
+  "usage": {
+    "input": 44,
+    "cacheCreate": 53596,
+    "cacheRead": 1472761,
+    "output": 15532
+  },
+  "toolCalls": 21,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-906.md"
+    },
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/RISKS.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/geom2d.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/segment2d.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/segment2d.test.js"
+    }
+  ],
+  "commits": [
+    "3D-906: segmentLength, segmentMidpoint, segmentIntersection in segment2d.js; tests; row -> review",
+    "3D-906: start, checkpoint, in-progress; provisional D-3D906-1 (R-906-1)"
+  ],
+  "pushes": [],
+  "finalText": "3D-906 is implemented and in `review`, but the three functions are in a new file `packages/geo-model3d/src/segment2d.js`, not in `geom2d.js` as you asked. `geom2d.js` already has 282 lines, and adding three documented functions would take it past the 300-line limit, so `check:arch` (an acceptance line) would fail.\n\nI also tried re-exporting them from `geom2d.js` so a single import path would still work. `check:arch` refuses that too, because kernel root files may not import each other. `geom2d.js` only got a one-line comment pointing to the new file.\n\n## What was built\n- **`segmentLength(s)`** and **`segmentMidpoint(s)`**: a segment is `[[x, y], [x, y]]`.\n- **`segmentIntersection(s, t)`**: returns the common point, end points included. It returns `null` when the segments are parallel, and also when they are collinear, zero-length, or their lines cross outside either segment.\n- **Parallel test**: exact, with no tolerance, since none is defined for these helpers.\n- **Tests**: 10 in `packages/geo-model3d/test/segment2d.test.js`, covering each function.\n\n## Check results\n| Check | Result |\n|---|---|\n| `npm run types` | pass |\n| `npm run check:arch` | pass |\n| `npm test` | 1337 passed, 1 skipped; 46 tool tests passed |\n| `npm run golden` | 116 passed, 3 skipped |\n| `npm run backlog:sync -- --check` | pass |\n| `npm run check:docs` | **fails** on one line |\n\nThe `check:docs` failure is `new final id 3D-906 on a WP branch`. Row 3D-906 exists only in this session's start commit, not o"
+}

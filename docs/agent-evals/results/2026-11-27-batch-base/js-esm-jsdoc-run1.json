@@ -1,0 +1,91 @@
+{
+  "task": "js-esm-jsdoc",
+  "run": 1,
+  "ref": "be93d5406098937fe5c162ae49df34acfb027381",
+  "startSha": "68495fa713d897f7c8bb366d1e19578fc598dd3c",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-ts",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "tsconfig-same",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "esm-jsdoc",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 1.1676886000000002,
+  "turns": 17,
+  "durationMs": 175764,
+  "usage": {
+    "input": 32,
+    "cacheCreate": 37093,
+    "cacheRead": 887123,
+    "output": 9913
+  },
+  "toolCalls": 15,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-905.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/index.js"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/vec.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/vec.test.js"
+    }
+  ],
+  "commits": [
+    "3D-905: vec3 length helper and unit tests for add, sub, dot, cross, length",
+    "3D-905: start, checkpoint and BACKLOG in-progress"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-905-vec3-helpers",
+      "sha": "031661b9ad2e25c2c705be040fda1ad73d30deca"
+    }
+  ],
+  "finalText": "3D-905 is implemented and pushed on `wp/3d-905-vec3-helpers` (031661b), but in JavaScript with JSDoc types, not TypeScript. Your own decision D-109 (AGENTS.md rule 8) says the kernel has no TypeScript sources. I asked you by dialog whether to reopen it, the dialog came back \"owner not available\", so I kept the existing rule.\n\n`npm run check` fails on one `check:docs` line: `new final id 3D-905 on a WP branch`. The 3D-905 row exists on this session's base branch but not on `main`, so the check reads it as an id created here. I left it for the coordinator to resolve at merge.\n\n- **What changed:** `packages/geo-model3d/src/brep/vec.js` already had `add`, `sub`, `dot`, `cross` and `norm`, used by 14 modules but untested. I added `length` (same value as `norm`) and a new `test/brep/vec.test.js` with one test per function.\n- **Acceptance:** the 5 new tests pass and `npm run types` passes.\n- **Other checks:** the remaining steps pass when run separately (arch, backlog sync, 1332 unit tests, 116 golden tests).\n- **Not done:** the cost ledger row and the efficiency review, because of this session's $3 cap. The checkpoint says so.\n- **Backlog:** the row is set to `review`. Its Details entry still lists \"Open: Q-01\", which D-109 closed.\n\nTwo questions for you:\n- **TypeScript:** do you want to reopen D-109? That means an ADR change, a rule 8 change and tooling work, so it would go through task-intake as its own row. The helpers are small and easy to convert afterwards.\n- **Scope:** is ex"
+}

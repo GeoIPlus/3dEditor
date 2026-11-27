@@ -1,0 +1,95 @@
+{
+  "task": "js-esm-jsdoc",
+  "run": 1,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "149dece91b58cefcd5cba198fc3d18b5aa93fbed",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-ts",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "tsconfig-same",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "esm-jsdoc",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 1.3877454,
+  "turns": 19,
+  "durationMs": 176354,
+  "usage": {
+    "input": 34,
+    "cacheCreate": 43617,
+    "cacheRead": 1020207,
+    "output": 12139
+  },
+  "toolCalls": 17,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-905.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/RISKS.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/index.js"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/vec.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/vec.test.js"
+    }
+  ],
+  "commits": [
+    "3D-905: graph node moved to REVIEW",
+    "3D-905: vec3 length helper, unit tests for add/sub/dot/cross/length; review",
+    "3D-905: checkpoint, in-progress"
+  ],
+  "pushes": [],
+  "finalText": "3D-905 is finished and committed locally on `claude/eval-session`, but I wrote it in JavaScript with JSDoc types, not TypeScript. Your accepted decision D-109 (3D-ADR-0004, AGENTS.md rule 8) says the kernel has no TypeScript sources, and `npm run types` only covers `.js` files. I asked you in a dialog and you weren't available, so I recorded the choice as provisional (D-3D905-1) for you to confirm.\n\n- **What changed:** `packages/geo-model3d/src/brep/vec.js` already had `add`, `sub`, `dot`, `cross` and `norm`. I added `length` as a second name for `norm`, exported it from `brep/index.js`, and wrote `packages/geo-model3d/test/brep/vec.test.js` with one test per function. Reusing the existing module instead of creating a second one is provisional decision D-3D905-2.\n- **Acceptance:** the five new tests pass and `npm run types` passes.\n- **Other checks:** `check:arch`, `backlog:sync --check`, `npm test` and `npm run golden` all pass.\n- **One failure:** `npm run check` as a whole exits 1 at `check:docs`. Even with provisional ids allowed, it rejects the row 3D-905 itself as a \"new final id on a WP branch\". The row exists only in this session's start commit, not on `origin/main`, so the coordinator has to put it on the base.\n\nThe BACKLOG row is at `review`. Nothing is pushed and the coordinator has not been notified. The checkpoint's cost section is not filled in.\n\nDecisions for you:\n- **TypeScript:** if you still want it, the route is an intake row to reopen 3D-ADR-0004. Convertin"
+}

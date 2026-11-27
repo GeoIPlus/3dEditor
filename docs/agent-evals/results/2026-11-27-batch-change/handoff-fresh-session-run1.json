@@ -1,0 +1,75 @@
+{
+  "task": "handoff-fresh-session",
+  "run": 1,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "3197d8ef309decd31a6e8e074f26588703892b10",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "paused",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "committed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "pushed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "fields",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "new-session",
+      "pass": true,
+      "weak": true
+    },
+    {
+      "id": "no-main",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 0.4981646,
+  "turns": 7,
+  "durationMs": 21702,
+  "usage": {
+    "input": 10,
+    "cacheCreate": 23565,
+    "cacheRead": 220623,
+    "output": 1923
+  },
+  "toolCalls": 5,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "ToolSearch"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [],
+  "changed": [
+    {
+      "status": "M",
+      "path": ".agent/checkpoints/3D-901.md"
+    }
+  ],
+  "commits": [
+    "3D-901: checkpoint paused, handoff to a fresh session"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-901-ring-utils",
+      "sha": "e0cd76e5e090637e126fb33c70f697f008217d92"
+    }
+  ],
+  "finalText": "3D-901 is paused and pushed, but I couldn't start the fresh session myself: this session has no session-creation tool. A new session is required — please start one and paste the handoff below.\n\n```\nWP: 3D-901 Kernel util: polygon ring helpers - add ringArea and ringIsClockwise to packages/geo-model3d/src/ring.js with unit tests\nRepo/branch/base: 3dEditor wp/3d-901-ring-utils @e0cd76e (base claude/keen-pascal-u7z2gk)\nCheckpoint: .agent/checkpoints/3D-901.md\nDecisions: -   Open: -\nNext: add ringArea (abs of ringSignedArea) and ringIsClockwise (signed area < 0) to ring.js, then write packages/geo-model3d/test/ring.test.js for the unit square and its reverse\nChecks outstanding: unit tests for both acceptance lines (area 1; not clockwise for the CCW square, clockwise for the reverse); npm run check; wp-session Finish steps\n```\n\nState at the pause:\n- **Done:** only `ringSignedArea` exists in `ring.js`; it has no test and no check has been run on it.\n- **Not done:** `ringArea`, `ringIsClockwise` and `ring.test.js`; both acceptance lines are still open.\n- **Checkpoint:** set to `status: paused` with the log and next step, committed as `e0cd76e` on the WP branch only."
+}

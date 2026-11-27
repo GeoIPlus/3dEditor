@@ -68,10 +68,14 @@ checkpoint). Stop and ask the owner (dialog with proposed answers) if any of the
    event at all: `cost_usd` `?` and `source` `no cost: <reason>`. Missing a session's row: add it. The gate (step 5)
    fails the merge commit otherwise.
 2. Details entry of the row: add the `- Actual:` line (README §3) with the ratio to `est0`.
-3. Copy the review's proposals (checkpoint "Cost and efficiency") into LEDGER.md "Improvement proposals" as `open`.
+3. Copy the review's proposals (checkpoint "Cost and efficiency") into LEDGER.md "Improvement proposals" as `open`;
+   fill `review` in the WP's ledger row (D-478).
 4. Recompute the forecast by script (README §4; never by hand) and replace the block in BACKLOG "## Budget and
    forecast". A class whose median ratio left 0.8..1.25: add re-estimate lines to its open rows.
 5. The coordinating session's own row (`WP = coord`) is written at its rotation (3D-136), not per merge.
+6. Owner questions (D-475 part C): `git fetch origin`, then `node tools/questions.mjs --remote --write`; commit
+   `docs/QUESTIONS.md` with the merge. An owner answer to a provisional decision: append its review row to
+   `docs/decisions/RISKS.md` with the DECISIONS.md entry.
 
 ## 5. Gate
 
@@ -86,9 +90,13 @@ merge commit: a missing or non-final ledger row of the WP fails it (step 4a.1). 
 
 ## 6. Commit, push, confirm
 
-1. Commit (amend the merge commit if you made fixes after it), then `git push -u origin <base>`, retrying network
+1. History (D-484, [coordinator-handover §2](../coordinator-handover/SKILL.md#2-history)): append to
+   `docs/coordination/history/YYYY-MM.md` a `start` line for each session of the WP that has none (`grep 3D-<id>`;
+   session ids from the checkpoint) and the `merge` line (ref = the acceptance D-NN), in the merge commit. When the
+   coordinator starts a WP session, it appends that `start` line with the row's `in-progress` commit on the base.
+2. Commit (amend the merge commit if you made fixes after it), then `git push -u origin <base>`, retrying network
    errors up to 4 times with backoff. Never force-push.
-2. Confirm: `git fetch origin && git merge-base --is-ancestor origin/<wp> origin/<base>` exits 0.
+3. Confirm: `git fetch origin && git merge-base --is-ancestor origin/<wp> origin/<base>` exits 0.
 
 ## 7. Clean up (D-42)
 

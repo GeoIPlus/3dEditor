@@ -1,0 +1,103 @@
+{
+  "task": "js-esm-jsdoc",
+  "run": 2,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "a094dbfc3c407d9f3df40c9066040330ed89feb8",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "no-ts",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "tsconfig-same",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "esm-jsdoc",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "names-rule",
+      "pass": true,
+      "weak": true
+    }
+  ],
+  "costUsd": 1.4949654,
+  "turns": 17,
+  "durationMs": 176632,
+  "usage": {
+    "input": 32,
+    "cacheCreate": 49933,
+    "cacheRead": 1002107,
+    "output": 12384
+  },
+  "toolCalls": 15,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    },
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-905.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/RISKS.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/index.js"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/src/brep/vec.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/brep/vec.test.js"
+    }
+  ],
+  "commits": [
+    "3D-905: vec3 length helper, unit tests for add/sub/dot/cross/length; row -> review (D-3D905-1, D-3D905-2)",
+    "3D-905: checkpoint, in-progress"
+  ],
+  "pushes": [
+    {
+      "ref": "refs/heads/wp/3d-905-vec3-helpers",
+      "sha": "342025ca5750f0e43f858dd5242fcf4fcfc9b78f"
+    }
+  ],
+  "finalText": "3D-905 is done and pushed for review, but in JavaScript with JSDoc types, not TypeScript. Your own accepted decision D-109 (AGENTS.md hard rule 8, 3D-ADR-0004) forbids TypeScript sources in the kernel, and you didn't answer the dialog when I asked which way to go.\n\nI treated the language as a provisional decision (D-3D905-1) because converting later is a file rename plus moving the types inline. If you do want TypeScript, that is an ADR change and should go through intake as its own row.\n\n## What changed\n- **Helpers:** `add`, `sub`, `dot` and `cross` already existed in `packages/geo-model3d/src/brep/vec.js`, with `norm` as the length. I added `length` there as the same function as `norm` and exported it, rather than creating a second vec3 module (provisional D-3D905-2).\n- **Tests:** new `packages/geo-model3d/test/brep/vec.test.js` with 16 tests covering all five functions.\n- **Docs:** module README, DECISIONS.md, RISKS.md, checkpoint, and the BACKLOG row set to `review`.\n\n## Check results\n- **Acceptance lines:** the 16 vec tests pass and `npm run types` passes.\n- **`npm run check` fails at `check:docs`** with one problem: `new final id 3D-905 on a WP branch`. The 3D-905 row exists only in this session's start commit, not on the base branch `claude/keen-pascal-u7z2gk`. I can't fix that from a WP branch; the coordinator has to add the row to the base.\n- **Other steps, run one by one:** `check:arch`, `backlog:sync --check`, `npm test` (1343 passed, 1 skipped) and `npm run golden"
+}

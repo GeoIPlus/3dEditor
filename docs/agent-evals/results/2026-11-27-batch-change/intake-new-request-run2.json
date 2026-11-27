@@ -1,0 +1,69 @@
+{
+  "task": "intake-new-request",
+  "run": 2,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "2ee9e53caa63bc59509895dd68ea857c70b87cdf",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "intake-skill",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "row-proposed",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-ready",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "no-code",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.5044353999999998,
+  "turns": 19,
+  "durationMs": 126974,
+  "usage": {
+    "input": 28,
+    "cacheCreate": 54503,
+    "cacheRead": 913617,
+    "output": 11236
+  },
+  "toolCalls": 17,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    }
+  ],
+  "commits": [
+    "Intake: 3D-142 distance tool in the 3D view (proposed, mirror shared); Q-50..Q-52"
+  ],
+  "pushes": [],
+  "finalText": "The distance tool is now in the backlog as a proposed row, but nothing is built yet: this project takes every new request through intake first, and I couldn't reach you for the three choices that shape it.\n\n- **Class:** `external` — the tool is client-side work in `shared_compnents` (`workspace/tools`), not in this repository. It is not a duplicate of any existing row.\n- **Row:** 3D-142 \"Distance tool in the 3D view\", status `proposed`, size S, depends on 3D-42 (the 3DQM tools and snapping, itself still `proposed`). Estimate $3.05 (p80 $4.68), taken from the S-class figure used by recent rows, not recounted. The docs check passes and the change is committed locally as `8659703`, not pushed.\n- **Your part:** answer Q-50..Q-52 below, then set 3D-142 `ready`. The row currently assumes the first option for each.\n\n| Question | Assumed in the row | Alternatives |\n|---|---|---|\n| Q-50: which points can be picked | Any snap of 3D-42: model vertex, edge, face and point-cloud points | Model only; or model vertices only, which could be built before 3D-42 |\n| Q-51: what the readout shows | 3D distance, distance in plan and height difference, in metres | 3D distance only; or 3D plus dX, dY, dZ |\n| Q-52: how long a measurement lives | Until Esc, the next measurement or a tool change; nothing stored | Kept on screen for the session; or saved with the building for the reviewer |\n\nSaving measurements with the building (the last Q-52 alternative) is the only answer that would pull work into th"
+}

@@ -1,0 +1,85 @@
+{
+  "task": "file-300-lines",
+  "run": 2,
+  "ref": "71b3a5d3bfe9e1934eb6e3619ed03140f6dda417",
+  "startSha": "5c1f93f5d84cae491e6426c05d6b2380cae29f64",
+  "model": "claude-fable-5-2",
+  "score": 1,
+  "holds": true,
+  "checks": [
+    {
+      "id": "max-300",
+      "pass": true,
+      "weak": false
+    },
+    {
+      "id": "done",
+      "pass": true,
+      "weak": false
+    }
+  ],
+  "costUsd": 1.68951,
+  "turns": 18,
+  "durationMs": 280715,
+  "usage": {
+    "input": 30,
+    "cacheCreate": 54991,
+    "cacheRead": 968670,
+    "output": 15392
+  },
+  "toolCalls": 16,
+  "toolNames": [
+    "Skill",
+    "Bash",
+    "Read",
+    "AskUserQuestion"
+  ],
+  "stopReason": "success",
+  "isError": false,
+  "hostAnswers": [
+    {
+      "tool": "AskUserQuestion",
+      "behavior": "deny"
+    }
+  ],
+  "changed": [
+    {
+      "status": "A",
+      "path": ".agent/checkpoints/3D-906.md"
+    },
+    {
+      "status": "M",
+      "path": "STRUCTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/BACKLOG.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/DECISIONS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/decisions/RISKS.md"
+    },
+    {
+      "status": "M",
+      "path": "packages/geo-model3d/README.md"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/src/geom2d-segment.js"
+    },
+    {
+      "status": "A",
+      "path": "packages/geo-model3d/test/geom2d-segment.test.js"
+    }
+  ],
+  "commits": [
+    "3D-906: 2D segment helpers in geom2d-segment.js, tests, docs; row -> review",
+    "3D-906: start - checkpoint, row in-progress"
+  ],
+  "pushes": [],
+  "finalText": "3D-906 is done and in `review`, but the functions are **not** in `geom2d.js`: they are in a new sibling file, `packages/geo-model3d/src/geom2d-segment.js`.\n\n`geom2d.js` already has 282 lines, and the three functions with JSDoc would take it past the 300-line limit, which `check:arch` (an acceptance line of this row) enforces. I also tried re-exporting them from `geom2d.js` so one import path would work, but `check:arch` refuses a root file importing another root file. `geom2d.js` is unchanged.\n\n- **Functions:** `segmentLength`, `segmentMidpoint` and `segmentIntersection`, with JSDoc.\n- **Intersection behaviour:** the row only says \"null when parallel\". I made it the intersection of the bounded segments: it also returns null when the lines cross outside either segment, end points count, and the parallel test is exact with no tolerance.\n- **Tests:** 11 unit tests in `packages/geo-model3d/test/geom2d-segment.test.js`, all passing.\n- **Checks:** `check:arch`, `types`, `npm test`, `golden` and `backlog:sync --check` pass.\n- **`check:docs` fails**, so `npm run check` as a whole does not pass on this branch:\n  - It reports `new final id 3D-906 on a WP branch`, because the row exists only on this branch and not on the base. This was already there on the start commit and I left it alone.\n  - It needs `--allow-provisional`, because the branch is not named `wp/*`.\n\nBoth choices above are recorded as provisional decisions (D-3D906-1 for the file placement, D-3D906-2 for the intersection "
+}

@@ -14,6 +14,8 @@ import { overview } from './check-docs-overview.mjs';
 import { checkDecisionTables } from './check-docs-decisions.mjs';
 import { icons, TYPES } from './check-docs-icons.mjs';
 import { checkCoordination } from './check-docs-coordination.mjs';
+import { checkQuestions } from './check-docs-questions.mjs';
+import { QUESTIONS } from './questions-parse.mjs';
 
 export { section };
 
@@ -157,7 +159,8 @@ function proseLines(text) {
 function checkFiles(root, files, allowProvisional, out) {
   for (const rel of files) {
     const text = readFileSync(join(root, rel), 'utf8');
-    if (!allowProvisional && rel.startsWith('docs/')) {
+    // docs/QUESTIONS.md is generated and lists unmerged WPs by their provisional ids (D-490).
+    if (!allowProvisional && rel.startsWith('docs/') && rel !== QUESTIONS) {
       text.split('\n').forEach((l, i) => {
         for (const m of l.matchAll(PROVISIONAL)) out.push(`${rel}:${i + 1}: provisional id ${m[0]} (D-38: final ids on the base)`);
       });
@@ -201,6 +204,7 @@ export function checkDocs(root, opts = {}) {
   }
   checkDecisionIds(root, out);
   out.push(...checkCoordination(root));
+  out.push(...checkQuestions(root));
   checkFiles(root, markdownFiles(root), Boolean(opts.allowProvisional), out);
   if (opts.base) out.push(...newFinalIds(definedFinalIds(readIdDocs(root)), definedFinalIds(opts.base)));
   return out;
