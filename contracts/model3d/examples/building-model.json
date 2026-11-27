@@ -79,7 +79,7 @@
       "semantics": {
         "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
       },
-      "toleranceProfileId": "tp-1"
+      "toleranceProfileId": "sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7"
     }
   ],
   "invalid": [
@@ -164,7 +164,7 @@
         "semantics": {
           "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
         },
-        "toleranceProfileId": "tp-1",
+        "toleranceProfileId": "sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7",
         "templateInstances": {}
       }
     },
@@ -248,7 +248,7 @@
         "semantics": {
           "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
         },
-        "toleranceProfileId": "tp-1"
+        "toleranceProfileId": "sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7"
       }
     },
     {
@@ -332,7 +332,7 @@
         "semantics": {
           "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
         },
-        "toleranceProfileId": "tp-1"
+        "toleranceProfileId": "sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7"
       }
     },
     {
@@ -408,7 +408,7 @@
         "semantics": {
           "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
         },
-        "toleranceProfileId": "tp-1"
+        "toleranceProfileId": "sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7"
       }
     },
     {
@@ -499,7 +499,7 @@
         "semantics": {
           "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
         },
-        "toleranceProfileId": "tp-1"
+        "toleranceProfileId": "sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7"
       }
     },
     {
@@ -583,7 +583,7 @@
         "semantics": {
           "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
         },
-        "toleranceProfileId": "tp-1"
+        "toleranceProfileId": "sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7"
       }
     },
     {
@@ -667,7 +667,7 @@
         "semantics": {
           "b-1": { "id": "b-1", "kind": "Building", "solidIds": ["s-1"], "attributes": {}, "sourceRef": "DEBY_LOD2_1" }
         },
-        "toleranceProfileId": "tp-1"
+        "toleranceProfileId": "sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7"
       }
     }
   ]

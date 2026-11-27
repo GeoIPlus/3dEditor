@@ -500,6 +500,8 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-484 | `merge-wp` and the WP start procedure get a step that appends the `merge` / `start` line to `docs/coordination/history/YYYY-MM.md` (coordinator-handover §2); it is added in 3D-137, which already edits `merge-wp`, not in 3D-136 | Owner, dialog, WP session 3D-136, 2026-11-27 |
 | D-485 | 3D-136 accepted (done); merged into the base by the coordinating session (D-178); provisional D-484 became D-484; the coordinator rotates now by the new `coordinator-handover` skill | Owner, WP session 3D-136, 2026-11-27 |
 | D-486 | 3D-134 done: SC PR #87 (vendor of the 3D-24 `model3d` schemas) merged into shared_compnents main 287c4b24 and records PR #88 (SC row 90 `done`, WP-90 closed) merged as 5c14f256 on the owner's instruction in the SC session; reported by the 3D-134 session, not verified from here (no SC access in the coordinating session) | Owner (SC), coordinating session, 2026-11-27 |
+| D-487 | The `building-model.toleranceProfileId` description (D-473) is approved (D-18), shape unchanged; canonical form: exactly the `tolerance-profile` `required` members, keys sorted by UTF-16 code units, no whitespace, numbers as `JSON.stringify` (RFC 8785 form), UTF-8, `sha256:` + lower-case hex; test vector (D-13 defaults) `sha256:fb3a0e5e5c5a018563facede2bd52f61c90e0ad3fc7bb6943da3f5fff78ed6b7` in `contracts/model3d/README.md`; the `building-model` examples use it in place of `tp-1` | Owner, dialog, 2026-11-27 (3D-135) |
+| D-488 | 3D-135 accepted (done); merged into the base by the coordinating session (D-178); owner decision of the WP is D-487 | Owner, WP session 3D-135, 2026-11-27 |
 
 ## Open questions
 

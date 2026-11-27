@@ -21,16 +21,16 @@ Updated: 2026-11-27
 
 | Progress | Rows |
 |---|---:|
-| Done | 82 / 117 |
+| Done | 83 / 117 |
 | Review | 1 |
-| In progress | 3 |
+| In progress | 2 |
 | Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 25 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 82/117 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 83/117 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-135 Profile id by content hash; 3D-138 Async owner answers; 3D-40 geo-render model3d.
+**Running:** 3D-138 Async owner answers; 3D-40 geo-render model3d.
 
 ```mermaid
 flowchart TB
@@ -42,6 +42,7 @@ flowchart TB
     D47["✅ 🔗 3D-47 SC: 3D view port + host"]
     D129["✅ 🔗 3D-129 SC: INVALID_CRS schema"]
     D134["✅ 🔗 3D-134 SC: vendor 3D-24 schemas"]
+    D135["✅ 🖥️ 3D-135 Profile id by content hash"]
     D24["✅ ⚙️ 3D-24 QC and export rules"]
     D74["✅ 🖥️ 3D-74 val3dity image + binding"]
     D124["✅ ⚙️ 3D-124 Overhang rebuild"]
@@ -147,7 +148,6 @@ flowchart TB
     D111["💡 🖥️ 3D-111 history S3 adapter"]
     D68["💡 🔧 3D-68 Latency bench: COMMIT, import, concurrency"]
     D132["💡 🖥️ 3D-132 Return for rework"]
-    D135["🚧 🖥️ 3D-135 Profile id by content hash"]
     D138["🚧 🔧 3D-138 Async owner answers"]
     D139["💡 🖥️ 3D-139 POC file mode of the service"]
     D140["💡 🔗 3D-140 GV POC workplace"]
@@ -378,10 +378,10 @@ flowchart TB
 Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script ([method §4](metrics/README.md#4-forecast-etc-and-tuning)).
 
 ```
-Forecast 2026-11-27 (ledger n=48 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=6, S kernel n=5, S spec n=8, S tooling n=5; baseline d7c472d 2026-11-19)
-Known remaining: $239 / $310 over 36 rows   Overhead k=1.07   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $255 / $331
-Throughput: 70.9 rows/week (8 d), 387 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 3, range 0.78..1.65)
+Forecast 2026-11-27 (ledger n=50 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=6, S kernel n=5, S spec n=8, S tooling n=5; baseline d7c472d 2026-11-19)
+Known remaining: $233 / $301 over 34 rows   Overhead k=1.65   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $384 / $495
+Throughput: 72.6 rows/week (8 d), 491 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 5, range 0.78..1.65)
 ```
 
 MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
@@ -456,7 +456,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-132 | Return for rework with a comment: reviewer (not an author) records a return on the head version (spec §11 r2; v0.3 §8.5) | here | service | 24 | G5 | S | service | proposed |
 | 3D-133 | Service import: `IMPORT_BUILDING` from the input dataset (`datasets.read`), `putBaseline`, keep the source CityJSON and the `progress.save` save basis for the export source port of 3D-24 | here | service | 24, 128 | G5 | M | service | done (D-472; merged into base, no PR; D-467..D-471) |
 | 3D-134 | SC: vendor the `model3d` schemas of 3D-24 (`approval-request`, `approval`, `export-request`, `export-result`; error `NOT_APPROVABLE`, D-455, D-456) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 24, 45 | G5 | S | mirror | done (D-486; SC row 90, PR #87, records PR #88) |
-| 3D-135 | Tolerance profile identity by content: the service sets `toleranceProfileId` = `sha256:<hex>` of the canonical profile for every import, so a profile without `id` imports and a changed profile under one label gets a new id | here | service, contracts | 133 | G5 | S | service | in-progress (D-474; wp/3d-135-tolerance-id) |
+| 3D-135 | Tolerance profile identity by content: the service sets `toleranceProfileId` = `sha256:<hex>` of the canonical profile for every import, so a profile without `id` imports and a changed profile under one label gets a new id | here | service, contracts | 133 | G5 | S | service | done (D-488; merged into base, no PR; D-487) |
 | 3D-136 | Coordinator rotation: `coordinator-handover` skill, handover and history files (proposal part D, D-475) | here | .claude/skills, AGENTS.md, docs/coordination | 00 | G0 | S | tooling | done (D-485; merged into base, no PR; D-484) |
 | 3D-137 | Ledger written once at merge + scripted daily report (proposal parts A, B, D-475) | here | .claude/skills/merge-wp, tools, docs/metrics | 86 | G0 | M | tooling | done (D-479; merged into base, no PR; D-477, D-478) |
 | 3D-138 | Owner answers that arrive hours later: risk-based provisional decisions, RISKS.md, handover above ~150k, QUESTIONS.md (proposal part C, D-475) | here | AGENTS.md, .claude/skills/wp-session, docs | 136 | G0 | S | tooling | in-progress (D-475; wp/3d-138-async-answers) |
@@ -602,6 +602,7 @@ accuracy ratio 1.30 is n=1 and not applied.
   author or an operator -> `403 FORBIDDEN`; the comment is readable with the model; semantics decided by the owner first.
 - Decisions: D-450, D-452  Open: semantics of a return (owner dialog at the start of the row)
 - Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S service n < 5)
+- Actual: $2.55 over 1 session(s), 3.4 min model time, 2.04 h wall; ratio 0.83; review: no (not due)
 
 ### 3D-133 Service import
 - Source: WP session 3D-24, owner dialog 2026-11-26 (D-453): no row imports a building in the service; 3D-24's
@@ -914,7 +915,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 - Accept: GT-I1 import through the handler with a profile without `id` -> 201, model `toleranceProfileId` =
   `sha256:<hex>` of the test vector; the same numbers with another or no label -> the same id; one changed tolerance
   -> another id; key order of the profile does not change the id; `npm run check` green.
-- Decisions: D-13, D-473  Open: none
+- Decisions: D-13, D-473, D-487  Open: none
 - Estimate: $3.05 (p80 $4.68), ~4 min model time; basis: S n=17 (S service n < 5)
 
 ### 3D-136 .. 3D-138 Cost data, daily report, async answers, coordinator rotation
