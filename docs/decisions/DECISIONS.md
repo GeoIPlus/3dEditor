@@ -475,6 +475,7 @@ Append-only. Ids are never reused. A decision is changed only by a new decision 
 | D-459 | 3D-24 accepted by the owner (done once merged by the coordinator, D-178); branch wp/3d-24-qc-export | Owner, dialog, 2026-11-27 (3D-24) |
 | D-460 | Row 3D-133 (service import; dependencies 3D-24 accepted, 3D-128 done) set `ready` by the owner; to start in a fresh session after the coordinator merges 3D-24 | Owner, chat, 2026-11-27 (3D-24) |
 | D-461 | 3D-24 accepted (done); merged into the base by the coordinating session (D-178) from b98b3e6; provisional ids became D-450..D-460, rows 3D-132..3D-134; 3D-133 (service import) `ready` per D-460 and started by the coordinator | Owner, WP session 3D-24, 2026-11-27 |
+| D-462 | 3D-47 done: its SC rows 70 (3D view port and host, PR #52, ADR-0068) and 71 (camera controls, PR #53, ADR-0069) were merged into shared_compnents main on 2026-11-25; the mirror row had stayed `in-progress` because it was not linked to the SC row ids (coordinator error, found 2026-11-27) | Coordinating session, 2026-11-27 |
 
 ## Open questions
 

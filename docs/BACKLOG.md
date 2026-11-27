@@ -21,20 +21,21 @@ Updated: 2026-11-27
 
 | Progress | Rows |
 |---|---:|
-| Done | 76 / 110 |
+| Done | 77 / 110 |
 | Review | 0 |
-| In progress | 3 |
+| In progress | 2 |
 | Ready | 6 |
 | Proposed (waiting for the owner to set `ready`) | 24 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 76/110 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 77/110 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-131 Overhang width at B; 3D-133 Service import; 3D-47 SC: 3D view port + host.
+**Running:** 3D-131 Overhang width at B; 3D-133 Service import.
 
 ```mermaid
 flowchart TB
   subgraph done["DONE"]
+    D47["✅ 🔗 3D-47 SC: 3D view port + host"]
     D129["✅ 🔗 3D-129 SC: INVALID_CRS schema"]
     D24["✅ ⚙️ 3D-24 QC and export rules"]
     D74["✅ 🖥️ 3D-74 val3dity image + binding"]
@@ -116,7 +117,6 @@ flowchart TB
   end
   subgraph ready["READY"]
     D133["🚧 🖥️ 3D-133 Service import"]
-    D47["🚧 🔗 3D-47 SC: 3D view port + host"]
     D48["▶️ 🔗 3D-48 SC: apps/3dqm host"]
     D51["▶️ 🔗 3D-51 geoviewer scene3d adapter"]
   end
@@ -483,7 +483,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | mirror | proposed (UI per brandbook, D-40) |
 | 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared (78) | contracts | 06, 27 | G3 | S | mirror | done (D-380; SC row 78, PR #68 merged) |
 | 3D-129 | SC: re-vendor the `model3d` error schema with `INVALID_CRS` (422, `details.crsReason`; D-406) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 110, 45 | G5 | S | mirror | done (D-443; SC row 84 done, PR #75, records PR #80) |
-| 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | mirror | in-progress (D-61; SC wp/70-3d-view-host, wp/71-3d-camera-controls; started in a fresh cloud session; UI per brandbook, D-40) |
+| 3D-47 | `geo-render` 3D view port and perspective host (camera, controls, point drawing); SC ADR first | shared | geo-render | 02; shared WP-19 | G3 | L | mirror | done (D-462; SC rows 70, 71, PR #52, #53) |
 | 3D-48 | `apps/3dqm`: independent 3DQM host that assembles the workplace from the CP document | shared | apps | 43, 47; shared WP-28 | G5 | M | mirror | ready (D-61; waits for 3D-43, 3D-47, SC WP-28; D-55; UI per brandbook, D-40) |
 | 3D-46 | P4 canary scan of `shared_compnents` browser outputs + rule "no `geo-model3d` dependency" | shared (76) | tools, CI | 27 | G0 | S | mirror | done (D-147; merged into base, no PR here; code: SC row 76 `done`, [SC pull request #67](https://github.com/GeoIPlus/shared_compnents/pull/67) merged `b65c139`; D-144, D-145) |
 | 3D-50 | geoviewer consumes 3DQM packages: `@geoiplus/*` dependencies (none today) with the registry token in CI and Docker build, P4 canary scan of the client build (split D-397: mount and kernel route -> 3D-127) | geoviewer | host, CI | 23, 43 | G5 | M | mirror | ready (D-381; waits for 3D-43) |
