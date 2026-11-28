@@ -21,16 +21,16 @@ Updated: 2026-11-28
 
 | Progress | Rows |
 |---|---:|
-| Done | 85 / 118 |
+| Done | 85 / 119 |
 | Review | 0 |
-| In progress | 1 |
-| Ready | 5 |
-| Proposed (waiting for the owner to set `ready`) | 26 |
+| In progress | 2 |
+| Ready | 4 |
+| Proposed (waiting for the owner to set `ready`) | 27 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 85/118 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 85/119 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
-**Running:** 3D-40 geo-render model3d.
+**Running:** 3D-40 geo-render model3d; 3D-43 plans/3dqm.
 
 ```mermaid
 flowchart TB
@@ -128,6 +128,7 @@ flowchart TB
     D51["▶️ 🔗 3D-51 geoviewer scene3d adapter"]
   end
   subgraph g0["G0 - plan, contracts, spike (PROPOSED)"]
+    D143["💡 🔧 3D-143 WP handoff via coordinator"]
   end
   subgraph g1["G1 - kernel core, import, export (PROPOSED)"]
   end
@@ -158,7 +159,7 @@ flowchart TB
   subgraph client["shared / geoviewer / crowdsource mirrors (PROPOSED)"]
     D40["🚧 🔗 3D-40 geo-render model3d"]
     D42["💡 🔗 3D-42 3DQM tools"]
-    D43["▶️ 🔗 3D-43 plans/3dqm"]
+    D43["🚧 🔗 3D-43 plans/3dqm"]
     D44["💡 🔗 3D-44 3DQM UI panels"]
     D50["▶️ 🔗 3D-50 geoviewer consumes 3DQM packages"]
     D127["▶️ 🔗 3D-127 geoviewer runs 3DQM"]
@@ -327,6 +328,7 @@ flowchart TB
   D00 --> D136
   D86 --> D137
   D136 --> D138
+  D138 --> D143
   D133 --> D139
   D70 --> D139
   D139 --> D140
@@ -381,8 +383,8 @@ Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script
 
 ```
 Forecast 2026-11-28 (ledger n=52 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=6, S kernel n=5, S spec n=8, S tooling n=6; baseline d7c472d 2026-11-19)
-Known remaining: $233 / $298 over 33 rows   Overhead k=1.84   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $428 / $549
+Known remaining: $236 / $303 over 34 rows   Overhead k=1.84   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $434 / $557
 Throughput: 66.1 rows/week (9 d), 446 model min/week; waiting share 99 %   Accuracy: median ratio 1.37 (last 6, range 0.78..2.95)
 ```
 
@@ -466,6 +468,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-140 | geoviewer POC workplace: upload a CityJSON (+ LAS/COPC), pick one building, edit it with the 3DQM tools (points, heatmap, FIT_PLANE, validation, undo/redo), download the result; internal, static tokens (D-481) | geoviewer | host, POC | 139, 127, 51, 42, 44 | G5 | M | mirror | proposed |
 | 3D-141 | geoviewer POC: oblique images (stereo) view-only in a second viewport kept in sync with the 3D viewport (camera, selected building); no measurement, no effect on the model (D-03 unchanged, D-481) | geoviewer | host, oblique | 140 | G5 | M | mirror | proposed |
 | 3D-142 | Operation contract: `editable` / `affected` / `dependent` in `GeometryCommandResult` and the kernel check `affected ⊆ editable` (from Р-08 rev. 1 §4.1.6, D-498) | here | contracts, geo-model3d/ops, services/kernel | 15 | G3 | M | kernel | proposed |
+| 3D-143 | Context handoff of a WP session past ~150k: the WP session writes checkpoint and handoff and messages the coordinator, the coordinator starts the fresh session (gap in D-492 found by 3D-138; D-501) | here | .claude/skills/wp-session, .claude/skills/coordinator-handover, AGENTS.md | 138 | G0 | S | tooling | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 133, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
@@ -508,7 +511,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | mirror | in-progress (D-465; SC session) |
 | 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-80, WP-81 (WP-28 core slice + 3DQM plan support) | G3 | M | mirror | done (D-499; SC row 87, PR #89, records PR #91) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | mirror | proposed (UI per brandbook, D-40) |
-| 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-80, WP-81 | G5 | M | mirror | ready (D-381; waits for 3D-41; SC WP-80, WP-81 merged) |
+| 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-80, WP-81 | G5 | M | mirror | in-progress (D-500; SC session) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | mirror | proposed (UI per brandbook, D-40) |
 | 3D-45 | Pinned `model3d` schemas in `shared_compnents`: `contracts/vendor/3deditor/` + `provenance.json` hash check; how client code loads them | shared (78) | contracts | 06, 27 | G3 | S | mirror | done (D-380; SC row 78, PR #68 merged) |
 | 3D-129 | SC: re-vendor the `model3d` error schema with `INVALID_CRS` (422, `details.crsReason`; D-406) into `contracts/vendor/3deditor/` and update `provenance.json` | shared | contracts | 110, 45 | G5 | S | mirror | done (D-443; SC row 84 done, PR #75, records PR #80) |
@@ -979,6 +982,14 @@ accuracy ratio 1.30 is n=1 and not applied.
 - Accept: every implemented operation's PREVIEW and COMMIT reply validates with the three lists; a test operation that changes an entity outside `editable` is refused and the model is unchanged; existing golden tests unchanged; `npm run check` green.
 - Decisions: D-08, D-18, D-498  Open: what counts as "stored state" in the current model (planes, explicit `p`) - to settle in the WP's first turn against D-08
 - Estimate: $7.7 (p80 $9.0), ~13 min model time; basis: M kernel n=6
+
+### 3D-143 Context handoff of a WP session through the coordinator
+- Source: WP session 3D-138, 2026-11-27 (it passed 150k and could not hand over: its brief forbids starting sessions); owner, dialog 2026-11-28 (D-501).
+- Goal: the >150k handoff of D-492 works for WP sessions that may not start sessions.
+- Scope in: `wp-session` handoff step (checkpoint + handoff pushed, then send_message to the coordinator "WP 3D-<id> handoff, <branch>@<sha>, checkpoint <path>"); coordinator procedure to start the fresh session on the same branch and archive the old one; history `start` line. Scope out: changing the 150k threshold.
+- Accept: the procedure text names who starts the session in both skills; agent evals (§7.8) on the changed skills, 2 runs per task, no flipped task without a reason.
+- Decisions: D-178, D-492, D-501  Open: -
+- Estimate: $3.05 (p80 $4.87), ~5 min model time; basis: S tooling n=6
 
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under
