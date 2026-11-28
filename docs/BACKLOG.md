@@ -17,18 +17,18 @@ method and session data in [docs/metrics/](metrics/README.md) (D-236).
 
 ## Progress overview
 
-Updated: 2026-11-27
+Updated: 2026-11-28
 
 | Progress | Rows |
 |---|---:|
-| Done | 84 / 117 |
+| Done | 84 / 118 |
 | Review | 1 |
 | In progress | 1 |
 | Ready | 5 |
-| Proposed (waiting for the owner to set `ready`) | 25 |
+| Proposed (waiting for the owner to set `ready`) | 26 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 84/117 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 84/118 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-40 geo-render model3d.
 
@@ -138,6 +138,7 @@ flowchart TB
     D113["💡 📐 3D-113 ALIGN edges extensions"]
     D106["💡 ⚙️ 3D-106 ROTATE_FACE"]
     D107["💡 📐 3D-107 ADR: shared plane"]
+    D142["💡 ⚙️ 3D-142 Operation contract"]
     D108["💡 ⚙️ 3D-108 Constraint lineage"]
     D125["💡 ⚙️ 3D-125 Dormers follow roof"]
     D130["💡 ⚙️ 3D-130 Metric change detection"]
@@ -243,6 +244,7 @@ flowchart TB
   D15 --> D106
   D15 --> D107
   D15 --> D108
+  D15 --> D142
   D87 --> D102
   D73 --> D84
   D00 --> D85
@@ -378,10 +380,10 @@ flowchart TB
 Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script ([method §4](metrics/README.md#4-forecast-etc-and-tuning)).
 
 ```
-Forecast 2026-11-27 (ledger n=51 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=6, S kernel n=5, S spec n=8, S tooling n=6; baseline d7c472d 2026-11-19)
-Known remaining: $231 / $297 over 33 rows   Overhead k=1.89   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $436 / $562
-Throughput: 73.5 rows/week (8 d), 502 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 5, range 0.78..1.65)
+Forecast 2026-11-28 (ledger n=51 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=6, S kernel n=5, S spec n=8, S tooling n=6; baseline d7c472d 2026-11-19)
+Known remaining: $238 / $306 over 34 rows   Overhead k=1.89   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $451 / $579
+Throughput: 65.3 rows/week (9 d), 446 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 5, range 0.78..1.65)
 ```
 
 MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
@@ -463,6 +465,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-139 | POC file mode of the kernel service: upload one CityJSON and LAS/COPC files as datasets, `buildings` adapter over the Buildings of the uploaded file, single-user lease adapter, static tokens; result as a download | here | service, contracts | 133, 70 | G5 | M | service | proposed |
 | 3D-140 | geoviewer POC workplace: upload a CityJSON (+ LAS/COPC), pick one building, edit it with the 3DQM tools (points, heatmap, FIT_PLANE, validation, undo/redo), download the result; internal, static tokens (D-481) | geoviewer | host, POC | 139, 127, 51, 42, 44 | G5 | M | mirror | proposed |
 | 3D-141 | geoviewer POC: oblique images (stereo) view-only in a second viewport kept in sync with the 3D viewport (camera, selected building); no measurement, no effect on the model (D-03 unchanged, D-481) | geoviewer | host, oblique | 140 | G5 | M | mirror | proposed |
+| 3D-142 | Operation contract: `editable` / `affected` / `dependent` in `GeometryCommandResult` and the kernel check `affected ⊆ editable` (from Р-08 rev. 1 §4.1.6, D-498) | here | contracts, geo-model3d/ops, services/kernel | 15 | G3 | M | kernel | proposed |
 | 3D-25 | E2E on CP/DP mock: import -> edit -> validate -> approve -> export -> re-import | here | e2e | 24, 133, 43, 127 | G5 | M | tests | proposed |
 | 3D-26 | Import acceptance on real roofer and TerraSolid output; tolerance profile calibration | here | geo-model3d/import, fixtures | 10, 11 | G1 | M | kernel | blocked (sample data path, Q-07) |
 | 3D-27 | Early ADR: location of `model3d` contract schemas (Q-08) and P4 canary check of client bundles (Q-09) | here | docs/decisions | 01 | G0 | S | spec | done (D-39; merged into base, no PR) |
@@ -886,6 +889,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 - Source: WP 3D-15, owner decisions 2026-11-25/26 (dialog; D-305, D-306).
 - Goal: decide whether faces share a logical plane entity (owner handoff P15-03) and how a plane forks when one face moves.
 - Accept: ADR accepted by the owner; effect on D-298 named.
+- Scope change 2026-11-28 (D-498): input is the §4.1 text "Р-08 rev. 1" on branch `claude/awesome-ramanujan-h0dhgd` @4d35f4a (`docs/fullSpecsV0.3.md` there; `Surface` entity with `Face.surfaceId`, `sharedSurfacePolicy`, vertex definitions `SURFACES_3` / `EDGE_PARAM` / `EXPLICIT`, stored state = solver degrees of freedom, invariants 4.1.4, immutable measurements). After the MVP, in parts: the ADR names the follow-up rows (contract, kernel, golden tests) and the ill-conditioned-vertex threshold left open there (ADR-S). The operation contract (§4.1.6) is row 3D-142. D-08 holds until the ADR is accepted.
 
 ### 3D-108 Constraint ids in the lineage
 - Source: WP 3D-15, owner decisions 2026-11-25/26 (dialog; D-305, D-306).
@@ -967,6 +971,14 @@ accuracy ratio 1.30 is n=1 and not applied.
   (camera, selected building)."
 - Decisions: D-03, D-481  Open: sync criterion (latency), which oblique datasets the POC uses
 - Estimate: $6.63 (p80 $8.96); basis: M n=16 (M mirror n < 5)
+
+### 3D-142 Operation contract: editable / affected / dependent
+- Source: owner, dialog 2026-11-28 (D-498): §4.1.6 of "Р-08 rev. 1" (branch `claude/awesome-ramanujan-h0dhgd` @4d35f4a), taken out ahead of the rest of 3D-107 because it is additive.
+- Goal: every PREVIEW and COMMIT result says which entities the operation may change, which it changed and which changed only in derived values; the kernel refuses a result that touched anything outside `editable`.
+- Scope in: `command-result` schema fields `editable`, `affected`, `dependent` (contract first, owner approval D-18); per-`OperationKind` rule how `editable` follows from the selection and mode; kernel check `affected ⊆ editable` with stored state of all other entities bit-identical, else refusal without change (error code from the existing taxonomy or a question); tests per implemented operation. Scope out: `Surface` entity and vertex definitions (3D-107 follow-ups); stored state stays the current model (`supportPlane`, `definingFaceIds`) until then.
+- Accept: every implemented operation's PREVIEW and COMMIT reply validates with the three lists; a test operation that changes an entity outside `editable` is refused and the model is unchanged; existing golden tests unchanged; `npm run check` green.
+- Decisions: D-08, D-18, D-498  Open: what counts as "stored state" in the current model (planes, explicit `p`) - to settle in the WP's first turn against D-08
+- Estimate: $7.7 (p80 $9.0), ~13 min model time; basis: M kernel n=6
 
 ### 3D-60 .. 3D-63 Data serving in crowdsource (D-35)
 - Source: owner dialog 2026-11-19 after 3D-29. 3D-60..3D-62 are added in `crowdsource` by a session working there under
