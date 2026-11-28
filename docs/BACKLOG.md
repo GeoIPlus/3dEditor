@@ -21,14 +21,14 @@ Updated: 2026-11-28
 
 | Progress | Rows |
 |---|---:|
-| Done | 84 / 118 |
-| Review | 1 |
+| Done | 85 / 118 |
+| Review | 0 |
 | In progress | 1 |
 | Ready | 5 |
 | Proposed (waiting for the owner to set `ready`) | 26 |
 | Blocked (external access or data) | 1 |
 
-**Implementation progress: 0 %** of code; 84/118 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
+**Implementation progress: 0 %** of code; 85/118 rows done. Planning done: agent manual and backlog (3D-00, D-48), verification
 notes 3D-01 and 3D-29 ([3D-01](verification/3D-01.md), [3D-29](verification/3D-29.md)), agent tooling 3D-30 (D-47), ADR kernel package and remote port 3D-02 (D-56), repository bootstrap 3D-05 (D-59), agent evals 3D-28 (D-65, baseline 16/19 tasks hold, D-64), 3DQM spec 3D-04 ([docs/specs/3dqm-spec.md](specs/3dqm-spec.md), D-71), code-graph spike 3D-31 (D-73, result: defer), contract schemas 3D-06 ([contracts/model3d](../contracts/model3d/README.md), D-78), ADR storage 3D-03 ([3D-ADR-0003](decisions/adr/3D-ADR-0003-storage-of-versions-journal-results.md), D-87), spec update 3D-64 (D-98), latency spike and kernel ADRs 3D-08 ([3D-08 note](verification/3D-08.md): PREVIEW p95 5.4 ms / 150 ms; JS on Node, D-109..D-111, D-113), spec/AGENTS.md ADR references 3D-66 (D-143).
 **Running:** 3D-40 geo-render model3d.
 
@@ -44,6 +44,7 @@ flowchart TB
     D134["✅ 🔗 3D-134 SC: vendor 3D-24 schemas"]
     D135["✅ 🖥️ 3D-135 Profile id by content hash"]
     D138["✅ 🔧 3D-138 Async owner answers"]
+    D41["✅ 🔗 3D-41 Remote kernel port"]
     D24["✅ ⚙️ 3D-24 QC and export rules"]
     D74["✅ 🖥️ 3D-74 val3dity image + binding"]
     D124["✅ ⚙️ 3D-124 Overhang rebuild"]
@@ -121,7 +122,6 @@ flowchart TB
     D65["✅ 📐 3D-65 Schema text: D-76 in FIT_TO_SHARED_EDGE"]
   end
   subgraph review["REVIEW"]
-    D41["🔍 🔗 3D-41 Remote kernel port"]
   end
   subgraph ready["READY"]
     D48["▶️ 🔗 3D-48 SC: apps/3dqm host"]
@@ -380,10 +380,10 @@ flowchart TB
 Replaced by the coordinator at every merge (`merge-wp` §4a), computed by script ([method §4](metrics/README.md#4-forecast-etc-and-tuning)).
 
 ```
-Forecast 2026-11-28 (ledger n=51 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=6, S kernel n=5, S spec n=8, S tooling n=6; baseline d7c472d 2026-11-19)
-Known remaining: $238 / $306 over 34 rows   Overhead k=1.89   Growth g=TBD (plan period until 2026-12-03)
-ETC: TBD (g not measured before 2026-12-03); known x k = $451 / $579
-Throughput: 65.3 rows/week (9 d), 446 model min/week; waiting share 99 %   Accuracy: median ratio 1.30 (last 5, range 0.78..1.65)
+Forecast 2026-11-28 (ledger n=52 WPs, classes with n>=5: L kernel n=6, M kernel n=6, M tooling n=6, S kernel n=5, S spec n=8, S tooling n=6; baseline d7c472d 2026-11-19)
+Known remaining: $233 / $298 over 33 rows   Overhead k=1.84   Growth g=TBD (plan period until 2026-12-03)
+ETC: TBD (g not measured before 2026-12-03); known x k = $428 / $549
+Throughput: 66.1 rows/week (9 d), 446 model min/week; waiting share 99 %   Accuracy: median ratio 1.37 (last 6, range 0.78..2.95)
 ```
 
 MVP client path forecast (2026-11-26, from the ledger; not script output): 3D-41 -> 3D-43 -> 3D-50 -> 3D-127 ->
@@ -506,7 +506,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 | 3D-86 | Forecast script `tools/budget.mjs` (ledger + BACKLOG -> ETC block) and ledger backfill of every finished WP session | here | tools, docs/metrics | 85 | G0 | S | tooling | done (D-248; merged into base, no PR) |
 | 3D-89 | Forecast growth g from per-row first appearance: rows dated by the commit where they first appear, the plan baseline (first 14 days of the backlog) excluded; baseline commit printed, shallow clone refused (D-250) | here | tools, docs/metrics | 86 | G0 | S | tooling | done (D-255; merged into base, no PR) |
 | 3D-40 | `geo-render/model3d`: draw edited building from patches against the 3D view port, hide source layer, ghost, pick by entity id | shared | geo-render | 06, 45, 47; shared WP-19, WP-20 | G3 | L | mirror | in-progress (D-465; SC session) |
-| 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-80, WP-81 (WP-28 core slice + 3DQM plan support) | G3 | M | mirror | review (D-497; SC row 87, PR #89 merged, records PR #91 open) |
+| 3D-41 | Remote kernel port: `model3d-kernel` registry service adapter, host-injected transport, Tools Plane placement value in plan v2 | shared | plans/registry, workspace, contracts | 02, 06, 45; shared WP-80, WP-81 (WP-28 core slice + 3DQM plan support) | G3 | M | mirror | done (D-499; SC row 87, PR #89, records PR #91) |
 | 3D-42 | 3DQM tools: E-04 state machine, selection, snapping incl. point cloud, numeric input, PREVIEW throttling | shared | workspace/tools | 40, 41; shared WP-24 | G3 | L | mirror | proposed (UI per brandbook, D-40) |
 | 3D-43 | `plans/3dqm`: `production` and `qa` plans, 3DQM contract extension schema | shared | plans, contracts | 06, 41, 45; shared WP-21, WP-80, WP-81 | G5 | M | mirror | ready (D-381; waits for 3D-41; SC WP-80, WP-81 merged) |
 | 3D-44 | 3DQM UI panels: validation issues, constraint inspector, heatmap legend, QC approve/return | shared | workspace/ui | 42; shared WP-23, WP-25 | G4/G5 | M | mirror | proposed (UI per brandbook, D-40) |
@@ -1039,6 +1039,7 @@ accuracy ratio 1.30 is n=1 and not applied.
 - Estimate: $6.63 (p80 $8.96), ~12 min model time; basis: M n=16 (M mirror n=0 < 5); wall: 1-3 h agent incl. PR/CI in the other repository (+ owner dialogs and PR merge there; M span p50 16 h, p80 32 h)
 - Size check 2026-11-26 (MVP estimates): M fits only with SC WP-28 (factory, registry, plan v2) already on SC main;
   WP-28 itself is not in this figure (D-381).
+- Actual: $19.55 over 1 session(s), ? min model time (get_session usage only), 23.65 h wall; ratio 2.95; review: no
 
 ### 3D-50 geoviewer consumes 3DQM packages (mirror; GV row authoritative)
 - Accept: see "3D-40 .. 3D-50 Mirrors" (3D-27, 3D-01 changes).
